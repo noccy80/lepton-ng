@@ -1,0 +1,18 @@
+Writing applications
+====================
+
+Applications are classes derived from the ConsoleApplication or ConsoleService
+class. Depending on if you are writing an application or a service you need to
+implement a few methods:
+
+ConsoleApplication
+------------------
+ * public main($argc,$argv) - Program entrypoint
+ * public usage() - Usage helper, invoked if -h is on the command line.
+ * protected $arguments - Command line arguments accepted
+
+ConsoleService
+--------------
+ * public main($argc,$argv) - Main service entrypoint
+ * public usage() - Usage helper, same as above
+ * protected $arguments - Command line arguments accepted

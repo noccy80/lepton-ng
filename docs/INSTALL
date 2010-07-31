@@ -1,0 +1,11 @@
+1. Global installation
+======================
+
+ * Place the 'sys' folder in a path accessible on your PHP include path.
+ * Requiring "sys/base.php" should now kickstart things properly.
+
+2. Local installation
+=====================
+
+ * To use the console scripts with a local installation, symlink the ../sys/ folder into the bin folder
+

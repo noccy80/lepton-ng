@@ -1,0 +1,53 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+class LeptonUtil extends ConsoleApplication {
+	protected $arguments = 'h';
+	function main($argc,$argv) {
+		if (count($this->arguments) == 0) {
+			$this->usage();
+			return 1;
+		}
+		switch(strtolower($this->arguments[0])) {
+			case 'deploy':
+				Console::writeLn("Deploying instance...");
+				break;
+			case 'scaffold':
+				break;
+			case 'export':
+				Console::writeLn("Exporting site to archive...");
+				break;
+			case 'import':
+				break;
+			case 'config':
+				Console::write("Reading configuration metadata ... ");
+				Console::status('dbx           '); sleep(1);
+				Console::status('dbx.db        '); sleep(1);
+				Console::status('dbx.db.mysql  '); sleep(1);
+				Console::writeLn('done          ');
+				Console::writeLn("Parsing configuration file ... done");
+				Console::writeLn("Preparing options ... done");
+				break;
+			default:
+				$this->usage();
+				return 1;
+		}
+		return 0;
+	}
+	function usage() {
+		Console::writeLn('Usage:     %s [-options] action [arguments]', $this->getName());
+		Console::writeLn();
+		Console::writeLn('Options:   -q        Quiet, show no info');
+		Console::writeLn('           -h        Show help');
+		Console::writeLn('           -o        Output file (when exporting)');
+		Console::writeLn('           -i        Input file (when importing)');
+		Console::writeLn();
+		Console::writeLn('Actions:   deploy    Deploy a lepton MVC structure in the current folder');
+		Console::writeLn('           scaffold  Scaffolds the database and imports any data');
+		Console::writeLn('           export    Export the entire site into a .tgz file');
+		Console::writeLn('           import    Import a site from a .tgz file');
+		Console::writeLn('           config    Configure interactively');
+	}
+}
+return Lepton::run('LeptonUtil');

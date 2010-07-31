@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration group="dbx" name="Database configuration">
+	<!-- the hint is information helpful to the user -->
+	<hint>Enabling this class allows you to connect to databases that are hosted on the local or a remote machine.</hint>
+	<!-- if the class is optional -->
+	<attribute name="optional">true</attribute>
+	<!-- class to load if activated -->
+	<attribute name="class">lepton.dbx.dbx</attribute>
+	<!-- the colon notation in the key makes the values added as a hash -->
+	<option group="dbx.db" name="Database type">
+		<config type="select">
+			<value enables="dbx.db.mysql" disables="dbx.db.*">MySQL</value>
+		</config>
+	</option>
+	<option group="dbx.db.mysql" name="Database setup" key="lepton.dbx.sets:default" enabled="false">
+		<!-- these are the options we offer -->
+		<config key="username" type="text" />
+		<config key="password" type="password" />
+		<config key="host" type="text" default="localhost" />
+		<config key="port" type="numeric" default="3304" />
+		<config key="database" type="text" />
+		<!-- the keys are passed as environment variables -->
+		<after exec="lepton invoke dbx test" />
+	</option>
+</configuration>
