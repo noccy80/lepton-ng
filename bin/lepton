@@ -2,6 +2,8 @@
 <?php
 
 require('sys/base.php');
+ModuleManager::load('lepton.ui.curses');
+
 class LeptonUtil extends ConsoleApplication {
 	protected $arguments = 'h';
 	function main($argc,$argv) {
@@ -50,4 +52,5 @@ class LeptonUtil extends ConsoleApplication {
 		Console::writeLn('           config    Configure interactively');
 	}
 }
+
 return Lepton::run('LeptonUtil');

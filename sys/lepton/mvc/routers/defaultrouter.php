@@ -7,6 +7,7 @@
 		function route() {
 			
 			Controller::invoke($method, $arguments);
+
 		}
 	}
 

@@ -1,0 +1,18 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+ModuleManager::load('lepton.ui.gtk');
+
+class TestApplication extends GtkApplication {
+	protected $arguments = 'h';
+	private $ui;
+	function usage() { Console::writeLn('Usage:     %s', $this->getName()); }
+	function main($argc,$argv) {
+
+		return 0;
+
+	}
+}
+
+return Lepton::run('TestApplication');

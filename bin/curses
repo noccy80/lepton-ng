@@ -1,0 +1,32 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+ModuleManager::load('lepton.ui.curses');
+
+class TestApplication extends CursesApplication {
+	protected $arguments = 'h';
+	function usage() { }
+	function main($argc,$argv) {
+		$opts = array(
+			'Configure Lepton-ng',
+			'Test the configuration',
+			'Save and exit'
+		);
+		$this->addChild(new CursesMenu(5,5,40,5,"Main Menu",$opts));
+		while($key = $this->refresh()) {
+			if ($key == 27) if(!$this->removeChild()) break;
+			if ($key == 13) {
+				static $level;
+				$level++;
+				$this->addChild(new CursesMenu(5+($level*5),5+($level*2),40,5,"Main Menu",$opts));
+			}
+		}
+		return 0;
+
+	}
+}
+
+return Lepton::run('TestApplication');
+
+?>

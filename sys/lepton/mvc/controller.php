@@ -26,3 +26,5 @@
 			unset($this->_state[$key]);
 		}
 	}
+
+?>
