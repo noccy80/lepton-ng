@@ -13,22 +13,30 @@ class TestApplication extends CursesApplication {
 			'Save and exit'
 		),
 		'configure' => array(
-			'Database setup (lepton.dbx)',
-			'Authentication setup (lepton.user)',
-			'View setup (lepton.view)',
-			'MVC Project setup (lepton.mvc)',
-			'Routing setup (lepton.mvc.routing)'
+			'Database setup          (lepton.dbx)',
+			'Authentication setup    (lepton.user)',
+			'View setup              (lepton.view)',
+			'MVC Project setup       (lepton.mvc)',
+			'Routing setup           (lepton.mvc.routing)',
+			'Google Analytics setup  (lepton.ganalytics)',
+			'Analytics setup         (lepton.analytics)',
+			'Cache setup             (lepton.cache)',
+			'Gravatars setup         (lepton.gravatars)',
+			'Uploads setup           (lepton.uploads)'
 		)
 	);
 	function usage() { }
 	function main($argc,$argv) {
+		static $level;
 		$this->addChild(new CursesMenu(5,2,40,5,"Main Menu",$this->menu['main']));
 		while($key = $this->refresh()) {
-			if ($key == 27) if(!$this->removeChild()) break;
+			if ($key == 27) {
+				$this->removeChild();
+				$level--;
+			}
 			if ($key == 13) {
-				static $level;
 				$level++;
-				$this->addChild(new CursesMenu(5+($level*5),2+($level*2),50,7,"Configure Lepton-ng",$this->menu['configure']));
+				$this->addChild(new CursesMenu(5+($level*5),2+($level*2),50,10,"Configure Lepton-ng",$this->menu['configure']));
 			}
 			if ($this->childCount() == 0) break;
 		}

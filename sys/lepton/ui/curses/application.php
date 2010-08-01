@@ -3,6 +3,7 @@
 define('NCC_FRAME', 1);
 define('NCC_TEXT', 2);
 define('NCC_TITLE', 3);
+define('NCC_MORE', 4);
 
 /**
  * @interface ICursesWidget
@@ -18,6 +19,7 @@ interface ICursesWidget {
  * @brief Abstract baseclass for CurseWidget components
  */
 abstract class CursesWidget implements ICursesWidget {
+
 }
 
 /**
@@ -31,6 +33,7 @@ class CursesMenu extends CursesWidget {
 	private $_items;
 	private $_selected;
 	private $_scroll;
+	private $_wh;
 	/**
 	 * Constructor accepts the placement (x, y, width and height), the title,
 	 * the available options, and the currently selected index.
@@ -50,6 +53,13 @@ class CursesMenu extends CursesWidget {
 		$this->_items = $items;
 		$this->_selected = $selected;
 		$this->_scroll = 0; // TODO: Calculate from height and selected
+		$this->_wh = ncurses_newwin($this->_h, $this->_w, $this->_y, $this->_x); 
+		Console::debug("Created window with handle %xd", $this->_wh);
+	}
+
+	function __destruct() {
+		Console::debug("Deleting window with handle %xd", $this->_wh);
+		ncurses_delwin($this->_wh);
 	}
 
 	/**
@@ -58,7 +68,7 @@ class CursesMenu extends CursesWidget {
 	 * @param int $workspace The workspace window handle for curses
 	 */
 	function draw($workspace) {
-		$wh = ncurses_newwin($this->_h, $this->_w, $this->_y, $this->_x); 
+		$wh = $this->_wh;
 		ncurses_wcolor_set($wh, NCC_FRAME);
 		ncurses_wborder($wh,0,0, 0,0, 0,0, 0,0); 
 		ncurses_wcolor_set($wh, NCC_TITLE);
@@ -67,7 +77,9 @@ class CursesMenu extends CursesWidget {
 		ncurses_mvwaddstr($wh, 0, $left, ' '.$this->_title.' ');
 		ncurses_wattroff($wh,NCURSES_A_BOLD); 
 		ncurses_wcolor_set($wh, NCC_TEXT);
-		$i = 0;
+		$i = $this->_scroll;
+		$sm = (count($this->_items) - ($this->_h - 2));
+		if ($sm<0) $sm = 0;
 		for($n = 0; $n < $this->_h - 2; $n++) {
 			if (($n + $i) < count($this->_items)) {
 				$str = " ".$this->_items[$n+$i];
@@ -75,12 +87,17 @@ class CursesMenu extends CursesWidget {
 				$str = "";
 			}
 			$str.= str_repeat(' ',$this->_w - 2 - strlen($str));
-			if ($n+$i == $this->_selected) ncurses_wattron($wh,NCURSES_A_REVERSE); 
-			ncurses_mvwaddstr($wh, $n + 1, 1, $str); 
-			ncurses_wattroff($wh,NCURSES_A_REVERSE); 
+			if ($n+$i == $this->_selected) ncurses_wattron($wh,NCURSES_A_REVERSE);
+			ncurses_mvwaddstr($wh, $n + 1, 1, $str);
+			ncurses_wattroff($wh,NCURSES_A_REVERSE);
 		}
-		ncurses_wrefresh($wh); 
+		ncurses_wcolor_set($wh,NCC_MORE);
+		if ($i > 0) { ncurses_wmove($wh, 1, $this->_w - 1); ncurses_waddch($wh,NCURSES_ACS_UARROW | NCURSES_A_BOLD); }
+		if ($sm-$i > 0) { ncurses_wmove($wh, $this->_h - 2, $this->_w - 1); ncurses_waddch($wh,NCURSES_ACS_DARROW | NCURSES_A_BOLD); }
+		ncurses_wrefresh($wh);
 		ncurses_wcolor_set($wh,0);
+		ncurses_move(-1,1);
+		ncurses_refresh();
 	}
 
 	/**
@@ -90,10 +107,12 @@ class CursesMenu extends CursesWidget {
 		if ($key == NCURSES_KEY_UP) {
 			if ($this->_selected > 0) {
 				$this->_selected--;
+				if ($this->_selected - $this->_scroll < 0) $this->_scroll--;
 			}
 		} elseif ($key == NCURSES_KEY_DOWN) {
 			if ($this->_selected < count($this->_items) - 1) {
 				$this->_selected++;
+				if ($this->_selected - $this->_scroll > ($this->_h - 3)) $this->_scroll++;
 			}
 		}
 	}
@@ -161,10 +180,13 @@ abstract class CursesApplication extends ConsoleApplication {
 		ncurses_init();
 		if (ncurses_has_colors()) {
 			ncurses_start_color();
-			ncurses_init_pair(NCC_FRAME, 	NCURSES_COLOR_BLACK, 	NCURSES_COLOR_BLUE);
-			ncurses_init_pair(NCC_TEXT, 	NCURSES_COLOR_WHITE, 	NCURSES_COLOR_BLUE);		
-			ncurses_init_pair(NCC_TITLE, 	NCURSES_COLOR_YELLOW, 	NCURSES_COLOR_BLUE);		
+			ncurses_init_pair(NCC_FRAME,	NCURSES_COLOR_BLACK, 	NCURSES_COLOR_BLUE);
+			ncurses_init_pair(NCC_TEXT,	NCURSES_COLOR_WHITE, 	NCURSES_COLOR_BLUE);
+			ncurses_init_pair(NCC_TITLE,	NCURSES_COLOR_YELLOW, 	NCURSES_COLOR_BLUE);
+			ncurses_init_pair(NCC_MORE, 	NCURSES_COLOR_WHITE, 	NCURSES_COLOR_BLUE);
+			ncurses_curs_set(0);
 		}
+		$this->workspace = ncurses_newwin ( 0, 0, 0, 0);  
 	}
 
 	/**
@@ -195,6 +217,7 @@ abstract class CursesApplication extends ConsoleApplication {
 		if ($widget == null) {
 			if (count($this->children)>0) {
 				unset($this->children[count($this->children)-1]);
+				$this->children = array_values($this->children);
 				ncurses_erase();
 				return true;
 			}
@@ -202,6 +225,7 @@ abstract class CursesApplication extends ConsoleApplication {
 		foreach($this->children as $index=>$child) {
 			if ($child == $widget) {
 				unset($this->children[$index]);
+				$this->children = array_values($this->children);
 				ncurses_erase();
 				return true;
 			}
@@ -213,7 +237,6 @@ abstract class CursesApplication extends ConsoleApplication {
 	 *
 	 */
 	function refresh() {
-		$this->workspace = ncurses_newwin ( 0, 0, 0, 0);  
 		ncurses_refresh();// paint both windows 
 		foreach((array)$this->children as $child) {
 			$child->draw($this->workspace);
