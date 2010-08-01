@@ -1,7 +1,5 @@
 <?php
 
-
-
-ModuleManager::checkLibrary(null, 'php_gtk', true);
+ModuleManager::checkExtension('php_gtk', true);
 
 ?>

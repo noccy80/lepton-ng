@@ -5,8 +5,12 @@
 
 	class DefaultRouter extends Router {
 		function route() {
-			
-			Controller::invoke($method, $arguments);
+
+			$controller = $this->getSegment(0);
+			$method = $this->getSegment(1);
+			$arguments = $this->getSegmentSlice(2);
+
+			Controller::invoke($controller, $method, $arguments);
 
 		}
 	}

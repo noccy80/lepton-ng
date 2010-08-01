@@ -1,0 +1,29 @@
+Debugging HowTo
+===============
+
+In order to debug your project, simply set the DEBUG environment variable to 1
+and watch the fireworks:
+
+  $ DEBUG=1 bin/myscript
+
+The above command will put Lepton in debugging mode and all relevant information
+will be output to the console window. You can also specify a dedicated debug file
+using the LOGFILE environment variable:
+
+  $ DEBUG=1 LOGFILE=myscript.log bin/myscript
+
+The debug output will now be made available to the file myscript.log
+
+Please note that the output log is NOT appended to, but overwritten by each
+consequitive run.
+
+
+Adding debugging code
+---------------------
+
+In order to allow for debugging, simply call on Console::debug() with a format
+string and the data in the same format as used by printf(). This information
+will be output if debugging is enabled.
+
+You can also use the Console::warn() with the same parameter setup to cause a
+warning to be output even if debugging is disabled.

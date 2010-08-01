@@ -6,21 +6,31 @@ ModuleManager::load('lepton.ui.curses');
 
 class TestApplication extends CursesApplication {
 	protected $arguments = 'h';
-	function usage() { }
-	function main($argc,$argv) {
-		$opts = array(
+	var $menu = array(
+		'main' => array(
 			'Configure Lepton-ng',
 			'Test the configuration',
 			'Save and exit'
-		);
-		$this->addChild(new CursesMenu(5,5,40,5,"Main Menu",$opts));
+		),
+		'configure' => array(
+			'Database setup (lepton.dbx)',
+			'Authentication setup (lepton.user)',
+			'View setup (lepton.view)',
+			'MVC Project setup (lepton.mvc)',
+			'Routing setup (lepton.mvc.routing)'
+		)
+	);
+	function usage() { }
+	function main($argc,$argv) {
+		$this->addChild(new CursesMenu(5,2,40,5,"Main Menu",$this->menu['main']));
 		while($key = $this->refresh()) {
 			if ($key == 27) if(!$this->removeChild()) break;
 			if ($key == 13) {
 				static $level;
 				$level++;
-				$this->addChild(new CursesMenu(5+($level*5),5+($level*2),40,5,"Main Menu",$opts));
+				$this->addChild(new CursesMenu(5+($level*5),2+($level*2),50,7,"Configure Lepton-ng",$this->menu['configure']));
 			}
+			if ($this->childCount() == 0) break;
 		}
 		return 0;
 

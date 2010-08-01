@@ -184,6 +184,13 @@ abstract class CursesApplication extends ConsoleApplication {
 	/**
 	 *
 	 */
+	function childCount() {
+		return count($this->children);
+	}
+
+	/**
+	 *
+	 */
 	function removeChild(CursesWidget $widget = null) {
 		if ($widget == null) {
 			if (count($this->children)>0) {

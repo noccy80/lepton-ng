@@ -4,8 +4,14 @@
 		function __request($method,$arguments);
 	}
 
-	class Controller implements IController {
+	abstract class Controller implements IController {
 		private $_state;
+		static function invoke($controller=null,$method=null,Array $arguments=null) {
+			Console::debug("Trying to invoke controller...");
+			require(BASE_PATH.'app/controllers/index.php');
+			$ci = new IndexController();
+			$ci->index();
+		}
 		function __construct() {
 			$this->_state = Array();
 		}

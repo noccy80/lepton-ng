@@ -2,17 +2,27 @@ Writing applications
 ====================
 
 Applications are classes derived from the ConsoleApplication or ConsoleService
-class. Depending on if you are writing an application or a service you need to
-implement a few methods:
+class. There are also a few additional derived variants of ConsoleApplication
+which of the most interesting would be CursesApplication. This class serves a
+ncurses-based application framework straight to your script.
 
-ConsoleApplication
-------------------
+Methods needed by all ConsoleApplications
+-----------------------------------------
+
  * public main($argc,$argv) - Program entrypoint
  * public usage() - Usage helper, invoked if -h is on the command line.
  * protected $arguments - Command line arguments accepted
 
-ConsoleService
---------------
- * public main($argc,$argv) - Main service entrypoint
- * public usage() - Usage helper, same as above
- * protected $arguments - Command line arguments accepted
+Differences between ConsoleApplication and MvcApplication
+---------------------------------------------------------
+
+The MVC application is used to invoke controllers to produce views. It
+therefore doesn't contain a main() method nor does it allow any usage
+information to be presented.
+
+Differences between ConsoleApplication and ConsoleService
+---------------------------------------------------------
+
+The console service contains facilities to allow it to be detached from
+the active console, letting it run in the background. This is done with
+a call to $this->fork() from within the application.

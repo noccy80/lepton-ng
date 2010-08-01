@@ -1,6 +1,6 @@
 <?php
 
-ModuleManager::checkLibrary('ncurses_init','ncurses', true);
+ModuleManager::checkExtension('ncurses', true);
 ModuleManager::load('lepton.ui.curses.application');
 
 class CursesUi {

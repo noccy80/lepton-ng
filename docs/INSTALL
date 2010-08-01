@@ -2,10 +2,18 @@
 ======================
 
  * Place the 'sys' folder in a path accessible on your PHP include path.
+ * You probably have to set the SYS_PATH environment variable too, see below.
  * Requiring "sys/base.php" should now kickstart things properly.
 
 2. Local installation
 =====================
 
- * To use the console scripts with a local installation, symlink the ../sys/ folder into the bin folder
+ * To use the console scripts with a local installation, symlink the ../sys/ folder into the bin folder.
+ * The scripts should now work out of the box.
 
+3. Making sure the files can be found
+=====================================
+
+ * You can also use the LEPTON_PATH, SYS_PATH and APP_PATH environment variables. Unless explicitly defined,
+   the base path is used for all three paths. The LEPTON_PATH points to the root of the project, while the
+   SYS_PATH and APP_PATH points to the folder CONTAINING the app and sys folders respectively.

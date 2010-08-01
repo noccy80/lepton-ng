@@ -1,0 +1,33 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+ModuleManager::load('lepton.base.mvc');
+
+class MvcInvoker extends ConsoleApplication {
+	protected $arguments = 'hv';
+	private $verbose = false;
+	function usage() { 
+		Console::writeLn('usage:    %s [-options] [controller [method [argument ...]]]', $this->getName());
+		Console::writeLn('options:  -v      Verbose output');
+		Console::writeLn('          -h      Show help');
+	}
+	function main($argc,$argv) {
+		if (isset($this->options['v'])) $this->verbose = true;
+
+		$ctl = NULL; $mtd = NULL; $args = array();
+		if (count($this->arguments)>0) $ctl = $this->arguments[0];
+		if (count($this->arguments)>1) $mtd = $this->arguments[1];
+		if (count($this->arguments)>2) $args = array_slice($this->arguments,2,count($this->arguments)); 
+
+		if ($this->verbose) 
+			Console::writeLn("Preparing to invoke %s:%s with %d arguments", (($ctl==NULL)?'NULL':$ctl), (($mtd==NULL)?'NULL':$mtd), count($args));
+
+		Controller::invoke($ctl,$mtd,$args);
+		return 0;
+	}
+}
+
+return Lepton::run('MvcInvoker');
+
+?>
