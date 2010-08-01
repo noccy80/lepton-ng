@@ -178,11 +178,11 @@
 			if (file_exists($path)) {
 				Console::debug("Loading %s (%s).",$module,$path);
 				try {
+					ModuleManager::$_modules[strtolower($module)] = true;
 					require($path);
 				} catch(ModuleException $e) {
 					return false;
 				}
-				ModuleManager::$_modules[strtolower($module)] = true;
 				return true;
 			} else {
 				Console::debug("Failed to load %s.",$module);
