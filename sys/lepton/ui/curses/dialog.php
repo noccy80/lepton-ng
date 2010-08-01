@@ -6,7 +6,7 @@ ModuleManager::load('lepton.ui.curses.widget');
  *
  *
  */
-class CursesDialog extends CursesWidget {
+class CursesDialog extends CursesContainer {
 
 	private $_x, $_y, $_w, $_h;
 	private $_title;
@@ -23,7 +23,6 @@ class CursesDialog extends CursesWidget {
 		$this->_text = $text;
 		$this->_wh = ncurses_newwin($this->_h, $this->_w, $this->_y, $this->_x); 
 		Console::debug("Created window with handle %xd", $this->_wh);
-		ncurses_werase($this->_wh);
 	}
 
 	function __destruct() {
@@ -55,5 +54,36 @@ class CursesDialog extends CursesWidget {
 	 *
 	 */
 	function keypress($key) { }
+
+	function addChild(CursesWidget $widget) {
+		$this->children[] = $widget;
+		$this->topmost = $this->children[count($this->children)-1];
+	}
+
+	/**
+	 *
+	 */
+	function removeChild(CursesWidget $widget = null) {
+		if ($widget == null) {
+			if (count($this->children)>0) {
+				unset($this->children[count($this->children)-1]);
+				$this->children = array_values($this->children);
+				$this->topmost = $this->children[count($this->children)-1];
+				ncurses_erase();
+				return true;
+			}
+		}
+		foreach($this->children as $index=>$child) {
+			if ($child == $widget) {
+				unset($this->children[$index]);
+				$this->children = array_values($this->children);
+				$this->topmost = $this->children[count($this->children)-1];
+				ncurses_erase();
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
 ?>

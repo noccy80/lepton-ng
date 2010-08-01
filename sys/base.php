@@ -106,16 +106,14 @@
 	class Lepton {
 
 		function run($class) {
-			Console::debug("Inspecting environment:\n%s", ModuleManager::debug());
-			Console::debug('Invoking application instance from %s.', $class);
+			Console::debug("Inspecting environment module state:\n%s", ModuleManager::debug());
 			if (class_exists($class)) {
 				$rv = 0;
 				try {
 					$instance = new $class();
-					Console::debug("Instance constructed, running...");
+					Console::debug('Invoking application instance from %s.', $class);
 					$rv = $instance->run();
 					Console::debug("Main method exited with code %d.", $rv);
-					Console::debug("Instance destructed, exiting...");
 				} catch (Exception $e) {
 					Console::warn("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
 					$f = file($e->getFile());
