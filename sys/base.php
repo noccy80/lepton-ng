@@ -117,7 +117,16 @@
 					Console::debug("Main method exited with code %d.", $rv);
 					Console::debug("Instance destructed, exiting...");
 				} catch (Exception $e) {
-					Console::warn("Unhandled exception: %s", $e->getMessage());
+					Console::warn("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
+					$f = file($e->getFile());
+					foreach($f as $i=>$line) {
+						$mark = (($i+1) == $e->getLine())?'=> ':'   ';
+						$f[$i] = sprintf('  %05d. %s',$i+1,$mark).$f[$i];
+					}
+					$first = $e->getLine() - 4; if ($first < 0) $first = 0;
+					$last = $e->getLine() + 3; if ($last >= count($f)) $last = count($f)-1;
+					$source = join("",array_slice($f,$first,$last-$first));
+					Console::debug("Source dump:\n%s", $source);
 					Console::backtrace(0,$e->getTrace());
 				}
 				return $rv;

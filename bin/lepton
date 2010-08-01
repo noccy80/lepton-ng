@@ -31,6 +31,9 @@ class LeptonUtil extends ConsoleApplication {
 				Console::writeLn("Parsing configuration file ... done");
 				Console::writeLn("Preparing options ... done");
 				break;
+			case 'exception':
+				throw new Exception("This is a new exception");
+				break;
 			default:
 				$this->usage();
 				return 1;
