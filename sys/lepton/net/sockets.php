@@ -86,7 +86,7 @@ class TcpSocket extends Socket {
 		if ($this->state == SOCKSTATE_CONNECTED) {
 			@socket_close($this->fsh);
 			@fclose($this->fsh);
-			unset($this->fsh);
+			$this->fsh = 0;
 		}
 		$this->state = SOCKSTATE_CLOSED;
 	}
