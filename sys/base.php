@@ -2,8 +2,6 @@
 
 	declare(ticks = 1);
 
-	class BaseException extends Exception { }
-
 	/*
 	 * Global defines and workarounds. These ensure a consistent platform for
 	 * Lepton to use.
@@ -50,6 +48,17 @@
 	define('LOG_BASIC', 1);
 	define('LOG_WARN', 0);
 	define('LOG_LOG', 0);
+
+
+	/*
+		Exception classes. Should all be derived from BaseException
+	*/
+	class BaseException extends Exception { }
+		class FilesystemException extends BaseException { }
+			class FileNotFoundException extends FilesystemException { }
+			class FileAccessException extends FilesystemException { }
+
+
 
 	class Console {
 		static function debugEx($level,$module) {

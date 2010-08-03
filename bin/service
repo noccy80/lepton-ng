@@ -5,9 +5,10 @@ require('sys/base.php');
 
 ModuleManager::load('lepton.net.sockets');
 ModuleManager::load('lepton.system.threading');
+ModuleManager::load('lepton.system.delegates');
 
-function threadfunc() {
-	for($n = 0; $n < 20; $n++) { printf($n.' '); usleep(500000); }
+function threadfunc($id) {
+	for($n = 0; $n < 5; $n++) { Console::debug('Thread %d tick %d', $id, $n); usleep(rand(1,1000)*1000); }
 }
 
 class ServiceTest extends ConsoleService {
@@ -22,9 +23,13 @@ class ServiceTest extends ConsoleService {
 		return 0;
 	}
 	function servicemain() {
-		Console::writeLn("I am the service!");
-		$t = new Thread('threadfunc');
-		$t->start();
+		$t1 = new Thread('threadfunc');
+		$t2 = new Thread('threadfunc');
+		$t3 = new Thread('threadfunc');
+		$t1->start(1);
+		$t2->start(2);
+		$t3->start(3);
+		/*
 		$s = new TcpSocket();
 		$s->connect('linea.eani.net',80);
 		if ($s->state == SOCKSTATE_CONNECTED) {
@@ -33,8 +38,9 @@ class ServiceTest extends ConsoleService {
 			if ($br>0) Console::debug("Read %d bytes:\n%s", $br, $data);
 		}
 		$s->close();
+		*/
 		Console::debug("Waiting for thread to stop");
-		while ($t->isAlive()) $this->sleep(500);
+		while (($t1->isAlive()) || ($t2->isAlive()) || ($t3->isAlive())) $this->sleep(500);
 		Console::debug("Okay, thread is done!");
 	}
 	function signal($sig) {

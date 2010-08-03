@@ -28,6 +28,6 @@ class MvcInvoker extends ConsoleApplication {
 	}
 }
 
-return Lepton::run('MvcInvoker');
+Lepton::run('MvcInvoker');
 
 ?>
