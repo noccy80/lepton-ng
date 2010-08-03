@@ -10,6 +10,7 @@
 		}
 
 		function __call($method,$arguments) {
+			Console::debugEx(LOG_DEBUG1,__CLASS__,"ClassDelegate invocation for %s",$method);
 			foreach($this->callable as $classes) {
 				@call_user_func_array(array($classes,$method),(array)$arguments);
 			}
@@ -27,30 +28,12 @@
 		}
 
 		function call($arguments) {
+			Console::debugEx(LOG_DEBUG1,__CLASS__,"Delegate invocation");
 			foreach($this->callable as $classes) {
 				@call_user_func_array($classes,(array)$arguments);
 			}
 		}
 
 	}
-
-	class DelegateTest1 {
-		function testfunc1($foo,$bar) {
-			Console::debug('Testing 1: %s %s', $foo, $bar);
-		}
-	}
-	class DelegateTest2 {
-		function testfunc1($foo,$bar) {
-			Console::debug('Testing 2: %s %s', $foo, $bar);
-		}
-	}
-	function freebeer($foo,$bar) { Console::debug('Free beer for %s %s', $foo, $bar); }
-
-	$d = new Delegate(
-		array('DelegateTest1','testfunc1'),
-		array('DelegateTest2','testfunc1'),
-		'freebeer'
-	);
-	$d->call('foo','bar');
 
 ?>
