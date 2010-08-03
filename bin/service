@@ -1,0 +1,39 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+
+ModuleManager::load('lepton.net.sockets');
+
+class ServiceTest extends ConsoleService {
+	protected $arguments = 'hD';
+	function main($argc,$argv) {
+		if ($this->hasArgument('D')) {
+			Console::writeLn('Detaching from console...');
+			$this->fork();
+		} else {
+			$this->servicemain();
+		}
+		return 0;
+	}
+	function servicemain() {
+		Console::writeLn("I am the service!");
+		$s = new TcpSocket();
+		$s->connect('linea.eani.net',80);
+		if ($s->state == SOCKSTATE_CONNECTED) {
+			$s->write("GET / HTTP/1.0\r\nhost: linea.eani.net\r\nuser-agent: leptonservice/1.0\r\n\r\n");
+			while(true) { $data = $s->read(1024,$br); if ($data) break; }
+			if ($br>0) Console::debug("Read %d bytes:\n%s", $br, $data);
+		}
+		$s->close();
+		while(1) $this->sleep(1);
+	}
+	function signal($sig) {
+		Console::debug("Caught signal %d", $sig);
+	}
+	function usage() {
+		Console::writeLn('Usage:     %s [-options] action [arguments]', $this->getName());
+	}
+}
+
+Lepton::run('ServiceTest');

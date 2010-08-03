@@ -1,5 +1,9 @@
 <?php
 
+	declare(ticks = 1);
+
+	class BaseException extends Exception { }
+
 	/*
 	 * Global defines and workarounds. These ensure a consistent platform for
 	 * Lepton to use.
@@ -34,28 +38,43 @@
 		define('LEPTON_CONSOLE', true);
 	}
 	if (getenv("LOGFILE")) {
-		define("LOGFILE", fopen(getenv("LOGFILE"),'w+'));
+		define("LOGFILE", fopen(getenv("LOGFILE"),'a+'));
+		fprintf(LOGFILE,"\n --- MARK --- \n\n");
 	} else {
 		define("LOGFILE", null);
 	}
+	define('LOG_DEBUG2', 5);
+	define('LOG_DEBUG1', 4);
+	define('LOG_EXTENDED', 3);
+	define('LOG_VERBOSE', 2);
+	define('LOG_BASIC', 1);
+	define('LOG_WARN', 0);
+	define('LOG_LOG', 0);
 
 	class Console {
+		static function debugEx($level,$module) {
+			$args = func_get_args();
+			$strn = @call_user_func_array('sprintf',array_slice($args,2));
+			$ts = Console::ts();
+			$lines = explode("\n",$strn);
+			foreach($lines as $line) {
+				if (getenv("DEBUG") >= $level) {
+					fprintf(STDERR," %s | %20s | %s\n", $ts, $module,$line);
+				}
+				if (LOGFILE) fprintf(LOGFILE," %s | %20s | %s\n", $ts, $module, $line);
+			}
+		}
+
 		static function debug() {
 			$args = func_get_args();
-			$strn = @call_user_func_array('sprintf',array_slice($args,0));
-			$ts = Console::ts();
-			if (getenv("DEBUG") == "1") {
-				fprintf(STDERR,"[%s] %s\n", $ts, $strn);
-			}
-			if (LOGFILE) fprintf(LOGFILE,"[%s] %s\n", $ts, $strn);
+			@call_user_func_array(array('Console','debugEx'),array_merge(array(LOG_DEBUG1,'Debug'),array_slice($args,0)));
 		}
+
 		static function warn() {
 			$args = func_get_args();
-			$strn = @call_user_func_array('sprintf',array_slice($args,0));
-			$ts = Console::ts();
-			fprintf(STDERR,"[%s] WARNING: %s\n", $ts, $strn);
-			if (LOGFILE) fprintf(LOGFILE,"[%s] WARNING: %s\n", $ts, $strn);
+			@call_user_func_array(array('Console','debugEx'),array_merge(array(LOG_WARN,'WARNING'),array_slice($args,0)));
 		}
+
 		static function backtrace($trim=1,$stack=null) {
 			if (!$stack) { $stack = debug_backtrace(false); }
 			$trace = array();
@@ -73,21 +92,24 @@
 					}
 				}
 			}
-			fprintf(STDERR, join("\n", $trace)."\n");
+			Console::debugEx(LOG_WARN,'Backtrace:', "%s", join("\n", $trace)."\n");
 			if (LOGFILE) fprintf(LOGFILE, join("\n", $trace)."\n");
 		}
+
 		static function write() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
 			printf($strn);
 			if (LOGFILE) fprintf(LOGFILE, $strn);
 		}
+
 		static function writeLn() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
 			printf($strn . "\n");
 			if (LOGFILE) fprintf(LOGFILE, $strn . "\n");
 		}
+
 		static function status() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
@@ -98,22 +120,28 @@
 		static function ts() {
 			return @date("y-M-d H:i:s",time());
 		}
-	}
 
-	Console::debug('Starting with base %s', BASE_PATH);
-	Console::debug("Running on PHP %d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS);
+		static function getChar() {
+
+		}
+
+		static function readLine($hidden=false) {
+
+		}
+
+	}
 
 	class Lepton {
 
 		function run($class) {
-			Console::debug("Inspecting environment module state:\n%s", ModuleManager::debug());
+			Console::debugEx(LOG_EXTENDED,__CLASS__,"Inspecting environment module state:\n%s", ModuleManager::debug());
 			if (class_exists($class)) {
 				$rv = 0;
 				try {
 					$instance = new $class();
-					Console::debug('Invoking application instance from %s.', $class);
+					Console::debugEx(LOG_BASIC,__CLASS__,"Invoking application instance from %s.", $class);
 					$rv = $instance->run();
-					Console::debug("Main method exited with code %d.", $rv);
+					Console::debugEx(LOG_BASIC,__CLASS__,"Main method exited with code %d.", $rv);
 				} catch (Exception $e) {
 					Console::warn("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
 					$f = file($e->getFile());
@@ -129,7 +157,7 @@
 				}
 				return $rv;
 			} else {
-				Console::warn('Application class not found!');
+				Console::warn('Application class %s not found!', $class);
 				return 1;
 			}
 		}
@@ -152,6 +180,7 @@
 	class ModuleManager {
 
 		static $_modules;
+		static $_order;
 
 		static function checkExtension($extension,$required=false) {
 			if( extension_loaded($extension) ) {
@@ -178,23 +207,39 @@
 				return (!$failed);
 			}
 			if (ModuleManager::has($module)) {
-				Console::debug("Already loaded %s.",$module);
+				Console::debugEx(LOG_EXTENDED,__CLASS__,"Already loaded %s.",$module);
 				return true;
 			}
 			$path = BASE_PATH.'sys/'.str_replace('.','/',$module).'.php';
 			if (file_exists($path)) {
-				Console::debug("Loading %s (%s).",$module,$path);
+				Console::debugEx(LOG_BASIC,__CLASS__,"Loading %s (%s).",$module,str_replace(BASE_PATH,'',$path));
 				try {
 					ModuleManager::$_modules[strtolower($module)] = true;
+					ModuleManager::$_order[] = strtolower($module);
 					require($path);
+					array_pop(ModuleManager::$_order);
 				} catch(ModuleException $e) {
 					return false;
 				}
 				return true;
 			} else {
-				Console::debug("Failed to load %s.",$module);
+				Console::debugEx(LOG_BASIC,__CLASS__,"Failed to load %s.",$module);
 				return false;
 			}
+		}
+
+		static function conflicts($module) {
+			if (!is_array(ModuleManager::$_modules)) {
+				ModuleManager::$_modules = array();
+				return false;
+			}
+			$module = strtolower($module);
+			foreach(ModuleManager::$_modules as $mod=>$meta) {
+				if ($mod == $module) {
+					Console::warn("Requested module %s conflicts with the loaded module %s", $module, ModuleManager::$_order[count(ModuleManager::$_order)-1]);
+				}
+			}
+			return false;
 		}
 
 		static function has($module) {
@@ -215,12 +260,17 @@
 				ModuleManager::$_modules = array();
 			}
 			foreach(ModuleManager::$_modules as $mod=>$meta) {
+				// TODO: Show metadata
 				$modinfo[] = sprintf(" - Module %s: Loaded", $mod);
 			}
 			return join("\n", $modinfo);
 		}
 
 	}
+
+	Console::debugEx(LOG_BASIC,'(bootstrap)',"Base path: %s", BASE_PATH);
+	Console::debugEx(LOG_BASIC,'(bootstrap)',"Platform: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS);
+	Console::debugEx(LOG_BASIC,'(bootstrap)',"Running as %s with pid %d", get_current_user(), getmypid());
 
 	if (isset($argc)) {
 		ModuleManager::load('lepton.base.application');

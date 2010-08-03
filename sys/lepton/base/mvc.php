@@ -12,7 +12,7 @@
 
 	class MvcApplication extends Application {
 		function run() {
-			Console::debug('I am routing right now!');
+			Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking router...');
 			// Create new router and invoke it
 			$r = new DefaultRouter();
 			$r->route();

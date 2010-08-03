@@ -1,5 +1,8 @@
 <?php
 
+	class ModelException extends BaseException { }
+	class BadDefinitionException extends ModelException { }
+
 	abstract class Model {
 		function find($by,$value) {
 
@@ -41,9 +44,33 @@
 		protected function addField($field,$meta) {
 			// TODO: Verify the meta format
 			$md = explode(' ',$meta); $mi = 0;
-			$ftype = null; $fdef = null; $freq = false; $fprot = false;
+			$mo = array();
+			Console::debugEx(LOG_DEBUG2,__CLASS__,"Parsing quotes in array for %s", $meta);
+			Console::debugEx(LOG_DEBUG2,__CLASS__," \$md = {'%s'}", join("','", $md));
 			while($mi < count($md)) {
-				Console::debug('Parsing abstract model field %s: %s', $field, $md[$mi]);
+				Console::debugEx(LOG_DEBUG2,__CLASS__,"Current token: %s", $md[$mi]);
+				if ($md[$mi][0] == '"') {
+					$buf = array();
+					while($mi < count($md)) {
+						$str = $md[$mi];
+						$buf[] = $md[$mi++];
+						Console::debugEx(LOG_DEBUG2,__CLASS__," -- Quoted token: %s (%s)", $str, $str[strlen($str)-1]);
+						if ($str[strlen($str)-2] == '"') break;
+					}
+					$bufstr = join(' ',$buf);
+					$bufstr = substr($bufstr,1,strlen($bufstr)-2);
+					$mo[] = $bufstr;
+					Console::debugEx(LOG_DEBUG2,__CLASS__,"Joined quoted statement: %s", $bufstr);
+				} else {
+					$mo[] = $md[$mi++];
+				}
+			}
+			$md = $mo;
+			Console::debugEx(LOG_DEBUG2,__CLASS__," \$md = {'%s'}", join("','", $md));
+			$ftype = null; $fdef = null; $freq = false; $fprot = false;
+			$mi = 0;
+			while($mi < count($md)) {
+				Console::debugEx(LOG_DEBUG1,__CLASS__,'Parsing abstract model field %s: %s', $field, $md[$mi]);
 				switch(strtolower($md[$mi])) {
 					case 'string':
 						$ftype = 'STRING';
@@ -64,12 +91,33 @@
 						$this->_index = $field;
 						break;
 					case 'default':
-						$fdef = join(' ',array_slice($md, $mi+1, count($md)));
-						$mi = count($md);
+						$fdef = $md[++$mi];
+						break;
+					case 'like':
+						$flike = $md[++$mi];
+						break;
+					case 'in':
+						$fin = $md[++$mi];
+						break;
+					case 'format':
+						if (($ftype == 'INT') || ($ftype == 'STRING')) {
+							// Check format
+						} else {
+							Console::warn('Format declaration for key %s ignored', $field);
+						}
+						break;
+					case 'auto':
+						if (($ftype == 'INT')) {
+
+						} else {
+							Console::warn('Only INT can be auto fields');
+						}
+						$fauto = true;
+						break;
 				}
 				$mi++;
 			}
-			if (($ftype)) {
+			if (($ftype != null)) {
 				$this->_fields[$field] = array(
 					'type' => $ftype,
 					'required' => $freq,
@@ -121,7 +169,7 @@
 	class TestModel extends AbstractModel {
 		var $model = 'TestModel';
 		var $fields = array(
-			'name' => 'string required default untitled user',
+			'name' => 'string required default "untitled user"',
 			'age' => 'int default 0',
 			'active' => 'bool default false'
 		);

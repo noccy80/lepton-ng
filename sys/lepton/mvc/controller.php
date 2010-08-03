@@ -7,10 +7,13 @@
 	abstract class Controller implements IController {
 		private $_state;
 		static function invoke($controller=null,$method=null,Array $arguments=null) {
-			Console::debug("Trying to invoke controller...");
-			require(BASE_PATH.'app/controllers/index.php');
-			$ci = new IndexController();
-			$ci->index();
+			if (!$controller) $controller = 'default'; // config
+			if (!$method) $method = 'index'; // config
+			Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking controller instance %s (method=\'%s\', args=\'%s\')...', $controller, $method, join('\',\'',(array)$arguments));
+			require(BASE_PATH.'app/controllers/'.$controller.'.php');
+			$cc = $controller.'Controller';
+			$ci = new $cc;
+			$ci->__request($method,(array)$arguments);
 		}
 		function __construct() {
 			$this->_state = Array();
