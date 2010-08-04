@@ -1,0 +1,23 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+
+ModuleManager::load('lepton.base.application');
+ModuleManager::load('lepton.utils.tokenizer');
+
+class TokenizerApp extends ConsoleApplication {
+	protected $arguments = "hvo:";
+	function usage() { 
+
+	}
+	function main($argc,$argv) {
+		$mf = new Tokenizer("-left:1 -top:1 -width:1 -height:1 -title:1", "-left 15 -top 15 -width 22 -height 20");
+		$t = $mf->getTokens();
+		Console::debug($t['-width']);
+	}
+}
+
+Lepton::run('TokenizerApp');
+
+?>
