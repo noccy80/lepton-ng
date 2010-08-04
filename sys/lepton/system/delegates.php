@@ -1,13 +1,22 @@
 <?php
 
-	class ClassDelegate {
+	class DelegateBase {
 
-		private $callable;
+		protected $callable;
 
 		function __construct($delegates=null) {
 			$args = func_get_args();
 			$this->callable = $args;
 		}
+
+		function add($delegate) {
+			$this->callable[] = $delegate;
+		}
+
+	}
+
+	class ClassDelegate extends DelegateBase {
+
 
 		function __call($method,$arguments) {
 			Console::debugEx(LOG_DEBUG1,__CLASS__,"ClassDelegate invocation for %s",$method);
@@ -18,9 +27,7 @@
 
 	}
 
-	class Delegate {
-
-		private $callable;
+	class Delegate extends DelegateBase {
 
 		function __construct($delegates=null) {
 			$args = func_get_args();
