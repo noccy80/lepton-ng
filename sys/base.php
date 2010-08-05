@@ -164,12 +164,17 @@
 					Console::debug("Source dump:\n%s", $source);
 					Console::backtrace(0,$e->getTrace());
 				}
-				return $rv;
+				exit( $rv );
 			} else {
 				Console::warn('Application class %s not found!', $class);
-				return 1;
+				exit( 1 );
 			}
 		}
+
+        function getMimeType($filename) {
+            $file = escapeshellarg( BASE_PATH.$filename );
+            return str_replace("\n","",shell_exec("file -b --mime-type " . $file));
+        }
 
 	}
 
@@ -211,7 +216,7 @@
 				$f = glob($path);
 				$failed = false;
 				foreach($f as $file) {
-					if (!ModuleManager::load(str_replace('*',basename($file,'.php'),$module))) $failed=true;
+                    if (!ModuleManager::load(str_replace('*',basename($file,'.php'),$module))) $failed=true;
 				}
 				return (!$failed);
 			}
@@ -220,7 +225,7 @@
 				return true;
 			}
 			$path = BASE_PATH.'sys/'.str_replace('.','/',$module).'.php';
-			if (file_exists($path)) {
+            if (file_exists($path)) {
 				Console::debugEx(LOG_BASIC,__CLASS__,"Loading %s (%s).",$module,str_replace(BASE_PATH,'',$path));
 				try {
 					ModuleManager::$_modules[strtolower($module)] = true;

@@ -145,6 +145,14 @@
 			}
 		}
 
+        public function saveTo(AbstractStreamIoWriter $writer) {
+
+        }
+
+        public function load(AbstractStreamIoReader $reader) {
+
+        }
+
 		public function __get($field) {
 			if (isset($this->_fields[$field])) {
 				return ($this->_data[$field]);
@@ -163,6 +171,71 @@
 
 	}
 
+////////////// SAVING AND LOADING OF DATA /////////////////////////////////////
+
+    /**
+     * @interface IAbstractStreamIoReader
+     * @brief Interface for the AbstractStreamIoReader
+     *
+     * Defines the methods that need to be exposed by all readers
+     */
+    interface IAbstractStreamIoReader {
+        /**
+         * Reads a definition set from the file, the result should be an array
+         * defining the number of fields present and some metadata.
+         */
+        function readDefinition();
+        function readRecord();
+    }
+    
+    interface IAbstractStreamIoWriter {
+        function write($file);
+    }
+
+    interface IAbstractStreamBase {
+        function open($file=null);
+    }
+
+    abstract class AbstractStreamIoBase implements IAbstractStreamBase {
+        protected $_filename;
+        function __construct($filename=null) {
+            $this->_filename = $filename;
+        }
+        protected function getLock() {
+            
+        }
+        protected function releaseLock() {
+
+        }
+        function isOpen() {
+
+        }
+        function isEof() {
+
+        }
+    }
+
+    abstract class AbstractStreamIoReader extends AbstractStreamIoBase implements IAbstractStreamIoReader {
+
+    }
+
+    abstract class AbstractStreamIoWriter extends AbstractStreamIoBase implements IAbstractStreamIoWriter {
+
+    }
+
+    class XmlAsiReader extends AbstractStreamIoReader {
+        function open($filename = null) {
+            if ($filename) {
+                // Load XML
+            }
+        }
+        function readRecord() {
+
+        }
+        function readDefinition() {
+            
+        }
+    }
 
 //////////////////////////// TESTING CODE /////////////////////////////////////
 

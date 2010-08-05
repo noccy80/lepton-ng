@@ -1,51 +1,104 @@
 #!/usr/bin/php
 <?php
-
+/**
+ *
+ * Lepton Service. Performs background tasks such as keeping track of workers
+ * for the LDWP worker service.
+ *
+ * Use -D to daemonize.
+ *
+ */
 require('sys/base.php');
 
 ModuleManager::load('lepton.net.sockets');
 ModuleManager::load('lepton.system.threading');
 ModuleManager::load('lepton.system.delegates');
+ModuleManager::load('lepton.system.mutex');
 
-function threadfunc($id) {
-	for($n = 0; $n < 5; $n++) { Console::debug('Thread %d tick %d', $id, $n); usleep(rand(1,1000)*1000); }
-}
+ModuleManager::load('ldwp.*');
 
-class MyThread extends Runnable {
-	function threadmain($id) {
-		Console::debug("This is thread %d reporting for duty.", $id);
+class TaskRunner extends Runnable {
+    private $id;
+    private $meta;
+    public $pid;
+    function __construct($task) {
+        $this->id = $task['id'];
+        $this->meta = $task;
+    }
+	function threadmain() {
+        Console::debug("[%d] Thread running for task %d", $this->pid, $this->id);
+        LdwpGovernor::action(LdwpAction::ACTION_START, $this->id);
+        Console::debug("[%d] Thread finished for task %d", $this->pid, $this->id);
+        // Pull task $id from the database and get on it.
 	}
 }
 
 class ServiceTest extends ConsoleService {
-	protected $arguments = 'hD';
-	function main($argc,$argv) {
+
+    protected $arguments = 'hD';
+    private $canexit = false;
+    private $th; // Thread handles
+    private $tc; // Thread count
+    private $tm = 5; // 5 Threads Max
+
+    function main($argc,$argv) {
 		if ($this->hasArgument('D')) {
 			$this->fork();
 		} else {
-			$this->servicemain();
+			return $this->servicemain();
 		}
 		return 0;
 	}
-	function servicemain() {
-		/*
-		$s = new TcpSocket();
-		$s->connect('linea.eani.net',80);
-		if ($s->state == SOCKSTATE_CONNECTED) {
-			$s->write("GET / HTTP/1.0\r\nhost: linea.eani.net\r\nuser-agent: leptonservice/1.0\r\n\r\n");
-			while(true) { $data = $s->read(1024,$br); if ($data) break; }
-			if ($br>0) Console::debug("Read %d bytes:\n%s", $br, $data);
-		}
-		$s->close();
-		*/
-		Console::debug("Waiting for thread to stop");
-		while (($t1->isAlive()) || ($t2->isAlive()) || ($t3->isAlive())) $this->sleep(500);
-		Console::debug("Okay, thread is done!");
-	}
-	function signal($sig) {
-		Console::debug("Caught signal %d", $sig);
-	}
-	function usage() {
+
+    /**
+     * Main function for the service. This is where the magic happens. The
+     * service will wake up when a worker is requesting its attention, or when
+     * a new job is added to the database. The jobs will be spawned in threads.
+     */
+    function servicemain() {
+
+        // print_r(get_declared_classes());
+
+        $this->th = array();
+        $tasks = LdwpGovernor::getAvailableJobs();
+        while(true) {
+            // Check the task list
+            foreach($tasks as &$task) {
+                if (($task['state'] == null) && ($this->tc < $this->tm)) {
+                    $this->th[$task['id']] = new Thread(new TaskRunner($task));
+                    $this->th[$task['id']]->start();
+                    $task['state'] = 'running';
+                    $this->tc++;
+                }
+            }
+            // Check the threads and free them
+            foreach($this->th as $jobid=>&$thread) {
+                if (!$thread->isAlive()) {
+                    // Free thread and decrease counter
+                    $this->tc--;
+                    $thread->stop();
+                    unset($this->th[$jobid]);
+                }
+            }
+            // Console::debug("Running threads: %d", $this->tc);
+            $this->sleep(1000);
+            if ($this->canexit) return 0;
+        }
+
+    }
+
+    function shutdown() {
+        $this->canexit = true;
+    }
+
+    function signal($signal) {
+        Console::debug("Caught signal %d", $signal);
+        if ($signal === SIGINT || $signal === SIGTERM) {
+            $this->shutdown();  
+        }
+    }
+
+    function usage() {
 		Console::writeLn('Usage:     %s [-options] action [arguments]', $this->getName());
 	}
 }

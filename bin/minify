@@ -14,7 +14,10 @@ class MinifyApp extends ConsoleApplication {
 	function main($argc,$argv) {
 		$mf = new Minifier();
 		$if = $this->arguments[0];
-		Console::writeLn("Minifying %s ...", $if);
+
+		$mt = Lepton::getMimeType($if);
+
+		Console::writeLn("Minifying %s [%s]...", $if, $mt);
 		$mf->loadFromFile($if);
 		Console::write($mf->minify(Minifier::MFF_MAXIMUM));
 	}

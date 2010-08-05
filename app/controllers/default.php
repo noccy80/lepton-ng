@@ -6,7 +6,7 @@
 	class DefaultController extends Controller {
 
 		function index() {
-			View::load('index/index.php');
+			View::load('default/index.php');
 		}
 
 	}

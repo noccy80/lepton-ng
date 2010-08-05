@@ -9,16 +9,16 @@ interface IConsoleApplication {
 }
 
 abstract class ConsoleApplication extends Application implements IConsoleApplication {
-	protected $options;
-	protected $arguments;
+	protected $_args;
+	protected $_params;
 	function run() {
 		global $argc, $argv;
 		if (isset($this->arguments)) {
-			list($opts,$args) = $this->parseArguments($this->arguments);
-			$this->options = $opts;
-			$this->arguments = $args;
+			list($args,$params) = $this->parseArguments($this->arguments);
+			$this->_args = $args;
+			$this->_params = $params;
 		}
-		if (isset($opts['h'])) {
+		if (isset($args['h'])) {
 			$this->usage();
 			return 1;
 		}
@@ -49,13 +49,21 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 		return array($params,$default);
 	}
 	function hasArgument($argument) {
-		
-		return (isset($this->options[$argument]));
+		return (isset($this->_args[$argument]));
 	}
 	function getArgument($argument) {
-		return $this->options[$argument];
+		return $this->_args[$argument];
 	}
-	function sleep($ms) {
+    function getParameters() {
+        return $this->_params;
+    }
+    function getParameter($index) {
+        return $this->_params[$index];
+    }
+    function getParameterCount() {
+        return count($this->_params);
+    }
+	function sleep($ms=100) {
 		usleep($ms*1000);
 	}
 }
@@ -68,17 +76,19 @@ interface IConsoleService {
 abstract class ConsoleService extends ConsoleApplication implements IConsoleService {
 
 	public function __construct() {
-		Console::debug("Constructing service instance");
-		pcntl_signal(SIGQUIT, array(&$this,'signal'));
+		// Console::debug("Constructing service instance");
+        // register_shutdown_function(array(&$this, 'fatal'));
+        pcntl_signal(SIGINT, array(&$this, 'signal'));
+        pcntl_signal(SIGQUIT, array(&$this,'signal'));
 		pcntl_signal(SIGTERM, array(&$this,'signal'));
 		pcntl_signal(SIGHUP, array(&$this,'signal'));
 		pcntl_signal(SIGUSR1, array(&$this,'signal'));
-		register_tick_function(array(&$this,'checkstate'));
 		gc_enable();
+		register_tick_function(array(&$this,'checkstate'));
 	}
 
 	public function __destruct() {
-		Console::debug("Destructing service instance");
+		// Console::debug("Destructing service instance");
 		gc_collect_cycles();
 	}
 
@@ -86,6 +96,14 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
 		// TODO: Time this better
 		gc_collect_cycles();
 	}
+
+    function signal($signal) {
+        echo "\n";
+        Console::debug("Caught signal %d", $signal);
+        if ($signal === SIGINT || $signal === SIGTERM) {
+            exit();
+        }
+    }
 
 	protected function fork() {
 		$pid = pcntl_fork();

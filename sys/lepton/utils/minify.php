@@ -22,7 +22,7 @@
 		}
 
 		function minify($flags) {
-			$buffer = 
+			$buffer = $this->_data;
 			return $buffer;
 		}
 
