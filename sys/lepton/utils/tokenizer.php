@@ -12,13 +12,14 @@
 			Console::debugEx(LOG_DEBUG2,__CLASS__," \$md = {'%s'}", join("','", $md));
 			while($mi < count($md)) {
 				Console::debugEx(LOG_DEBUG2,__CLASS__,"Current token: %s", $md[$mi]);
-				if ($md[$mi][0] == '"') {
+				$qt = $md[$mi][0];
+				if (($qt == '"') || ($qt == "'" )) {
 					$buf = array();
 					while($mi < count($md)) {
 						$str = $md[$mi];
 						$buf[] = $md[$mi++];
 						Console::debugEx(LOG_DEBUG2,__CLASS__," -- Quoted token: %s (%s)", $str, $str[strlen($str)-1]);
-						if ($str[strlen($str)-2] == '"') break;
+						if ($str[strlen($str)-2] == $qt) break;
 					}
 					$bufstr = join(' ',$buf);
 					$bufstr = substr($bufstr,1,strlen($bufstr)-2);
