@@ -2,11 +2,11 @@
 
 ModuleManager::load('lepton.graphics.colorspaces');
 
-class RgbColorSpace extends ColorSpace {
+class RgbColor extends Color {
 
-	private $r;
-	private $g;
-	private $b;
+	var $red;
+	var $green;
+	var $blue;
 
 }
 
