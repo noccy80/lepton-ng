@@ -1,0 +1,25 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+
+ModuleManager::load('lepton.base.application');
+ModuleManager::load('lepton.utils.tokenizer');
+ModuleManager::load('lepton.graphics.*');
+ModuleManager::load('lepton.graphics.renderers.*');
+
+class ImageTestApp extends ConsoleApplication {
+	protected $arguments = "hvo:";
+	function usage() { 
+
+	}
+	function main($argc,$argv) {
+		$i = Graphics::render(640,480, new GradientRenderer(new Color(255,128,0), new Color(128,0,255), 0));
+		$i->save("image.png");
+		Console::writeLn("Created image.png.");
+	}
+}
+
+Lepton::run('ImageTestApp');
+
+?>
