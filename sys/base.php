@@ -58,7 +58,26 @@
 			class FileNotFoundException extends FilesystemException { }
 			class FileAccessException extends FilesystemException { }
 
+    class Config {
+        static $values = array();
+        function get($key,$default=null) {
+            return (isset(Config::$values[$key])?Config::$values[$key]:$default);
+        }
+        function set($key,$value) {
+            Config::$values[$key] = $value;
+        }
+        function has($key,$value) {
+            return (isset(Config::$values[$key]));
+        }
+        function def($key,$default) {
+            if (!isset(Config::$values[$key])) Config::$values[$key] = $default;
+        }
+        function clr($key) {
+            unset(Config::$values[$key]);
+        }
+    }
 
+    Config::set('foo.bar','baz');
 
 	class Console {
 		static function debugEx($level,$module) {
@@ -90,9 +109,11 @@
 			foreach($stack as $i=>$method) {
 				$args = array();
 				if ($i > ($trim - 1)) {
-					foreach($method['args'] as $arg) { 
-						$args[] = gettype($arg);
-					}
+                    if (isset($method['args'])) {
+                        foreach($method['args'] as $arg) {
+                            $args[] = gettype($arg);
+                        }
+                    }
 					$mark = (($i == ($trim))?'in':'   invoked from');
 					if (isset($method['type'])) {
 						$trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), str_replace(BASE_PATH,'',$method['file']), $method['line']);
@@ -101,7 +122,7 @@
 					}
 				}
 			}
-			Console::debugEx(LOG_WARN,'Backtrace:', "%s", join("\n", $trace)."\n");
+			Console::debugEx(LOG_WARN,'Backtrace', "%s", join("\n", $trace)."\n");
 			if (LOGFILE) fprintf(LOGFILE, join("\n", $trace)."\n");
 		}
 

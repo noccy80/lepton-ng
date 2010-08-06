@@ -4,7 +4,6 @@
 set_time_limit(0);
 
 interface IConsoleApplication {
-	function usage();
 	function main($argc,$argv);
 }
 
@@ -19,7 +18,9 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 			$this->_params = $params;
 		}
 		if (isset($args['h'])) {
-			$this->usage();
+			if (function_exists(array(&$this,'usage'))) {
+				$this->usage();
+			}
 			return 1;
 		}
 		return $this->main($argc,$argv);
