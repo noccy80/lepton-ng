@@ -1,0 +1,25 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+
+ModuleManager::load('lepton.base.application');
+ModuleManager::load('lepton.utils.tokenizer');
+ModuleManager::load('lepton.fs.*');
+
+class FsTestApp extends ConsoleApplication {
+	protected $arguments = "hvo:";
+	function usage() { 
+
+	}
+	function main($argc,$argv) {
+		$f = FsObject::get('.');
+		foreach($f as $i) {
+			var_dump($i);
+		}
+	}
+}
+
+Lepton::run('FsTestApp');
+
+?>
