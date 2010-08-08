@@ -1,0 +1,14 @@
+To compile UUID support:
+========================
+
+First install the uuid-dev package:
+
+  $ sudo apt-get install uuid-dev
+
+Then install the extension using pecl:
+
+  $ sudo pecl install uuid
+
+Finally fix your uuid.ini file:
+
+  $ echo "extension=uuid.so" | sudo tee /etc/php5/conf.d/uuid.ini
