@@ -55,15 +55,18 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 	function getArgument($argument) {
 		return $this->_args[$argument];
 	}
-    function getParameters() {
-        return $this->_params;
-    }
-    function getParameter($index) {
-        return $this->_params[$index];
-    }
-    function getParameterCount() {
-        return count($this->_params);
-    }
+	function getParameters() {
+		return $this->_params;
+	}
+	function getParameter($index) {
+		return $this->_params[$index];
+	}
+	function getParameterSlice($first,$last=null) {
+		return array_slice($this->_params,$first,($last)?$last:count($this->_params));
+	}
+	function getParameterCount() {
+		return count($this->_params);
+	}
 	function sleep($ms=100) {
 		usleep($ms*1000);
 	}
@@ -78,9 +81,9 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
 
 	public function __construct() {
 		// Console::debug("Constructing service instance");
-        // register_shutdown_function(array(&$this, 'fatal'));
-        pcntl_signal(SIGINT, array(&$this, 'signal'));
-        pcntl_signal(SIGQUIT, array(&$this,'signal'));
+		// register_shutdown_function(array(&$this, 'fatal'));
+		pcntl_signal(SIGINT, array(&$this, 'signal'));
+		pcntl_signal(SIGQUIT, array(&$this,'signal'));
 		pcntl_signal(SIGTERM, array(&$this,'signal'));
 		pcntl_signal(SIGHUP, array(&$this,'signal'));
 		pcntl_signal(SIGUSR1, array(&$this,'signal'));
@@ -98,13 +101,13 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
 		gc_collect_cycles();
 	}
 
-    function signal($signal) {
-        echo "\n";
-        Console::debug("Caught signal %d", $signal);
-        if ($signal === SIGINT || $signal === SIGTERM) {
-            exit();
-        }
-    }
+	function signal($signal) {
+		echo "\n";
+		Console::debug("Caught signal %d", $signal);
+		if ($signal === SIGINT || $signal === SIGTERM) {
+			exit();
+		}
+	}
 
 	protected function fork() {
 		$pid = pcntl_fork();
