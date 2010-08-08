@@ -9,11 +9,19 @@
 		static function invoke($controller=null,$method=null,Array $arguments=null) {
 			if (!$controller) $controller = 'default'; // config
 			if (!$method) $method = 'index'; // config
-			Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking controller instance %s (method=\'%s\', args=\'%s\')...', $controller, $method, join('\',\'',(array)$arguments));
-			require(BASE_PATH.'app/controllers/'.$controller.'.php');
-			$cc = $controller.'Controller';
-			$ci = new $cc;
-			$ci->__request($method,(array)$arguments);
+			$ctlpath = BASE_PATH.'app/controllers/'.$controller.'.php';
+			if (file_exists($ctlpath)) {
+				Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking controller instance %s (method=\'%s\', args=\'%s\')...', $controller, $method, join('\',\'',(array)$arguments));
+				require($ctlpath);
+				$cc = $controller.'Controller';
+				$ci = new $cc;
+				if (!$ci->__request($method,(array)$arguments)) {
+
+				}
+			} else {
+				throw new BaseException("Could not find controller class ". $controller);
+				return 1;
+			}
 		}
 		function __construct() {
 			$this->_state = Array();

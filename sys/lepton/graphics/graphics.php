@@ -23,7 +23,7 @@
 		 * @return ImageCanvas The canvas
 		 */
 		static function load($filename) {
-			$i = new ImageCanvas();
+			$i = new Canvas();
 			$i->__loadFromFile($filename);
 			return $i;
 		}
@@ -36,8 +36,7 @@
 		 * @return ImageCanvas The canvas
 		 */
 		static function create($width, $height, Color $color = null) {
-			$i = new ImageCanvas();
-			$i->__create($width, $height, $color);
+			$i = new Canvas($width, $height, $color);
 			return $i;
 		}
 

@@ -186,6 +186,8 @@
 					$source = join("",array_slice($f,$first,$last-$first));
 					Console::debug("Source dump:\n%s", $source);
 					Console::backtrace(0,$e->getTrace());
+					$rv = 1;
+					Console::debugEx(LOG_BASIC,__CLASS__,"Exiting with return code %d after exception.", $rv);
 				}
 				exit( $rv );
 			} else {
@@ -314,7 +316,8 @@
 
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Base path: %s", BASE_PATH);
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Platform: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS);
-	Console::debugEx(LOG_BASIC,'(bootstrap)',"Running as %s with pid %d", get_current_user(), getmypid());
+	Console::debugEx(LOG_BASIC,'(bootstrap)',"Running as %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid());
+	Console::debugEx(LOG_BASIC,'(bootstrap)',"Memory allocated: %0.3f KB (Total: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
 
 	if (isset($argc)) {
 		ModuleManager::load('lepton.base.application');

@@ -13,7 +13,7 @@ class MvcInvoker extends ConsoleApplication {
 		Console::writeLn('          -h      Show help');
 	}
 	function main($argc,$argv) {
-		if (isset($this->options['v'])) $this->verbose = true;
+		if ($this->hasArgument('v')) $this->verbose = true;
 		$pc = $this->getParameterCount();
 		$ctl = NULL; $mtd = NULL; $args = array();
 		if ($pc>0) $ctl = $this->getParameter(0);

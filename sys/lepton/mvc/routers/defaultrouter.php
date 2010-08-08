@@ -4,7 +4,7 @@
 	ModuleManager::load('lepton.mvc.controller');
 
 	class DefaultRouter extends Router {
-		function route() {
+		function routeRequest() {
 
 			$controller = $this->getSegment(0);
 			$method = $this->getSegment(1);
