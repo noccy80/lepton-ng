@@ -1,0 +1,19 @@
+Installing curses support for PHP
+=================================
+
+Linux
+-----
+
+First, install the ncurses pecl module:
+
+  $ sudo pecl install ncurses
+
+Then, add a file to your /etc/php5/conf.d/ folder named ncurses.ini and add to it:
+
+  extension=ncurses.so
+
+
+Windows
+-------
+
+No instructions available.

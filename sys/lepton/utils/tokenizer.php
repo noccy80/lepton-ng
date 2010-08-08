@@ -1,8 +1,12 @@
 <?php
 
-	class Tokenizer {
+	class Tokenizer implements IteratorAggregate {
 
 		private $_tokens;
+
+		function getIterator() {
+			return new ArrayIterator($this->_tokens);
+		}
 
 		function __construct($matchtok,$str) {
 

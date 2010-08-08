@@ -12,9 +12,11 @@ class TokenizerApp extends ConsoleApplication {
 
 	}
 	function main($argc,$argv) {
-		$mf = new Tokenizer("-left:1 -top:1 -width:1 -height:1 -title:1", "-left 15 -top 15 -width 22 -height 20");
-		$t = $mf->getTokens();
-		Console::debug($t['-width']);
+		$def = "-left:1 -top:1 -width:1 -height:1 -title:1";
+		$mf = new Tokenizer($def, "-left 15 -top 15 -width 22 -height 20");
+		foreach($mf as $tok=>$val) {
+			Console::debug("Token %s - value %s", $tok, $val);
+		}
 	}
 }
 

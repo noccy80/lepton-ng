@@ -237,6 +237,18 @@
         }
     }
 
+	class BinaryAsiReader extends AbstractStreamIoReader {
+		function open($filename = null) {
+
+		}
+		function readRecord() {
+
+		}
+		function readDefinition() {
+
+		}
+	}
+
 //////////////////////////// TESTING CODE /////////////////////////////////////
 
 	class TestModel extends AbstractModel {
