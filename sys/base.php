@@ -13,8 +13,8 @@
 		define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
 	}
 	if(PHP_VERSION_ID < 50207) {
-		define('PHP_MAJOR_VERSION',    $version[0]);
-	    define('PHP_MINOR_VERSION',    $version[1]);
+		define('PHP_MAJOR_VERSION',	$version[0]);
+		define('PHP_MINOR_VERSION',	$version[1]);
 		define('PHP_RELEASE_VERSION',  $version[2]);
 	}
 	if(getenv("APP_PATH")) define('APP_PATH', getenv("APP_PATH"));
@@ -29,6 +29,8 @@
 	}
 	if (!$path) throw new Exception('Failed to get script path!');
 	define('BASE_PATH', $path.'/');
+	define('SYS_PATH', $path.'/sys/');
+	define('APP_PATH', $path.'/app/');
 	if (getenv("DEBUG") == "1") {
 		error_reporting(E_ALL);
 	}
@@ -58,26 +60,26 @@
 			class FileNotFoundException extends FilesystemException { }
 			class FileAccessException extends FilesystemException { }
 
-    class Config {
-        static $values = array();
-        function get($key,$default=null) {
-            return (isset(Config::$values[$key])?Config::$values[$key]:$default);
-        }
-        function set($key,$value) {
-            Config::$values[$key] = $value;
-        }
-        function has($key,$value) {
-            return (isset(Config::$values[$key]));
-        }
-        function def($key,$default) {
-            if (!isset(Config::$values[$key])) Config::$values[$key] = $default;
-        }
-        function clr($key) {
-            unset(Config::$values[$key]);
-        }
-    }
+	class Config {
+		static $values = array();
+		function get($key,$default=null) {
+			return (isset(Config::$values[$key])?Config::$values[$key]:$default);
+		}
+		function set($key,$value) {
+			Config::$values[$key] = $value;
+		}
+		function has($key,$value) {
+			return (isset(Config::$values[$key]));
+		}
+		function def($key,$default) {
+			if (!isset(Config::$values[$key])) Config::$values[$key] = $default;
+		}
+		function clr($key) {
+			unset(Config::$values[$key]);
+		}
+	}
 
-    Config::set('foo.bar','baz');
+	Config::set('foo.bar','baz');
 
 	class Console {
 		static function debugEx($level,$module) {
@@ -109,11 +111,11 @@
 			foreach($stack as $i=>$method) {
 				$args = array();
 				if ($i > ($trim - 1)) {
-                    if (isset($method['args'])) {
-                        foreach($method['args'] as $arg) {
-                            $args[] = gettype($arg);
-                        }
-                    }
+					if (isset($method['args'])) {
+						foreach($method['args'] as $arg) {
+							$args[] = gettype($arg);
+						}
+					}
 					$mark = (($i == ($trim))?'in':'   invoked from');
 					if (isset($method['type'])) {
 						$trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), str_replace(BASE_PATH,'',$method['file']), $method['line']);
@@ -192,10 +194,10 @@
 			}
 		}
 
-        function getMimeType($filename) {
-            $file = escapeshellarg( BASE_PATH.$filename );
-            return str_replace("\n","",shell_exec("file -b --mime-type " . $file));
-        }
+		function getMimeType($filename) {
+			$file = escapeshellarg( BASE_PATH.$filename );
+			return str_replace("\n","",shell_exec("file -b --mime-type " . $file));
+		}
 
 	}
 
@@ -237,7 +239,7 @@
 				$f = glob($path);
 				$failed = false;
 				foreach($f as $file) {
-                    if (!ModuleManager::load(str_replace('*',basename($file,'.php'),$module))) $failed=true;
+					if (!ModuleManager::load(str_replace('*',basename($file,'.php'),$module))) $failed=true;
 				}
 				return (!$failed);
 			}
@@ -245,8 +247,15 @@
 				Console::debugEx(LOG_EXTENDED,__CLASS__,"Already loaded %s.",$module);
 				return true;
 			}
-			$path = BASE_PATH.'sys/'.str_replace('.','/',$module).'.php';
-            if (file_exists($path)) {
+			$modpath = str_replace('.','/',$module).'.php';
+			if (file_exists(APP_PATH.$modpath)) {
+				$path = APP_PATH.$modpath;
+			} elseif (file_exists(SYS_PATH.$modpath)) {
+				$path = SYS_PATH.$modpath;
+			} else {
+				$path = null;
+			}
+			if ($path) {
 				Console::debugEx(LOG_BASIC,__CLASS__,"Loading %s (%s).",$module,str_replace(BASE_PATH,'',$path));
 				try {
 					ModuleManager::$_modules[strtolower($module)] = true;

@@ -14,11 +14,11 @@ class MvcInvoker extends ConsoleApplication {
 	}
 	function main($argc,$argv) {
 		if (isset($this->options['v'])) $this->verbose = true;
-
+		$pc = $this->getParameterCount();
 		$ctl = NULL; $mtd = NULL; $args = array();
-		if (count($this->arguments)>0) $ctl = $this->arguments[0];
-		if (count($this->arguments)>1) $mtd = $this->arguments[1];
-		if (count($this->arguments)>2) $args = array_slice($this->arguments,2,count($this->arguments)); 
+		if ($pc>0) $ctl = $this->getParameter(0);
+		if ($pc>1) $mtd = $this->getParameter(1);
+		if ($pc>2) $args = $this->getParameterSlice(2); 
 
 		if ($this->verbose) 
 			Console::writeLn("Preparing to invoke %s:%s with %d arguments", (($ctl==NULL)?'NULL':$ctl), (($mtd==NULL)?'NULL':$mtd), count($args));
