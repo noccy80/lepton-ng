@@ -19,5 +19,7 @@
 			$r->route();
 		}
 	}
+	
+	declare(encoding = 'UTF-8');
 
 ?>
