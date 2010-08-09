@@ -7,6 +7,30 @@ interface IConsoleApplication {
 	function main($argc,$argv);
 }
 
+class Ansi {
+	static $seq = array(
+		'setCursor'         => '$1;$2H',
+		'cursorUp'          => '$1A',
+		'cursorDown'        => '$1A',
+		'cursorForward'     => '$1A',
+		'cursorBackward'    => '$1A',
+		'saveCursor'        => 's',
+		'restoreCursor'     => 'u',
+		'eraseDisplay'      => '2J',
+		'eraseLine'         => 'K',
+		'setBold'           => '1m',
+		'clearBold'			=> '0m',
+		'setMode'           => '=$1h',
+		'setColor'          => '$@m',
+	);
+	static function __callStatic($mtd,$arg) {
+		$sstr = self::$seq[$mtd];
+		for($n = 0; $n < count($arg); $n++) { $sstr = str_replace('$'.$n+1,$arg[$n],$sstr); }
+		$sstr = str_replace('$@',join(';',$arg),$sstr);
+		return (chr(27)."[".$sstr);
+	}
+}
+
 abstract class ConsoleApplication extends Application implements IConsoleApplication {
 	protected $_args;
 	protected $_params;

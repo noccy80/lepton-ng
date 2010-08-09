@@ -111,7 +111,9 @@
 		}
 
 		protected function getSegment($index) {
-			return $this->_urisegments[$index];
+			if ($index < count($this->_urisegments))
+				return $this->_urisegments[$index];
+			return null;
 		}
 
 		protected function getSegmentSlice($start,$length = null) {

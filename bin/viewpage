@@ -5,25 +5,38 @@ require('sys/base.php');
 ModuleManager::load('lepton.base.mvc');
 
 class MvcInvoker extends ConsoleApplication {
-	protected $arguments = 'hv';
+	protected $arguments = 'hvrc';
 	private $verbose = false;
+	private $routed = false;
 	function usage() { 
-		Console::writeLn('usage:    %s [-options] [controller [method [argument ...]]]', $this->getName());
+		Console::writeLn('usage:    %s [-c] [-options] [controller [method [argument ...]]]', $this->getName());
+		Console::writeLn('          %s -r [-options] [[http://server.tld]/uri/to/invoke]', $this->getName());
 		Console::writeLn('options:  -v      Verbose output');
+		Console::writeLn('          -c      Direct controller invocation (default)');
+		Console::writeLn('          -r      Routed controller invocation');
 		Console::writeLn('          -h      Show help');
 	}
 	function main($argc,$argv) {
 		if ($this->hasArgument('v')) $this->verbose = true;
+		if ($this->hasArgument('r')) $this->routed = true;
+		if ($this->hasArgument('c')) $this->routed = false;
 		$pc = $this->getParameterCount();
-		$ctl = NULL; $mtd = NULL; $args = array();
-		if ($pc>0) $ctl = $this->getParameter(0);
-		if ($pc>1) $mtd = $this->getParameter(1);
-		if ($pc>2) $args = $this->getParameterSlice(2); 
-
-		if ($this->verbose) 
-			Console::writeLn("Preparing to invoke %s:%s with %d arguments", (($ctl==NULL)?'NULL':$ctl), (($mtd==NULL)?'NULL':$mtd), count($args));
-
-		Controller::invoke($ctl,$mtd,$args);
+		if ($this->routed == false) {
+			$ctl = NULL; $mtd = NULL; $args = array();
+			if ($pc>0) $ctl = $this->getParameter(0);
+			if ($pc>1) $mtd = $this->getParameter(1);
+			if ($pc>2) $args = $this->getParameterSlice(2); 
+			if ($this->verbose) 
+				Console::writeLn("Preparing to invoke %s:%s with %d arguments", (($ctl==NULL)?'NULL':$ctl), (($mtd==NULL)?'NULL':$mtd), count($args));
+			Controller::invoke($ctl,$mtd,$args);
+		} else {
+			$_SERVER['REQUEST_URI'] = $this->getParameter(0);
+			$_SERVER['SERVER_NAME'] = 'localhost';
+			if ($this->verbose) 
+				Console::writeLn("Preparing to invoke %s for domain %d with default router", $_SERVER['REQUEST_URI'], $_SERVER['SERVER_NAME']);
+			$ma = new MvcApplication();
+			$ma->run();
+		}
 		return 0;
 	}
 }
