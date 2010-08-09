@@ -1,0 +1,55 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+
+ModuleManager::load('lepton.crypto.uuid');
+
+class UuidApp extends ConsoleApplication {
+	protected $arguments = "hvg:s";
+
+	function usage() {
+		Console::writeLn("Usage:    %s [-g <num>] [-s]", $this->getName());
+		Console::writeLn("Options:  -g <num>    Number of UUIDs to generate for benchmarking");
+		Console::writeLn("          -s          Force software implementation (inactive)");
+	}
+
+	function main($argc,$argv) {
+
+		$num = 1000;
+		if ($this->hasArgument("g")) $num = $this->getArgument("g");
+		if ($this->hasArgument("s")) Uuid::$usepecl = false;
+
+		Console::writeLn("Using backend: %s",Uuid::getBackend());
+
+		Console::write("Generating UUIDs (static): ");
+		$n = 0; $t1a = microtime(true);
+		while($n++ < $num) {
+			$uuid = Uuid::generate(Uuid::UUID_V4);
+		}
+		$t1b = microtime(true);
+		Console::writeLn("%d UUIDs in %5.3f seconds", $num, ($t1b-$t1a));
+
+		Console::write("Generating UUIDs (tostring): ");
+		$n = 0; $t2a = microtime(true);
+		while($n++ < $num) {
+			$uuid = (string)(new Uuid(Uuid::UUID_V4));
+		}
+		$t2b = microtime(true);
+		Console::writeLn("%d UUIDs in %5.3f seconds", $num, ($t2b-$t2a));
+
+		Console::write("Generating UUIDs (object): ");
+		$n = 0; $t3a = microtime(true);
+		$u = new Uuid(Uuid::UUID_V4);
+		while($n++ < $num) {
+			$uuid = $u->update();
+		}
+		$t3b = microtime(true);
+		Console::writeLn("%d UUIDs in %5.3f seconds", $num, ($t3b-$t3a));
+
+	}
+}
+
+Lepton::run('UuidApp');
+
+?>

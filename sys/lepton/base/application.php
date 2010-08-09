@@ -18,7 +18,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 			$this->_params = $params;
 		}
 		if (isset($args['h'])) {
-			if (function_exists(array(&$this,'usage'))) {
+			if (method_exists($this,'usage')) {
 				$this->usage();
 			}
 			return 1;

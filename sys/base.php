@@ -235,6 +235,14 @@
 			return (extension_loaded($extension));
 		}
 
+		static function hasExtension($extension) {
+			if (extension_loaded($extension)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 		static function load($module,$optional=false) {
 			if (strpos($module,'*') == (strlen($module) - 1)) {
 				$path = BASE_PATH.'sys/'.str_replace('.','/',$module).'.php';

@@ -1,5 +1,6 @@
 <?php
 
+	ModuleManager::checkExtension('uuid');
 
 	class Uuid {
 		const UUID_V1 = 1;
@@ -11,6 +12,8 @@
 
 		static $urand = null;
 		static $uobject = null;
+		static $init = false;
+		static $usepecl = false;
 		private $version = null;
 		protected $uuid;
 
@@ -25,13 +28,21 @@
 		 *
 		 */
 		static function initialize() {
-			if (function_exists('uuid_create')) {
-				if (! is_resource ( Uuid::$uobject )) {
-					uuid_create ( Uuid::$uobject );
-				}
+			if (self::$init) return;
+			if (ModuleManager::hasExtension('uuid')) {
+				self::$usepecl = true;
 			} else {
 				Uuid::$urand = @fopen ( '/dev/urandom', 'rb' );
+				self::$usepecl = false;
 			}
+			self::$init = true;
+		}
+
+		function getBackend() {
+			return (self::$usepecl)?
+				'PECL UUID Implementation':
+				'Lepton Software UUID Implementation';
+
 		}
 
 		function update() {
@@ -104,9 +115,10 @@
 
 			Uuid::initialize();
 
-			if (isset(Uuid::$uobject)) {
-				uuid_make ( Uuid::$uobject, UUID_MAKE_V4 );
-				uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
+			if (self::$usepecl) {
+				$uuidstring = uuid_create ( Uuid::$uobject );
+				// uuid_make ( Uuid::$uobject, UUID_MAKE_V4 );
+				// uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
 				return trim ( $uuidstring );
 			}
 
