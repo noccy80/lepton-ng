@@ -9,7 +9,7 @@
 	ModuleManager::load('lepton.user.authentication');
 	ModuleManager::load('lepton.mvc.routers.defaultrouter');
 
-	// ModuleManager::load('lepton.web.*');
+	ModuleManager::load('lepton.web.*');
 
 	class MvcApplication extends Application {
 		function run() {

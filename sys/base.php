@@ -164,6 +164,8 @@
 
 	class Lepton {
 
+		static $__exceptionhandler = null;
+
 		function run($class) {
 			Console::debugEx(LOG_EXTENDED,__CLASS__,"Inspecting environment module state:\n%s", ModuleManager::debug());
 			if (class_exists($class)) {
@@ -174,19 +176,7 @@
 					$rv = $instance->run();
 					Console::debugEx(LOG_BASIC,__CLASS__,"Main method exited with code %d.", $rv);
 				} catch (Exception $e) {
-					Console::warn("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
-					$f = file($e->getFile());
-					foreach($f as $i=>$line) {
-						$mark = (($i+1) == $e->getLine())?'=> ':'   ';
-						$f[$i] = sprintf('  %05d. %s',$i+1,$mark).$f[$i];
-					}
-					$first = $e->getLine() - 4; if ($first < 0) $first = 0;
-					$last = $e->getLine() + 3; if ($last >= count($f)) $last = count($f)-1;
-					$source = join("",array_slice($f,$first,$last-$first));
-					Console::debug("Source dump of %s:\n%s", str_replace(BASE_PATH,'',$e->getFile()), $source);
-					Console::backtrace(0,$e->getTrace());
-					$rv = 1;
-					Console::debugEx(LOG_BASIC,__CLASS__,"Exiting with return code %d after exception.", $rv);
+					throw $e;
 				}
 				exit( $rv );
 			} else {
@@ -199,7 +189,35 @@
 			$file = escapeshellarg( BASE_PATH.$filename );
 			return str_replace("\n","",shell_exec("file -b --mime-type " . $file));
 		}
+		
+		function setExceptionHandler($handler,$override=false) {
+			if (($override == true) || (Lepton::$__exceptionhandler == null)) {
+				Lepton::$__exceptionhandler = $handler;
+				Console::debugEx(LOG_BASIC,__CLASS__,"Assigned exception handler: %s", $handler);
+			} else {
+				Console::debugEx(LOG_BASIC,__CLASS__,"Ignoring exception handler: %s", $handler);
+			}			
+		}
+		
+		static function handleException(Exception $e) {
+			if (Lepton::$__exceptionhandler) {
+				$eh = new Lepton::$__exceptionhandler();
+				$eh->exception($e);
+			} else {
+				
+			}
+		}
 
+	}
+
+	set_exception_handler( array('Lepton','handleException') );
+
+	interface IExceptionHandler {
+		function exception(Exception $e);
+	}
+	
+	abstract class ExceptionHandler implements IExceptionHandler { 
+	
 	}
 
 	interface IApplication {
