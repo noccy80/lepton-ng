@@ -99,9 +99,9 @@
 			$lines = explode("\n",$strn);
 			foreach($lines as $line) {
 				if (getenv("DEBUG") >= $level) {
-					fprintf(STDERR," %s | %-20s | %s\n", $ts, $module,$line);
+					fprintf(STDERR," %s | [%s] %s\n", $ts, $module,$line);
 				}
-				if (LOGFILE) fprintf(LOGFILE," %s | %20s | %s\n", $ts, $module, $line);
+				if (LOGFILE) fprintf(LOGFILE," %s | [%s] %s\n", $ts, $module, $line);
 			}
 		}
 
@@ -216,7 +216,8 @@
 				$eh = new Lepton::$__exceptionhandler();
 				$eh->exception($e);
 			} else {
-				
+				printf($e);
+				die("Unhandled exception and no exception handler loaded.");
 			}
 		}
 
@@ -358,6 +359,7 @@
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Running as %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid());
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
 
+	ModuleManager::load('defaults',false);
 	if (isset($argc)) {
 		ModuleManager::load('lepton.base.application');
 	}

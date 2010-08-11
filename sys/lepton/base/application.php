@@ -150,7 +150,7 @@ class ConsoleExceptionHandler extends ExceptionHandler {
 
 	function exception(Exception $e) {
 
-		Console::warn("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
+		Console::debugEx(0, get_class($e), "Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
 		$f = file($e->getFile());
 		foreach($f as $i=>$line) {
 			$mark = (($i+1) == $e->getLine())?'=> ':'   ';
@@ -160,7 +160,7 @@ class ConsoleExceptionHandler extends ExceptionHandler {
 		$last = $e->getLine() + 3; if ($last >= count($f)) $last = count($f)-1;
 		$source = join("",array_slice($f,$first,$last-$first));
 		Console::debug("Source dump of %s:\n%s", str_replace(BASE_PATH,'',$e->getFile()), $source);
-		Console::backtrace(0,$e->getTrace());
+		Console::debugEx(0, get_class($e), Console::backtrace(0,$e->getTrace(),true));
 		$rv = 1;
 		Console::debugEx(LOG_BASIC,__CLASS__,"Exiting with return code %d after exception.", $rv);
 	

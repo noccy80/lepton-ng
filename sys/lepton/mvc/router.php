@@ -21,6 +21,14 @@
 		private $_uri = null;
 		private $_urisegments = array();
 		private $_secure = false;
+		static $_staticroutes = array();
+
+		static function hookRequestUri($uripat,$hook) {
+			Router::$_staticroutes[] = array(
+				'match' => $uripat,
+				'hook' => $hook
+			);
+		}
 
 		/**
 		 * Constructor
@@ -75,6 +83,14 @@
 		 *
 		 */
 		public function route() {
+			// Determine if this is a hooked uri
+			foreach(Router::$_staticroutes as $sr) {
+				if (@preg_match('/'.$sr['match'].'/', $this->_uri, $ret)) {
+					call_user_func_array($sr['hook'],array_slice($ret,1));
+					return 0;
+				}
+			}
+
 			// Invoke the router
 			return $this->routeRequest($this->_uri);
 		}
