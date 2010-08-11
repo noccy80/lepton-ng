@@ -7,11 +7,11 @@ ModuleManager::load('lepton.ui.curses');
 class LeptonUtil extends ConsoleApplication {
 	protected $arguments = 'h';
 	function main($argc,$argv) {
-		if (count($this->arguments) == 0) {
+		if ($this->getParameterCount() == 0) {
 			$this->usage();
 			return 1;
 		}
-		switch(strtolower($this->arguments[0])) {
+		switch(strtolower($this->getParameter(0))) {
 			case 'deploy':
 				Console::writeLn("Deploying instance...");
 				break;
