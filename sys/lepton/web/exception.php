@@ -10,10 +10,22 @@
 		}
 
 		function exception(Exception $e) {
+
+			$dbg = sprintf("Unhandled exception: (%s) %s\n  in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
+			$dbg .= Console::backtrace(0,$e->getTrace(),true);
+	
+			header('content-type: text/html; charset=utf-8');
 			echo '<html><head><title>Unhandled Exception</title>'.self::$css.'</head><body>' .
 				'<div id="box"><div id="left"><img src="'.$this->image(self::$ico_error).'"></div><div id="main">' .
 				'<h1>An Unhandled Exception Occured</h1>' .
-				'<p>This means things didn\'t quite go as planned. Try agan in a bit</p>' .
+				'<hr noshade>'.
+				'<p>This means things didn\'t quite go as planned. Normally this is really '.
+				'something exceptional that has gone wrong, so please be patient and try '.
+				'again later.</p>' .
+				'<p>The administrator of the website has been notified about this error</p>'.
+				'<hr noshade>'.
+				'<p>Information for developers:</p>'.
+				'<pre>'.$dbg.'</pre>'.
 				'</body></html>';
 
 		}
@@ -35,11 +47,13 @@
 			"AAAAAElFTkSuQmCC";
 	MvcExceptionHandler::$css = '<style type="text/css">'.
 			'body { background-color:#202020; }'.
+			'hr { height:1px; color:#808080; padding:0px; margin:5px 0px 5px 0px; }'.
 			'#box { -moz-border-radius:10px; -webkit-border-radius:10px; -opera-border-radius:10px; background-color:#E0E0E0; padding:15px; width:690px; margin:20px auto 20px auto; overflow:hidden; }'.
 			'#left { float:left; width:50px; text-align:center; padding-top:5px; }'.
 			'#main { float:left; width:600px; }'.
-			'h1 { margin:3px 0px 3px 0px; padding:0px 0px 3px 0px; font:bold 14pt sans-serif; color:#404040; border-bottom:solid 1px #808080;}'.
+			'h1 { margin:3px 0px 3px 0px; padding:0px; font:bold 14pt sans-serif; color:#404040; }'.
 			'p { margin:3px 0px 3px 0px; padding:0px; font:8pt sans-serif; color:#404040; }'.
+			'pre { overflow-y:scroll; font-size:8pt; padding:5px; background-color:#F8F8F8; }'.
 			'</style>';
 
 	

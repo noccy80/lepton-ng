@@ -27,6 +27,9 @@
 	} else {
 		$path = getcwd();
 	}
+	if (!$path) {
+		$path = dirname(__FILE__).'/../';
+	}
 	if (!$path) throw new Exception('Failed to get script path!');
 	define('BASE_PATH', $path.'/');
 	define('SYS_PATH', $path.'/sys/');
@@ -104,7 +107,7 @@
 			@call_user_func_array(array('Console','debugEx'),array_merge(array(LOG_WARN,'Warning'),array_slice($args,0)));
 		}
 
-		static function backtrace($trim=1,$stack=null) {
+		static function backtrace($trim=1,$stack=null,$return=false) {
 			if (!$stack) { $stack = debug_backtrace(false); }
 			$trace = array();
 			foreach($stack as $i=>$method) {
@@ -123,6 +126,7 @@
 					}
 				}
 			}
+			if ($return) return join("\n", $trace)."\n";
 			Console::debugEx(LOG_WARN,'Backtrace', "%s", join("\n", $trace)."\n");
 			if (LOGFILE) fprintf(LOGFILE, join("\n", $trace)."\n");
 		}
