@@ -2,6 +2,13 @@
 
 	declare(ticks = 1);
 
+	define("LEPTON_MAJOR_VERSION", 2);
+	define("LEPTON_MINOR_VERSION", 0);
+	define("LEPTON_RELEASE_VERSION", 0);
+	define("LEPTON_RELEASE_TAG", "alpha");
+	define("LEPTON_VERSION", LEPTON_MAJOR_VERSION.".".LEPTON_MINOR_VERSION.".".LEPTON_RELEASE_VERSION." ".LEPTON_RELEASE_TAG);
+	define("LEPTON_PLATFORM_ID", "Lepton Application Framework " . LEPTON_VERSION);
+
 	/*
 	 * Global defines and workarounds. These ensure a consistent platform for
 	 * Lepton to use.
@@ -32,7 +39,8 @@
 	}
 	if (!$path) throw new Exception('Failed to get script path!');
 	define('BASE_PATH', $path.'/');
-	define('SYS_PATH', $path.'/sys/');
+	$syspath = realpath(dirname(__FILE__)).'/';
+	define('SYS_PATH', $syspath);
 	define('APP_PATH', $path.'/app/');
 	if (getenv("DEBUG") == "1") {
 		error_reporting(E_ALL);
@@ -120,9 +128,9 @@
 					}
 					$mark = (($i == ($trim))?'in':'   invoked from');
 					if (isset($method['type'])) {
-						$trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), str_replace(BASE_PATH,'',$method['file']), $method['line']);
+						$trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), str_replace(SYS_PATH,'',$method['file']), $method['line']);
 					} else {
-						$trace[] = sprintf("  %s %s(%s) - %s:%d", $mark, $method['function'], join(',',$args), str_replace(BASE_PATH,'',$method['file']), $method['line']);
+						$trace[] = sprintf("  %s %s(%s) - %s:%d", $mark, $method['function'], join(',',$args), str_replace(SYS_PATH,'',$method['file']), $method['line']);
 					}
 				}
 			}
@@ -336,14 +344,16 @@
 			}
 			foreach(ModuleManager::$_modules as $mod=>$meta) {
 				// TODO: Show metadata
-				$modinfo[] = sprintf(" - Module %s: Loaded", $mod);
+				$modinfo[] = sprintf("     %s", $mod);
 			}
-			return join("\n", $modinfo);
+			return join("\n", $modinfo)."\n";
 		}
 
 	}
 
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Base path: %s", BASE_PATH);
+	Console::debugEx(LOG_BASIC,'(bootstrap)',"System path: %s", SYS_PATH);
+	Console::debugEx(LOG_BASIC,'(bootstrap)',"App path: %s", APP_PATH);
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Platform: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS);
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Running as %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid());
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
