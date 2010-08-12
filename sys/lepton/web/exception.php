@@ -34,17 +34,21 @@
 			     . ModuleManager::debug()
 			     . "\n"
 			     . "Request time: ".date(DATE_RFC822,$_SERVER['REQUEST_TIME'])."\n"
-			     . "Error id: ".$id."\n"
+			     . "Event id: ".$id."\n"
 			     . "User-agent: ".$_SERVER['HTTP_USER_AGENT']."\n"
 			     . "Request URI: ".$_SERVER['REQUEST_URI']."\n"
 			     . "Request method: ".$_SERVER['REQUEST_METHOD']."\n"
 			     . "Remote IP: ".$_SERVER['REMOTE_ADDR']." (".gethostbyaddr($_SERVER['REMOTE_ADDR']).")\n"
 			     . "Hostname: ".$_SERVER['HTTP_HOST']."\n"
+			     . "Referrer: ".$_SERVER['HTTP_REFERER']."\n"
+			     . sprintf("Running as: %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid())."\n"
+			     . sprintf("Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024))."\n"
 			     . "Platform: ".LEPTON_PLATFORM_ID."\n"
+			     . sprintf("Runtime: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS)."\n"
 			     ;
 
-			if (config::get('lepton.mvc.debuglog',null)) {
-				$logfile = config::get('lepton.mvc.debuglog');
+			if (config::get('lepton.mvc.exception.log',false)==true) {
+				$logfile = config::get('lepton.mvc.exception.logfile',"/tmp/".$_SERVER['HTTP_HOST']."-debug.log");
 				$log = "=== Unhandled Exception ===\n\n".$dbg."\n";
 				$lf = fopen($logfile, "a+");
 				fputs($lf,$log);
@@ -62,23 +66,29 @@
 				'<p>This means that something didn\'t go quite go as planned. This could be '.
 				'caused by one of several reasons, so please be patient and try '.
 				'again in a little while.</p>';
-			echo '<p>The administrator of the website has been notified about this error. You '.
-				'can help us find and fix the problem by writing a line or two about what you were doing when this '.
-				'error occured.</p>';
-			echo '<p id="feedbacklink"><a href="javascript:doFeedback();">If you would like to assist us with more information, please click here</a>.</p>';
-			echo '<div id="feedback" style="display:none;"><p>Describe in a few short lines what you were doing right before you encountered this error:</p><form action="/errorevent.feedback/'.$id.'" method="post"><div><textarea name="text" style="width:100%; height:50px;"></textarea></div><div style="padding-top:5px; text-align:right;"><input type="submit" value=" Submit Feedback "></div></form></div>';
-			echo '<hr noshade>'.
-				'<a href="javascript:toggleAdvanced();">Details &raquo;</a>'.
-				'<pre id="advanced" style="display:none;">'.$dbg.'</pre>'.
-				'</body></html>';
+			if (config::get('lepton.mvc.exception.feedback',false) == true):
+				echo '<p>The administrator of the website has been notified about this error. You '.
+					'can help us find and fix the problem by writing a line or two about what you were doing when this '.
+					'error occured.</p>';
+				echo '<p id="feedbacklink"><a href="javascript:doFeedback();">If you would like to assist us with more information, please click here</a>.</p>';
+				echo '<div id="feedback" style="display:none;"><p>Describe in a few short lines what you were doing right before you encountered this error:</p><form action="/errorevent.feedback/'.$id.'" method="post"><div><textarea name="text" style="width:100%; height:50px;"></textarea></div><div style="padding-top:5px; text-align:right;"><input type="button" value=" Close " onclick="closeFeedback();"> <input type="submit" value=" Submit Feedback "></div></form></div>';
+			endif;
+			if (config::get('lepton.mvc.exception.showdebug',false) == true):
+				echo '<hr noshade>'.
+					'<a href="javascript:toggleAdvanced();">Details &raquo;</a>'.
+					'<pre id="advanced" style="display:none; height:300px;">'.$dbg.'</pre>';
+			endif;
+				echo '<div>'.
+					'</body></html>';
 
 		}
 
 	}
 
-	Router::hookRequestUri('^\/errorevent\.feedback\/(.*)$', array('MvcExceptionHandler','saveFeedback'));
+	if (config::get('lepton.mvc.exception.feedback',false)==true) Router::hookRequestUri('^\/errorevent\.feedback\/(.*)$', array('MvcExceptionHandler','saveFeedback'));
 
 	// MvcExceptionHandler::$ico_error = file_get_contents(SYS_PATH.'/res/ico_error.b64');
+	// Old icon
 	MvcExceptionHandler::$ico_error = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ".
 			"bWFnZVJlYWR5ccllPAAAAlpJREFUeNqkU8tu2lAQHT8wtlEQcUKUIjVVgaiCVkhIlSq1isSKTdRN".
 			"uu5P8AX5Alb9g+6zqZR8QNWmC3ZRa1UJIm0hAWpeNthg/OiMechl00UtHXvuvXPOnbn3mPF9H/7n".
@@ -129,9 +139,11 @@ Atm8LMDUwCnIhgGYGBlwAgDeuckvbbM0gwAAAABJRU5ErkJggg==";
 			'h1 { margin:4px 0px 4px 0px; padding:0px; font:bold 14pt sans-serif; color:#404040; }'.
 			'p { margin:4px 0px 4px 0px; padding:0px; font:8pt sans-serif; color:#404040; }'.
 			'textarea { overflow-y:scroll; overflow-x:hidden; font-size:8pt; padding:5px; background-color:#F8F8F8; border:inset 1px #F0F0F0; }'.
-			'pre { overflow-x:scroll; overflow-y:hidden; font-size:8pt; padding:5px; background-color:#F8F8F8; border:inset 1px #F0F0F0; }'.
+			'pre { overflow-x:scroll; overflow-y:scroll; font-size:8pt; padding:5px; background-color:#F8F8F8; border:inset 1px #F0F0F0; }'.
 			'a { color:#A06060; text-decoration:underline; font: 8pt sans-serif; text-decoration:none; }'.
 			'a:hover { text-decoration:underline; }'.
+			'input[type=button] { font:8pt sans-serif; color:#606060; }'.
+			'input[type=submit] { font:8pt sans-serif; color:#202020; }'.
 			'</style>';
 
 	MvcExceptionHandler::$js = '<script type="text/javascript">'.
@@ -146,6 +158,10 @@ Atm8LMDUwCnIhgGYGBlwAgDeuckvbbM0gwAAAABJRU5ErkJggg==";
 			'function doFeedback() {'.
 			'document.getElementById("feedbacklink").style.display = "none";'.
 			'document.getElementById("feedback").style.display = "block";'.
+			'}'.
+			'function closeFeedback() {'.
+			'document.getElementById("feedbacklink").style.display = "block";'.
+			'document.getElementById("feedback").style.display = "none";'.
 			'}'.
 			'</script>';
 

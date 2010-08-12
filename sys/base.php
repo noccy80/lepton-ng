@@ -126,7 +126,7 @@
 							$args[] = gettype($arg);
 						}
 					}
-					$mark = (($i == ($trim))?'in':'   invoked from');
+					$mark = (($i == ($trim))?'in':'  invoked from');
 					if (isset($method['type'])) {
 						$trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), str_replace(SYS_PATH,'',$method['file']), $method['line']);
 					} else {
@@ -345,7 +345,7 @@
 			}
 			foreach(ModuleManager::$_modules as $mod=>$meta) {
 				// TODO: Show metadata
-				$modinfo[] = sprintf("     %s", $mod);
+				$modinfo[] = sprintf("    %s", $mod);
 			}
 			return join("\n", $modinfo)."\n";
 		}
