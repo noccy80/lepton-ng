@@ -1,0 +1,61 @@
+Web Development with Lepton
+===========================
+
+Where it all starts
+-------------------
+
+A Web Application is centered around the MvcApplication class. Unless you got
+something insane in mind, this should work out of the box. There is no need
+to derive classes from the MvcApplication class, but rather just make sure 
+that it is loaded from your index.php file:
+
+  <?php
+      require('sys/base.php');
+      ModuleManager::load('lepton.base.mvc');
+      Lepton::run('MvcApplication');
+  ?>
+
+The next step would be to set up your default controller and create the needed
+methods. The controller should go into /app/controllers/default.php and the
+class should be named "DefaultController". All controller instances must
+inherit from the Controller class.
+
+For testing you are OK with just an index method:
+
+  <?php
+      class DefaultController extends Controller {
+          function index() { View::load('default/index.php'); }
+      }
+  ?>
+
+Now all that's left is the view. The views contain all your HTML and the first
+view should go into /app/views/default/index.php. That is the view we loaded
+in the above example class.
+
+Now, assuming everything is properly set up in your web server, you should be
+able to browse to your site and view your index view.
+
+
+Testing your site
+-----------------
+
+Direct invocation of specific controller and method. The following command
+will attempt to invoke the index method of the default controller with the
+two parameters "foo" and "bar". With the default router, this would be the
+same as browsing to "/default/index/foo/bar".
+
+  $ bin/viewpage -c default index foo bar | w3m -T text/html
+
+Routed invocation of specificic URL. This will make your request pass through
+the router rather than invoking the controller directly. This allows you to
+inspect the performance of your router.
+
+  $ bin/viewpage -r / | w3m -T text/html
+
+w3m is a tiny text-based web browser that is capable of rendering pages from
+an input stream. Just remember to specify -T for content type or you will get
+plain text.
+
+For more information on the viewpage script, view the help:
+
+  $ bin/viewpage -h

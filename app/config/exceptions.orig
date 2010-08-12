@@ -1,16 +1,11 @@
 <?php
 
-
-	// The default router instance
-	Config::set('lepton.mvc.router', 'DefaultRouter');
-
-
 	// If true, debug information will be shown when an unhandled exception 
 	// occurs.
 	config::set('lepton.mvc.exception.showdebug',true);
 	// If true, the feedback form will be displayed. This requires either log, 
 	// db or email below to be enabled.
-	config::set('lepton.mvc.exception.feedback',false);
+	config::set('lepton.mvc.exception.feedback',true);
 	// Save exceptions to a logfile. If true, specify filename or leave as
 	// null. Default filename is /tmp/HOSTNAME-debug.log
 	config::set('lepton.mvc.exception.log',false);
@@ -18,6 +13,10 @@
 	// Send exception information via e-mail. Requires an e-mail transport to
 	// be enabled.
 	config::set('lepton.mvc.exception.email',false);
-	config::set('lepton.mvc.exception.email.to', null);
+	config::set('lepton.mvc.exception.email.to', 'admin@domain.com');
+	// Log to database
+	config::set('lepton.mvc.exception.db',false);
+	// Log to audit log (in db)
+	config::set('lepton.mvc.exception.audit',true);
 
 ?>

@@ -273,10 +273,22 @@
 			}
 		}
 
+		static function _mangleModulePath($module) {
+			// Console::debugEx(LOG_LOG,__CLASS__,"Mangling module %s", $module);
+			if (preg_match('/^app\./',$module)) {
+				$path = APP_PATH.str_replace('.','/',str_replace('app.','',$module)).'.php';
+			} else {
+				$path = SYS_PATH.str_replace('.','/',$module).'.php';
+			}
+			// Console::debugEx(LOG_LOG,__CLASS__,"  -> %s", $path);
+			return $path;
+		}		
+
 		static function load($module,$optional=false) {
 			if (strpos($module,'*') == (strlen($module) - 1)) {
-				$path = BASE_PATH.'sys/'.str_replace('.','/',$module).'.php';
+				$path = self::_mangleModulePath($module);
 				$f = glob($path);
+				sort($f);
 				$failed = false;
 				foreach($f as $file) {
 					if (!ModuleManager::load(str_replace('*',basename($file,'.php'),$module))) $failed=true;
@@ -287,7 +299,9 @@
 				Console::debugEx(LOG_EXTENDED,__CLASS__,"Already loaded %s.",$module);
 				return true;
 			}
-			$modpath = str_replace('.','/',$module).'.php';
+//			$modpath = str_replace('.','/',$module).'.php';
+			$path = self::_mangleModulePath($module);
+/*
 			if (file_exists(APP_PATH.$modpath)) {
 				$path = APP_PATH.$modpath;
 			} elseif (file_exists(SYS_PATH.$modpath)) {
@@ -295,6 +309,7 @@
 			} else {
 				$path = null;
 			}
+*/
 			if ($path) {
 				Console::debugEx(LOG_BASIC,__CLASS__,"Loading %s (%s).",$module,str_replace(BASE_PATH,'',$path));
 				try {
@@ -360,6 +375,7 @@
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
 
 	ModuleManager::load('defaults',false);
+	ModuleManager::load('app.config.*',false);
 	if (isset($argc)) {
 		ModuleManager::load('lepton.base.application');
 	}
