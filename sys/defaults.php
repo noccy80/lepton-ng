@@ -1,5 +1,7 @@
 <?php
 
+	// Charset to use
+	config::set('lepton.charset','utf-8');
 
 	// The default router instance
 	Config::set('lepton.mvc.router', 'DefaultRouter');

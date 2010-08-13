@@ -2,7 +2,6 @@
 <?php
 
 require('sys/base.php');
-ModuleManager::load('lepton.ui.curses');
 
 class LeptonUtil extends ConsoleApplication {
 	protected $arguments = 'h';
@@ -15,7 +14,32 @@ class LeptonUtil extends ConsoleApplication {
 			case 'deploy':
 				Console::writeLn("Deploying instance...");
 				break;
-			case 'scaffold':
+			case 'initialize':
+				Console::write("Single or Multi domain site? [S/m] "); $mode = Console::readLn();
+				Console::write("  Base domain name (for routing): "); $dombase = Console::readLn();
+			
+				Console::write("Creating folder structure ... ");
+				Console::status("app             ");
+				usleep(50000);
+				Console::status("app/config      ");
+				usleep(50000);
+				Console::status("app/controllers ");
+				usleep(50000);
+				Console::status("app/models      ");
+				usleep(50000);
+				Console::status("app/views       ");
+				usleep(50000);
+				Console::status("res             ");
+				usleep(50000);
+				Console::writeLn("Done            ");
+
+				Console::write("Copying files ... ");
+				Console::writeLn("39 of 39");
+
+				Console::write("Checking configuration ... ");
+				Console::writeLn("Ok");
+				Console::write("Do you want a htconf too? [y/N] ");
+				$w = Console::readLn();
 				break;
 			case 'export':
 				Console::writeLn("Exporting site to archive...");
@@ -43,16 +67,17 @@ class LeptonUtil extends ConsoleApplication {
 	function usage() {
 		Console::writeLn('Usage:     %s [-options] action [arguments]', $this->getName());
 		Console::writeLn();
-		Console::writeLn('Options:   -q        Quiet, show no info');
-		Console::writeLn('           -h        Show help');
-		Console::writeLn('           -o        Output file (when exporting)');
-		Console::writeLn('           -i        Input file (when importing)');
+		Console::writeLn('Options:   -q          Quiet, show no info');
+		Console::writeLn('           -h          Show help');
+		Console::writeLn('           -o file     Output file (when exporting)');
+		Console::writeLn('           -i file     Input file (when importing)');
 		Console::writeLn();
-		Console::writeLn('Actions:   deploy    Deploy a lepton MVC structure in the current folder');
-		Console::writeLn('           scaffold  Scaffolds the database and imports any data');
-		Console::writeLn('           export    Export the entire site into a .tgz file');
-		Console::writeLn('           import    Import a site from a .tgz file');
-		Console::writeLn('           config    Configure interactively');
+		Console::writeLn('Actions:   deploy      Deploy a lepton MVC structure in the current folder');
+		Console::writeLn('           initialize  Initializes a new Lepton deployment');
+		Console::writeLn('           scaffold    Scaffolds the database and imports any data');
+		Console::writeLn('           export      Export the entire site into a .tgz file');
+		Console::writeLn('           import      Import a site from a .tgz file');
+		Console::writeLn('           config      Configure interactively');
 	}
 }
 

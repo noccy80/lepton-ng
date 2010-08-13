@@ -16,26 +16,34 @@
 		private $_contenttype = null;
 		
 		function begin($doctype = self::DT_HTML401_TRANS) {
-			switch ($this->_doctype) {
+			switch ($doctype) {
 				case self::DT_HTML401_STRICT:
 				case self::DT_HTML401_TRANS:
 				case self::DT_HTML401_FRAMESET:
-					$this->_contenttype = 'text/html; charset=utf-8';
+					$this->_contenttype = 'text/html; charset='.config::get('lepton.charset');
 					break;
 				case self::DT_XHTML1_STRICT:
 				case self::DT_XHTML1_TRANS:
 				case self::DT_XHTML1_FRAMESET:
 				case self::DT_XHTML1_DTD:
 				case self::DT_XHTML11_BASIC:
-					$this->_contenttype = 'text/xml+html; charset=utf-8';
+					$this->_contenttype = 'text/xhtml';
 					break;
 			}
 			$this->_doctype = $doctype;
 			@ob_clean();
-			header('Content-type: '.$this->_contenttype);
 			ob_start(array(&$this,'obhandler'));
+			header('Content-type: '.$this->_contenttype);
 			printf($this->_doctype."\n");
 			$this->_started = true;
+		}
+		
+		function includeView($view) {
+			
+		}
+		
+		function insertString($str) {
+			return eval($str);
 		}
 		
 		function obhandler($str) {

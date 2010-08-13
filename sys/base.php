@@ -146,6 +146,10 @@
 			if (LOGFILE) fprintf(LOGFILE, $strn);
 		}
 
+		static function readLn() {
+			return fgets(STDIN);
+		}
+
 		static function writeLn() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
@@ -376,6 +380,7 @@
 
 	ModuleManager::load('defaults',false);
 	ModuleManager::load('app.config.*',false);
+	ModuleManager::load('lepton.installer');
 	if (isset($argc)) {
 		ModuleManager::load('lepton.base.application');
 	}
