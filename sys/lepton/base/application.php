@@ -155,12 +155,13 @@ class ConsoleExceptionHandler extends ExceptionHandler {
 		foreach($f as $i=>$line) {
 			$mark = (($i+1) == $e->getLine())?'=> ':'   ';
 			$f[$i] = sprintf('  %05d. %s',$i+1,$mark).$f[$i];
+			$f[$i] = str_replace("\n","",$f[$i]);
 		}
 		$first = $e->getLine() - 4; if ($first < 0) $first = 0;
 		$last = $e->getLine() + 3; if ($last >= count($f)) $last = count($f)-1;
-		$source = join("",array_slice($f,$first,$last-$first));
-		Console::debug("Source dump of %s:\n%s", str_replace(BASE_PATH,'',$e->getFile()), $source);
+		$source = join("\n",array_slice($f,$first,$last-$first));
 		Console::debugEx(0, get_class($e), Console::backtrace(0,$e->getTrace(),true));
+		Console::debug("Source dump of %s:\n%s", str_replace(BASE_PATH,'',$e->getFile()), $source);
 		$rv = 1;
 		Console::debugEx(LOG_BASIC,__CLASS__,"Exiting with return code %d after exception.", $rv);
 	

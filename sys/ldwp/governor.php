@@ -4,9 +4,39 @@
         const ACTION_START = 1;
     }
 
+	/**
+	 * Job queue implementation for workers
+	 */
+	class LdwpJobQueue {
+
+		private $_queue = null;
+
+		function length() {
+			return count((array)$this->_queue);
+		}
+
+		function push(LdwpJob $job, $priority=false) {
+			// Add the job to the end
+		}
+
+		function pop() {
+			// Return the queue from the top
+		}
+
+		function remove(LdwpJob $job) {
+
+		}
+
+		function postpone(LdwpJob $job) {
+			// Push job to end of queue
+		}
+
+	}
+
 	class LdwpGovernor {
 
         static $registry = array();
+		static $queue;
 
         function getAvailableJobs($maxnum=5) {
             return array(

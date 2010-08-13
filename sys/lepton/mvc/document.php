@@ -39,6 +39,7 @@
 		}
 		
 		function obhandler($str) {
+			// TODO: implement handler hooks to inject stylesheets etc
 			return $str;
 		}
 		

@@ -99,9 +99,9 @@
 			$lines = explode("\n",$strn);
 			foreach($lines as $line) {
 				if (getenv("DEBUG") >= $level) {
-					fprintf(STDERR," %s | [%s] %s\n", $ts, $module,$line);
+					fprintf(STDERR,"%s [%s] %s\n", $ts, $module,$line);
 				}
-				if (LOGFILE) fprintf(LOGFILE," %s | [%s] %s\n", $ts, $module, $line);
+				if (LOGFILE) fprintf(LOGFILE,"%s [%s] %s\n", $ts, $module, $line);
 			}
 		}
 

@@ -46,16 +46,16 @@
 			// TODO: Verify the meta format
 			$md = explode(' ',$meta); $mi = 0;
 			$mo = array();
-			Console::debugEx(LOG_DEBUG2,__CLASS__,"Parsing quotes in array for %s", $meta);
-			Console::debugEx(LOG_DEBUG2,__CLASS__," \$md = {'%s'}", join("','", $md));
+			// Console::debugEx(LOG_DEBUG2,__CLASS__,"Parsing quotes in array for %s", $meta);
+			// Console::debugEx(LOG_DEBUG2,__CLASS__," \$md = {'%s'}", join("','", $md));
 			while($mi < count($md)) {
-				Console::debugEx(LOG_DEBUG2,__CLASS__,"Current token: %s", $md[$mi]);
+				// Console::debugEx(LOG_DEBUG2,__CLASS__,"Current token: %s", $md[$mi]);
 				if ($md[$mi][0] == '"') {
 					$buf = array();
 					while($mi < count($md)) {
 						$str = $md[$mi];
 						$buf[] = $md[$mi++];
-						Console::debugEx(LOG_DEBUG2,__CLASS__," -- Quoted token: %s (%s)", $str, $str[strlen($str)-1]);
+						// Console::debugEx(LOG_DEBUG2,__CLASS__," -- Quoted token: %s (%s)", $str, $str[strlen($str)-1]);
 						if ($str[strlen($str)-2] == '"') break;
 					}
 					$bufstr = join(' ',$buf);
@@ -67,11 +67,11 @@
 				}
 			}
 			$md = $mo;
-			Console::debugEx(LOG_DEBUG2,__CLASS__," \$md = {'%s'}", join("','", $md));
+			// Console::debugEx(LOG_DEBUG2,__CLASS__," \$md = {'%s'}", join("','", $md));
 			$ftype = null; $fdef = null; $freq = false; $fprot = false;
 			$mi = 0;
 			while($mi < count($md)) {
-				Console::debugEx(LOG_DEBUG1,__CLASS__,'Parsing abstract model field %s: %s', $field, $md[$mi]);
+				// Console::debugEx(LOG_DEBUG1,__CLASS__,'Parsing abstract model field %s: %s', $field, $md[$mi]);
 				switch(strtolower($md[$mi])) {
 					case 'string':
 						$ftype = 'STRING';
@@ -81,6 +81,12 @@
 						break;
 					case 'bool':
 						$ftype = 'BOOL';
+						break;
+					case 'set':
+						$ftype = 'SET';
+						break;
+					case 'enum':
+						$ftype = 'STRING';
 						break;
 					case 'required':
 						$freq = true;
@@ -98,6 +104,7 @@
 						$flike = $md[++$mi];
 						break;
 					case 'in':
+					case 'of':
 						$fin = $md[++$mi];
 						break;
 					case 'format':
@@ -277,6 +284,20 @@
 	}
 
 //////////////////////////// TESTING CODE /////////////////////////////////////
+
+	class ForumsRecord extends ActiveModel {
+		var $table = "forums";
+		var $fields = array(
+			'id'         => 'int auto index',
+			'parent'     => 'int required default 0',
+			'slug'       => 'string required format 64',
+			'name'       => 'string required format 64',
+			'descripion' => 'string',
+			'posts'      => 'int required default 0',
+			'threads'    => 'int required default 0',
+			'flags'      => 'set of "public,private,hidden,locked" default "public"'
+		);
+	}
 
 	class TestModel extends AbstractModel {
 		var $model = 'TestModel';

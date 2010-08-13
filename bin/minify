@@ -7,13 +7,22 @@ ModuleManager::load('lepton.base.application');
 ModuleManager::load('lepton.utils.minify');
 
 class MinifyApp extends ConsoleApplication {
-	protected $arguments = "hvo:";
+	protected $arguments = "hvo:mnt:";
 	function usage() { 
-
+		Console::writeLn("Usage:   %s [-t <type>] [-o <outfile>] <infile> [<infile>]", $this->getName());
+		Console::writeLn("Options: -t <type>    Type of content (js or css, if not specified will autodetect");
+		Console::writeLn("         -m           Use maximum minification");
+		Console::writeLn("         -n           Use minimin minification");
+		Console::writeln("Note:    file type will be determined from file extensions. Currently");
+		Console::writeLn("         minify supports .css and .js files.");
 	}
 	function main($argc,$argv) {
+		if ($this->getParameterCount() < 1) {
+			$this->usage();
+			exit(1);
+		}
 		$mf = new Minifier();
-		$if = $this->arguments[0];
+		$if = $this->getParameter(0);
 
 		$mt = Lepton::getMimeType($if);
 
