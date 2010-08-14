@@ -1,19 +1,47 @@
 #!/usr/bin/php
 <?php
 
-require('sys/base.php');
+if	(file_exists('sys/base.php')) require('sys/base.php');
+elseif	(file_exists('../sys/base.php')) require('../sys/base.php');
+else	(die("Failed to load sys/base.php"));
 
+/**
+ * UUID Benchmark script
+ *
+ * Generates a specific number (1000 by default) of UUIDs using three different
+ * methods. The first one is a static call to the Uuid::generate() method. The
+ * second one casts a newly created Uuid object to a string in order to extract
+ * the UUID. And the third method uses the update() method of an UUID instance.
+ *
+ * Use the -g parameter to specify how many UUIDs to generate.
+ *
+ * This script only tests UUIDs of version 4.
+ *
+ * NOTE: This script doesn't *OUTPUT* any UUIDs. It simply benchmarks the
+ * process.
+ */
+
+// Load the UUID classes
 ModuleManager::load('lepton.crypto.uuid');
 
+/**
+ * UuidApplication. The main application class for the benchmark script.
+ *
+ * Invoked using Lepton::run('UuidApp') at the bottom of the script.
+ */
 class UuidApp extends ConsoleApplication {
+
+	// Command line arguments that the application accepts.
 	protected $arguments = "hvg:s";
 
+	// Usage instructions, shown when invoked with -h
 	function usage() {
 		Console::writeLn("Usage:    %s [-g <num>] [-s]", $this->getName());
 		Console::writeLn("Options:  -g <num>    Number of UUIDs to generate for benchmarking");
-		Console::writeLn("          -s          Force software implementation (inactive)");
+		Console::writeLn("          -s          Force software implementation");
 	}
 
+	// Main function.
 	function main($argc,$argv) {
 
 		$num = 1000;
@@ -50,6 +78,7 @@ class UuidApp extends ConsoleApplication {
 	}
 }
 
+// Run the application
 Lepton::run('UuidApp');
 
 ?>

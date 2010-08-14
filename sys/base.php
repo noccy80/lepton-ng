@@ -9,12 +9,6 @@
 	define("LEPTON_VERSION", LEPTON_MAJOR_VERSION.".".LEPTON_MINOR_VERSION.".".LEPTON_RELEASE_VERSION." ".LEPTON_RELEASE_TAG);
 	define("LEPTON_PLATFORM_ID", "Lepton Application Framework " . LEPTON_VERSION);
 
-	/*
-	 * Global defines and workarounds. These ensure a consistent platform for
-	 * Lepton to use.
-	 *
-	 *
-	 */
 	if(!defined('PHP_VERSION_ID')) {
 		$version = explode('.',PHP_VERSION);
 		define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
@@ -24,8 +18,8 @@
 		define('PHP_MINOR_VERSION',	$version[1]);
 		define('PHP_RELEASE_VERSION',  $version[2]);
 	}
+
 	if(getenv("APP_PATH")) define('APP_PATH', getenv("APP_PATH"));
-	$path = null;
 	if(defined('APP_PATH')) {
 		$path = APP_PATH;
 	} elseif (getenv("SCRIPT_FILENAME")) {
@@ -34,17 +28,26 @@
 	} else {
 		$path = getcwd();
 	}
+/*
 	if (!$path) {
 		$path = dirname(__FILE__).'/../';
 	}
 	if (!$path) throw new Exception('Failed to get script path!');
+*/
 	define('BASE_PATH', $path.'/');
-	$syspath = realpath(dirname(__FILE__)).'/';
-	define('SYS_PATH', $syspath);
+	if(getenv('SYS_PATH')) {
+		define('SYS_PATH', getenv('SYS_PATH').'/');
+	} else {
+		$syspath = realpath(dirname(__FILE__)).'/';
+		define('SYS_PATH', $syspath);
+	}
 	define('APP_PATH', $path.'/app/');
-	if (getenv("DEBUG") == "1") {
+
+	// Enable PHPs error reporting when the DEBUG envvar is set
+	if (getenv("DEBUG") >= 1) {
 		error_reporting(E_ALL);
 	}
+
 	if (isset($argv)) {
 		define('LEPTON_CONSOLE', true);
 	}
@@ -54,6 +57,7 @@
 	} else {
 		define("LOGFILE", null);
 	}
+
 	define('LOG_DEBUG2', 5);
 	define('LOG_DEBUG1', 4);
 	define('LOG_EXTENDED', 3);
@@ -69,29 +73,63 @@
 		class FilesystemException extends BaseException { }
 			class FileNotFoundException extends FilesystemException { }
 			class FileAccessException extends FilesystemException { }
-
-	class Config {
+	/**
+	 * @class Config
+	 * @brief Configuration management
+	 *
+	 * This is a light re-implementation to give global access to config-
+	 * uration values.
+	 * 
+	 * @author Christoper Vagnetoft <noccy@chillat.net>
+	 */
+	abstract class Config {
 		static $values = array();
-		function get($key,$default=null) {
+
+		/**
+		 *
+		 */
+		static function get($key,$default=null) {
 			return (isset(Config::$values[$key])?Config::$values[$key]:$default);
 		}
-		function set($key,$value) {
+
+		/**
+		 *
+		 */
+		static function set($key,$value) {
 			Config::$values[$key] = $value;
 		}
-		function has($key,$value) {
+
+		/**
+		 *
+		 */
+		static function has($key,$value) {
 			return (isset(Config::$values[$key]));
 		}
-		function def($key,$default) {
+
+		/**
+		 *
+		 */
+		static function def($key,$default) {
 			if (!isset(Config::$values[$key])) Config::$values[$key] = $default;
 		}
-		function clr($key) {
+
+		/**
+		 *
+		 */
+		static function clr($key) {
 			unset(Config::$values[$key]);
 		}
+
 	}
 
-	Config::set('foo.bar','baz');
-
+	/**
+	 * @class Console
+	 * @brief Console management function
+	 */
 	class Console {
+		/**
+		 *
+		 */
 		static function debugEx($level,$module) {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,2));
@@ -105,16 +143,25 @@
 			}
 		}
 
+		/**
+		 *
+		 */
 		static function debug() {
 			$args = func_get_args();
 			@call_user_func_array(array('Console','debugEx'),array_merge(array(LOG_DEBUG1,'Debug'),array_slice($args,0)));
 		}
 
+		/**
+		 *
+		 */
 		static function warn() {
 			$args = func_get_args();
 			@call_user_func_array(array('Console','debugEx'),array_merge(array(LOG_WARN,'Warning'),array_slice($args,0)));
 		}
 
+		/**
+		 *
+		 */
 		static function backtrace($trim=1,$stack=null,$return=false) {
 			if (!$stack) { $stack = debug_backtrace(false); }
 			$trace = array();
@@ -139,6 +186,9 @@
 			if (LOGFILE) fprintf(LOGFILE, join("\n", $trace)."\n");
 		}
 
+		/**
+		 *
+		 */
 		static function write() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
@@ -146,6 +196,9 @@
 			if (LOGFILE) fprintf(LOGFILE, $strn);
 		}
 
+		/**
+		 *
+		 */
 		static function readLn() {
 			return fgets(STDIN);
 		}
@@ -157,6 +210,9 @@
 			if (LOGFILE) fprintf(LOGFILE, $strn . "\n");
 		}
 
+		/**
+		 *
+		 */
 		static function status() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
@@ -164,33 +220,88 @@
 			if (LOGFILE) fprintf(LOGFILE, $strn);
 		}
 
+		/**
+		 *
+		 */
 		static function ts() {
 			return @date("y-M-d H:i:s",time());
 		}
 
+		/**
+		 *
+		 */
 		static function getChar() {
 
 		}
 
+		/**
+		 *
+		 */
 		static function readLine($hidden=false) {
 
 		}
 
 	}
 
+	/**
+	 * @class Timer
+	 * @brief A rough timer with microsecond resolution.
+	 *
+	 * Returns the time elapsed between a call to start() and stop() with
+	 * the getElapsed() method. 
+	 */
+	class Timer {
+		private $_starttime = 0.0;
+		private $_stoptime = 0.0;
+		private $_running = false;		
+
+		/**
+		 *
+		 */
+		function start() {
+			$this->_running = true;
+			$this->_starttime = microtime(true);
+		}
+
+		/**
+		 *
+		 */
+		function stop() {
+			$this->_stoptime = microtime(true);
+			$this->_running = false;
+		}
+
+		/**
+		 *
+		 */
+		function getElapsed() {
+			return ($this->_stoptime - $this->_starttime);
+		}
+
+	}
+
+	/**
+	 * @class Lepton
+	 */
 	class Lepton {
 
 		static $__exceptionhandler = null;
 
+		/**
+		 *
+		 */
 		function run($class) {
 			Console::debugEx(LOG_EXTENDED,__CLASS__,"Inspecting environment module state:\n%s", ModuleManager::debug());
 			if (class_exists($class)) {
 				$rv = 0;
+				$apptimer = new Timer();
 				try {
 					$instance = new $class();
 					Console::debugEx(LOG_BASIC,__CLASS__,"Invoking application instance from %s.", $class);
+					$apptimer->start();
 					$rv = $instance->run();
-					Console::debugEx(LOG_BASIC,__CLASS__,"Main method exited with code %d.", $rv);
+					$apptimer->stop();
+					Console::debugEx(LOG_BASIC,__CLASS__,"Main method exited with code %d after %.2f seconds.", $rv, $apptimer->getElapsed());
 				} catch (Exception $e) {
 					throw $e;
 				}
@@ -201,11 +312,17 @@
 			}
 		}
 
+		/**
+		 *
+		 */
 		function getMimeType($filename) {
 			$file = escapeshellarg( BASE_PATH.$filename );
 			return str_replace("\n","",shell_exec("file -b --mime-type " . $file));
 		}
 		
+		/**
+		 *
+		 */
 		function setExceptionHandler($handler,$override=false) {
 			if (($override == true) || (Lepton::$__exceptionhandler == null)) {
 				Lepton::$__exceptionhandler = $handler;
@@ -215,6 +332,9 @@
 			}			
 		}
 		
+		/**
+		 *
+		 */
 		static function handleException(Exception $e) {
 			if (Lepton::$__exceptionhandler) {
 				$eh = new Lepton::$__exceptionhandler();
@@ -247,7 +367,7 @@
 
 
 	/**
-	 * Lepton-ng Bootstrap Code
+	 * @class ModuleManager
 	 *
 	 */
 	class ModuleManager {
@@ -255,6 +375,9 @@
 		static $_modules;
 		static $_order;
 
+		/**
+		 *
+		 */
 		static function checkExtension($extension,$required=false) {
 			if( extension_loaded($extension) ) {
 				return true;
@@ -269,6 +392,9 @@
 			return (extension_loaded($extension));
 		}
 
+		/**
+		 *
+		 */
 		static function hasExtension($extension) {
 			if (extension_loaded($extension)) {
 				return true;
@@ -277,6 +403,9 @@
 			}
 		}
 
+		/**
+		 *
+		 */
 		static function _mangleModulePath($module) {
 			// Console::debugEx(LOG_LOG,__CLASS__,"Mangling module %s", $module);
 			if (preg_match('/^app\./',$module)) {
@@ -288,6 +417,9 @@
 			return $path;
 		}		
 
+		/**
+		 *
+		 */
 		static function load($module,$optional=false) {
 			if (strpos($module,'*') == (strlen($module) - 1)) {
 				$path = self::_mangleModulePath($module);
@@ -331,6 +463,9 @@
 			}
 		}
 
+		/**
+		 *
+		 */
 		static function conflicts($module) {
 			if (!is_array(ModuleManager::$_modules)) {
 				ModuleManager::$_modules = array();
@@ -345,6 +480,9 @@
 			return false;
 		}
 
+		/**
+		 *
+		 */
 		static function has($module) {
 			if (!is_array(ModuleManager::$_modules)) {
 				ModuleManager::$_modules = array();
@@ -357,6 +495,9 @@
 			return false;
 		}
 
+		/**
+		 *
+		 */
 		static function debug() {
 			$modinfo = array();
 			if (!is_array(ModuleManager::$_modules)) {
@@ -371,6 +512,7 @@
 
 	}
 
+	// Initial debug output
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Base path: %s", BASE_PATH);
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"System path: %s", SYS_PATH);
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"App path: %s", APP_PATH);
@@ -378,9 +520,11 @@
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Running as %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid());
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
 
+	// Load configuration settings
 	ModuleManager::load('defaults',false);
 	ModuleManager::load('app.config.*',false);
-	ModuleManager::load('lepton.installer');
+
+	// Load application base if the $argc global variable is set
 	if (isset($argc)) {
 		ModuleManager::load('lepton.base.application');
 	}

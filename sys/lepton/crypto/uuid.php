@@ -58,8 +58,9 @@
 		public static function v1() {
 			Uuid::initialize();
 			if ( isset(Uuid::$uobject) ) {
-				uuid_make ( Uuid::$uobject, UUID_MAKE_V1 );
-				uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
+				$uuidstring = uuid_create( 5 );
+				// uuid_make ( Uuid::$uobject, UUID_MAKE_V1 );
+				// uuid_export ( Uuid::$uobject, UUID_FMT_STR, $uuidstring );
 				return trim ( $uuidstring );
 			} else {
 				return null;
@@ -116,7 +117,8 @@
 			Uuid::initialize();
 
 			if (self::$usepecl) {
-				$uuidstring = uuid_create ( Uuid::$uobject );
+				$uuidstring = uuid_create ( 4 );
+				// $uuidstring = uuid_create ( Uuid::$uobject );
 				// uuid_make ( Uuid::$uobject, UUID_MAKE_V4 );
 				// uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
 				return trim ( $uuidstring );
@@ -182,8 +184,9 @@
 			Uuid::initialize();
 
 			if (isset(Uuid::$uobject)) {
-				uuid_make ( Uuid::$uobject, UUID_MAKE_V5 );
-				uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
+				$uuidstring = uuid_create( 5 );
+				// uuid_make ( Uuid::$uobject, UUID_MAKE_V5 );
+				// uuid_export ( Uuid::$uobject, UUID_FMT_STR, $uuidstring );
 				return trim ( $uuidstring );
 			}
 
