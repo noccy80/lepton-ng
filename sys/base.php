@@ -9,6 +9,10 @@
 	define("LEPTON_VERSION", LEPTON_MAJOR_VERSION.".".LEPTON_MINOR_VERSION.".".LEPTON_RELEASE_VERSION." ".LEPTON_RELEASE_TAG);
 	define("LEPTON_PLATFORM_ID", "Lepton Application Framework " . LEPTON_VERSION);
 
+	define("PHP_RUNTIME_OS", php_uname('s'));
+	define("IS_WINNT", (strtolower(PHP_RUNTIME_OS) == 'windows'));
+	define("IS_LINUX", (strtolower(PHP_RUNTIME_OS) == 'linux'));
+
 	if(!defined('PHP_VERSION_ID')) {
 		$version = explode('.',PHP_VERSION);
 		define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
@@ -34,21 +38,22 @@
 	}
 	if (!$path) throw new Exception('Failed to get script path!');
 */
-	define('BASE_PATH', $path.'/');
+	define('BASE_PATH', realpath($path.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
+	set_include_path( BASE_PATH . PATH_SEPARATOR . get_include_path() );
 	if(getenv('SYS_PATH')) {
-		define('SYS_PATH', getenv('SYS_PATH').'/');
+		define('SYS_PATH', getenv('SYS_PATH').DIRECTORY_SEPARATOR);
 	} else {
-		$syspath = realpath(dirname(__FILE__)).'/';
+		$syspath = realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 		define('SYS_PATH', $syspath);
 	}
-	define('APP_PATH', $path.'/app/');
+	define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')));
 
 	// Enable PHPs error reporting when the DEBUG envvar is set
 	if (getenv("DEBUG") >= 1) {
 		error_reporting(E_ALL);
 	}
 
-	if (isset($argv)) {
+	if (php_sapi_name() == 'cli') {
 		define('LEPTON_CONSOLE', true);
 	}
 	if (getenv("LOGFILE")) {
@@ -512,10 +517,14 @@
 
 	}
 
+	if (PHP_VERSION < "5")
+		Console::warn("Lepton is running on an unsupported version of PHP. Behavior in versions prior to 5.0 may be unreliable");
+
 	// Initial debug output
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Base path: %s", BASE_PATH);
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"System path: %s", SYS_PATH);
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"App path: %s", APP_PATH);
+	Console::debugEx(LOG_BASIC,'(bootstrap)',"Include path: %s", get_include_path());
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Platform: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS);
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Running as %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid());
 	Console::debugEx(LOG_BASIC,'(bootstrap)',"Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
@@ -525,7 +534,7 @@
 	ModuleManager::load('app.config.*',false);
 
 	// Load application base if the $argc global variable is set
-	if (isset($argc)) {
+	if (php_sapi_name() == 'cli') {
 		ModuleManager::load('lepton.base.application');
 	}
 

@@ -83,6 +83,8 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 		return $this->_params;
 	}
 	function getParameter($index) {
+		if ($index >= count($this->_params))
+			return null;
 		return $this->_params[$index];
 	}
 	function getParameterSlice($first,$last=null) {
