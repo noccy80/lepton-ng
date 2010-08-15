@@ -163,7 +163,7 @@ class ConsoleExceptionHandler extends ExceptionHandler {
 		$last = $e->getLine() + 3; if ($last >= count($f)) $last = count($f)-1;
 		$source = join("\n",array_slice($f,$first,$last-$first));
 		Console::debugEx(0, get_class($e), Console::backtrace(0,$e->getTrace(),true));
-		Console::debug("Source dump of %s:\n%s", str_replace(BASE_PATH,'',$e->getFile()), $source);
+		Console::debugEx(LOG_LOG,"Exception","Source dump of %s:\n%s", str_replace(BASE_PATH,'',$e->getFile()), $source);
 		$rv = 1;
 		Console::debugEx(LOG_BASIC,__CLASS__,"Exiting with return code %d after exception.", $rv);
 	

@@ -39,7 +39,7 @@
 	if (!$path) throw new Exception('Failed to get script path!');
 */
 	define('BASE_PATH', realpath($path.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
-	set_include_path( BASE_PATH . PATH_SEPARATOR . get_include_path() );
+	// set_include_path( BASE_PATH . PATH_SEPARATOR . get_include_path() );
 	if(getenv('SYS_PATH')) {
 		define('SYS_PATH', getenv('SYS_PATH').DIRECTORY_SEPARATOR);
 	} else {
