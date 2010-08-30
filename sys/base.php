@@ -46,7 +46,7 @@
 		$syspath = realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 		define('SYS_PATH', $syspath);
 	}
-	define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')));
+	define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')).'/');
 
 	// Enable PHPs error reporting when the DEBUG envvar is set
 	if (getenv("DEBUG") >= 1) {

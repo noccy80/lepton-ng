@@ -55,6 +55,50 @@ class LeptonUtil extends ConsoleApplication {
 				Console::writeLn("Parsing configuration file ... done");
 				Console::writeLn("Preparing options ... done");
 				break;
+			case 'info':
+				switch($this->getParameter(1)) {
+				case 'pdo':
+					Console::writeLn("Installed PDO drivers:");
+					foreach(PDO::getAvailableDrivers() as $driver) {
+						Console::writeLn("  %s", $driver);
+					}
+					break;
+				case 'php':
+					$info = array(
+						'php_uname()' => php_uname('a'),
+						'phpversion()' => phpversion(),
+						'php_sapi_name()' => php_sapi_name(),
+						'PHP_OS' => PHP_OS,
+						'DIRECTORY_SEPARATOR' => DIRECTORY_SEPARATOR,
+						'PATH_SEPARATOR' => PATH_SEPARATOR,
+						'PHP_SHLIB_SUFFIX' => PHP_SHLIB_SUFFIX,
+						'sys_get_temp_dir()' => sys_get_temp_dir()
+					);
+					$comp = array(
+						'COMPAT_GETOPT_LONGOPTS' => (PHP_VERSION >= "5.3")?'Supported':'Emulated (PHP >= 5.3)',
+						'COMPAT_SOCKET_BACKLOG' => (PHP_VERSION >= "5.3.3")?'Supported':'Missing (PHP >= 5.3.3)',
+						'COMPAT_HOST_VALIDATION' => (PHP_VERSION >= "5.2.13")?'Supported':'Emulated (PHP >= 5.2.13)',
+						'COMPAT_NAMESPACES' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
+						'COMPAT_INPUT_BROKEN' => ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1"))?'php://input possibly broken (PHP >= 5, PHP < 5.3.1)':'Functional',
+						'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
+						'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)'
+					);
+					Console::writeLn("PHP Overview:");
+					foreach($info as $key=>$val) {
+						Console::writeLn("  %-25s : %s", $key, $val);
+					}
+					Console::writeLn("Compatibility layer overview:");
+					foreach($comp as $key=>$val) {
+						Console::writeLn("  %-25s : %s", $key, $val);
+					}
+					break;
+				default:
+					Console::writeLn("Use as %s info <section> where section is one of:", $this->getName());
+					Console::writeLn("  php       Information on PHP environment and OS");
+					Console::writeLn("  pdo       Information on PDO drivers");
+					break;
+				}
+				break;
 			case 'exception':
 				throw new Exception("This is a new exception");
 				break;
@@ -78,6 +122,7 @@ class LeptonUtil extends ConsoleApplication {
 		Console::writeLn('           export      Export the entire site into a .tgz file');
 		Console::writeLn('           import      Import a site from a .tgz file');
 		Console::writeLn('           config      Configure interactively');
+		Console::writeln('           info        Show information');
 	}
 }
 

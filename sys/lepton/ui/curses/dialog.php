@@ -43,7 +43,9 @@ class CursesDialog extends CursesContainer {
 		ncurses_mvwaddstr($wh, 0, $left, ' '.$this->_title.' ');
 		ncurses_wattroff($wh,NCURSES_A_BOLD); 
 		ncurses_wcolor_set($wh, NCC_TEXT);
-
+		for ($n = 0; $n < $this->_h - 2; $n++) {
+			ncurses_mvwaddstr($wh, $n+1, 1, str_repeat(" ",$this->_w -2));
+		}
 		ncurses_wrefresh($wh);
 		ncurses_wcolor_set($wh,0);
 		ncurses_move(-1,1);

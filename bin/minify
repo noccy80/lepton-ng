@@ -24,11 +24,13 @@ class MinifyApp extends ConsoleApplication {
 		$mf = new Minifier();
 		$if = $this->getParameter(0);
 
-		$mt = Lepton::getMimeType($if);
+		// $mt = Lepton::getMimeType($if);
 
-		Console::writeLn("Minifying %s [%s]...", $if, $mt);
+		// Console::writeLn("Minifying %s [%s]...", $if, $mt);
 		$mf->loadFromFile($if);
-		Console::write($mf->minify(Minifier::MFF_MAXIMUM));
+		$mfs = $mf->minify(Minifier::MFF_MAXIMUM);
+		echo $mfs;
+		// printf("%d -> %d (%.1f%%)\n", strlen($this->_data), strlen($buffer),(strlen($buffer)/strlen($this->_data))*100); 
 	}
 }
 
