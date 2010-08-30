@@ -22,8 +22,62 @@
 		}
 
 		function minify($flags) {
+			$sepchars = array('(',')',';','}','{','/*','*/',':');
+			$killchars = array("\t","\r","\n");
 			$buffer = $this->_data;
-			return $buffer;
+
+			// Replace tokens that are delimiters and remove the kill characters.
+			foreach($sepchars as $char) $buffer = str_replace($char," ".$char." ",$buffer);
+			foreach($killchars as $char) $buffer = str_replace($char," ",$buffer);
+			while(strpos($buffer,'  ')>0) $buffer=str_replace('  ',' ',$buffer);
+
+			// Explode our parsed buffer into tokens and process them
+			$toks = explode(" ",$buffer);
+			$bout = array();
+			$boutd = array();
+			$mute = false; // in comment
+			$defn = false; // in definition
+			for($n=0;$n<count($toks);$n++) {
+				if ($toks[$n] == "/*") {
+					$mute = true;
+				} elseif( $toks[$n] == "*/") {
+					$mute = false;
+				} elseif( $toks[$n] == "{") {
+					$defn = true;
+				} elseif( $toks[$n] == "}") {
+					for($i=0;$i<count($boutd);$i++) {
+						if (($boutd[$i] != ';') && ($boutd[$i] != ':')) {
+							$boutd[$i] = $boutd[$i].' ';
+						}
+					}
+					$boutds = join('',$boutd);
+					$boutds = str_replace(' ;',';',$boutds);
+					$boutds = str_replace(' :',':',$boutds);
+					$bout[] = "{".$boutds."}";
+					$boutd = array();
+					$defn = false;
+				} elseif( (!$mute) && (strlen($toks[$n])>0) ) {
+					$token = $toks[$n];
+					// print("[".$token."]");
+					if ($token[0] == $token[strlen($token)-1]) {
+						if (($token[0] == '"')
+						|| ($token[0] == "'")) {
+							$token = substr($token,1,strlen($token)-2);
+						}
+					}
+					elseif (($token[0] == '#') && (strlen($token) == 7)) {
+						if (($token[1] == $token[2])
+						&& ($token[3] == $token[4])
+						&& ($token[5] == $token[6])) {
+							// print("[COLOR:".$token."]");
+							$token = '#'.$token[1].$token[3].$token[5];
+						}
+					}
+					if ($defn) { $boutd[] = $token; } else { $bout[] = $token; }
+				}
+			}
+			$buffer = join('',$bout);
+			return($buffer);
 		}
 
 	}
