@@ -8,6 +8,25 @@ interface IConsoleApplication {
 }
 
 class Ansi {
+	static $fgcolor = array(
+		'black' => '0;30',
+		'gray' => '1;30',
+		'blue' => '0;34',   
+		'ltblue' => '1;34',
+		'green' => '0;32',
+		'ltgreen' => '1;32',
+		'cyan' => '0;36',
+		'ltcyan' => '1;36',
+		'red' => '0;31',
+		'ltred' => '1;31',
+		'purple' => '0;35',
+		'ltpurple' => '1;35',
+		'brown' => '0;33',
+		'yellow' => '1;33',
+		'ltgray' => '0;37',
+		'white' => '1;37',
+		'default' => '39m'
+	);
 	static $seq = array(
 		'setCursor'         => '$1;$2H',
 		'cursorUp'          => '$1A',
@@ -20,6 +39,10 @@ class Ansi {
 		'eraseLine'         => 'K',
 		'setBold'           => '1m',
 		'clearBold'			=> '0m',
+		'setItalic'         => '3m',
+		'clearItalic'		=> '0m',
+		'setUnderline'      => '4m',
+		'clearUnderline'	=> '0m',
 		'setMode'           => '=$1h',
 		'setColor'          => '$@m',
 	);
@@ -30,9 +53,22 @@ class Ansi {
 		return (chr(27)."[".$sstr);
 	}
 	static function parse($str) {
-		
+		$s = $str;
+		$s = preg_replace('/\\\\b\{(.*?)\}/', Ansi::setBold().'$1'.Ansi::clearBold(), $s);
+		$s = preg_replace('/\\\\i\{(.*?)\}/', Ansi::setItalic().'$1'.Ansi::clearItalic(), $s);
+		$s = preg_replace('/\\\\u\{(.*?)\}/', Ansi::setUnderline().'$1'.Ansi::clearUnderline(), $s);
+		$s = preg_replace_callback('/\\\\c\{(.*?)\}/', array('Ansi','_cb_color'), $s);
+		return $s;
+	}
+	static function _cb_color($str) {
+		$str = $str[1];
+		$sa = explode(' ',$str);
+		$color = $sa[0];
+		$text = join(" ",array_slice($sa,1));
+		return chr(27).'['.Ansi::$fgcolor[$color].'m'.$text.chr(27).'['.Ansi::$fgcolor['default'].'m';
 	}
 }
+function __astr($str) { return Ansi::parse($str); }
 
 abstract class ConsoleApplication extends Application implements IConsoleApplication {
 	protected $_args;

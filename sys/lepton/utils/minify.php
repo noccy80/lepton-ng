@@ -25,6 +25,42 @@
 			$sepchars = array('(',')',';','}','{','/*','*/',':');
 			$killchars = array("\t","\r","\n");
 			$buffer = $this->_data;
+			$result = array();
+			preg_match_all( '/(?ims)([a-z0-9\s\.\:#_\-@]+)\{([^\}]*)\}/', $buffer, $arr); 
+			foreach ($arr[0] as $i => $x) { 
+				$selector = trim($arr[1][$i]); 
+				$rules = explode(';', trim($arr[2][$i])); 
+				if (!isset($result[$selector])) {
+					$result[$selector] = array(
+						'selector' => $selector,
+						'rules' => array()
+					);
+				}
+				foreach ($rules as $strRule) { 
+					if (!empty($strRule)) { 
+						$rule = explode(":", $strRule); 
+						$result[$selector]['rules'][$rule[0]] = $rule[1]; 
+					} 
+				}
+			}
+			sort($result);
+			$sout = "";
+			foreach($result as $selector=>$rules) {
+				$sout.=$rules['selector'].'{';
+				foreach($rules['rules'] as $rule=>$value) {
+					$sout.=$rule.':'.$value;
+				}
+				$sout.='}';
+			}
+
+			return $sout;
+
+		}
+
+		function minifytok($flags) {
+			$sepchars = array('(',')',';','}','{','/*','*/',':');
+			$killchars = array("\t","\r","\n");
+			$buffer = $this->_data;
 
 			// Replace tokens that are delimiters and remove the kill characters.
 			foreach($sepchars as $char) $buffer = str_replace($char," ".$char." ",$buffer);

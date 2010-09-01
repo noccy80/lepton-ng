@@ -19,22 +19,37 @@ class LeptonUtil extends ConsoleApplication {
 		return $m;
 	}
 	function interactiveMode() {
-		while($cmd = Readline::read('lepton> ')) {
-			$cmd = explode(" ",$cmd);
+		while($cmds = Readline::read('lepton> ')) {
+			$cmd = explode(" ",$cmds);
 			switch($cmd[0]) {
 				case 'exit':
+				case 'quit':
 					return;
 					break;
 				case 'package':
+					ModuleManager::load('lepton.utils.l2package');
 					if (count($cmd)>1) {
-						switch($cmd[1])
-						
+						switch($cmd[1]) {
+							case 'install':
+								Console::write("Reading database: ");
+								$pm = new L2PackageManager();
+								$pkg = new L2Package($cmd[2]);
+								$pm->installPackage($pkg);
+								Console::writeLn("Done");
+								break;
+							
+						}
 					} else {
-						Console::writeLn(Ansi::setBold()."Package: Manage packages (l2p)".Ansi::clearBold());
-						Console::writeLn("  package \b{install} \c{gray package.l2p}  - Installs a package");
+						Console::writeLn(__astr("\b{Package}: Manage packages (l2p)"));
+						Console::writeLn(__astr("  package \b{install} \u{package.l2p}  - Installs a package"));
+						Console::writeLn(__astr("  package \b{remove} \u{package}  - Removes a package"));
 					}
+					break;
+				default:
+					Console::writeLn("Bad command.");
+					break;
 			}
-			Readline::addHistory($cmd);
+			Readline::addHistory($cmds);
 		}
 	}
 	function main($argc,$argv) {

@@ -4,8 +4,11 @@
 	config::set('lepton.charset','utf-8');
 
 	// The default router instance
-	Config::set('lepton.mvc.router', 'DefaultRouter');
+	config::set('lepton.mvc.router', 'DefaultRouter');
 
+	// Syslog configuration
+	config::set('lepton.debug.syslog',false);
+	config::set('lepton.debug.syslog.facility', LOG_DAEMON); // Will use LOG_USER on Windows platforms
 
 	// If true, debug information will be shown when an unhandled exception 
 	// occurs.

@@ -1,6 +1,20 @@
 <?php
 
 	declare(ticks = 1);
+/*
+	class __lepton_rt {
+		static $_ltrace = null;
+		function profile() {
+			static $trace = null;
+			if ($trace == null) {
+				$trace = debug_backtrace(false);
+				$trace = array_slice($trace,1);
+				var_dump($trace);
+			}
+		}
+	}
+	register_tick_function(array('__lepton_rt','profile'));
+*/
 
 	define("LEPTON_MAJOR_VERSION", 2);
 	define("LEPTON_MINOR_VERSION", 0);
@@ -465,7 +479,7 @@
 				$path = null;
 			}
 */
-			if ($path) {
+			if (($path) && (file_exists($path))) {
 				Console::debugEx(LOG_BASIC,__CLASS__,"Loading %s (%s).",$module,str_replace(BASE_PATH,'',$path));
 				try {
 					ModuleManager::$_modules[strtolower($module)] = true;
