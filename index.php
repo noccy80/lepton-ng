@@ -12,6 +12,6 @@
 //  Initialize an MVC application to handle the request for us
 //
 	ModuleManager::load('lepton.base.mvc');
-	Lepton::run('MvcApplication');
+	Lepton::run('MvcApplication','app');
 //
 ?>

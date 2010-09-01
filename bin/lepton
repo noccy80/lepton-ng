@@ -3,9 +3,42 @@
 
 require('sys/base.php');
 
+ModuleManager::load('lepton.console.readline');
+
 class LeptonUtil extends ConsoleApplication {
-	protected $arguments = 'h';
+	protected $arguments = 'hi';
+	function autocomplete($cmd) {
+		$cmds = array(
+		
+		);
+		$m = array();
+		foreach($cmds as $c) {
+			if (substr($c,0,strlen($cmd)) == $cmd) $m[] = $c;	
+		}
+		var_dump($m);
+		return $m;
+	}
+	function interactiveMode() {
+		while($cmd = Readline::read('lepton> ')) {
+			$cmd = explode(" ",$cmd);
+			switch($cmd[0]) {
+				case 'exit':
+					return;
+					break;
+				case 'package':
+					if (count($cmd)>1) {
+						switch($cmd[1])
+						
+					} else {
+						Console::writeLn(Ansi::setBold()."Package: Manage packages (l2p)".Ansi::clearBold());
+						Console::writeLn("  package \b{install} \c{gray package.l2p}  - Installs a package");
+					}
+			}
+			Readline::addHistory($cmd);
+		}
+	}
 	function main($argc,$argv) {
+		if ($this->hasArgument('i')) return $this->interactiveMode();
 		if ($this->getParameterCount() == 0) {
 			$this->usage();
 			return 1;

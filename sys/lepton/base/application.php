@@ -29,6 +29,9 @@ class Ansi {
 		$sstr = str_replace('$@',join(';',$arg),$sstr);
 		return (chr(27)."[".$sstr);
 	}
+	static function parse($str) {
+		
+	}
 }
 
 abstract class ConsoleApplication extends Application implements IConsoleApplication {

@@ -9,6 +9,17 @@
 	define("LEPTON_VERSION", LEPTON_MAJOR_VERSION.".".LEPTON_MINOR_VERSION.".".LEPTON_RELEASE_VERSION." ".LEPTON_RELEASE_TAG);
 	define("LEPTON_PLATFORM_ID", "Lepton Application Framework " . LEPTON_VERSION);
 
+	foreach(array(
+		'COMPAT_GETOPT_LONGOPTS' => (PHP_VERSION >= "5.3"),
+		'COMPAT_SOCKET_BACKLOG' => (PHP_VERSION >= "5.3.3"),
+		'COMPAT_HOST_VALIDATION' => (PHP_VERSION >= "5.2.13"),
+		'COMPAT_NAMESPACES' => (PHP_VERSION >= "5.3.0"),
+		'COMPAT_INPUT_BROKEN' => ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1")),
+		'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0"),
+		'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")
+	) as $compat=>$val) define($compat,$val);
+
+
 	define("PHP_RUNTIME_OS", php_uname('s'));
 	define("IS_WINNT", (strtolower(PHP_RUNTIME_OS) == 'windows'));
 	define("IS_LINUX", (strtolower(PHP_RUNTIME_OS) == 'linux'));
@@ -78,6 +89,7 @@
 		class FilesystemException extends BaseException { }
 			class FileNotFoundException extends FilesystemException { }
 			class FileAccessException extends FilesystemException { }
+		class UnsupportedPlatformException extends BaseException { }
 	/**
 	 * @class Config
 	 * @brief Configuration management
@@ -296,6 +308,8 @@
 		 *
 		 */
 		function run($class) {
+			$args = func_get_args();
+			$args = array_slice($args,1);
 			Console::debugEx(LOG_EXTENDED,__CLASS__,"Inspecting environment module state:\n%s", ModuleManager::debug());
 			if (class_exists($class)) {
 				$rv = 0;
@@ -304,7 +318,7 @@
 					$instance = new $class();
 					Console::debugEx(LOG_BASIC,__CLASS__,"Invoking application instance from %s.", $class);
 					$apptimer->start();
-					$rv = $instance->run();
+					$rv = call_user_func_array(array($instance,'run'),$args);
 					$apptimer->stop();
 					Console::debugEx(LOG_BASIC,__CLASS__,"Main method exited with code %d after %.2f seconds.", $rv, $apptimer->getElapsed());
 				} catch (Exception $e) {

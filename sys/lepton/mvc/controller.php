@@ -9,7 +9,7 @@
 		static function invoke($controller=null,$method=null,Array $arguments=null) {
 			if (!$controller) $controller = 'default'; // config
 			if (!$method) $method = 'index'; // config
-			$ctlpath = BASE_PATH.'app/controllers/'.$controller.'.php';
+			$ctlpath = BASE_PATH.MvcApplication::$app.'/controllers/'.$controller.'.php';
 			if (file_exists($ctlpath)) {
 				Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking controller instance %s (method=\'%s\', args=\'%s\')...', $controller, $method, join('\',\'',(array)$arguments));
 				require($ctlpath);

@@ -11,7 +11,7 @@ ModuleManager::load('lepton.graphics.renderers.*');
 class ImageTestApp extends ConsoleApplication {
 	protected $arguments = "hvo:";
 	function main($argc,$argv) {
-		$i = Graphics::render(640,480, new GradientRenderer(new Color("#FFEEFF"), new Color("#FFFFFF"), 0));
+		$i = Graphics::render(1,100, new GradientRenderer(new Color("#4040FF"), new Color("#40FF40"), 0));
 		$i->save("image.png");
 		Console::writeLn("Created image.png.");
 	}
