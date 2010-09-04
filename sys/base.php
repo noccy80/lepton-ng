@@ -1,27 +1,19 @@
 <?php
 
 	declare(ticks = 1);
-/*
-	class __lepton_rt {
-		static $_ltrace = null;
-		function profile() {
-			static $trace = null;
-			if ($trace == null) {
-				$trace = debug_backtrace(false);
-				$trace = array_slice($trace,1);
-				var_dump($trace);
-			}
-		}
-	}
-	register_tick_function(array('__lepton_rt','profile'));
-*/
 
-	define("LEPTON_MAJOR_VERSION", 2);
-	define("LEPTON_MINOR_VERSION", 0);
-	define("LEPTON_RELEASE_VERSION", 0);
-	define("LEPTON_RELEASE_TAG", "alpha");
+	foreach(array(
+		'LEPTON_MAJOR_VERSION' => 2,
+		'LEPTON_MINOR_VERSION' => 0,
+		'LEPTON_RELEASE_VERSION' => 0,
+		'LEPTON_RELEASE_TAG' => "alpha",
+		'LEPTON_PLATFORM' => "Lepton Application Framework",
+		'PHP_RUNTIME_OS' => php_uname('s')
+	) as $def=>$val) define($def,$val);
 	define("LEPTON_VERSION", LEPTON_MAJOR_VERSION.".".LEPTON_MINOR_VERSION.".".LEPTON_RELEASE_VERSION." ".LEPTON_RELEASE_TAG);
-	define("LEPTON_PLATFORM_ID", "Lepton Application Framework " . LEPTON_VERSION);
+	define("LEPTON_PLATFORM_ID", LEPTON_PLATFORM . " " . LEPTON_VERSION);
+	define('IS_WINNT', (strtolower(PHP_RUNTIME_OS) == 'windows'));
+	define('IS_LINUX', (strtolower(PHP_RUNTIME_OS) == 'linux'));
 
 	foreach(array(
 		'COMPAT_GETOPT_LONGOPTS' => (PHP_VERSION >= "5.3"),
@@ -32,11 +24,6 @@
 		'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0"),
 		'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")
 	) as $compat=>$val) define($compat,$val);
-
-
-	define("PHP_RUNTIME_OS", php_uname('s'));
-	define("IS_WINNT", (strtolower(PHP_RUNTIME_OS) == 'windows'));
-	define("IS_LINUX", (strtolower(PHP_RUNTIME_OS) == 'linux'));
 
 	if(!defined('PHP_VERSION_ID')) {
 		$version = explode('.',PHP_VERSION);
@@ -57,21 +44,17 @@
 	} else {
 		$path = getcwd();
 	}
-/*
-	if (!$path) {
-		$path = dirname(__FILE__).'/../';
-	}
-	if (!$path) throw new Exception('Failed to get script path!');
-*/
+
 	define('BASE_PATH', realpath($path.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
-	// set_include_path( BASE_PATH . PATH_SEPARATOR . get_include_path() );
 	if(getenv('SYS_PATH')) {
 		define('SYS_PATH', getenv('SYS_PATH').DIRECTORY_SEPARATOR);
 	} else {
 		$syspath = realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 		define('SYS_PATH', $syspath);
 	}
-	define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')).'/');
+	if (!defined('APP_PATH')) {
+		define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')).'/');
+	}
 
 	// Enable PHPs error reporting when the DEBUG envvar is set
 	if (getenv("DEBUG") >= 1) {
@@ -205,10 +188,14 @@
 						}
 					}
 					$mark = (($i == ($trim))?'in':'  invoked from');
-					if (isset($method['type'])) {
-						$trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), str_replace(SYS_PATH,'',$method['file']), $method['line']);
+					if (!isset($method['file'])) {
+						$trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), '???', 0);
 					} else {
-						$trace[] = sprintf("  %s %s(%s) - %s:%d", $mark, $method['function'], join(',',$args), str_replace(SYS_PATH,'',$method['file']), $method['line']);
+						if (isset($method['type'])) {
+							$trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), str_replace(SYS_PATH,'',$method['file']), $method['line']);
+						} else {
+							$trace[] = sprintf("  %s %s(%s) - %s:%d", $mark, $method['function'], join(',',$args), str_replace(SYS_PATH,'',$method['file']), $method['line']);
+						}
 					}
 				}
 			}

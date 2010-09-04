@@ -131,11 +131,11 @@ class LeptonUtil extends ConsoleApplication {
 						'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
 						'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)'
 					);
-					Console::writeLn("PHP Overview:");
+					Console::writeLn(__astr("\b{PHP Overview:}"));
 					foreach($info as $key=>$val) {
 						Console::writeLn("  %-25s : %s", $key, $val);
 					}
-					Console::writeLn("Compatibility layer overview:");
+					Console::writeLn(__astr("\b{Compatibility layer overview:}"));
 					foreach($comp as $key=>$val) {
 						Console::writeLn("  %-25s : %s", $key, $val);
 					}
