@@ -1,0 +1,37 @@
+#!/usr/bin/php
+<?php
+
+define('APP_PATH','../app/');
+
+if	(file_exists('sys/base.php')) require('sys/base.php');
+elseif	(file_exists('../sys/base.php')) require('../sys/base.php');
+else	(die("Failed to load sys/base.php"));
+
+ModuleManager::load('lepton.db.database');
+ModuleManager::load('lepton.console.readline');
+
+class DbUtility extends ConsoleApplication {
+
+	// Command line arguments that the application accepts.
+	protected $arguments = "hvg:s";
+
+	// Usage instructions, shown when invoked with -h
+	function usage() {
+		Console::writeLn("Usage:    %s [-g <num>] [-s]", $this->getName());
+		Console::writeLn("Options:  -g <num>    Number of UUIDs to generate for benchmarking");
+		Console::writeLn("          -s          Force software implementation");
+	}
+
+	// Main function.
+	function main($argc,$argv) {
+
+		Console::writeLn("Opening default connection.");
+		$db = new DatabaseConnection();
+
+		$db->updateRow("CREATE TABLE ".LEPTON_DB_PREFIX.'users'." (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(32) NOT NULL UNIQUE, passwordsalt VARCHAR(128) NULL, password VARCHAR(128) NULL, flags VARCHAR(32) NOT NULL DEFAULT '')"); }
+}
+
+// Run the application
+Lepton::run('DbUtility');
+
+?>

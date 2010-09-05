@@ -25,4 +25,7 @@
 	config::set('lepton.mvc.exception.email',false);
 	config::set('lepton.mvc.exception.email.to', null);
 
+	// Session save handler - default to null
+	config::set('lepton.session.savehandler', null);
+	
 ?>

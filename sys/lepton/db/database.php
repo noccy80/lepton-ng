@@ -77,6 +77,12 @@
 			}
 		}
 
+		function __destruct() {
+
+			Console::debugEx(LOG_LOG,__CLASS__,"Closing handle (querycount = %d)", Database::$querycounter);
+
+		}
+
 		function connect() {
 
 		}
@@ -139,6 +145,7 @@
 			$args = func_get_args();
 			$sql = $this->db_conn->escapeString($args);
 			Console::debugEx(LOG_DEBUG1,__CLASS__,"GetRows: %s", $sql);
+			Database::$querycounter++;
 			$queryresult = $this->db_conn->query($sql);
 			
 			return $queryresult['data'];
@@ -150,6 +157,7 @@
 			$args = func_get_args();
 			$sql = $this->db_conn->escapeString($args);
 			Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleRow: %s", $sql);
+			Database::$querycounter++;
 			$queryresult = $this->db_conn->query($sql);
 			
 			// Only return first item
@@ -166,6 +174,7 @@
 			$args = func_get_args();
 			$sql = $this->db_conn->escapeString($args);
 			Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleValue: %s", $sql);
+			Database::$querycounter++;
 			$queryresult = $this->db_conn->query($sql);
 			
 			// Only return first column of first item
@@ -182,6 +191,7 @@
 			$args = func_get_args();
 			$sql = $this->db_conn->escapeString($args);
 			Console::debugEx(LOG_DEBUG1,__CLASS__,"InsertRow: %s", $sql);
+			Database::$querycounter++;
 			$queryresult = $this->db_conn->query($sql);
 
 			return $queryresult->autonumber;
@@ -193,6 +203,7 @@
 			$args = func_get_args();
 			$sql = $this->db_conn->escapeString($args);
 			Console::debugEx(LOG_DEBUG1,__CLASS__,"UpdateRow: %s", $sql);
+			Database::$querycounter++;
 			$queryresult = $this->db_conn->query($sql);
 
 			return null;
@@ -203,6 +214,7 @@
 
 			$args = func_get_args();
 			$sql = $this->db_conn->escapeString($args);
+			Database::$querycounter++;
 			$queryresult = $this->db_conn->query($sql);
 
 			return null;
@@ -221,4 +233,6 @@
 	
 	}
 	
-	
+	class Database {
+		static $querycounter = 0;
+	}
