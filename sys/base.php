@@ -55,7 +55,6 @@
 	if (!defined('APP_PATH')) {
 		define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')).'/');
 	}
-
 	// Enable PHPs error reporting when the DEBUG envvar is set
 	if (getenv("DEBUG") >= 1) {
 		error_reporting(E_ALL);

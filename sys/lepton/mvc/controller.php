@@ -9,7 +9,7 @@
 		static function invoke($controller=null,$method=null,Array $arguments=null) {
 			if (!$controller) $controller = 'default'; // config
 			if (!$method) $method = 'index'; // config
-			$ctlpath = BASE_PATH.MvcApplication::$app.'/controllers/'.$controller.'.php';
+			$ctlpath = APP_PATH.'/controllers/'.$controller.'.php';
 			if (file_exists($ctlpath)) {
 				Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking controller instance %s (method=\'%s\', args=\'%s\')...', $controller, $method, join('\',\'',(array)$arguments));
 				require($ctlpath);
@@ -27,7 +27,11 @@
 			$this->_state = Array();
 		}
 		function __request($method,$arguments) {
-			return call_user_func_array(array($this,$method),$arguments);
+			if (method_exists($this,$method)) {
+				return call_user_func_array(array($this,$method),$arguments);
+			} else {
+				throw new BaseException("Could not find controller method ".$method);
+			}
 		}
 
 		function __set($key,$value) {

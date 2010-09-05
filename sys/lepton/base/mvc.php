@@ -5,6 +5,7 @@
 	ModuleManager::load('lepton.mvc.model');
 	ModuleManager::load('lepton.mvc.view');
 	ModuleManager::load('lepton.mvc.controller');
+	ModuleManager::load('lepton.mvc.request');
 	ModuleManager::load('lepton.mvc.response');
 	ModuleManager::load('lepton.user.authentication');
 	ModuleManager::load('lepton.mvc.routers.defaultrouter');

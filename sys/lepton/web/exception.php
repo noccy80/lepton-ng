@@ -35,6 +35,8 @@
 			     . "\n"
 			     . "Request time: ".date(DATE_RFC822,$_SERVER['REQUEST_TIME'])."\n"
 			     . "Event id: ".$id."\n"
+			     . "Base path: ".BASE_PATH."\n"
+			     . "App path: ".APP_PATH."\n"
 			     . "User-agent: ".$_SERVER['HTTP_USER_AGENT']."\n"
 			     . "Request URI: ".$_SERVER['REQUEST_URI']."\n"
 			     . "Request method: ".$_SERVER['REQUEST_METHOD']."\n"
