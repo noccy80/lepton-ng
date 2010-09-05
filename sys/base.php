@@ -115,6 +115,19 @@
 		/**
 		 *
 		 */
+		static function push($key,$value) {
+			if (isset(Config::$values[$key])) {
+				$old = (array)Config::$values[$key];
+			} else {
+				$old = array();
+			}
+			$old[] = $value;
+			Config::$values[$key] = $old;
+		}
+
+		/**
+		 *
+		 */
 		static function has($key,$value) {
 			return (isset(Config::$values[$key]));
 		}
@@ -385,6 +398,20 @@
 	}
 
 
+	function __fileinfo($strinfo,$vars=null) {
+		if (count(ModuleManager::$_order) > 0) {
+			$mod = ModuleManager::$_order[count(ModuleManager::$_order) - 1];
+			ModuleManager::$_modules[$mod]['modinfo'] = $strinfo;
+			if ($vars!=null) {
+				foreach($vars as $key=>$var) {
+					ModuleManager::$_modules[$mod][$key] = $var;
+				}
+			} 
+		} else {
+			Console::warn("Module reported modinfo '%s' without being requested???", $string);
+		}
+	}
+
 	/**
 	 * @class ModuleManager
 	 *
@@ -468,8 +495,9 @@
 			if (($path) && (file_exists($path))) {
 				Console::debugEx(LOG_BASIC,__CLASS__,"Loading %s (%s).",$module,str_replace(BASE_PATH,'',$path));
 				try {
-					ModuleManager::$_modules[strtolower($module)] = true;
+					ModuleManager::$_modules[strtolower($module)] = array();
 					ModuleManager::$_order[] = strtolower($module);
+					Console::debugEx(LOG_BASIC,__CLASS__,"  path = %s", $path);
 					require($path);
 					array_pop(ModuleManager::$_order);
 				} catch(ModuleException $e) {
@@ -524,7 +552,11 @@
 			}
 			foreach(ModuleManager::$_modules as $mod=>$meta) {
 				// TODO: Show metadata
-				$modinfo[] = sprintf("    %s", $mod);
+				$mi = "n/a";
+				$ver = null;
+				if (isset($meta['modinfo'])) $mi = $meta['modinfo'];
+				if (isset($meta['version'])) $ver = 'v'.$meta['version'];
+				$modinfo[] = sprintf(__astr("    %s - \c{ltgray %s}"), $mod, $mi.($ver?' '.$ver:''));
 			}
 			return join("\n", $modinfo)."\n";
 		}

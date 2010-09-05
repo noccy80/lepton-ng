@@ -25,7 +25,7 @@ class Ansi {
 		'yellow' => '1;33',
 		'ltgray' => '0;37',
 		'white' => '1;37',
-		'default' => '39m'
+		'default' => '39'
 	);
 	static $seq = array(
 		'setCursor'         => '$1;$2H',

@@ -1,4 +1,4 @@
-<?php
+<?php __fileinfo("Readline wrapper", array());
 
 class Readline {
 	static $autocompleter = null;
@@ -10,7 +10,9 @@ class Readline {
 	}
 	static function read($prompt = null) {
 		if (self::$autocompleter != null) readline_completion_function(self::$autocompleter);
-		return readline($prompt);
+		$ret = readline($prompt);
+		if ($ret) return $ret;
+		return true;
 	}
 	static function addHistory($command) {
 		readline_add_history($command);

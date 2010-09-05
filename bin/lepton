@@ -1,9 +1,11 @@
 #!/usr/bin/php
 <?php
 
+define('APP_PATH', '../app');
 require('sys/base.php');
 
 ModuleManager::load('lepton.console.readline');
+ModuleManager::load('lepton.base.cmd.*');
 
 class LeptonUtil extends ConsoleApplication {
 	protected $arguments = 'hi';
@@ -19,158 +21,52 @@ class LeptonUtil extends ConsoleApplication {
 		return $m;
 	}
 	function interactiveMode() {
-		while($cmds = Readline::read('lepton> ')) {
+		while($cmds = Readline::read(__astr('\c{ltgreen lepton}\c{ltblue >} '))) {
+			Console::write(__astr('\b{}'));
 			$cmd = explode(" ",$cmds);
 			switch($cmd[0]) {
 				case 'exit':
 				case 'quit':
 					return;
 					break;
-				case 'package':
-					ModuleManager::load('lepton.utils.l2package');
-					if (count($cmd)>1) {
-						switch($cmd[1]) {
-							case 'install':
-								Console::write("Reading database: ");
-								$pm = new L2PackageManager();
-								$pkg = new L2Package($cmd[2]);
-								$pm->installPackage($pkg);
-								Console::writeLn("Done");
-								break;
-							
-						}
-					} else {
-						Console::writeLn(__astr("\b{Package}: Manage packages (l2p)"));
-						Console::writeLn(__astr("  package \b{install} \u{package.l2p}  - Installs a package"));
-						Console::writeLn(__astr("  package \b{remove} \u{package}  - Removes a package"));
-					}
-					break;
 				default:
-					Console::writeLn("Bad command.");
-					break;
+					$this->doCommand($cmd);
 			}
 			Readline::addHistory($cmds);
 		}
 	}
+	function doCommand($cmd) {
+		foreach(config::get('lepton.cmd.actionhandlers') as $handler) {
+			if (method_exists($handler,$cmd[0])) {
+				call_user_func_array(array($handler,$cmd[0]), array_slice($cmd,1));
+				return;
+			}
+		}
+		Console::warn("No such command: %s", $cmd[0]);
+
+	}
 	function main($argc,$argv) {
+
 		if ($this->hasArgument('i')) return $this->interactiveMode();
+
 		if ($this->getParameterCount() == 0) {
 			$this->usage();
 			return 1;
 		}
-		switch(strtolower($this->getParameter(0))) {
-			case 'deploy':
-				Console::writeLn("Deploying instance...");
-				break;
-			case 'initialize':
-				Console::write("Single or Multi domain site? [S/m] "); $mode = Console::readLn();
-				Console::write("  Base domain name (for routing): "); $dombase = Console::readLn();
-			
-				Console::write("Creating folder structure ... ");
-				Console::status("app             ");
-				usleep(50000);
-				Console::status("app/config      ");
-				usleep(50000);
-				Console::status("app/controllers ");
-				usleep(50000);
-				Console::status("app/models      ");
-				usleep(50000);
-				Console::status("app/views       ");
-				usleep(50000);
-				Console::status("res             ");
-				usleep(50000);
-				Console::writeLn("Done            ");
 
-				Console::write("Copying files ... ");
-				Console::writeLn("39 of 39");
+		$this->doCommand($this->getParameterSlice(0));
 
-				Console::write("Checking configuration ... ");
-				Console::writeLn("Ok");
-				Console::write("Do you want a htconf too? [y/N] ");
-				$w = Console::readLn();
-				break;
-			case 'export':
-				Console::writeLn("Exporting site to archive...");
-				break;
-			case 'import':
-				break;
-			case 'config':
-				Console::write("Reading configuration metadata ... ");
-				Console::status('dbx           '); sleep(1);
-				Console::status('dbx.db        '); sleep(1);
-				Console::status('dbx.db.mysql  '); sleep(1);
-				Console::writeLn('done          ');
-				Console::writeLn("Parsing configuration file ... done");
-				Console::writeLn("Preparing options ... done");
-				break;
-			case 'info':
-				switch($this->getParameter(1)) {
-				case 'pdo':
-					Console::writeLn("Installed PDO drivers:");
-					foreach(PDO::getAvailableDrivers() as $driver) {
-						Console::writeLn("  %s", $driver);
-					}
-					break;
-				case 'php':
-					$info = array(
-						'php_uname()' => php_uname('a'),
-						'phpversion()' => phpversion(),
-						'php_sapi_name()' => php_sapi_name(),
-						'PHP_OS' => PHP_OS,
-						'DIRECTORY_SEPARATOR' => DIRECTORY_SEPARATOR,
-						'PATH_SEPARATOR' => PATH_SEPARATOR,
-						'PHP_SHLIB_SUFFIX' => PHP_SHLIB_SUFFIX,
-						'sys_get_temp_dir()' => sys_get_temp_dir()
-					);
-					$comp = array(
-						'COMPAT_GETOPT_LONGOPTS' => (PHP_VERSION >= "5.3")?'Supported':'Emulated (PHP >= 5.3)',
-						'COMPAT_SOCKET_BACKLOG' => (PHP_VERSION >= "5.3.3")?'Supported':'Missing (PHP >= 5.3.3)',
-						'COMPAT_HOST_VALIDATION' => (PHP_VERSION >= "5.2.13")?'Supported':'Emulated (PHP >= 5.2.13)',
-						'COMPAT_NAMESPACES' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
-						'COMPAT_INPUT_BROKEN' => ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1"))?'php://input possibly broken (PHP >= 5, PHP < 5.3.1)':'Functional',
-						'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
-						'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)'
-					);
-					Console::writeLn(__astr("\b{PHP Overview:}"));
-					foreach($info as $key=>$val) {
-						Console::writeLn("  %-25s : %s", $key, $val);
-					}
-					Console::writeLn(__astr("\b{Compatibility layer overview:}"));
-					foreach($comp as $key=>$val) {
-						Console::writeLn("  %-25s : %s", $key, $val);
-					}
-					break;
-				default:
-					Console::writeLn("Use as %s info <section> where section is one of:", $this->getName());
-					Console::writeLn("  php       Information on PHP environment and OS");
-					Console::writeLn("  pdo       Information on PDO drivers");
-					break;
-				}
-				break;
-			case 'exception':
-				throw new Exception("This is a new exception");
-				break;
-			default:
-				$this->usage();
-				return 1;
-		}
 		return 0;
 	}
 	function usage() {
-		Console::writeLn('Usage:     %s [-options] action [arguments]', $this->getName());
+		Console::writeLn('Usage:     %s [-options] command [arguments]', $this->getName());
 		Console::writeLn();
 		Console::writeLn('Options:   -q          Quiet, show no info');
 		Console::writeLn('           -h          Show help');
 		Console::writeLn('           -o file     Output file (when exporting)');
 		Console::writeLn('           -i file     Input file (when importing)');
 		Console::writeLn();
-		Console::writeLn('Actions:   deploy      Deploy a lepton MVC structure in the current folder');
-		Console::writeLn('           initialize  Initializes a new Lepton deployment');
-		Console::writeLn('           scaffold    Scaffolds the database and imports any data');
-		Console::writeLn('           export      Export the entire site into a .tgz file');
-		Console::writeLn('           import      Import a site from a .tgz file');
-		Console::writeLn('           config      Configure interactively');
-		Console::writeln('           info        Show information');
+		Console::writeLn('Actions:   Use \'help\' to see the actions available');
 	}
 }
 

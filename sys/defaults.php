@@ -1,4 +1,6 @@
-<?php
+<?php __fileinfo("Default settings for Lepton Application Framework", array(
+	'version' => '2010.09.06'
+));
 
 	// Charset to use
 	config::set('lepton.charset','utf-8');
