@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest uuid="d66d69a0-bb86-4d6f-abf3-bec03cac4ebe">
+	<title>JavaScript Support Files</title>
+	<version>1.0.0</version>
+	<description>This bundle contains LeptonJS together with Prototype, Scriptaculous and Livepipe.</description>
+	<author>Christopher Vagnetoft &lt;noccy@chillat.net&gt;</author>
+	<updateurl>http://lepton.noccylabs.info/updates.xml</updateurl>
+	<filedb src="package.db" />
+</manifest>

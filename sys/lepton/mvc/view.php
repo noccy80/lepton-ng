@@ -13,7 +13,6 @@
 				if 
 				(preg_match('/\.php$/',$path)) {
 					Console::debugEx(LOG_BASIC,__CLASS__,"Invoking as Pure PHP View");
-					$document = new Document();
 					include($path);
 				} elseif
 				(preg_match('/\.txl$/',$path)) {

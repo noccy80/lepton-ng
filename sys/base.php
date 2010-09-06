@@ -2,6 +2,9 @@
 
 	declare(ticks = 1);
 
+	define('RETURN_SUCCESS', 0);
+	define('RETURN_ERROR', 1);
+
 	foreach(array(
 		'LEPTON_MAJOR_VERSION' => 2,
 		'LEPTON_MINOR_VERSION' => 0,
@@ -102,7 +105,21 @@
 		 *
 		 */
 		static function get($key,$default=null) {
-			return (isset(Config::$values[$key])?Config::$values[$key]:$default);
+			if (strpos($key,'*') !== false) {
+				$ol = array();
+				foreach(Config::$values as $ckey=>$val) {
+					if (preg_match('/'.str_replace('*','.*',$key).'/',$ckey)) {
+						$ol[$ckey] = $val;
+					}
+				}
+				return $ol;
+			} else {
+				if (isset(Config::$values[$key])) {
+					return Config::$values[$key];
+				} else {
+					return $default;
+				}
+			}
 		}
 
 		/**
@@ -143,7 +160,51 @@
 		 *
 		 */
 		static function clr($key) {
-			unset(Config::$values[$key]);
+			if (strpos($key,'*') !== false) {
+				$kv = array();
+				foreach(Config::$values as $ckey=>$val) {
+					if (preg_match('/'.str_replace('*','.*',$key).'/',$ckey)) {
+						unset(config::$values[$ckey]);
+						$kv[] = $ckey;
+					}
+				}
+				return $kv;
+			} else {
+				unset(config::$values[$key]);
+				return $key;
+			}
+		}
+
+	}
+
+	function __fromprintable($str) {
+		if (in_array($str[0],array('"',"'"))) {
+			$qc = $str[0];
+			if ($str[strlen($str)-1] == $qc) {
+				return substr($str,1,strlen($str)-2);
+			}
+		}
+		switch($str) {
+			case 'NULL':
+				return NULL;
+			case 'false':
+				return false;
+			case 'true':
+				return true;
+			default:
+				return $str;
+		}
+	}
+
+	function __printable($var) {
+		if (is_null($var)) {
+			return "NULL";
+		} elseif (is_bool($var)) {
+			return ($var)?'true':'false';
+		} elseif (is_string($var)) {
+			return '"'.$var.'"';
+		} else {
+			return $var;
 		}
 
 	}
@@ -321,9 +382,11 @@
 		 *
 		 */
 		function run($class) {
+			static $ic = 0;
 			$args = func_get_args();
 			$args = array_slice($args,1);
 			Console::debugEx(LOG_EXTENDED,__CLASS__,"Inspecting environment module state:\n%s", ModuleManager::debug());
+			$ic++;
 			if (class_exists($class)) {
 				$rv = 0;
 				$apptimer = new Timer();
@@ -333,14 +396,17 @@
 					$apptimer->start();
 					$rv = call_user_func_array(array($instance,'run'),$args);
 					$apptimer->stop();
+					unset($instance);
 					Console::debugEx(LOG_BASIC,__CLASS__,"Main method exited with code %d after %.2f seconds.", $rv, $apptimer->getElapsed());
 				} catch (Exception $e) {
 					throw $e;
 				}
-				exit( $rv );
+				$ic--;
+				if ($ic == 0) exit( $rv );
 			} else {
 				Console::warn('Application class %s not found!', $class);
-				exit( 1 );
+				$ic--;
+				if ($ic == 0) exit( RETURN_ERROR );
 			}
 		}
 
@@ -363,7 +429,7 @@
 				Console::debugEx(LOG_BASIC,__CLASS__,"Ignoring exception handler: %s", $handler);
 			}			
 		}
-		
+
 		/**
 		 *
 		 */
@@ -455,13 +521,13 @@
 		static function _mangleModulePath($module) {
 			// Console::debugEx(LOG_LOG,__CLASS__,"Mangling module %s", $module);
 			if (preg_match('/^app\./',$module)) {
-				$path = APP_PATH.str_replace('.','/',str_replace('app.','',$module)).'.php';
+				$path = APP_PATH.'/'.str_replace('.','/',str_replace('app.','',$module)).'.php';
 			} else {
-				$path = SYS_PATH.str_replace('.','/',$module).'.php';
+				$path = SYS_PATH.'/'.str_replace('.','/',$module).'.php';
 			}
 			// Console::debugEx(LOG_LOG,__CLASS__,"  -> %s", $path);
 			return $path;
-		}		
+		}
 
 		/**
 		 *

@@ -5,25 +5,20 @@ define('APP_PATH', '../app');
 require('sys/base.php');
 
 ModuleManager::load('lepton.console.readline');
+ModuleManager::load('lepton.utils.tokenizer');
 ModuleManager::load('lepton.base.cmd.*');
 
 class LeptonUtil extends ConsoleApplication {
 	protected $arguments = 'hi';
-	function autocomplete($cmd) {
-		$cmds = array(
-		
-		);
-		$m = array();
-		foreach($cmds as $c) {
-			if (substr($c,0,strlen($cmd)) == $cmd) $m[] = $c;	
-		}
-		var_dump($m);
-		return $m;
-	}
+	protected $version = '1.0';
 	function interactiveMode() {
+		Console::writeLn(__astr("\b{Lepton Management Utility} \c{ltgray v%s}"), $this->version);
+		Console::writeLn(__astr("(c) 2010, NoccyLabs.info"));
+
 		while($cmds = Readline::read(__astr('\c{ltgreen lepton}\c{ltblue >} '))) {
 			Console::write(__astr('\b{}'));
-			$cmd = explode(" ",$cmds);
+			$t = new ArgumentTokenizer($cmds);
+			$cmd = $t->getTokens();
 			switch($cmd[0]) {
 				case 'exit':
 				case 'quit':

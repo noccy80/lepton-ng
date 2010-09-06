@@ -22,6 +22,7 @@
 			// Create new router and invoke it
 			$r = new DefaultRouter();
 			$r->route();
+			return 0;
 		}
 	}
 	

@@ -37,11 +37,19 @@
 		 * @param string $domain The domain to route
 		 * @param bool $secure True if connection made via SSL
 		 */
-		public function __construct() {
+		public function __construct($buri = '/') {
 
-			$uri = $_SERVER['REQUEST_URI'];
-			$domain = strtolower($_SERVER['SERVER_NAME']);
-			$secure = false;
+			if (isset($_SERVER['REQUEST_URI'])) {
+				$uri = $_SERVER['REQUEST_URI'];
+			} else {
+				$uri = $buri;
+			}
+			if (isset($_SERVER['SERVER_NAME'])) {
+				$domain = strtolower($_SERVER['SERVER_NAME']);
+			} else {
+				$domain = 'localhost';
+			}
+			$secure = true;
 			// Parse query string
 			if (strpos($uri,'?')) {
 				$base = substr($uri,0,strpos($uri,'?'));

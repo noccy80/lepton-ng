@@ -1,4 +1,4 @@
-<?php
+<?php __fileinfo("String and Argument tokenizers");
 
 	class Tokenizer implements IteratorAggregate {
 
@@ -52,6 +52,46 @@
 
 				$mi++;
 			}
+
+		}
+
+		public function getTokens() {
+
+			return $this->_tokens;
+
+		}
+	}
+
+	class ArgumentTokenizer implements IteratorAggregate {
+
+		private $_tokens;
+
+		function getIterator() {
+			return new ArrayIterator($this->_tokens);
+		}
+
+		function __construct($str) {
+
+			if (is_array($str)) $str = join('',$str);
+			$md = explode(' ',$str); $mi = 0;
+			$mo = array();
+			while($mi < count($md)) {
+				$qt = $md[$mi][0];
+				if (($qt == '"') || ($qt == "'" )) {
+					$buf = array();
+					while($mi < count($md)) {
+						$str = $md[$mi];
+						$buf[] = $md[$mi++];
+						if ($str[strlen($str)-2] == $qt) break;
+					}
+					$bufstr = join(' ',$buf);
+					$bufstr = substr($bufstr,1,strlen($bufstr)-2);
+					$mo[] = $bufstr;
+				} else {
+					$mo[] = $md[$mi++];
+				}
+			}
+			$this->_tokens = $mo;
 
 		}
 

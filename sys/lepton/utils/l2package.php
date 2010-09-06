@@ -32,7 +32,10 @@
 		}
 
 		function initCache() {
+			Console::write("Initializing database ... ");
 			$this->cachedb = new PDO("sqlite:".SYS_PATH.'/.l2cache');
+			$this->cachedb->query("CREATE TABLE packages (id INT PRIMARY, package TEXT, description TEXT, version TEXT");
+			Console::writeLn("Done");
 		}
 
 		function loadCache() {
@@ -49,7 +52,74 @@
 		}
 
 		public function installPackage(L2Package $pkg) {
-			
+
+			Console::writeLn(__astr("Preparing package: \b{%s}"), $pkg->getFilename());
+			$files = $pkg->getFiles();
+			Console::writeLn(__astr("    \b{Name} : %s"), $pkg->getTitle());
+			Console::writeLn(__astr("    \b{Files} : %d"), count($files));
+			Console::write(__astr("Checking dependencies : "));
+			$warn = 0;
+			foreach($files as $file) {
+				$fn = $file['filename'];
+				$q = $this->cachedb->query(sprintf("SELECT * FROM files WHERE filename='%s'", $fn));
+				if ($q) {
+					Console::writeLn("Warning: File %s collides with other package", $fs);
+					$warn++;
+				} else {
+					$lcpath = APP_PATH.str_replace('app','',$fn);
+					if (file_exists($lcpath)) {
+						Console::writeLn("Warning: File %s already exist in filesystem", $lcpath);
+						// $warn++;
+					}
+				}
+			}
+			Console::writeLn(__astr(" Ok"));
+			if($warn == 0) {
+				foreach($files as $file) {
+					$fn = $file['filename'];
+					$fsrc = $fn;
+					$fdest = APP_PATH.str_replace('app','',$fn);
+					if (!file_exists(dirname($fdest))) {
+						$dirname = dirname($fdest);
+						$dn = $dirname;
+						Console::writeLn(__astr("    \c{ltgray mkdir} %s"), $dirname);
+						mkdir($dirname);
+					}
+					Console::writeLn(__astr("    \c{ltgray copy} %s => %s"), $fsrc, $fdest);
+					$fnin = 'zip://'.$pkg->getFilename(true).'#'.$fsrc;
+					$fr = fopen($fnin,'rb');
+					$fw = fopen($fdest,'wb');
+					if ($fr && $fw) {
+						while (!feof($fr)) {
+							$db = fread($fr,4096);
+							fwrite($fw,$db);
+						}
+					} else {
+						Console::writeLn(__astr("    \c{red error}: Could not open file"));
+					}
+					// TODO: Copy file, log everyting including mkdirs
+				}
+			}
+
+		}
+
+		public function removePackage(L2Package $pkg) {
+
+			Console::writeLn(__astr("Preparing package: \b{%s}"), $pkg->getFilename());
+			$files = $pkg->getFiles();
+			Console::writeLn(__astr("    \b{Name} : %s"), $pkg->getTitle());
+			Console::writeLn(__astr("    \b{Files} : %d"), count($files));
+
+			foreach($files as $file) {
+				$fn = $file['filename'];
+				$fsrc = $fn;
+				$fdest = APP_PATH.str_replace('app','',$fn);
+				if (file_exists($fdest)) {
+					Console::writeLn(__astr("    \c{ltgray delete} %s"), $fdest);
+					unlink($fdest);
+				}
+			}
+
 		}
 
 		public function listPackages() {
@@ -73,27 +143,50 @@
 		const PT_SYSPACK = 'l2package:sys';
 
 		private $title;
+		private $package;
+		private $packagename;
 		private $description;
 		private $filedb;
 		private $version;
+		private $filename;
 
 		function __construct($package = null) {
-			$fn = 'zip://'.$package.'#'.basename($package,'.l2p').'/package.xml';
-			$manifest = DOMDocument::load($fn);
-			$xp = new DOMXPath($manifest);
+			if ($package) $this->load($package);
+		}
 
-			$q = $xp->query("/manifest/title");
-			$this->title = ($q->length > 0)?$q->item(0)->nodeValue:'';
+		function load($package) {
+			$pn = APP_PATH.'/pkg/'.str_replace(APP_PATH.'/pkg/','',$package);
+			if (file_exists($pn.".l2p")) {
+				$pn .= ".l2p";
+			}
+			$this->package = $package;
+			$this->packagename = $pn;
+			if ($package && file_exists($pn)) {
 
-			$q = $xp->query("/manifest/version");
-			$this->version = ($q->length > 0)?$q->item(0)->nodeValue:'';
+				$this->filename = $package;
 
-			$q = $xp->query("/manifest/description");
-			$this->description = ($q->length > 0)?$q->item(0)->nodeValue:'';
+				$fn = 'zip://'.$pn.'#package.xml';
+				$manifest = DOMDocument::load($fn);
+				$xp = new DOMXPath($manifest);
 
-			$q = $xp->query("/manifest/title");
-			$this->filedb = ($q->length > 0)?$q->item(0)->getAttribute('src'):'';
-			printf($this->filedb);
+				$q = $xp->query("/manifest/title");
+				$this->title = ($q->length > 0)?$q->item(0)->nodeValue:'';
+
+				$q = $xp->query("/manifest/version");
+				$this->version = ($q->length > 0)?$q->item(0)->nodeValue:'';
+
+				$q = $xp->query("/manifest/description");
+				$this->description = ($q->length > 0)?$q->item(0)->nodeValue:'';
+
+				$q = $xp->query("/manifest/filedb");
+				$this->filedb = ($q->length > 0)?$q->item(0)->getAttribute('src'):'';
+
+			}
+		}
+
+		public function getFilename($full=false) {
+			if ($full) return $this->packagename;
+			return $this->filename;
 		}
 
 		public function getTitle() {
@@ -108,8 +201,23 @@
 			return $this->version;
 		}
 
-		public function getFileDb() {
-			
+		public function getFiles() {
+			Console::write("Reading file database: ");
+			$fn = 'zip://'.$this->packagename.'#'.$this->filedb;
+			Console::write("%s ... ", $fn);
+			$fh = fopen($fn,'r');
+			$files = array();
+			while(!feof($fh)) {
+				$fl = fgets($fh);
+				while(strpos($fl,"  ") !== false) { $fl = str_replace("  "," ",$fl); }
+				$fd = explode(" ", str_replace("\n","",$fl));
+				$files[] = array(
+					'filename' => $fd[1],
+					'md5' => $fd[0]
+				);
+			}
+			Console::writeLn("Done");
+			return $files;
 		}
 
 	}

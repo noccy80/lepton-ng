@@ -10,17 +10,23 @@
 			if (!$controller) $controller = 'default'; // config
 			if (!$method) $method = 'index'; // config
 			$ctlpath = APP_PATH.'/controllers/'.$controller.'.php';
-			if (file_exists($ctlpath)) {
-				Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking controller instance %s (method=\'%s\', args=\'%s\')...', $controller, $method, join('\',\'',(array)$arguments));
-				require($ctlpath);
-				$cc = $controller.'Controller';
-				$ci = new $cc;
-				if (!$ci->__request($method,(array)$arguments)) {
+			Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking controller instance %s (method=\'%s\', args=\'%s\')...', $controller, $method, join('\',\'',(array)$arguments));
+			$cc = $controller.'Controller';
 
+			if(!class_exists($cc)) {
+				if (file_exists($ctlpath)) {
+					require($ctlpath);
+				} else {
+					throw new BaseException("Could not find controller class ". $controller);
+					return RETURN_ERROR;
 				}
+			}
+
+			$ci = new $cc;
+			if (!$ci->__request($method,(array)$arguments)) {
+				return RETURN_ERROR;
 			} else {
-				throw new BaseException("Could not find controller class ". $controller);
-				return 1;
+				return RETURN_SUCCESS;
 			}
 		}
 		function __construct() {

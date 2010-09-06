@@ -11,31 +11,32 @@
 		const DT_XHTML1_DTD = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">';
 		const DT_XHTML11_BASIC = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">';
 	
-		private $_started = false;
-		private $_doctype = null;
-		private $_contenttype = null;
+		static $_started = false;
+		static $_doctype = null;
+		static $_contenttype = null;
 		
-		function begin($doctype = self::DT_HTML401_TRANS) {
+		static function begin($doctype = self::DT_HTML401_TRANS) {
 			switch ($doctype) {
 				case self::DT_HTML401_STRICT:
 				case self::DT_HTML401_TRANS:
 				case self::DT_HTML401_FRAMESET:
-					$this->_contenttype = 'text/html; charset='.config::get('lepton.charset');
+					Document::$_contenttype = 'text/html; charset='.config::get('lepton.charset');
 					break;
 				case self::DT_XHTML1_STRICT:
 				case self::DT_XHTML1_TRANS:
 				case self::DT_XHTML1_FRAMESET:
 				case self::DT_XHTML1_DTD:
 				case self::DT_XHTML11_BASIC:
-					$this->_contenttype = 'text/xhtml';
+					Document::$_contenttype = 'text/xhtml';
 					break;
 			}
-			$this->_doctype = $doctype;
-			@ob_clean();
-			ob_start(array(&$this,'obhandler'));
-			header('Content-type: '.$this->_contenttype);
-			printf($this->_doctype."\n");
-			$this->_started = true;
+			Document::$_doctype = $doctype;
+			// @ob_clean();
+			// ob_start(array(&$this,'obhandler'));
+			if (!headers_sent()) {
+				header('Content-type: '.$this->_contenttype);
+			}
+			printf(Document::$_doctype."\n");
 		}
 		
 		function includeView($view) {
@@ -54,9 +55,11 @@
 		function flush() {
 			ob_flush();
 		}
-		
-		function __destruct() {
-			if ($this->_started) ob_end_flush();
+
+		function  __destruct() {
+			ob_end_flush();
+			printf("DESTRUCTING");
+			$this->_started = false;
 		}		
 		
 		function write() {
