@@ -128,7 +128,7 @@
 			Console::writeLn(__astr("\b{Available packages:}"));
 			$g = glob(APP_PATH.'/pkg/*.l2?');
 			foreach($g as $package) {
-				Console::write(__astr("    \b{%s}: "), $package);
+				Console::write(__astr("    \b{%s}: "), basename($package));
 				$p = new L2Package($package);
 				Console::writeLn("%s (%s)", $p->getTitle(), $p->getVersion());
 			}

@@ -60,6 +60,16 @@ class BaseActions {
 			Console::writeLn(__astr("    set \u{key} \u{value}"));
 		}
 	}
+	function push($key=null,$val=null) {
+		if (($key) && ($val)) {
+			$val = __fromprintable($val);
+			Config::push($key,$val);
+			Console::writeLn(__astr("    \b{%s[]} \c{ltgray :} %s"), $key, __printable($val));
+		} else {
+			Console::writeLn(__astr("\b{push}: push a configuration value"));
+			Console::writeLn(__astr("    push \u{key} \u{value}"));
+		}
+	}
 	function get($key=null) {
 		$cfg = Config::get($key);
 		if (is_array($cfg)) {
@@ -147,6 +157,15 @@ class BaseActions {
 					'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
 					'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)'
 				);
+				$opts = array(
+					'BASE_PATH' => BASE_PATH,
+					'APP_PATH' => APP_PATH,
+					'SYS_PATH' => SYS_PATH
+				);
+				Console::writeLn(__astr("\b{Lepton Overview:}"));
+				foreach($opts as $key=>$val) {
+					Console::writeLn("  %-25s : %s", $key, $val);
+				}
 				Console::writeLn(__astr("\b{PHP Overview:}"));
 				foreach($info as $key=>$val) {
 					Console::writeLn("  %-25s : %s", $key, $val);

@@ -9,7 +9,8 @@ class TestActions {
 	static $help = array(
 		'exception' => "Throw an exception",
 		'run' => "Run an application instance",
-		'uuid' => "Generate a new UUID v4"
+		'uuid' => "Generate a new UUID v4",
+		'mem' => "Show memory usage"
 	);
 	function _info($cmd) { return TestActions::$help[$cmd->name]; }
 
@@ -30,6 +31,13 @@ class TestActions {
 	function uuid() {
 		ModuleManager::load('lepton.crypto.uuid');
 		Console::writeLn(__astr("    \b{UUID v4} : %s"), Uuid::v4());
+	}
+	function mem() {
+		$peak = memory_get_peak_usage();
+		$use = memory_get_usage();
+		$peak = $peak / 1024;
+		$use = $use / 1024;
+		Console::writeLn(__astr("    \b{Memory} : %.2fkB Used (%.2fkB Peak)"), $use, $peak);
 	}
 
 }

@@ -622,7 +622,7 @@
 				$ver = null;
 				if (isset($meta['modinfo'])) $mi = $meta['modinfo'];
 				if (isset($meta['version'])) $ver = 'v'.$meta['version'];
-				$modinfo[] = sprintf(__astr("    %s - \c{ltgray %s}"), $mod, $mi.($ver?' '.$ver:''));
+				$modinfo[] = sprintf("    %s - %s", $mod, $mi.(isset($ver)?' '.$ver:''));
 			}
 			return join("\n", $modinfo)."\n";
 		}

@@ -1,15 +1,16 @@
 #!/usr/bin/php
 <?php
 
-define('APP_PATH', '../app');
 require('sys/base.php');
+
+
 
 ModuleManager::load('lepton.console.readline');
 ModuleManager::load('lepton.utils.tokenizer');
 ModuleManager::load('lepton.base.cmd.*');
 
 class LeptonUtil extends ConsoleApplication {
-	protected $arguments = 'hi';
+	protected $arguments = 'hil:';
 	protected $version = '1.0';
 	function interactiveMode() {
 		Console::writeLn(__astr("\b{Lepton Management Utility} \c{ltgray v%s}"), $this->version);
@@ -37,10 +38,13 @@ class LeptonUtil extends ConsoleApplication {
 				return;
 			}
 		}
+		if ($cmd == true) return;
 		Console::warn("No such command: %s", $cmd[0]);
 
 	}
 	function main($argc,$argv) {
+
+		if ($this->hasArgument('l')) ModuleManager::load($this->getArgument('l'));
 
 		if ($this->hasArgument('i')) return $this->interactiveMode();
 
@@ -60,6 +64,7 @@ class LeptonUtil extends ConsoleApplication {
 		Console::writeLn('           -h          Show help');
 		Console::writeLn('           -o file     Output file (when exporting)');
 		Console::writeLn('           -i file     Input file (when importing)');
+		Console::writeLn('           -l ns       Load module or namespace');
 		Console::writeLn();
 		Console::writeLn('Actions:   Use \'help\' to see the actions available');
 	}
