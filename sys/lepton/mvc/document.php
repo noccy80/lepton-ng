@@ -1,7 +1,7 @@
 <?php
 
 	class Document {
-	
+
 		const DT_HTML401_STRICT = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">';
 		const DT_HTML401_TRANS = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
 		const DT_HTML401_FRAMESET = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">';
@@ -10,11 +10,11 @@
 		const DT_XHTML1_FRAMESET = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">';
 		const DT_XHTML1_DTD = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">';
 		const DT_XHTML11_BASIC = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">';
-	
+
 		static $_started = false;
 		static $_doctype = null;
 		static $_contenttype = null;
-		
+
 		static function begin($doctype = self::DT_HTML401_TRANS) {
 			switch ($doctype) {
 				case self::DT_HTML401_STRICT:
@@ -34,7 +34,7 @@
 			// @ob_clean();
 			// ob_start(array(&$this,'obhandler'));
 			if (!headers_sent()) {
-				header('Content-type: '.$this->_contenttype);
+				header('Content-type: '.Document::$_contenttype);
 			}
 			printf(Document::$_doctype."\n");
 		}
