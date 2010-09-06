@@ -2,6 +2,8 @@
 
 	define('LEPTON_DB_PREFIX','l2');
 
+	class DatabaseException extends BaseException { }
+
 	abstract class DatabaseManager {
 
 		static $pool = array();
@@ -18,15 +20,19 @@
 		static function poolConnectGroup($group) {
 			$cfg = config::get('lepton.db.'.$group);
 			$driver = explode('/',$cfg['driver']);
-			$class = $driver[0].'DatabaseDriver';
-			Console::debugEx(LOG_DEBUG1,__CLASS__,"Base DBM driver: %s (%s) - %s", $class, $driver[0], $cfg['driver']);		
-			return new $class($cfg);
+			if ($driver[0] != '') {
+				$class = $driver[0].'DatabaseDriver';
+				Console::debugEx(LOG_DEBUG1,__CLASS__,"Base DBM driver: %s (%s) - %s", $class, $driver[0], $cfg['driver']);		
+				return new $class($cfg);
+			} else {
+				throw new DatabaseException("No database driver configured");
+			}
 		}
 
 		static function getPooledConnection() {
 
 			// Mangle pool and return a connection
-		
+
 		}
 
 	}
@@ -38,7 +44,7 @@
 		function escapeString($args);
 		function query($sql);
 	}
-	
+
 	abstract class DatabaseDriver implements IDatabaseDriver { }
 
 	class PdoDatabaseDriver extends DatabaseDriver {
@@ -48,14 +54,17 @@
 		function __construct($cfg) {
 			$driver = explode('/',$cfg['driver']);
 			$drv = $driver[1];
-			
+
 			$user = $cfg['username'];
 			$pass = $cfg['password'];
 			
 			Console::debugEx(LOG_DEBUG1,__CLASS__,"Connecting with driver %s.", $drv);		
 			switch($drv) {
 				case 'sqlite':
+					printf($cfg['filename']);
 					$dsn = 'sqlite:'.$cfg['filename'];
+					$user = null;
+					$pass = null;
 					break;
 				case 'mysql':
 					$dsn = 'mysql:';
@@ -69,11 +78,12 @@
 					}
 					break;
 			}
-			Console::debugEx(LOG_DEBUG1,__CLASS__,"Connection DNS: %s.", $dsn);		
+			Console::debugEx(LOG_DEBUG1,__CLASS__,"Connection DNS: %s.", $dsn);
 			try {
 				$this->conn = new PDO($dsn,$user,$pass);
+				$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			} catch (PDOException $e) {
-				throw new BaseException("Could not connect to database.");
+				throw new BaseException("Could not connect to database type '".$cfg['driver']."'.");
 			}
 		}
 

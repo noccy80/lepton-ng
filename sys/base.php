@@ -38,17 +38,29 @@
 		define('PHP_RELEASE_VERSION',  $version[2]);
 	}
 
-	if(getenv("APP_PATH")) define('APP_PATH', getenv("APP_PATH"));
-	if(defined('APP_PATH')) {
-		$path = APP_PATH;
-	} elseif (getenv("SCRIPT_FILENAME")) {
-		$path = getenv('SCRIPT_FILENAME');
-		$path = pathinfo($path, PATHINFO_DIRNAME);
+	if(!defined("APP_PATH")) {
+		if(getenv("APP_PATH")) {
+			define('APP_PATH', getenv("APP_PATH"));
+		} else {
+			if (getenv("SCRIPT_FILENAME")) {
+				$path = getenv('SCRIPT_FILENAME');
+				$path = pathinfo($path, PATHINFO_DIRNAME);
+			} else {
+				$path = getcwd();
+			}
+			if (substr($path,strlen($path)-4,4) == "/bin") {
+				$path = $path.'/../';
+			}
+			$path = $path.'/app';
+			$path = realpath($path);
+			define('APP_PATH', $path);
+		}
 	} else {
-		$path = getcwd();
+		Console::warn("APP_PATH already defined and set to %s", APP_PATH);
+		$path = APP_PATH;
 	}
 
-	define('BASE_PATH', realpath($path.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
+	define('BASE_PATH', realpath(APP_PATH.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
 	if(getenv('SYS_PATH')) {
 		define('SYS_PATH', getenv('SYS_PATH').DIRECTORY_SEPARATOR);
 	} else {

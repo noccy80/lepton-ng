@@ -1,8 +1,6 @@
 #!/usr/bin/php
 <?php
 
-define('APP_PATH','../app/');
-
 if	(file_exists('sys/base.php')) require('sys/base.php');
 elseif	(file_exists('../sys/base.php')) require('../sys/base.php');
 else	(die("Failed to load sys/base.php"));
@@ -28,7 +26,12 @@ class DbUtility extends ConsoleApplication {
 		Console::writeLn("Opening default connection.");
 		$db = new DatabaseConnection();
 
-		$db->updateRow("CREATE TABLE ".LEPTON_DB_PREFIX.'users'." (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(32) NOT NULL UNIQUE, passwordsalt VARCHAR(128) NULL, password VARCHAR(128) NULL, flags VARCHAR(32) NOT NULL DEFAULT '')"); }
+		try {
+			$db->updateRow("CREATE TABLE ".LEPTON_DB_PREFIX.'users'." (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(32) NOT NULL UNIQUE, passwordsalt VARCHAR(128) NULL, password VARCHAR(128) NULL, flags VARCHAR(32) NOT NULL DEFAULT '')");
+		} catch (PDOException $e) {
+			Console::writeLn("Okay!");
+		}
+	}
 }
 
 // Run the application
