@@ -29,7 +29,7 @@ class MinifyApp extends ConsoleApplication {
 		// Console::writeLn("Minifying %s [%s]...", $if, $mt);
 		$mf->loadFromFile($if);
 		$mfs = $mf->minify(Minifier::MFF_MAXIMUM);
-		Console::writeLn("%s", $mfs);
+		Console::write("%s", $mfs);
 		// printf("%d -> %d (%.1f%%)\n", strlen($this->_data), strlen($buffer),(strlen($buffer)/strlen($this->_data))*100); 
 	}
 }

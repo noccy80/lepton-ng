@@ -25,32 +25,34 @@
 			$sepchars = array('(',')',';','}','{','/*','*/',':');
 			$killchars = array("\t","\r","\n");
 			$buffer = $this->_data;
+			foreach($killchars as $char) $buffer = str_replace($char," ",$buffer);
 			$result = array();
-			preg_match_all( '/(?ims)([a-z0-9\s\.\:#_\-@]+)\{([^\}]*)\}/', $buffer, $arr); 
-			foreach ($arr[0] as $i => $x) { 
-				$selector = trim($arr[1][$i]); 
-				$rules = explode(';', trim($arr[2][$i])); 
+			preg_match_all( '/(?ims)([a-z0-9\s\.\:#_\-@\>\*]+)\{([^\}]*)\}/', $buffer, $arr); 
+			foreach ($arr[0] as $i => $x) {
+				$selector = trim($arr[1][$i]);
+				$rules = explode(';', trim($arr[2][$i]));
 				if (!isset($result[$selector])) {
 					$result[$selector] = array(
 						'selector' => $selector,
 						'rules' => array()
 					);
 				}
-				foreach ($rules as $strRule) { 
-					if (!empty($strRule)) { 
-						$rule = explode(":", $strRule); 
-						$result[$selector]['rules'][$rule[0]] = $rule[1]; 
-					} 
+				foreach ($rules as $strRule) {
+					if (!empty($strRule)) {
+						$rule = explode(":", $strRule);
+						$result[$selector]['rules'][trim($rule[0])] = trim($rule[1]);
+					}
 				}
 			}
 			sort($result);
 			$sout = "";
 			foreach($result as $selector=>$rules) {
 				$sout.=$rules['selector'].'{';
+				$ob = array();
 				foreach($rules['rules'] as $rule=>$value) {
-					$sout.=$rule.':'.$value;
+					$ob[] = $rule.':'.$value;
 				}
-				$sout.='}';
+				$sout.=join(';',$ob).';}';
 			}
 
 			return $sout;

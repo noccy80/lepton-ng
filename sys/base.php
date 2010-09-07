@@ -295,7 +295,7 @@
 		static function write() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
-			printf($strn);
+			printf("%s",$strn);
 			if (LOGFILE) fprintf(LOGFILE, $strn);
 		}
 
@@ -309,7 +309,7 @@
 		static function writeLn() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
-			printf($strn . "\n");
+			printf("%s\n",$strn);
 			if (LOGFILE) fprintf(LOGFILE, $strn . "\n");
 		}
 
@@ -319,7 +319,7 @@
 		static function status() {
 			$args = func_get_args();
 			$strn = @call_user_func_array('sprintf',array_slice($args,0));
-			printf($strn . str_repeat(chr(8),strlen($strn)));
+			printf("%s",$strn . str_repeat(chr(8),strlen($strn)));
 			if (LOGFILE) fprintf(LOGFILE, $strn);
 		}
 
@@ -660,6 +660,14 @@
 	// Load application base if the $argc global variable is set
 	if (php_sapi_name() == 'cli') {
 		ModuleManager::load('lepton.base.application');
+	}
+
+	function class_inherits($cn,$base) {
+		if (!class_exists($cn)) return false;
+		$rc = new ReflectionClass($cn);
+		$pc = $rc->getParentClass();
+		if ($pc) return ($pc->name == $base);
+		return false;
 	}
 
 ?>
