@@ -7,38 +7,31 @@
 
 	}
 	abstract class ViewHandler implements IViewHandler {
-
+		protected $_data = array();
+		function set($key,$val) {
+			 $this->_data[$key] = $val;
+		}
+		function getViewData() {
+			return $this->_data;
+		}
 	}
 
-	ModuleManager::load('lepton.mvc.viewhandler.php');
+	// TODO: This should only load the plain view. Document how to make use of the rest
+	ModuleManager::load('lepton.mvc.viewhandler.*');
 
 	class View {
 
+		static $_handlers = array();
 		static function load($view) {
 
-			$vh = new PlainViewHandler();
-			$vh->loadView($view);
-
-/*
-
-			$path = BASE_PATH.'views/'.$view;
-			Console::debugEx(LOG_BASIC,__CLASS__,"Attempting to invoke view from %s", $path);
-			if (file_exists($path)) {
-				if 
-				(preg_match('/\.php$/',$path)) {
-					Console::debugEx(LOG_BASIC,__CLASS__,"Invoking as Pure PHP View");
-					include($path);
-				} elseif
-				(preg_match('/\.txl$/',$path)) {
-					Console::debugEx(LOG_BASIC,__CLASS__,"Invoking as LiteTemplate View");
-					$document = new LiteTemplate($path);
-					echo $document->render();
+			foreach((array)View::$_handlers as $handler=>$match) {
+				if (preg_match('%'.$match.'%',$view)) {
+					$vc = new $handler();
+					$vc->loadView($view);
+					return true;
 				}
-			
-			} else {
-				throw new ViewNotFoundException("The view ".$view." could not be found");
 			}
-*/
+			throw new BaseException("No matching handler found for requested view");
 		}
 
 	}

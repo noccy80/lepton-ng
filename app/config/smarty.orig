@@ -1,6 +1,6 @@
 <?php
 
-config::set('smarty.location', '/usr/local/lib/php/Smarty/Smarty.class.php');
+config::set('smarty.location', APP_PATH.'/contrib/Smarty/Smarty.class.php');
 
 config::set('smarty.dir.templates', APP_PATH.'/views/templates');
 config::set('smarty.dir.compiled', APP_PATH.'/views/templates/compiled');
