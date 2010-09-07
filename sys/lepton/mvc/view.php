@@ -3,9 +3,23 @@
 	class ViewException extends Exception {}
 	class ViewNotFoundException extends ViewException {}
 
+	interface IViewHandler {
+
+	}
+	abstract class ViewHandler implements IViewHandler {
+
+	}
+
+	ModuleManager::load('lepton.mvc.viewhandler.php');
+
 	class View {
 
 		static function load($view) {
+
+			$vh = new PlainViewHandler();
+			$vh->loadView($view);
+
+/*
 
 			$path = BASE_PATH.'views/'.$view;
 			Console::debugEx(LOG_BASIC,__CLASS__,"Attempting to invoke view from %s", $path);
@@ -24,7 +38,7 @@
 			} else {
 				throw new ViewNotFoundException("The view ".$view." could not be found");
 			}
-
+*/
 		}
 
 	}

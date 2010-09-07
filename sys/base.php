@@ -40,11 +40,11 @@
 
 	if(!defined("APP_PATH")) {
 		if(getenv("APP_PATH")) {
-			define('APP_PATH', getenv("APP_PATH"));
+			define('APP_PATH', realpath(getenv("APP_PATH")).'/');
 		} else {
 			if (getenv("SCRIPT_FILENAME")) {
 				$path = getenv('SCRIPT_FILENAME');
-				$path = pathinfo($path, PATHINFO_DIRNAME);
+				$path = realpath(pathinfo($path, PATHINFO_DIRNAME));
 			} else {
 				$path = getcwd();
 			}
@@ -52,20 +52,19 @@
 				$path = $path.'/../';
 			}
 			$path = $path.'/app';
-			$path = realpath($path);
-			define('APP_PATH', $path);
+			define('APP_PATH', realpath($path).'/');
 		}
 	} else {
 		Console::warn("APP_PATH already defined and set to %s", APP_PATH);
 		$path = APP_PATH;
 	}
 
-	define('BASE_PATH', realpath(APP_PATH.DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
+	define('BASE_PATH', realpath(APP_PATH.DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR);
 	if(getenv('SYS_PATH')) {
-		define('SYS_PATH', getenv('SYS_PATH').DIRECTORY_SEPARATOR);
+		define('SYS_PATH', realpath(getenv('SYS_PATH').DIRECTORY_SEPARATOR).'/');
 	} else {
 		$syspath = realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-		define('SYS_PATH', $syspath);
+		define('SYS_PATH', realpath($syspath).'/');
 	}
 	if (!defined('APP_PATH')) {
 		define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')).'/');
@@ -575,7 +574,7 @@
 				try {
 					ModuleManager::$_modules[strtolower($module)] = array();
 					ModuleManager::$_order[] = strtolower($module);
-					Console::debugEx(LOG_BASIC,__CLASS__,"  path = %s", $path);
+					Console::debugEx(LOG_DEBUG2,__CLASS__,"  path = %s", $path);
 					require($path);
 					array_pop(ModuleManager::$_order);
 				} catch(ModuleException $e) {

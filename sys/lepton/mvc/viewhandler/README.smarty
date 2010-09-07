@@ -1,0 +1,4 @@
+Download and install smarty into your prefered location.
+
+Specify the smarty locations using the smarty.orig file (copy it to smarty.php)
+in your app/config directory.
