@@ -6,7 +6,7 @@
 	define('RETURN_ERROR', 1);
 
 	foreach(array(
-		'LEPTON_MAJOR_VERSION' => 2,
+		'LEPTON_MAJOR_VERSION' => 1,
 		'LEPTON_MINOR_VERSION' => 0,
 		'LEPTON_RELEASE_VERSION' => 0,
 		'LEPTON_RELEASE_TAG' => "alpha",
@@ -419,6 +419,14 @@
 				$ic--;
 				if ($ic == 0) exit( RETURN_ERROR );
 			}
+		}
+		
+		function using($module) {
+			Console::warn("Lepton::using() is deprecated (%s)", $module);
+			ModuleManager::load($module);
+		}
+		function autoload($module, $as) {
+			Console::warn("Lepton::autoload() is deprecated (%s => %s)", $module, $as);
 		}
 
 		/**

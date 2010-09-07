@@ -146,7 +146,8 @@ class BaseActions {
 					'DIRECTORY_SEPARATOR' => DIRECTORY_SEPARATOR,
 					'PATH_SEPARATOR' => PATH_SEPARATOR,
 					'PHP_SHLIB_SUFFIX' => PHP_SHLIB_SUFFIX,
-					'sys_get_temp_dir()' => sys_get_temp_dir()
+					'sys_get_temp_dir()' => sys_get_temp_dir(),
+					'Platform' => LEPTON_PLATFORM_ID
 				);
 				$comp = array(
 					'COMPAT_GETOPT_LONGOPTS' => (PHP_VERSION >= "5.3")?'Supported':'Emulated (PHP >= 5.3)',

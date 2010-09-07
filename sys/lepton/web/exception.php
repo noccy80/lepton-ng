@@ -1,4 +1,4 @@
-<?php
+<?php __fileinfo("MVC Exception Handler");
 
 	class MvcExceptionHandler extends ExceptionHandler {
 

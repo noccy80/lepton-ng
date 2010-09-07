@@ -1,9 +1,13 @@
-<?php
+<?php __fileinfo("Smarty View Handler", array(
+	'version' => '1.0',
+	'author' => 'Christopher Vagnetoft <noccy@chillat.net>'
+));
 
 ModuleManager::load('lepton.mvc.view');
 
 class SmartyViewHandler extends ViewHandler {
 	private $smarty;
+	private $template;
 	function __construct() {
 		// put full path to Smarty.class.php
 		$smartyloc = config::get('smarty.location');
@@ -19,15 +23,18 @@ class SmartyViewHandler extends ViewHandler {
 			throw new BaseException("Smarty view invoked but Smarty not found");
 		}
 	}
-	function loadView($view) {
+	function loadView($template) {
+		$this->template = $template;
 		if ($this->smarty) {
 			foreach($this->getViewData() as $key=>$value) {
 				$this->smarty->assign($key, $value);
 			}
-			$this->smarty->display($view);
 		} else {
 			throw new BaseException("Smarty view loaded but Smarty not found");
 		}
+	}
+	function display() {
+		$this->smarty->display($this->template);
 	}
 }
 

@@ -1,4 +1,6 @@
-<?php
+<?php __fileinfo("Controller implementation", array(
+	'version' => '1.0'
+));
 
 	interface IController {
 		function __request($method,$arguments);

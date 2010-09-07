@@ -1,4 +1,10 @@
+Smarty Templates
+================
+
 Download and install smarty into your prefered location. The defaults for lng
 is to place it in /app/Smarty and store templates in /app/views/templates. As
 long as you stick to these, you can pretty much copy the smarty.orig file to
-smarty.php (in your app/config directory) and start loading .tpl templates.
+smarty.php (in your app/config directory) and start loading .tpl templates:
+
+  View::set('foo','bar');
+  View::load('mytemplate.tpl');

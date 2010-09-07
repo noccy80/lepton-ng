@@ -61,18 +61,21 @@
         }
 
         function action($action,$jobid) {
-            $meta = LdwpGovernor::getJob($jobid);
-            Console::debug("Preparing to send action to job %d (%s)", $jobid, $meta['worker']);
-            $cn = explode(':',$meta['worker']);
-            ModuleManager::load($cn[0]);
-            if ($cn[1]) {
-                $inst = new $cn[1]($jobid);
-                return $inst->action($action);
-            } else {
-                return null;
-            }
-        }
-
+		$meta = LdwpGovernor::getJob($jobid);
+		Console::debug("Preparing to send action to job %d (%s)", $jobid, $meta['worker']);
+		$cn = explode(':',$meta['worker']);
+		ModuleManager::load($cn[0]);
+		if (class_inherits($cn[1], "LdwpWorker")) {
+			if ($cn[1]) {
+        			$inst = new $cn[1]($jobid);
+	                	return $inst->action($action);
+		        } else {
+        		        return null;
+		        }
+		} else {
+			Console::warn("ERROR: Worker instantiation rejected due to %d not being a worker", $cn[1]);
+		}
 	}
+}
 
 ?>

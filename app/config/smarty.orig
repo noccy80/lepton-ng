@@ -6,3 +6,5 @@ config::set('smarty.dir.templates', APP_PATH.'/views/templates');
 config::set('smarty.dir.compiled', APP_PATH.'/views/templates/compiled');
 config::set('smarty.dir.cache', APP_PATH.'/views/templates/cache');
 config::set('smarty.dir.config', APP_PATH.'/views/templates/config');
+
+ModuleManager::load('lepton.mvc.viewhandler.smarty');
