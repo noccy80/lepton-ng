@@ -38,35 +38,46 @@
 			}
 			printf(Document::$_doctype."\n");
 		}
-		
-		function includeView($view) {
-			
+
+		static function buffer() {
+			@ob_start();
 		}
-		
+
+		static function end() {
+			if (ob_get_length()) {
+				@ob_flush();
+				@flush();
+				@ob_end_flush();
+			}
+		}
+
+		function includeView($view) {
+
+		}
+
 		function insertString($str) {
 			return eval($str);
 		}
-		
+
 		function obhandler($str) {
 			// TODO: implement handler hooks to inject stylesheets etc
 			return $str;
 		}
-		
-		function flush() {
-			ob_flush();
+
+		static function flush() {
+			if (ob_get_length()) {
+				@ob_flush();
+				@flush();
+				@ob_end_flush();
+			}
+			@ob_start();
 		}
 
-		function  __destruct() {
-			ob_end_flush();
-			printf("DESTRUCTING");
-			$this->_started = false;
-		}		
-		
 		function write() {
 			$args = func_get_args();
 			printf($args[0],array_slice($args,1));
 		}
-	
+
 	}
-	
+
 ?>

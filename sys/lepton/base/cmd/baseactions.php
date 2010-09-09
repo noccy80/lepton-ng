@@ -5,6 +5,7 @@
 ));
 
 class BaseActions {
+	private $extn;
 	function _info($cmd) {
 		switch($cmd->getName()) {
 			case 'help':		return "Show help";
@@ -24,7 +25,7 @@ class BaseActions {
 		foreach(config::get('lepton.cmd.actionhandlers') as $handler) {
 			$r = new ReflectionClass($handler);
 			foreach($r->getMethods() as $method) {
-				if (substr($method->getName(),0,1) != '_') {
+				if (($method->isPublic()) && (substr($method->getName(),0,1) != '_')) {
 					Console::writeLn(__astr("    \b{%-15s}: %s (\c{ltgray %s})"), $method->getName(), call_user_func_array(array($handler,"_info"),array($method)), basename($method->getFileName(),'.php'));
 				}
 			}
@@ -201,6 +202,88 @@ class BaseActions {
 				Console::writeLn();
 		}
 
+	}
+	private function checkExt($mod,$last=false,$lastp=false,$use='') {
+		$ry = Ansi::setColor(32,1);
+		$rn = Ansi::setColor(31,1);
+		$it = Ansi::setColor(33);
+		$rc = Ansi::setColor(0);
+		$ext = $this->extn;
+		Console::write(" %s   %s %-10s: %s",
+			($lastp==false)?'|':' ',
+			($last==false)?'|-':'\'-',
+			$mod,
+			(isset($ext[$mod])?$ry.'yes':$rn.'no').$rc
+		);
+		if ($use) {
+			Console::write(" - %s\n",$it.$use.$rc);
+		} else {
+			Console::write("\n");
+		}
+	}
+
+	private function treenode($text,$last=false,$lastp=false) {
+		$ry = Ansi::setColor(32,1);
+		$rn = Ansi::setColor(31,1);
+		$it = Ansi::setColor(33);
+		$rc = Ansi::setColor(0);
+		$ext = $this->extn;
+		Console::writeLn(" %s   %s %s",
+			($lastp==false)?'|':' ',
+			($last==false)?'|-':'\'-',
+			$text
+		);
+	}
+
+	function streams() {
+		$sw = stream_get_wrappers();
+		$sf = stream_get_filters();
+
+		Console::writeLn(Ansi::setBold()."Stream Management".Ansi::clearBold());
+		Console::writeLn(Ansi::setBold()." |- Registered wrappers".Ansi::clearBold());
+		for($n=0; $n<count($sw); $n++) {
+			$this->treenode( $sw[$n] , !(($n+1)<count($sw)), false );
+		}
+
+		Console::writeLn(Ansi::setBold()." '- Registered filters".Ansi::clearBold());
+		for($n=0; $n<count($sf); $n++) {
+			$this->treenode( $sf[$n] , !(($n+1)<count($sf)), true );
+		}
+
+		Console::writeLn();
+	}
+
+	function extensions() {
+		$extn = get_loaded_extensions();
+		foreach($extn as $val) { $ext[$val] = $val; }
+		$this->extn = $ext;
+
+		Console::writeLn(Ansi::setBold()."Loaded extensions:".Ansi::clearBold());
+		Console::writeLn(Ansi::setBold()." |- Archive formats:".Ansi::clearBold());
+			$this->checkExt('zlib',false,false);
+			$this->checkExt('bz2',false,false);
+			$this->checkExt('zip',false,false);
+			$this->checkExt('tar',true,false);
+
+		Console::writeLn(Ansi::setBold()." |- Imaging and metadata:".Ansi::clearBold());
+			$this->checkExt('gd',false,false,'Image manipulation library');
+			$this->checkExt('exif',false,false,'Serves image metadata');
+			$this->checkExt('imagick',true,false,'Image manipulation library');
+
+		Console::writeLn(Ansi::setBold()." |- Net and Sockets:".Ansi::clearBold());
+			$this->checkExt('curl',false,false,'HTTP, FTP, and other requests');
+			$this->checkExt('sockets',true,false);
+
+		Console::writeLn(Ansi::setBold()." '- Cryptography:".Ansi::clearBold());
+			$this->checkExt('uuid',false,false,'Accelerates UUID generation');
+			$this->checkExt('mcrypt',false,false,'Provides cryptographic features');
+			$this->checkExt('mhash',true,false);
+
+		Console::writeLn(__astr("\b{ '- Cryptography:}"));
+			$this->checkExt('memcache',false,true,"MemCache");
+			$this->checkExt('memcached',true,true,"MemCached");
+
+		Console::writeLn();
 	}
 
 	function initialize() {

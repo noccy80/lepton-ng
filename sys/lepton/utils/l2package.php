@@ -6,17 +6,20 @@
 
 		const LOCK_FILE = '/tmp/l2lock';
 
+		private $cachefile;
 		private $cachedb;
+		private $cache;
 		private $hlockfile;
 
 		function __construct() {
 
+			$this->cachefile  = APP_PATH . '/.l2cache';
+
 			$this->hlockfile = fopen(L2PackageManager::LOCK_FILE,"w");
 			flock($this->hlockfile,LOCK_EX);
 
-			$cachefile = SYS_PATH.'/.l2cache';
-			if (file_exists($cachefile)) {
-				Console::debugEx(LOG_BASIC,__CLASS__,"Loading package cache from %s", $cachefile);
+			if (file_exists($this->cachefile)) {
+				Console::debugEx(LOG_BASIC,__CLASS__,"Loading package cache from %s", $this->cachefile);
 				$this->loadCache();
 			} else {
 				Console::debugEx(LOG_BASIC,__CLASS__,"Package cache not found");
@@ -33,25 +36,39 @@
 
 		function initCache() {
 			Console::write("Initializing database ... ");
-			$this->cachedb = new PDO("sqlite:".SYS_PATH.'/.l2cache');
-			$this->cachedb->query("CREATE TABLE packages (id INT PRIMARY, package TEXT, description TEXT, version TEXT");
+			// $this->cachedb = new PDO("sqlite:".SYS_PATH.'/.l2cache');
+			// $this->cachedb->query("CREATE TABLE packages (id INT PRIMARY, package TEXT, description TEXT, version TEXT");
+			$this->cache = array();
 			Console::writeLn("Done");
 		}
 
 		function loadCache() {
-			$this->cachedb = new PDO("sqlite:".SYS_PATH.'/.l2cache');
+			// $this->cachedb = new PDO("sqlite:".SYS_PATH.'/.l2cache');
+			$fc = file_get_contents($this->cachefile);
+			$fco = unserialize($fc);
+			$this->cache = $fco;
 		}
 
 		function saveCache() {
-
+			$fco = $this->cache;
+			$fc = serialize($fco);
+			file_put_contents($this->cachefile, $fc);
 		}
 
 		function registerPackage($package,$data) {
 
-			
+			$this->cache['packages'][$package] = $data;
+
 		}
 
 		public function installPackage(L2Package $pkg) {
+
+			if (isset($this->cache['logs'][$pkg->getFilename()])) {
+				Console::writeLn(__astr("Package already installed: \b{%s}"), $pkg->getFilename());
+				return false;
+			}
+
+			$install_log = array();
 
 			Console::writeLn(__astr("Preparing package: \b{%s}"), $pkg->getFilename());
 			$files = $pkg->getFiles();
@@ -61,20 +78,20 @@
 			$warn = 0;
 			foreach($files as $file) {
 				$fn = $file['filename'];
-				$q = $this->cachedb->query(sprintf("SELECT * FROM files WHERE filename='%s'", $fn));
-				if ($q) {
+				// $q = $this->cachedb->query(sprintf("SELECT * FROM files WHERE filename='%s'", $fn));
+				if (isset($this->cache['fs'][$fn])) {
 					Console::writeLn("Warning: File %s collides with other package", $fs);
 					$warn++;
 				} else {
 					$lcpath = APP_PATH.str_replace('app','',$fn);
 					if (file_exists($lcpath)) {
 						Console::writeLn("Warning: File %s already exist in filesystem", $lcpath);
-						// $warn++;
+						$warn++;
 					}
 				}
 			}
-			Console::writeLn(__astr(" Ok"));
 			if($warn == 0) {
+				Console::writeLn(__astr(" Ok"));
 				foreach($files as $file) {
 					$fn = $file['filename'];
 					$fsrc = $fn;
@@ -83,10 +100,21 @@
 						$dirname = dirname($fdest);
 						$dn = $dirname;
 						Console::writeLn(__astr("    \c{ltgray mkdir} %s"), $dirname);
-						mkdir($dirname);
+						mkdir($dirname, 0777, true);
+						$this->cache['fs'][$dirname] = $pkg->getFilename();
+						$install_log[] = array(
+							'cmd' => 'mkdir',
+							'dirname' => $dirname
+						);
 					}
 					Console::writeLn(__astr("    \c{ltgray copy} %s => %s"), $fsrc, $fdest);
 					$fnin = 'zip://'.$pkg->getFilename(true).'#'.$fsrc;
+					$this->cache['fs'][$fdest] = $pkg->getFilename();
+					$install_log[] = array(
+						'cmd' => 'copy',
+						'dest' => $fdest,
+						'src' => $fnin
+					);
 					$fr = fopen($fnin,'rb');
 					$fw = fopen($fdest,'wb');
 					if ($fr && $fw) {
@@ -98,27 +126,43 @@
 						Console::writeLn(__astr("    \c{red error}: Could not open file"));
 					}
 					// TODO: Copy file, log everyting including mkdirs
+
+					$this->cache['logs'][$pkg->getFilename()] = $install_log;
 				}
+			} else {
+				Console::writeLn(__astr("    \c{red FAIL}"));
 			}
 
 		}
 
 		public function removePackage(L2Package $pkg) {
 
+			if (!isset($this->cache['logs'][$pkg->getFilename()])) {
+				Console::writeLn(__astr("Package not found: \b{%s}"), $pkg->getFilename());
+				return false;
+			}
+
 			Console::writeLn(__astr("Preparing package: \b{%s}"), $pkg->getFilename());
 			$files = $pkg->getFiles();
 			Console::writeLn(__astr("    \b{Name} : %s"), $pkg->getTitle());
 			Console::writeLn(__astr("    \b{Files} : %d"), count($files));
 
-			foreach($files as $file) {
-				$fn = $file['filename'];
-				$fsrc = $fn;
-				$fdest = APP_PATH.str_replace('app','',$fn);
-				if (file_exists($fdest)) {
-					Console::writeLn(__astr("    \c{ltgray delete} %s"), $fdest);
-					unlink($fdest);
+			$install_log = $this->cache['logs'][$pkg->getFilename()];
+			$install_log = array_reverse($install_log);
+			foreach($install_log as $operation) {
+				switch ($operation['cmd']) {
+					case 'copy':
+						Console::writeLn(__astr("    \c{ltgray delete} %s"), $operation['dest']);
+						unlink( $operation['dest'] );
+						break;
+					case 'mkdir':
+						Console::writeLn(__astr("    \c{ltgray rmdir} %s"), $operation['dirname']);
+						rmdir( $operation['dirname'] );
+						break;
 				}
 			}
+
+			unset($this->cache['logs'][$pkg->getFilename()]);
 
 		}
 

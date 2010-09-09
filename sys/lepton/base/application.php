@@ -187,6 +187,47 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
 
 }
 
+
+
+
+interface IShutdownHandler {
+	function shutdown();
+}
+abstract class ShutdownHandler implements IShutdownHandler {
+	static $handlers = array();
+	private $lasterror;
+	function __construct() {
+		$this->lasterror = error_get_last();
+	}
+	function wasError() {
+		return(!is_null($this->lasterror));
+	}
+	function getLastError() {
+		return $this->lasterror;
+	}
+	static function register($handler) {
+		$sh = new $handler();
+		ShutdownHandler::$handlers[$handler] = $sh;
+		register_shutdown_function(array(ShutdownHandler::$handlers[$handler],"shutdown"));
+	}
+}
+
+class ConsoleShutdownHandler extends ShutdownHandler {
+
+	function shutdown() {
+		if ($this->wasError()) {
+			printf("There was an error!\n");
+			print_r($this->getLastError());
+		}
+	}
+
+}
+
+ShutdownHandler::register('ConsoleShutdownHandler');
+
+
+
+
 class ConsoleExceptionHandler extends ExceptionHandler {
 
 	function exception(Exception $e) {
@@ -205,11 +246,14 @@ class ConsoleExceptionHandler extends ExceptionHandler {
 		Console::debugEx(LOG_LOG,"Exception","Source dump of %s:\n%s", str_replace(BASE_PATH,'',$e->getFile()), $source);
 		$rv = 1;
 		Console::debugEx(LOG_BASIC,__CLASS__,"Exiting with return code %d after exception.", $rv);
-	
+
 	}
-	
+
 }
 
 Lepton::setExceptionHandler('ConsoleExceptionHandler');
+
+
+
 
 ?>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest uuid="b6516e09-812b-4034-8d88-95190aeec0c7">
+	<title>Bindings to Adobe Air</title>
+	<version>1.0.0</version>
+	<description>Enables bindings to Adobe Air.</description>
+	<author>Christopher Vagnetoft &lt;noccy@chillat.net&gt;</author>
+	<updateurl>http://lepton.noccylabs.info/updates.xml</updateurl>
+	<filedb src="package.db" />
+	<postinst>./airmake init</postinst>
+</manifest>

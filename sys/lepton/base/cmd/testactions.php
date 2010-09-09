@@ -9,6 +9,7 @@ class TestActions {
 	static $help = array(
 		'exception' => "Throw an exception",
 		'run' => "Run an application instance",
+		'exec' => "Evaluate a PHP statement",
 		'uuid' => "Generate a new UUID v4",
 		'mem' => "Show memory usage"
 	);
@@ -26,6 +27,12 @@ class TestActions {
 	function run($class,$args=null) {
 		$arg = func_get_args();
 		return call_user_func_array(array('Lepton','run'),$arg);
+	}
+
+	function exec($cmd,$args=null) {
+		$arg = func_get_args();
+		print_r(eval(join("\n",$arg)))."\n";
+		return true;
 	}
 
 	function uuid() {

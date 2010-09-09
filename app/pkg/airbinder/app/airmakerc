@@ -1,0 +1,7 @@
+SDKDIR="/opt/airsdk"
+AIRKEYSTORE="app/air/myapplication.pfx"
+AIRSTOREPASS="examplepass"
+AIRFILE="app/res/podhub.air"
+AIRMANIFEST="app/air/application.xml"
+AIRDIR="app/air/src"
+AIRFILES="app/air/assets"

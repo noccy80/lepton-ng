@@ -4,7 +4,7 @@
 #  Will compress the specified folder into folder.l2p after hashing the files
 #
 
-PACKAGES=jskit.l2p ecommerce.l2p
+PACKAGES=jskit.l2p ecommerce.l2p demonstrations.l2p airbinder.l2p
 
 .phony: all clean
 

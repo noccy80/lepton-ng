@@ -26,6 +26,10 @@ class SmartyViewHandler extends ViewHandler {
 	function loadView($template) {
 		$this->template = $template;
 		if ($this->smarty) {
+			$def = get_defined_constants(true);
+			foreach($def['user'] as $key=>$value) {
+				$this->smarty->assign($key, $value);
+			}
 			foreach($this->getViewData() as $key=>$value) {
 				$this->smarty->assign($key, $value);
 			}

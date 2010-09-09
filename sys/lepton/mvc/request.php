@@ -25,4 +25,12 @@
 			return $data;
 		}
 
+		function clientConnected() {
+			return (!client_aborted());
+		}
+
+		function ignoreDisconnect($value=true) {
+			return (ignore_user_abort($value)==1)?true:false;
+		}
+
 	}
