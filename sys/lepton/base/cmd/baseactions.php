@@ -70,6 +70,15 @@ class BaseActions {
 			Console::writeLn(__astr("    push \u{key} \u{value}"));
 		}
 	}
+	function isPassword($str) {
+		static $passwdstr = array(
+			'/password/i'
+		);
+		foreach($passwdstr as $restr) {
+			if (preg_match($restr,$str)) return true;
+		}
+		return false;
+	}
 	function get($key=null) {
 		$cfg = Config::get($key);
 		if (is_array($cfg)) {
@@ -77,14 +86,23 @@ class BaseActions {
 				if (is_array($v)) {
 					Console::writeLn(__astr("    \b{%s} \c{ltgray :} Array("), $k);
 					foreach($v as $vk=>$vv) {
+						if (self::isPassword($vk)) {
+							$vv = __astr("\u{\c{gray \b{XxXxXx}}}");
+						} 
 						Console::writeLn(__astr("        \b{%s} \c{ltgray =>} %s"), $vk,__printable($vv));
 					}
 					Console::writeLn(__astr("    )"));
 				} else {
+					if (self::isPassword($k)) {
+						$v = __astr("\u{\c{gray \b{XxXxXx}}}");
+					} 
 					Console::writeLn(__astr("    \b{%s} \c{ltgray :} %s"), $k, __printable($v));
 				}
 			}
 		} else {
+			if (self::isPassword($key)) {
+				$cfg = __astr("\u{\c{gray \b{XxXxXx}}}");
+			}
 			Console::writeLn(__astr("    \b{%-40s} \c{ltgray :} %s"), $key, $cfg);
 		}
 	}
