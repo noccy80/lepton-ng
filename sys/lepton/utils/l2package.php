@@ -85,7 +85,7 @@
 					Console::writeLn("Warning: File %s collides with other package", $fs);
 					$warn++;
 				} else {
-					$lcpath = APP_PATH.str_replace('app','',$fn);
+					$lcpath = APP_PATH.'/'.$fn;
 					if (file_exists($lcpath)) {
 						Console::writeLn("Warning: File %s already exist in filesystem", $lcpath);
 						$warn++;
@@ -97,7 +97,7 @@
 				foreach($files as $file) {
 					$fn = $file['filename'];
 					$fsrc = $fn;
-					$fdest = APP_PATH.'/'.$fn;
+					$fdest = APP_PATH.'/'.substr($fn,4);
 					if (!file_exists(dirname($fdest))) {
 						$dirname = dirname($fdest);
 						$dn = $dirname;
