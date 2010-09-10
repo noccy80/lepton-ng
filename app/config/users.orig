@@ -1,0 +1,10 @@
+<?php
+
+// Salt generator for new users
+config::set('lepton.user.saltgenerator','DefaultSaltGenerator');
+
+// Hashing algorithm, can be any supported by hash_algos()
+config::set('lepton.user.hashalgorithm','md5');
+
+// If users should be disabled by default
+config::set('lepton.user.disabledbydefault', false);

@@ -4,4 +4,13 @@ What goes in here?
  - Your configuration files as .php
  - Any overridden setting from sys/defaults.php
  
+What is loaded?
+---------------
 
+  Only the files named .php are loaded. This means that you can rename your
+  files to prevent them from being loaded on startup.
+
+  This is also cleverly used by lepton to provide defaults, contained in the
+  .orig files. These files normally just contain the original settings (and
+  in some cases the code needed to load the functionality) so you can take
+  any .orig file and copy it to .php file and off you go!
