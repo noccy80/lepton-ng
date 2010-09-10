@@ -216,8 +216,9 @@ class ConsoleShutdownHandler extends ShutdownHandler {
 
 	function shutdown() {
 		if ($this->wasError()) {
-			printf("There was an error!\n");
-			print_r($this->getLastError());
+			// TODO: Write pretty error info
+			// printf("There was an error!\n");
+			// print_r($this->getLastError());
 		}
 	}
 

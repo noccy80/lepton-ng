@@ -2,6 +2,8 @@
 	'version' => '1.0.0'
 ));
 
+	class PackageNotFoundException extends BaseException { }
+
 	class L2PackageManager {
 
 		const LOCK_FILE = '/tmp/l2lock';
@@ -95,7 +97,7 @@
 				foreach($files as $file) {
 					$fn = $file['filename'];
 					$fsrc = $fn;
-					$fdest = APP_PATH.str_replace('app','',$fn);
+					$fdest = APP_PATH.'/'.$fn;
 					if (!file_exists(dirname($fdest))) {
 						$dirname = dirname($fdest);
 						$dn = $dirname;
@@ -169,6 +171,9 @@
 		public function listPackages() {
 
 			Console::writeLn(__astr("\b{Installed packages:}"));
+			foreach($this->cache['logs'] as $pkg=>$x) {
+				Console::writeLn(__astr("    \b{%s}: Installed"), $pkg);
+			}
 			Console::writeLn(__astr("\b{Available packages:}"));
 			$g = glob(APP_PATH.'/pkg/*.l2?');
 			foreach($g as $package) {
@@ -224,6 +229,10 @@
 
 				$q = $xp->query("/manifest/filedb");
 				$this->filedb = ($q->length > 0)?$q->item(0)->getAttribute('src'):'';
+
+			} else {
+
+				throw new PackageNotFoundException();
 
 			}
 		}
