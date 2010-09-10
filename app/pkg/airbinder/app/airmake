@@ -19,20 +19,23 @@ case "$1" in
 	;;
 "update")
 	echo "Updating classes..."
-	bin/lepton airmake update air/src/airbinder.js
+	../bin/lepton airmake update air/src/airbinder.js
 	;;
 "scaffold")
 	echo 'Creating application...'
-	mkdir air
-	mkdir air/src
-	mkdir air/build
-	mkdir air/icons
-	cp -v 'res/air/application.xml' air/application.xml
-	cp -v 'res/air/airmakerc' ./airmakerc
-	cp -v 'res/air/binder.php' air/binder.php
-	cp -v 'res/air/src/index.html' air/src/index.html
-	cp -v 'res/air/prototype.js' air/src/prototype.js
-	cp -v 'res/air/icons/*.png' air/icons/
+	test -d air || mkdir air
+	test -d air/src || mkdir air/src
+	test -d air/build || mkdir air/build
+	test -d air/icons || mkdir air/icons
+	cp -v 'res/air/application.xml' 'air/application.xml'
+	cp -v 'res/air/airmakerc' 'airmakerc'
+	cp -v 'res/air/binder.php' 'air/binder.php'
+	cp -v 'res/air/src/index.html' 'air/src/index.html'
+	cp -v 'res/air/prototype.js' 'air/src/prototype.js'
+	cp -vr 'res/air/icons/lepton-16.png' 'air/icons/lepton-16.png'
+	cp -vr 'res/air/icons/lepton-32.png' 'air/icons/lepton-32.png'
+	cp -vr 'res/air/icons/lepton-48.png' 'air/icons/lepton-48.png'
+	cp -vr 'res/air/icons/lepton-128.png' 'air/icons/lepton-128.png'
 	;;
 "create")
 	$0 initstore

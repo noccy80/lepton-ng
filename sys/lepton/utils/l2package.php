@@ -115,7 +115,7 @@
 					$install_log[] = array(
 						'cmd' => 'copy',
 						'dest' => $fdest,
-						'src' => $fnin
+						'src' => $fsrc
 					);
 					$fr = fopen($fnin,'rb');
 					$fw = fopen($fdest,'wb');
