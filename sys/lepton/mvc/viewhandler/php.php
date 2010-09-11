@@ -22,6 +22,10 @@ class PlainViewHandler extends ViewHandler {
 	function display() {
 		require($this->path);
 	}
+	function includeView($view) {
+		$path = APP_PATH.'views/'.$view;
+		include($path);
+	}
 }
 
 View::$_handlers['PlainViewHandler'] = '.*\.php$';

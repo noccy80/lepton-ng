@@ -648,6 +648,38 @@
 
 	}
 
+	abstract class KeyStore {
+		static $_data;
+		function register($key,$data) {
+			KeyStore::$_data[$key] = $data;
+		}
+		function query($key) {
+			if (isset(KeyStore::$_data[$key])) {
+				return KeyStore::$_data[$key];
+			} else {
+				return null;
+			}
+		}
+	}
+	class KeyStoreRequest {
+		private $key;
+		private $val;
+		function __construct($key) {
+			$this->key = $key;
+			$this->val = KeyStore::query($key);
+		}
+		function __toString() {
+			return $this->val;
+		}
+		function get() {
+			return $this->val;
+		}
+	}
+	function KeyStore($key) {
+		return (string)(new KeyStoreRequest($key));
+	}
+
+
 	if (PHP_VERSION < "5")
 		Console::warn("Lepton is running on an unsupported version of PHP. Behavior in versions prior to 5.0 may be unreliable");
 

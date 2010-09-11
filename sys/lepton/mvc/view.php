@@ -72,6 +72,11 @@
 		function setViewData($data) {
 			$this->_data = $data;
 		}
+		
+		function includeView($view) {
+			include($view);
+		}
+		
 	}
 
 	// TODO: This should only load the plain view. Document how to make use of the rest
