@@ -19,6 +19,7 @@
 	<script type="text/javascript" src="http://www.google.com/jsapi?key=<?=KeyStore('api:google')?>"></script>
 	<script type="text/javascript">
 		google.load("prototype", "1.6.1.0");
+		google.load("scriptaculous", "1.8.3");
 	</script>
 	<link rel="stylesheet" type="text/css" href="/res/boki/boki.css">
 	<script type="text/javascript" src="/res/boki/boki.js"></script>

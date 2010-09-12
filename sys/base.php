@@ -92,6 +92,8 @@
 	define('LOG_WARN', 0);
 	define('LOG_LOG', 0);
 
+////// Exceptions /////////////////////////////////////////////////////////////
+
 	/*
 		Exception classes. Should all be derived from BaseException
 	*/
@@ -100,6 +102,8 @@
 			class FileNotFoundException extends FilesystemException { }
 			class FileAccessException extends FilesystemException { }
 		class UnsupportedPlatformException extends BaseException { }
+		
+		
 	/**
 	 * @class Config
 	 * @brief Configuration management
@@ -219,6 +223,8 @@
 		}
 
 	}
+
+////// Console ////////////////////////////////////////////////////////////////
 
 	/**
 	 * @class Console
@@ -345,6 +351,8 @@
 
 	}
 
+////// Timer //////////////////////////////////////////////////////////////////
+
 	/**
 	 * @class Timer
 	 * @brief A rough timer with microsecond resolution.
@@ -381,6 +389,8 @@
 		}
 
 	}
+
+////// Lepton /////////////////////////////////////////////////////////////////
 
 	/**
 	 * @class Lepton
@@ -474,6 +484,9 @@
 	
 	}
 
+////// Application Base ///////////////////////////////////////////////////////
+
+
 	interface IApplication {
 		function run();
 	}
@@ -482,6 +495,7 @@
 
 	}
 
+////// Meta Information ///////////////////////////////////////////////////////
 
 	function __fileinfo($strinfo,$vars=null) {
 		if (count(ModuleManager::$_order) > 0) {
@@ -496,6 +510,8 @@
 			Console::warn("Module reported modinfo '%s' without being requested???", $string);
 		}
 	}
+
+////// ModuleManager //////////////////////////////////////////////////////////
 
 	/**
 	 * @class ModuleManager
@@ -648,6 +664,8 @@
 
 	}
 
+////// KeyStore ///////////////////////////////////////////////////////////////
+
 	abstract class KeyStore {
 		static $_data;
 		function register($key,$data) {
@@ -679,6 +697,8 @@
 		return (string)(new KeyStoreRequest($key));
 	}
 
+
+////// Finalizing Bootstrap ///////////////////////////////////////////////////
 
 	if (PHP_VERSION < "5")
 		Console::warn("Lepton is running on an unsupported version of PHP. Behavior in versions prior to 5.0 may be unreliable");

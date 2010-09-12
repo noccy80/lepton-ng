@@ -18,6 +18,7 @@ boki.Editor = Class.create({
 		e.insertBefore(this._el,t);
 		this._el.update(t.innerHTML);
 		this._el.focus();
+		new Effect.Highlight(this._el);
 		$(t).hide();
 		// t.document.documentElement.appendChild(this._el);
 		this._elp = e;
