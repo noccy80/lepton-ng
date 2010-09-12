@@ -9,7 +9,7 @@ ModuleManager::load('lepton.fs.*');
 
 class FsTestApp extends ConsoleApplication {
 	protected $arguments = "hvo:";
-	function usage() { 
+	function usage() {
 
 	}
 	function main($argc,$argv) {

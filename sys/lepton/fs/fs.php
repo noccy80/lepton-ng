@@ -566,9 +566,9 @@
 			}
 			return $result;
 		}
-		
+
 		public function getIterator() {
-			return $this->getListing();
+			return new ArrayIterator($this->getListing());
 		}
 
 	}
