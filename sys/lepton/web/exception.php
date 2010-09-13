@@ -26,6 +26,8 @@
 
 		function exception(Exception $e) {
 
+			header('HTTP/1.1 501 Server Error', true);
+
 			$id = uniqid();
 			$dbg = sprintf("Unhandled exception: (%s) %s\n  in %s:%d", get_class($e), $e->getMessage(), str_replace(SYS_PATH,'',$e->getFile()), $e->getLine())
 			     . Console::backtrace(0,$e->getTrace(),true)

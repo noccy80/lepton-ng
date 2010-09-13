@@ -7,11 +7,14 @@ ModuleManager::load('lepton.mvc.view');
 
 class PlainViewHandler extends ViewHandler {
 	private $path;
-	function __construct() {
-	}
 	function loadView($view) {
 		$path = APP_PATH.'views/'.$view;
 		Console::debugEx(LOG_BASIC,__CLASS__,"Attempting to invoke view from %s", $path);
+		$data = $this->getViewData();
+		foreach($data as $key=>$item) {
+			$this->key = $item;
+		}
+		extract($data, EXTR_SKIP);
 		if (file_exists($path)) {
 			Console::debugEx(LOG_BASIC,__CLASS__,"Invoking as Pure PHP View");
 			$this->path = $path;
@@ -20,9 +23,10 @@ class PlainViewHandler extends ViewHandler {
 		}
 	}
 	function display() {
+		header('HTTP/1.1 200 Content Follows', true);
 		require($this->path);
 	}
-	function includeView($view) {
+	function import($view) {
 		$path = APP_PATH.'views/'.$view;
 		include($path);
 	}

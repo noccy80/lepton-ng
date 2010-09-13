@@ -28,9 +28,7 @@ class SmartyViewHandler extends ViewHandler {
 		if ($this->smarty) {
 			$def = get_defined_constants(true);
 			foreach($def['user'] as $key=>$value) {
-				$this->smarty->assign($key, $value);
-			}
-			foreach($this->getViewData() as $key=>$value) {
+		
 				$this->smarty->assign($key, $value);
 			}
 		} else {
@@ -38,6 +36,7 @@ class SmartyViewHandler extends ViewHandler {
 		}
 	}
 	function display() {
+		header('HTTP/1.1 200 Content Follows', true);
 		$this->smarty->display($this->template);
 	}
 }

@@ -41,7 +41,9 @@
 				throw new BaseException("Could not find controller method ".$method);
 			}
 		}
-
+		function getState() {
+			return $this->_state;
+		}
 		function __set($key,$value) {
 			$this->_state[$key] = $value;
 		}

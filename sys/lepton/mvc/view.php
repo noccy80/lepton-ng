@@ -34,6 +34,7 @@
 		function set($key,$val) {
 			 $this->_data[$key] = $val;
 		}
+		function __set($key,$val) { return $this->set($key,$val); }
 		/**
 		 * @brief Push a value onto a keyset in the view data set
 		 *
@@ -56,6 +57,7 @@
 		function get($key) {
 			return (isset($this->_data[$key])?$this->_data[$key]:null);
 		}
+		function __get($key) { return $this->get($key); }
 		/**
 		 * @brief Returns the entire view data set
 		 *
@@ -97,12 +99,17 @@
 		 *
 		 *
 		 */
-		static function load($view) {
+		static function load($view,$ctl=null) {
 
 			// Go over the registered handlers and see which one match the file name
 			foreach((array)View::$_handlers as $handler=>$match) {
+				
 				if (preg_match('%'.$match.'%',$view)) {
 					$vc = new $handler();
+					// If controller is specified, get its state
+					if (count($ctl->getState()) > 0) {
+						$vc->setViewData($ctl->getState());
+					}
 					$vc->loadView($view);
 					$vc->display();
 					return true;
