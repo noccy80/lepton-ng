@@ -17,6 +17,8 @@
 	 *
 	 */
 	class DefaultAuthBackend extends AuthenticationBackend {
+
+		private $userid;
 		
 		/**
 		 * @brief Test a password for a username.
@@ -27,11 +29,11 @@
 		 * @param string $password The password to match with
 		 * @return bool True on success.
 		 */
-		function testUserPassword($username,$password) {
+		function testUserPassword($username,$password,$ext=false) {
 			$db = new DatabaseConnection();
 			try {
 				$userrecord = $db->getSingleRow(
-					"SELECT * FROM users WHERE username='%s'", $username
+					"SELECT * FROM ".LEPTON_DB_PREFIX."users WHERE username=%s", $username
 				);
 				if ($userrecord) {
 
@@ -40,7 +42,7 @@
 
 					// Grab the salt, concatenate the password and the salt,
 					// and hash it with the selected hashing algorithm.
-					$us = $userrecord['salt'];
+					$us = $userrecord['passwordsalt'];
 					$ps = $password.$us;
 					$hp = hash($ha,$ps);
 
@@ -58,6 +60,10 @@
 			
 		}
 		
+		function getUserId() {
+			return $this->userid;
+		}
+		
 		/**
 		 * @brief Query and return a user record.
 		 * This can be used by the authentication providers in a number of ways
@@ -68,10 +74,11 @@
 		 * @return array The user record, or null on failure.
 		 */
 		function queryUser($username) {
+		
 			$db = new DatabaseConnection();
 			try {
 				$userrecord = $db->getSingleRow(
-					"SELECT * FROM users WHERE username='%s'", $username
+					"SELECT * FROM users WHERE username=%s", $username
 				);
 				if ($userrecord) {
 					return $userrecord;
@@ -81,6 +88,14 @@
 				throw $e;
 			}
 			
+		}
+		
+		function generateSalt() {
+
+			$start = md5(microtime(true)*1000);
+			$salt = substr($start,4,16); // Grab 16 bytes from middle
+			return $salt;
+		
 		}
 		
 	}

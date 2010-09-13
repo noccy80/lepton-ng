@@ -10,7 +10,16 @@ ModuleManager::load('lepton.utils.tokenizer');
 ModuleManager::load('lepton.base.cmd.*');
 
 class LeptonUtil extends ConsoleApplication {
-	protected $arguments = 'hil:';
+	static $verbose;
+	protected $description = "Lepton Management Utility";
+	protected $arguments = array(
+		array('h','help','Show this help'),
+		array('v','verbose','Verbose mode'),
+		array('q','quiet','Show no progress information'),
+		array('o:','output','Specify output file when exporting'),
+		array('i:','input','Specify input file when importing'),
+		array('l::','load','Load modules or namespaces')
+	);
 	protected $version = '1.0';
 	function interactiveMode() {
 		Console::writeLn(__astr("\b{Lepton Management Utility} \c{ltgray v%s}"), $this->version);
@@ -59,7 +68,7 @@ class LeptonUtil extends ConsoleApplication {
 
 		return 0;
 	}
-	function usage() {
+	function usageX() {
 		Console::writeLn('Usage:     %s [-options] command [arguments]', $this->getName());
 		Console::writeLn();
 		Console::writeLn('Options:   -q          Quiet, show no info');

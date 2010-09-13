@@ -1,0 +1,19 @@
+<html lang="en-us">
+<head>
+	<title>LeptonApplication</title>
+	<script type="text/javascript" src="js/prototype.js"></script>
+	<script type="text/javascript" src="js/application_compat.js"></script>
+	<script type="text/javascript">
+		function reverse() {
+			var str = $F('string');
+			str = airtest.reverseString(str);
+			$('string').value = str;
+		}
+	</script>
+</head>
+<body>
+	<h1>LeptonApplication</h1>
+	<p>This application will communicate with the application through the /app/ controller.</p>
+	<p><a href="javascript:airtest.reverseString($('string'));">Reverse the string</a></p>
+</body>
+</html>

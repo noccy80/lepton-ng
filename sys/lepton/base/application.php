@@ -70,15 +70,79 @@ class Ansi {
 }
 function __astr($str) { return Ansi::parse($str); }
 
+
 abstract class ConsoleApplication extends Application implements IConsoleApplication {
 	protected $_args;
 	protected $_params;
+	function usage() {
+	
+		Console::writeLn("%s - %s", $this->getName(), isset($this->description)?$this->description:"Untitled Lepton Application");
+		Console::writeLn("");
+		Console::writeLn("Usage:");
+		Console::writeLn("    %s [-arguments] [parameters]", $this->getName());
+		Console::writeLn("");
+		Console::writeLn("Arguments:");
+		foreach($this->arguments as $arg=>$val) {
+			$opts = '';
+			if ($val[0] != null) {
+				$opts.= '-'.$val[0][0];
+			}
+			if ($val[1] != NULL) {
+				if ($opts != '') $opts .= ',';
+				$opts.= '--'.$val[1];
+			}
+			if (strlen($val[0])>1) { $opts.=' arg'; }
+			$desc = $val[2];
+			Console::writeLn("    %-20s %s", __astr($opts), $desc);
+		}
+		Console::writeLn();
+		Console::writeLn("Environment Variables:");
+		Console::writeLn("    APP_PATH             The application dir path");
+		Console::writeLn("    SYS_PATH             The system path");
+		Console::writeLn("    DEBUG                Show extended debug info (1-5)");
+		Console::writeLn("    LOGFILE              Log file to output debug info to");
+	
+	}
 	function run() {
 		global $argc, $argv;
 		if (isset($this->arguments)) {
-			list($args,$params) = $this->parseArguments($this->arguments);
+			if (is_string($this->arguments)) {
+				$strargs = $this->arguments;
+				$longargs = array();
+			} elseif (is_array($this->arguments)) {
+				$strargs = '';
+				$longargs = array();
+				foreach($this->arguments as $arg) {
+					$strargs.= $arg[0];
+					// Scope is the : or ::
+					$scope = substr($arg[0],1);
+					$longargs[] = $arg[1].$scope;
+				}
+			} else {
+				console::warn('Application->$arguments is set but format is not understood');
+			}
+			list($args,$params) = $this->parseArguments($strargs,$longargs);
+			foreach($args as $arg=>$val) {
+				if(in_array($arg,$longargs)){
+					foreach($this->arguments as $argsrc) {
+						if ($argsrc[1] == $arg) {
+							$args[$argsrc[0]] = $val;
+							$olarg = $argsrc[0];
+						}
+					}
+				} else {
+					foreach($this->arguments as $argsrc) {
+						if ($argsrc[0] == $arg) {
+							$args[$argsrc[1]] = $val;
+							$olarg = $argsrc[0];
+							// Do any matching we need here
+						}
+					}
+				}
+			}
 			$this->_args = $args;
 			$this->_params = $params;
+
 		}
 		if (isset($args['h'])) {
 			if (method_exists($this,'usage')) {
@@ -92,7 +156,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 		global $argv;
 		return( basename($argv[0]) );
 	}
-	function parseArguments($options) {
+	function parseArguments($options,$longopts=null) {
 		global $argc, $argv;
 		$matched = false;
 		$default = array();
@@ -109,7 +173,11 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 			}
 			if ($matched) $default[] = $argv[$n];
 		}
-		$params = (array)getopt($options);
+		if (COMPAT_GETOPT_LONGOPTS) {
+			$params = (array)getopt($options,$longopts);
+		} else {
+			$params = (array)getopt($options);
+		}
 		return array($params,$default);
 	}
 	function hasArgument($argument) {

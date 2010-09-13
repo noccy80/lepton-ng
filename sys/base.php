@@ -71,7 +71,10 @@
 	}
 	// Enable PHPs error reporting when the DEBUG envvar is set
 	if (getenv("DEBUG") >= 1) {
+		define('DEBUGMODE',true);
 		error_reporting(E_ALL);
+	} else {
+		define('DEBUGMODE',false);
 	}
 
 	if (php_sapi_name() == 'cli') {
@@ -241,9 +244,13 @@
 			$lines = explode("\n",$strn);
 			foreach($lines as $line) {
 				if (getenv("DEBUG") >= $level) {
-					fprintf(STDERR,"%s [%s] %s\n", $ts, $module,$line);
+					if (DEBUGMODE):
+						fprintf(STDERR,"%s %-20s %s\n", $ts, $module,$line);
+					else:
+						fprintf(STDERR,"[%s] %s\n", $module,$line);
+					endif;
 				}
-				if (LOGFILE) fprintf(LOGFILE,"%s [%s] %s\n", $ts, $module, $line);
+				if (LOGFILE) fprintf(LOGFILE,"%s | %-20s | %s\n", $ts, $module, $line);
 			}
 		}
 
@@ -332,7 +339,7 @@
 		 *
 		 */
 		static function ts() {
-			return @date("y-M-d H:i:s",time());
+			return @date("M-d H:i:s",time());
 		}
 
 		/**
@@ -496,6 +503,16 @@
 	}
 
 ////// Meta Information ///////////////////////////////////////////////////////
+
+	function dequote($str) {
+		$str = trim($str);
+		$qt = $str[0];
+		if (($qt == '"') || ($qt == "'" )) {
+			if ($str[strlen($str)-1] == $qt) {
+				return substr($str,1,strlen($str)-2);
+			}
+		}
+	}
 
 	function __fileinfo($strinfo,$vars=null) {
 		if (count(ModuleManager::$_order) > 0) {

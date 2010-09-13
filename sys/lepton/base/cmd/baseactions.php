@@ -71,7 +71,7 @@ class BaseActions {
 			Console::writeLn(__astr("    push \u{key} \u{value}"));
 		}
 	}
-	function isPassword($str) {
+	function _isPassword($str) {
 		static $passwdstr = array(
 			'/password/i'
 		);
@@ -87,7 +87,7 @@ class BaseActions {
 				if (is_array($v)) {
 					Console::writeLn(__astr("    \b{%s} \c{ltgray :} Array("), $k);
 					foreach($v as $vk=>$vv) {
-						if (self::isPassword($vk)) {
+						if (self::_isPassword($vk)) {
 							$vv = __astr("\u{\c{gray \b{XxXxXx}}}");
 						} 
 						Console::writeLn(__astr("        \b{%s} \c{ltgray =>} %s"), $vk,__printable($vv));

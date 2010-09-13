@@ -7,29 +7,53 @@ else	(die("Failed to load sys/base.php"));
 
 ModuleManager::load('lepton.db.database');
 ModuleManager::load('lepton.console.readline');
+ModuleManager::load('lepton.user.authentication');
 
 class DbUtility extends ConsoleApplication {
 
 	// Command line arguments that the application accepts.
-	protected $arguments = "hvg:s";
-
-	// Usage instructions, shown when invoked with -h
-	function usage() {
-		Console::writeLn("Usage:    %s [-g <num>] [-s]", $this->getName());
-		Console::writeLn("Options:  -g <num>    Number of UUIDs to generate for benchmarking");
-		Console::writeLn("          -s          Force software implementation");
-	}
+	var $arguments = array(
+		array('h','help','Show help'),
+		array('v','verbose','Show verbose output')
+	);
 
 	// Main function.
 	function main($argc,$argv) {
 
-		Console::writeLn("Opening default connection.");
 		$db = new DatabaseConnection();
 
 		try {
-			$db->updateRow("CREATE TABLE ".LEPTON_DB_PREFIX.'users'." (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(32) NOT NULL UNIQUE, passwordsalt VARCHAR(128) NULL, password VARCHAR(128) NULL, flags VARCHAR(32) NOT NULL DEFAULT '')");
+			$db->exec("DROP TABLE ".LEPTON_DB_PREFIX."users");
 		} catch (PDOException $e) {
-			Console::writeLn("Okay!");
+			Console::writeLn($e);
+		}
+
+		try {
+			$db->exec("CREATE TABLE ".LEPTON_DB_PREFIX."users (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(32) NOT NULL UNIQUE, passwordsalt VARCHAR(16) NULL, password VARCHAR(128) NULL, flags VARCHAR(32) NOT NULL DEFAULT '')");
+		} catch (PDOException $e) {
+			Console::writeLn($e);
+		}
+
+		try {
+			// Generate a new user salt
+			$abf = new DefaultAuthBackend();
+			$salt = $abf->generateSalt();
+
+			// Do the math
+			$user = 'test';
+			$pass = "spork234";
+			$hash = hash('md5',$pass.$salt);
+			
+			// Save to database
+			$db->insertRow("INSERT INTO ".LEPTON_DB_PREFIX."users (username,passwordsalt,password,flags) VALUES (%s,%s,%s,%s)", $user, $salt, $hash,'+a');
+			
+			$q = $db->getSingleRow("SELECT * FROM ".LEPTON_DB_PREFIX."users WHERE username=%s", $user);
+			Console::writeLn("User %s, salt %s.", $q['username'], $q['passwordsalt']);
+
+			User::authenticate(new PasswordAuthentication($q['username'],$pass));
+			
+		} catch (PDOException $e) {
+			Console::writeLn($e);
 		}
 	}
 }
