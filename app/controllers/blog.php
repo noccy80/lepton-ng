@@ -57,6 +57,8 @@ class BlogController extends Controller {
 			)
 		);
 		$this->blogposts = $posts;
+		$this->title = "Blog";
+		$this->sitename = "MySite";
 		View::load('blog/default.php',$this);
 	}
 
