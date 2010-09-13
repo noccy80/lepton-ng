@@ -21,6 +21,7 @@ class LeptonUtil extends ConsoleApplication {
 		array('l::','load','Load modules or namespaces')
 	);
 	protected $version = '1.0';
+	
 	function interactiveMode() {
 		Console::writeLn(__astr("\b{Lepton Management Utility} \c{ltgray v%s}"), $this->version);
 		Console::writeLn(__astr("(c) 2010, NoccyLabs.info"));
@@ -67,17 +68,6 @@ class LeptonUtil extends ConsoleApplication {
 		$this->doCommand($this->getParameterSlice(0));
 
 		return 0;
-	}
-	function usageX() {
-		Console::writeLn('Usage:     %s [-options] command [arguments]', $this->getName());
-		Console::writeLn();
-		Console::writeLn('Options:   -q          Quiet, show no info');
-		Console::writeLn('           -h          Show help');
-		Console::writeLn('           -o file     Output file (when exporting)');
-		Console::writeLn('           -i file     Input file (when importing)');
-		Console::writeLn('           -l ns       Load module or namespace');
-		Console::writeLn();
-		Console::writeLn('Actions:   Use \'help\' to see the actions available');
 	}
 }
 
