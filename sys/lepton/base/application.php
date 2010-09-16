@@ -122,16 +122,17 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 				console::warn('Application->$arguments is set but format is not understood');
 			}
 			list($args,$params) = $this->parseArguments($strargs,$longargs);
+			if (is_callable($this,"getArguments")) {
 			foreach($args as $arg=>$val) {
 				if(in_array($arg,$longargs)){
-					foreach($this->arguments as $argsrc) {
+					foreach($this->getArguments() as $argsrc) {
 						if ($argsrc[1] == $arg) {
 							$args[$argsrc[0]] = $val;
 							$olarg = $argsrc[0];
 						}
 					}
 				} else {
-					foreach($this->arguments as $argsrc) {
+					foreach($this->getArguments() as $argsrc) {
 						if ($argsrc[0] == $arg) {
 							$args[$argsrc[1]] = $val;
 							$olarg = $argsrc[0];
@@ -139,6 +140,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 						}
 					}
 				}
+			}
 			}
 			$this->_args = $args;
 			$this->_params = $params;

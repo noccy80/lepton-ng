@@ -74,11 +74,11 @@
 		function setViewData($data) {
 			$this->_data = $data;
 		}
-		
+
 		function includeView($view) {
-			include($view);
+			include(APP_PATH.'/views/'.$view);
 		}
-		
+
 	}
 
 	// TODO: This should only load the plain view. Document how to make use of the rest
@@ -103,11 +103,11 @@
 
 			// Go over the registered handlers and see which one match the file name
 			foreach((array)View::$_handlers as $handler=>$match) {
-				
+
 				if (preg_match('%'.$match.'%',$view)) {
 					$vc = new $handler();
 					// If controller is specified, get its state
-					if (count($ctl->getState()) > 0) {
+					if (($ctl) && count($ctl->getState()) > 0) {
 						$vc->setViewData($ctl->getState());
 					}
 					$vc->loadView($view);
