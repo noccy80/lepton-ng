@@ -16,9 +16,10 @@ class LeptonUtil extends ConsoleApplication {
 		array('h','help','Show this help'),
 		array('v','verbose','Verbose mode'),
 		array('q','quiet','Show no progress information'),
+		array('i','interactive','Interactive mode'),
 		array('o:','output','Specify output file when exporting'),
-		array('i:','input','Specify input file when importing'),
-		array('l::','load','Load modules or namespaces')
+		array('r:','read','Specify input file when importing'),
+		array('l:','load','Load modules or namespaces')
 	);
 	protected $version = '1.0';
 	

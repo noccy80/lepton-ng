@@ -75,7 +75,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 	protected $_args;
 	protected $_params;
 	function usage() {
-	
+
 		Console::writeLn("%s - %s", $this->getName(), isset($this->description)?$this->description:"Untitled Lepton Application");
 		Console::writeLn("");
 		Console::writeLn("Usage:");
@@ -101,7 +101,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 		Console::writeLn("    SYS_PATH             The system path");
 		Console::writeLn("    DEBUG                Show extended debug info (1-5)");
 		Console::writeLn("    LOGFILE              Log file to output debug info to");
-	
+
 	}
 	function run() {
 		global $argc, $argv;
@@ -122,17 +122,16 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 				console::warn('Application->$arguments is set but format is not understood');
 			}
 			list($args,$params) = $this->parseArguments($strargs,$longargs);
-			if (is_callable($this,"getArguments")) {
 			foreach($args as $arg=>$val) {
 				if(in_array($arg,$longargs)){
-					foreach($this->getArguments() as $argsrc) {
+					foreach($args as $argsrc) {
 						if ($argsrc[1] == $arg) {
 							$args[$argsrc[0]] = $val;
 							$olarg = $argsrc[0];
 						}
 					}
 				} else {
-					foreach($this->getArguments() as $argsrc) {
+					foreach($args as $argsrc) {
 						if ($argsrc[0] == $arg) {
 							$args[$argsrc[1]] = $val;
 							$olarg = $argsrc[0];
@@ -140,7 +139,6 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 						}
 					}
 				}
-			}
 			}
 			$this->_args = $args;
 			$this->_params = $params;
@@ -187,6 +185,9 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 	}
 	function getArgument($argument) {
 		return $this->_args[$argument];
+	}
+	function getArguments() {
+		return $this->_args;
 	}
 	function getParameters() {
 		return $this->_params;
