@@ -273,6 +273,15 @@
 		/**
 		 *
 		 */
+		static function fatal() {
+			$args = func_get_args();
+			@call_user_func_array(array('Console','debugEx'),array_merge(array(LOG_LOG,'Fatal'),array_slice($args,0)));
+			die(RETURN_ERROR);
+		}
+
+		/**
+		 *
+		 */
 		static function backtrace($trim=1,$stack=null,$return=false) {
 			if (!$stack) { $stack = debug_backtrace(false); }
 			$trace = array();

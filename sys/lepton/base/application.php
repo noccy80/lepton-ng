@@ -124,16 +124,16 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 			list($args,$params) = $this->parseArguments($strargs,$longargs);
 			foreach($args as $arg=>$val) {
 				if(in_array($arg,$longargs)){
-					foreach($args as $argsrc) {
-						if ($argsrc[1] == $arg) {
+					foreach($args as $argsrc=>$v) {
+						if ($argsrc == $arg) {
 							$args[$argsrc[0]] = $val;
 							$olarg = $argsrc[0];
 						}
 					}
 				} else {
-					foreach($args as $argsrc) {
-						if ($argsrc[0] == $arg) {
-							$args[$argsrc[1]] = $val;
+					foreach($args as $argsrc=>$v) {
+						if ($argsrc == $arg) {
+							$arg[$argsrc] = $val;
 							$olarg = $argsrc[0];
 							// Do any matching we need here
 						}
