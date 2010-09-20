@@ -1,13 +1,13 @@
 <?php
 
-	session_start();
-	
+	if (!headers_sent()) session_start();
+
 	abstract class Session {
-	
+
 		static $id;
-	
+
 		static function set($key,$value) {
-		
+
 			$_SESSION[$key] = $value;
 		
 		}
