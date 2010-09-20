@@ -15,7 +15,7 @@ class FsTestApp extends ConsoleApplication {
 	function main($argc,$argv) {
 		$f = FsObject::get('.');
 		foreach($f as $i) {
-			var_dump($i);
+			Console::writeLn('%s', $i->getAbsolute());
 		}
 	}
 }

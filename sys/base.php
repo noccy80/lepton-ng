@@ -315,7 +315,15 @@
 		 */
 		static function write() {
 			$args = func_get_args();
-			$strn = @call_user_func_array('sprintf',array_slice($args,0));
+			if (count($args)>0) {
+				if (count($args)>1) {
+					$strn = @call_user_func_array('sprintf',array_slice($args,0));
+				} else {
+					$strn = $args[0];
+				}
+			} else {
+				$strn = "";
+			}
 			printf("%s",$strn);
 			if (LOGFILE) fprintf(LOGFILE, $strn);
 		}
@@ -329,7 +337,15 @@
 
 		static function writeLn() {
 			$args = func_get_args();
-			$strn = @call_user_func_array('sprintf',array_slice($args,0));
+			if (count($args)>0) {
+				if (count($args)>1) {
+					$strn = @call_user_func_array('sprintf',array_slice($args,0));
+				} else {
+					$strn = $args[0];
+				}
+			} else {
+				$strn = "";
+			}
 			printf("%s\n",$strn);
 			if (LOGFILE) fprintf(LOGFILE, $strn . "\n");
 		}
@@ -441,12 +457,17 @@
 				$ic--;
 				if ($ic == 0) exit( $rv );
 			} else {
-				Console::warn('Application class %s not found!', $class);
 				$ic--;
-				if ($ic == 0) exit( RETURN_ERROR );
+				if ($ic == 0) {
+					Console::warn('FATAL: Application class %s not found!', $class);
+					exit( RETURN_ERROR );
+				} else {
+					Console::warn('Application class %s not found!', $class);
+				}
+
 			}
 		}
-		
+
 		function using($module) {
 			Console::warn("Lepton::using() is deprecated (%s)", $module);
 			ModuleManager::load($module);
@@ -531,7 +552,13 @@
 				foreach($vars as $key=>$var) {
 					ModuleManager::$_modules[$mod][$key] = $var;
 				}
-			} 
+				if (isset($vars['depends']) && is_array($vars['depends'])) {
+					$deps = (array)$vars['depends'];
+					foreach($vars['depends'] as $dep) {
+						ModuleManager::load($dep);
+					}
+				}
+			}
 		} else {
 			Console::warn("Module reported modinfo '%s' without being requested???", $string);
 		}
