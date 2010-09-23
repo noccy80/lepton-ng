@@ -1,29 +1,29 @@
 <?php
 
-	class AuditLog {
+    class AuditLog {
 
-		static function getLogger($component) {
-			return new AuditLogger($component);
-		}
+        static function getLogger($component) {
+            return new AuditLogger($component);
+        }
 
-	}
+    }
 
-	class AuditLogger {
+    class AuditLogger {
 
-		private $_component;
+        private $_component;
 
-		public function __construct($component) {
-			$this->_component = $component;
-		}
+        public function __construct($component) {
+            $this->_component = $component;
+        }
 
-		public function addEvent(AuditEvent $event) {
+        public function addEvent(AuditEvent $event) {
 
-		}
+        }
 
-	}
+    }
 
-	class AuditEvent {
+    class AuditEvent {
 
-		
+        
 
-	}
+    }

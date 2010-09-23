@@ -12,11 +12,11 @@
 //
 //  Load configuration and the base system.
 //  /
-	require('sys/base.php');
+    require('sys/base.php');
 //
 //  Initialize an MVC application to handle the request for us
 //
-	ModuleManager::load('lepton.base.mvc');
-	Lepton::run('MvcApplication','app');
+    ModuleManager::load('lepton.base.mvc');
+    Lepton::run('MvcApplication','app');
 //
 ?>

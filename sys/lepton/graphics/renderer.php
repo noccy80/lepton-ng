@@ -1,5 +1,5 @@
 <?php
 
-	class CanvasRenderer { }
+    class CanvasRenderer { }
 
 ?>

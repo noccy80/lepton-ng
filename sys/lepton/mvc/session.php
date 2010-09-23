@@ -1,26 +1,26 @@
 <?php
 
-	if (!headers_sent()) session_start();
+    if (!headers_sent()) session_start();
 
-	abstract class Session {
+    abstract class Session {
 
-		static $id;
+        static $id;
 
-		static function set($key,$value) {
+        static function set($key,$value) {
 
-			$_SESSION[$key] = $value;
-		
-		}
-	
-		static function get($key,$default=null) {
-		
-			if (isset($_SESSION[$key])) {
-				return $_SESSION[$key];
-			} else {
-				return $default;
-			}
-		}
-	
-	}
-	
-	Session::$id = session_id();
+            $_SESSION[$key] = $value;
+        
+        }
+    
+        static function get($key,$default=null) {
+        
+            if (isset($_SESSION[$key])) {
+                return $_SESSION[$key];
+            } else {
+                return $default;
+            }
+        }
+    
+    }
+    
+    Session::$id = session_id();

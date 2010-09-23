@@ -1,23 +1,23 @@
 <?php
 
-	ModuleManager::load('lepton.graphics.filters');
+    ModuleManager::load('lepton.graphics.filters');
 
-	class PixelizeImageFilter extends ImageFilter {
+    class PixelizeImageFilter extends ImageFilter {
 
-		function __construct() {
+        function __construct() {
 
-			if (PHP_VERSION >= 503000) {
-				// use internal
-			} else {
-				// roll our own
-			}
+            if (PHP_VERSION >= 503000) {
+                // use internal
+            } else {
+                // roll our own
+            }
 
-		}
+        }
 
-		function applyFilter($himage) {
+        function applyFilter($himage) {
 
-		}
+        }
 
-	}
+    }
 
 ?>

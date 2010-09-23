@@ -1,30 +1,30 @@
 <?php
 
-	ModuleManager::load('lepton.crypto.guid');
+    ModuleManager::load('lepton.crypto.guid');
 
-	/**
-	 * Defines a worker job
-	 */
-	class LdwpJob {
+    /**
+     * Defines a worker job
+     */
+    class LdwpJob {
 
-		private $_guid;
-		private $_state = null;
+        private $_guid;
+        private $_state = null;
 
-		public $data;
+        public $data;
 
-		function __construct($id=null) {
-			$this->_guid =
-			$this->data = array(); // new LdwpJobData();
-		}
+        function __construct($id=null) {
+            $this->_guid =
+            $this->data = array(); // new LdwpJobData();
+        }
 
-		function setState($state) {
-			$this->_state = $state;
-		}
+        function setState($state) {
+            $this->_state = $state;
+        }
 
-		function getState() {
-			return $this->_state;
-		}
+        function getState() {
+            return $this->_state;
+        }
 
-	}
+    }
 
 ?>

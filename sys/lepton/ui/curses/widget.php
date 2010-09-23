@@ -5,13 +5,13 @@
  * @brief Interface for CursesWidget components
  */
 interface ICursesWidget {
-	function draw($workspace);
-	function keypress($key);
+    function draw($workspace);
+    function keypress($key);
 }
 
 interface ICursesContainer {
-	function addChild(CursesWidget $widget);
-	function removeChild(CursesWidget $widget = null);
+    function addChild(CursesWidget $widget);
+    function removeChild(CursesWidget $widget = null);
 }
 
 /**
@@ -23,10 +23,10 @@ abstract class CursesWidget implements ICursesWidget {
 }
 
 abstract class CursesContainer extends CursesWidget implements ICursesContainer {
-	protected $children;
-	function childCount() {
-		return count($this->children);
-	}
+    protected $children;
+    function childCount() {
+        return count($this->children);
+    }
 }
 
 ?>

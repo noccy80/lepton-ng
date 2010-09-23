@@ -12,10 +12,10 @@
  
 class BokiController extends Controller {
 
-	function index() {
-	
-		View::load('boki/index.php');
-	
-	}
+    function index() {
+    
+        View::load('boki/index.php');
+    
+    }
 
 }

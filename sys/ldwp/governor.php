@@ -4,39 +4,39 @@
         const ACTION_START = 1;
     }
 
-	/**
-	 * Job queue implementation for workers
-	 */
-	class LdwpJobQueue {
+    /**
+     * Job queue implementation for workers
+     */
+    class LdwpJobQueue {
 
-		private $_queue = null;
+        private $_queue = null;
 
-		function length() {
-			return count((array)$this->_queue);
-		}
+        function length() {
+            return count((array)$this->_queue);
+        }
 
-		function push(LdwpJob $job, $priority=false) {
-			// Add the job to the end
-		}
+        function push(LdwpJob $job, $priority=false) {
+            // Add the job to the end
+        }
 
-		function pop() {
-			// Return the queue from the top
-		}
+        function pop() {
+            // Return the queue from the top
+        }
 
-		function remove(LdwpJob $job) {
+        function remove(LdwpJob $job) {
 
-		}
+        }
 
-		function postpone(LdwpJob $job) {
-			// Push job to end of queue
-		}
+        function postpone(LdwpJob $job) {
+            // Push job to end of queue
+        }
 
-	}
+    }
 
-	class LdwpGovernor {
+    class LdwpGovernor {
 
         static $registry = array();
-		static $queue;
+        static $queue;
 
         function getAvailableJobs($maxnum=5) {
             return array(
@@ -61,21 +61,21 @@
         }
 
         function action($action,$jobid) {
-		$meta = LdwpGovernor::getJob($jobid);
-		Console::debug("Preparing to send action to job %d (%s)", $jobid, $meta['worker']);
-		$cn = explode(':',$meta['worker']);
-		ModuleManager::load($cn[0]);
-		if (class_inherits($cn[1], "LdwpWorker")) {
-			if ($cn[1]) {
-        			$inst = new $cn[1]($jobid);
-	                	return $inst->action($action);
-		        } else {
-        		        return null;
-		        }
-		} else {
-			Console::warn("ERROR: Worker instantiation rejected due to %d not being a worker", $cn[1]);
-		}
-	}
+        $meta = LdwpGovernor::getJob($jobid);
+        Console::debug("Preparing to send action to job %d (%s)", $jobid, $meta['worker']);
+        $cn = explode(':',$meta['worker']);
+        ModuleManager::load($cn[0]);
+        if (class_inherits($cn[1], "LdwpWorker")) {
+            if ($cn[1]) {
+                    $inst = new $cn[1]($jobid);
+                        return $inst->action($action);
+                } else {
+                        return null;
+                }
+        } else {
+            Console::warn("ERROR: Worker instantiation rejected due to %d not being a worker", $cn[1]);
+        }
+    }
 }
 
 ?>
