@@ -44,6 +44,8 @@ class WebForm {
 	 * @return bool True if the form is valid
 	 */
 	public function validateForm($data) {
+		$toks = 'validate:1 between:1 and:1 above:1 below:1 netmask:1 '.
+				'match:1 as:1 maxlength:1 required:0 default:1';
 		$this->fields = $data;
 		$this->valid = true;
 		// Go over each of the expected form fields
@@ -56,8 +58,7 @@ class WebForm {
 			$valid = true;
 			$data = $this->raw[$field];
 
-		
-			$t = new Tokenizer('validate:1 between:1 and:1 above:1 below:1 netmask:1 match:1 as:1 maxlength:1',$attr);
+			$t = new Tokenizer($toks,$attr);
 			$ta = $t->getTokens();
 			foreach($t as $tok=>$arg) {
 				switch($tok) {
@@ -80,6 +81,7 @@ class WebForm {
 								$valid = (filter_var($data, FILTER_VALIDATE_FLOAT));
 								break;
 							default:
+								throw new BaseException('Invalid validation type: '.$arg);
 						}
 						break;
 					case 'between':
@@ -124,10 +126,16 @@ class WebForm {
 					case 'as':
 						if ($data != $this->raw[$arg]) $valid = false;
 						break;
+					case 'required':
+						if ($data == null) $valid = false;
+						break;
+					case 'default':
+						if ($data == null) $data = $arg;
+						break;
 					default:
 				}
 			}
-			if (!$valid) { Console::warn('Form field %s failed validation', $field); }
+			// if (!$valid) { Console::warn('Form field %s failed validation', $field); }
 			$this->fieldvalid[$field] = $valid;
 			$this->parsed[$field] = $data;
 			if (!$valid) $this->formvalid = false;
@@ -202,4 +210,4 @@ $myform = array(
 );
 
 $f = new WebForm($myform);
-echo $f->isValid()."\n";
+echo $f->username."\n";

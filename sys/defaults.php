@@ -42,4 +42,7 @@
     // If users should be disabled by default
     config::set('lepton.user.disabledbydefault', false);    
     
+    // What class should be responsible for showing the available payment options?
+    config::set('lepton.ec.paymentselector', 'DefaultPaymentSelector');
+    
 ?>
