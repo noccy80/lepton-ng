@@ -54,7 +54,7 @@ class WebForm {
 				$this->raw[$field] = null;
 			}
 			$valid = true;
-			$data = $this->raw[$field];						if (strlen($data) < $arg) $valid = false;
+			$data = $this->raw[$field];
 
 		
 			$t = new Tokenizer('validate:1 between:1 and:1 above:1 below:1 netmask:1 match:1 as:1 maxlength:1',$attr);
