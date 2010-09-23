@@ -188,26 +188,3 @@ class WebForm {
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  TEST CODE
-//
-
-$_REQUEST['foo'] = 'bar';
-$_REQUEST['email'] = 'bob@domain.com';
-$_REQUEST['email2'] = 'bob@domain.com';
-$_REQUEST['name'] = 'john doe';
-$_REQUEST['ip'] = '192.168.0.1';
-$_REQUEST['age'] = '100';
-
-$myform = array(
-	'username'   => 'required',
-	'email'      => 'validate email',
-	'email2'     => 'as email',
-	'name'       => 'match "/^john/i',
-	'ip'         => 'validate ip netmask 212.181.51.0/24;192.168.0.0/24',
-	'age'        => 'int between 0 and 100'
-);
-
-$f = new WebForm($myform);
-echo $f->username."\n";
