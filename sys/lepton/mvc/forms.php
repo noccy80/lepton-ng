@@ -45,7 +45,7 @@ class WebForm {
 	 */
 	public function validateForm($data) {
 		$toks = 'validate:1 between:1 and:1 above:1 below:1 netmask:1 '.
-				'match:1 as:1 maxlength:1 required:0 default:1';
+				'match:1 as:1 minlength:1 maxlength:1 required:0 default:1';
 		$this->fields = $data;
 		$this->valid = true;
 		// Go over each of the expected form fields
@@ -80,6 +80,9 @@ class WebForm {
 							case 'float':
 								$valid = (filter_var($data, FILTER_VALIDATE_FLOAT));
 								break;
+							case 'file':
+								// is a file?
+								break;
 							default:
 								throw new BaseException('Invalid validation type: '.$arg);
 						}
@@ -110,6 +113,12 @@ class WebForm {
 						// Match subnet x.x.x.x/xxx
 						$valid = false;
 						foreach($s as $net) {
+							list ($net, $mask) = explode ('/', $net); 
+    						if ((ip2long($data) & ~((1 << (32 - $mask)) - 1) ) == (ip2long($net) & ~((1 << (32 - $mask)) - 1))) {
+    							$valid = true;
+    							break;
+    						}
+    						/* 
 							$netpart = explode('/',$net);
 							$ip = sprintf("%032b",ip2long($data)); 
 							$subnet = sprintf("%032b",ip2long($netpart[0])); 
@@ -117,6 +126,7 @@ class WebForm {
 								$valid = true;
 								break;
 							}
+							*/
 						}
 						break;
 					case 'match':
@@ -133,6 +143,7 @@ class WebForm {
 						if ($data == null) $data = $arg;
 						break;
 					default:
+						throw new BaseException("Invalid token.");
 				}
 			}
 			// if (!$valid) { Console::warn('Form field %s failed validation', $field); }
