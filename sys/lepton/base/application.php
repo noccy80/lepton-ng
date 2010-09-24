@@ -87,6 +87,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
             if ($val[0] != null) {
                 $opts.= '-'.$val[0][0];
             }
+            if (strlen($val[0])>2) { $opts.='arg'; }
             if ($val[1] != NULL) {
                 if ($opts != '') $opts .= ',';
                 $opts.= '--'.$val[1];

@@ -6,6 +6,7 @@
 
 /**
  * @class WebForm
+ * @example formcontroller.php
  * @brief Validates forms posted from a browser or similar.
  *
  * Depends on the tokenizer class to parse the definitions. Allows validation

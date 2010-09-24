@@ -14,9 +14,9 @@ class BaseActions {
             case 'info':        return "Show information";
             case 'initialize':    return "Initialize an environment";
             case 'config':        return "Reconfigure an environment";
-            case 'set':            return "Set a configuration value";
+            case 'set':            return "Set a configuration value (for the session)";
             case 'get':            return "Get a configuration value (or glob)";
-            case 'push':        return "Push a value onto a configuration stack";
+            case 'push':        return "Push a value onto a configuration stack (for the session)";
             default:            return "n/a";
         }
     }
@@ -57,8 +57,9 @@ class BaseActions {
             Config::set($key,$val);
             Console::writeLn(__astr("    \b{%s} \c{ltgray :} %s"), $key, __printable($val));
         } else {
-            Console::writeLn(__astr("\b{set}: set a configuration value"));
+            Console::writeLn(__astr("\b{set}: set a configuration value for the session."));
             Console::writeLn(__astr("    set \u{key} \u{value}"));
+			Console::writeLn(__astr("To make the change persistent, please use the configuration file."));
         }
     }
     function push($key=null,$val=null) {
@@ -71,7 +72,7 @@ class BaseActions {
             Console::writeLn(__astr("    push \u{key} \u{value}"));
         }
     }
-    function _isPassword($str) {
+    private function isPassword($str) {
         static $passwdstr = array(
             '/password/i'
         );
@@ -80,29 +81,29 @@ class BaseActions {
         }
         return false;
     }
-    function get($key=null) {
+    function get($key="*") {
         $cfg = Config::get($key);
         if (is_array($cfg)) {
             foreach($cfg as $k=>$v) {
                 if (is_array($v)) {
                     Console::writeLn(__astr("    \b{%s} \c{ltgray :} Array("), $k);
                     foreach($v as $vk=>$vv) {
-                        if (self::_isPassword($vk)) {
-                            $vv = __astr("\u{\c{gray \b{XxXxXx}}}");
+                        if ($this->isPassword($vk)) {
+                            $vv = __astr("\c{gray *****}");
                         } 
                         Console::writeLn(__astr("        \b{%s} \c{ltgray =>} %s"), $vk,__printable($vv));
                     }
                     Console::writeLn(__astr("    )"));
                 } else {
-                    if (self::isPassword($k)) {
-                        $v = __astr("\u{\c{gray \b{XxXxXx}}}");
+                    if ($this->isPassword($k)) {
+                        $v = __astr("\c{gray *****}");
                     } 
                     Console::writeLn(__astr("    \b{%s} \c{ltgray :} %s"), $k, __printable($v));
                 }
             }
         } else {
             if (self::isPassword($key)) {
-                $cfg = __astr("\u{\c{gray \b{XxXxXx}}}");
+                $cfg = __astr("\c{gray *****}");
             }
             Console::writeLn(__astr("    \b{%-40s} \c{ltgray :} %s"), $key, $cfg);
         }

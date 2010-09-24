@@ -19,15 +19,23 @@ class LeptonUtil extends ConsoleApplication {
 		array('i','interactive','Interactive mode'),
 		array('o:','output','Specify output file when exporting'),
 		array('r:','read','Specify input file when importing'),
-		array('l:','load','Load modules or namespaces')
+		array('l::','load','Load modules or namespaces')
 	);
 	protected $version = '1.0';
-	
+	function usage() {
+		parent::usage();
+		Console::writeLn();	
+		Console::writeLn("Example:");
+		Console::writeLn("    %s -i -llepton.base.mvc -lapp.myclass -- run myclass", $this->getName());	
+		Console::writeLn();	
+		Console::writeLn("Use '%s help' to show the available commands.", $this->getName());
+	}
 	function interactiveMode() {
 		Console::writeLn(__astr("\b{Lepton Management Utility} \c{ltgray v%s}"), $this->version);
 		Console::writeLn(__astr("(c) 2010, NoccyLabs.info"));
 
-		while($cmds = Readline::read(__astr('\c{ltgreen lepton}\c{ltblue >} '))) {
+		while(true) {
+			$cmds = Readline::read(__astr('\c{ltgreen lepton}\c{ltblue >} '));
 			Console::write(__astr('\b{}'));
 			$t = new ArgumentTokenizer($cmds);
 			$cmd = $t->getTokens();
