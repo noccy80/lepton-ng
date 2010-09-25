@@ -174,7 +174,7 @@
         /**
          *
          */
-        static function has($key,$value) {
+        static function has($key) {
             return (isset(Config::$values[$key]));
         }
 
@@ -792,5 +792,10 @@
         if ($pc) return ($pc->name == $base);
         return false;
     }
-
+    
+    if (config::has('lepton.db.tableprefix')) {
+	    define('LEPTON_DB_PREFIX',config::get('lepton.db.tableprefix'));
+	} else {
+        define('LEPTON_DB_PREFIX','');
+    }
 ?>

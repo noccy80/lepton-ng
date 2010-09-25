@@ -15,6 +15,7 @@
     ModuleManager::load('lepton.mvc.routers.defaultrouter');
     ModuleManager::load('lepton.mvc.templates');
     ModuleManager::load('lepton.mvc.document');
+    ModuleManager::load('lepton.mvc.forms');
 
     ModuleManager::load('lepton.web.*');
 

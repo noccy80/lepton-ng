@@ -1,7 +1,5 @@
 <?php
 
-    define('LEPTON_DB_PREFIX','l2');
-
     ModuleManager::load('lepton.db.driver');
     ModuleManager::load('lepton.db.drivers.*');
 
