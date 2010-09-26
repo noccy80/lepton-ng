@@ -1,0 +1,27 @@
+<IfModule mod_rewrite.c>
+
+	RewriteEngine On
+	RewriteBase /
+
+	##If you would like to use the assets folder, uncomment this like:
+	#RewriteRule ^assets/(.*)$ assets/$1 [L,NS]
+
+	##If you would like to use the css, js, and img folders, uncomment these:
+	# RewriteRule ^css/(.*)$ assets/css/$1 [L,NS]
+	# RewriteRule ^img/(.*)$ assets/img/$1 [L,NS]
+	# RewriteRule ^js/(.*)$ assets/js/$1 [L,NS]
+
+	##Uncomment out these lines to allow the user to browse to folders and
+	##files in the filesystem. It is recommended that you leave this commented
+	##as it can be considered a security risk.
+	# RewriteCond %{REQUEST_FILENAME} !-f
+	# RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^(.*)$ index.php?/$1 [L,NS,QSA]
+
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+
+	ErrorDocument 404 /index.php
+
+</IfModule>
