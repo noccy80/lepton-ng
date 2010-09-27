@@ -84,6 +84,7 @@
     if (getenv("DEBUG") >= 1) {
         define('DEBUGMODE',true);
         error_reporting(E_ALL);
+        ini_set('display_errors','1');
     } else {
         define('DEBUGMODE',false);
     }
@@ -634,7 +635,7 @@
         static function load($module,$optional=false) {
             if (strpos($module,'*') == (strlen($module) - 1)) {
                 $path = self::_mangleModulePath($module);
-                $f = glob($path);
+                $f = glob($path.'.php');
                 sort($f);
                 $failed = false;
                 foreach($f as $file) {
