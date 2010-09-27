@@ -635,7 +635,8 @@
         static function load($module,$optional=false) {
             if (strpos($module,'*') == (strlen($module) - 1)) {
                 $path = self::_mangleModulePath($module);
-                $f = glob($path.'.php');
+                Console::debugEx(LOG_EXTENDED,__CLASS__,"Looking for modules matching %s from %s", $module, $path);
+                $f = glob($path);
                 sort($f);
                 $failed = false;
                 foreach($f as $file) {
@@ -647,7 +648,6 @@
                 Console::debugEx(LOG_EXTENDED,__CLASS__,"Already loaded %s.",$module);
                 return true;
             }
-//            $modpath = str_replace('.','/',$module).'.php';
             $path = self::_mangleModulePath($module);
 /*
             if (file_exists(APP_PATH.$modpath)) {
@@ -785,6 +785,8 @@
     if (php_sapi_name() == 'cli') {
         ModuleManager::load('lepton.base.application');
     }
+
+    function using($mod) { ModuleManager::load($mod); }
 
     function class_inherits($cn,$base) {
         if (!class_exists($cn)) return false;
