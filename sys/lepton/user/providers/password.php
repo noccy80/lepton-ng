@@ -25,7 +25,7 @@
             $this->userid = $this->auth_backend->getUserid();
             if ($this->userid) {
                 $this->setUser($this->userid);
-                console::writeLn("Authenticated as user %d", $this->userid);
+                // console::writeLn("Authenticated as user %d", $this->userid);
                 return true;
             }
             throw new AuthenticationException("No user available to login()");

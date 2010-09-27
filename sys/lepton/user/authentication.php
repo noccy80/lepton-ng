@@ -28,7 +28,10 @@
         }
 
         protected function setUser($id) {
-    
+            // TODO: Assign to session
+        	if (ModuleManager::has('lepton.mvc.session')) {
+        		if (session::set('lepton_uid',$id));
+        	}
         }
 
         protected function clearUser() {
@@ -49,6 +52,7 @@
 
             if ($authrequest->isTokenValid()) {
                 $authrequest->login();
+		return true;
             }
             
         }
@@ -61,6 +65,17 @@
             if ($auth_class->assignCredentials($user)) {
 	            $user->save();
 	        }
+        
+        }
+        
+        static function isAuthenticated() {
+        
+        	if (ModuleManager::has('lepton.mvc.session')) {
+        		if (session::get('lepton_uid',null) != null) {
+        			return true;
+        		}
+        		return false;
+        	}
         
         }
         

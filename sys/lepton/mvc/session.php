@@ -1,6 +1,8 @@
 <?php
 
-    if (!headers_sent()) session_start();
+    if (!headers_sent()) {
+    	session_start();
+    }
 
     abstract class Session {
 
