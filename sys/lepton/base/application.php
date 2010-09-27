@@ -27,38 +27,34 @@ class Ansi {
         'white' => '1;37',
         'default' => '39'
     );
-    static $seq = array(
-        'setCursor'         => '$1;$2H',
-        'cursorUp'          => '$1A',
-        'cursorDown'        => '$1A',
-        'cursorForward'     => '$1A',
-        'cursorBackward'    => '$1A',
-        'saveCursor'        => 's',
-        'restoreCursor'     => 'u',
-        'eraseDisplay'      => '2J',
-        'eraseLine'         => 'K',
-        'setBold'           => '1m',
-        'clearBold'            => '0m',
-        'setItalic'         => '3m',
-        'clearItalic'        => '0m',
-        'setUnderline'      => '4m',
-        'clearUnderline'    => '0m',
-        'setMode'           => '=$1h',
-        'setColor'          => '$@m',
-    );
-    static function __callStatic($mtd,$arg) {
-        $sstr = self::$seq[$mtd];
-        for($n = 0; $n < count($arg); $n++) { $sstr = str_replace('$'.$n+1,$arg[$n],$sstr); }
-        $sstr = str_replace('$@',join(';',$arg),$sstr);
-        return (chr(27)."[".$sstr);
-    }
     static function parse($str) {
         $s = $str;
-        $s = preg_replace('/\\\\b\{(.*?)\}/', Ansi::setBold().'$1'.Ansi::clearBold(), $s);
-        $s = preg_replace('/\\\\i\{(.*?)\}/', Ansi::setItalic().'$1'.Ansi::clearItalic(), $s);
-        $s = preg_replace('/\\\\u\{(.*?)\}/', Ansi::setUnderline().'$1'.Ansi::clearUnderline(), $s);
+        $s = preg_replace_callback('/\\\\b\{(.*?)\}/', array('Ansi','_cb_bold'), $s);
+        $s = preg_replace_callback('/\\\\u\{(.*?)\}/', array('Ansi','_cb_undl'), $s);
+        $s = preg_replace_callback('/\\\\i\{(.*?)\}/', array('Ansi','_cb_invert'), $s);
         $s = preg_replace_callback('/\\\\c\{(.*?)\}/', array('Ansi','_cb_color'), $s);
         return $s;
+    }
+    static function _cb_bold($str) {
+        $str = $str[1];
+        $sa = explode(' ',$str);
+        $color = $sa[0];
+        $text = join(" ",array_slice($sa,1));
+        return chr(27).'[1m'.$text.chr(27).'[0m';
+    }
+    static function _cb_undl($str) {
+        $str = $str[1];
+        $sa = explode(' ',$str);
+        $color = $sa[0];
+        $text = join(" ",array_slice($sa,1));
+        return chr(27).'[4m'.$text.chr(27).'[0m';
+    }
+    static function _cb_invert($str) {
+        $str = $str[1];
+        $sa = explode(' ',$str);
+        $color = $sa[0];
+        $text = join(" ",array_slice($sa,1));
+        return chr(27).'[3m'.$text.chr(27).'[0m';
     }
     static function _cb_color($str) {
         $str = $str[1];

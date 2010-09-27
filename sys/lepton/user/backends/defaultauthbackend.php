@@ -1,5 +1,7 @@
 <?php
 
+	using('lepton.crypto.uuid');
+
     /**
      * @file defaultauthbackend.php
      * @package lepton.user.backends.defaultauthbackend
@@ -29,7 +31,7 @@
          * @param string $password The password to match with
          * @return bool True on success.
          */
-        function testUserPassword($username,$password,$ext=false) {
+        function validateCredentials($username,$password,$ext=false) {
             $db = new DatabaseConnection();
             try {
                 $userrecord = $db->getSingleRow(
@@ -42,7 +44,7 @@
 
                     // Grab the salt, concatenate the password and the salt,
                     // and hash it with the selected hashing algorithm.
-                    $us = $userrecord['passwordsalt'];
+                    $us = $userrecord['salt'];
                     $ps = $password.$us;
                     $hp = hash($ha,$ps);
 
@@ -55,9 +57,44 @@
 
                 } 
             } catch(Exception $e) {
-                throw $e;
+                throw $e; // TODO: Handle exception
             }
             
+        }
+        
+        function assignCredentials(UserRecord $user) {
+        
+            $db = new DatabaseConnection();
+            
+            // Generate a new salt and hash the password
+            $salt = $this->generateSalt();
+            // What hashing algorithm to use
+            $ha = config::get('lepton.user.hashalgorithm','md5');
+            $ps = $user->password.$salt;
+            $hp = hash($ha,$ps);
+
+        	if ($user->userid == null) {
+	            $uuid = UUID::v4();
+		        try {
+		            $id = $db->insertRow(
+		                "INSERT INTO ".LEPTON_DB_PREFIX."users (username,salt,password,email,flags,registered,uuid) VALUES (%s,%s,%s,%s,%s,NOW(),%s)", 
+		                $user->username, $salt, $hp, $user->email, $user->flags,$uuid
+		            );
+		            $user->userid = $id;
+        		} catch(Exception $e) {
+        			throw $e; // TODO: Handle exception
+        		}
+        	} else {
+		        try {
+		            $db->updateRow(
+		                "UPDATE ".LEPTON_DB_PREFIX."users SET username=%s,salt=%s,password=%s,email=%s,flags=%s WHERE id=%d", 
+		                $user->username, $salt, $hp, $user->email, $user->flags, $user->userid
+		            );
+        		} catch(Exception $e) {
+        			throw $e; // TODO: Handle exception
+        		}
+        	}
+        
         }
         
         function getUserId() {

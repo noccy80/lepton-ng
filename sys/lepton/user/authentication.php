@@ -1,10 +1,10 @@
 <?php
 
-    class AuthenticationException extends BaseException { }
-
+	class UserException extends BaseException { }
+	    class AuthenticationException extends UserException { }
 
     interface IAuthenticationBackend {
-        function testUserPassword($username,$password);    
+        function validateCredentials($username,$password);    
     }
     
     abstract class AuthenticationBackend implements IAuthenticationBackend {
@@ -51,6 +51,21 @@
                 $authrequest->login();
             }
             
+        }
+        
+        static function create(UserRecord $user) {
+
+            // Resolve the authentication backend
+            $auth_backend = config::get('lepton.user.authbackend','defaultauthbackend');
+            $auth_class = new $auth_backend();
+            if ($auth_class->assignCredentials($user)) {
+	            $user->save();
+	        }
+        
+        }
+        
+        static function findUser($username) {
+        
         }
 
     }

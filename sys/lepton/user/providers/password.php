@@ -12,7 +12,7 @@
         }
         
         public function isTokenValid() {
-            if ($this->auth_backend->testUserPassword($this->username,$this->password)) {
+            if ($this->auth_backend->validateCredentials($this->username,$this->password)) {
                 console::debugex(LOG_DEBUG2,__CLASS__,"Matched token valid for %s", $this->username);
                 return true;
             } else {
