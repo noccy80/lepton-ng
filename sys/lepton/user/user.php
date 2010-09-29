@@ -14,7 +14,9 @@ class UserRecord {
 	private $lastlogindate = null;
 	private $lastloginip = null;
 	
+	private $properties = array();
 	private $ambient = array();
+	private $modified = array();
 
 	/**
 	 * Constructor
@@ -70,6 +72,9 @@ class UserRecord {
 			default:
 				$this->ambient[$key] = $value;
 				break;
+		}
+		if (!in_array($key, $this->modified)) {
+			$this->modified[] = $key;
 		}
 	}
 	
