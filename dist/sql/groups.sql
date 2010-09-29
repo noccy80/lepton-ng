@@ -1,0 +1,12 @@
+CREATE TABLE groups (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+
+	groupname VARCHAR(32) NOT NULL,
+	description VARCHAR(256) NOT NULL DEFAULT '',
+	flags VARCHAR(32) NOT NULL,
+	active TINYINT(1) NOT NULL,
+
+	uuid VARCHAR(37) NOT NULL,
+
+	UNIQUE KEY groupname(groupname)
+);

@@ -13,6 +13,7 @@ CREATE TABLE users (
 	lastip VARCHAR(32),
 
 	uuid VARCHAR(37) NOT NULL,
+	active TINYINT(1) NOT NULL,
 	
 	UNIQUE KEY username(username)
 );
