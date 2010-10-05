@@ -1,0 +1,25 @@
+<?php __fileinfo("E-Commerce Actions", array(
+    'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
+    'version' => '1.0',
+    'updater' => null
+));
+
+class EcActions {
+
+    static $help = array(
+        'ecproduct' => "Manage products",
+        'eccategory' => "Manage categories"
+    );
+    function _info($cmd) { return TestActions::$help[$cmd->name]; }
+
+    function ecproduct() {
+
+	using('lepton.ec.*');
+        Console::writeLn(__astr("    \b{Product} [\u{add} [id]|\u{remove} id|\u{find} name|\u{import} file|\u{export} file]"));
+
+    }
+
+}
+
+config::push('lepton.cmd.actionhandlers','EcActions');
+
