@@ -13,6 +13,7 @@
     // Syslog configuration
     config::set('lepton.debug.syslog',false);
     config::set('lepton.debug.syslog.facility', LOG_DAEMON); // Will use LOG_USER on Windows platforms
+    config::set('lepton.debug.syslog.tee',null); // Tee to a file
 
 
     // If true, debug information will be shown when an unhandled exception 
@@ -40,9 +41,11 @@
     // Hashing algorithm, can be any supported by hash_algos()
     config::set('lepton.user.hashalgorithm','md5');
     // If users should be disabled by default
-    config::set('lepton.user.disabledbydefault', false);    
-    
+    config::set('lepton.user.disabledbydefault', false);
+
+
     // What class should be responsible for showing the available payment options?
     config::set('lepton.ec.paymentselector', 'DefaultPaymentSelector');
-    
+
+
 ?>

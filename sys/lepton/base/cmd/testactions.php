@@ -12,12 +12,18 @@ class TestActions {
         'exec' => "Evaluate a PHP statement",
         'uuid' => "Generate a new UUID v4",
         'mem' => "Show memory usage",
-        'void' => "Do nothing"
+        'void' => "Do nothing",
+        'httpd' => "Start up a httpd"
     );
     function _info($cmd) { return TestActions::$help[$cmd->name]; }
 
     function void() {
         return true;
+    }
+    
+    function httpd($port=9000) {
+    	using("lepton.net.daemon.http");
+    	$s = new HttpDaemon($port);
     }
 
     function exception($msg=null,$type=null) {

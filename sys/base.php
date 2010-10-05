@@ -524,6 +524,14 @@
             return str_replace("\n","",shell_exec("file -b --mime-type " . $file));
         }
         
+        function getServerHostname() {
+        	if (isset($_SERVER['hostname'])) {
+        		return $_SERVER['hostname'];
+        	} else {
+        		return "script";
+        	}
+        }
+        
         /**
          *
          */
@@ -791,6 +799,25 @@
     }
 
 
+	abstract class Logger {
+		/*
+		LOG_EMERG - system is unusable
+		LOG_ALERT - action must be taken immediately
+		LOG_CRIT - critical conditions
+		LOG_ERR - error conditions
+		LOG_WARNING - warning conditions
+		LOG_NOTICE - normal, but significant, condition
+		LOG_INFO - informational message
+		LOG_DEBUG - debug info
+		*/
+	
+		function log($prio,$msg) {
+			$lmsg = '<'.Lepton::getServerHostname().'> '.$msg;
+			syslog($prio,$lmsg);
+		}
+	}
+
+
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
 
     if (PHP_VERSION < "5")
@@ -829,4 +856,6 @@
 	} else {
         define('LEPTON_DB_PREFIX','');
     }
+
+
 ?>
