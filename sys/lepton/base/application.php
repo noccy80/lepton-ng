@@ -37,24 +37,15 @@ class Ansi {
     }
     static function _cb_bold($str) {
         $str = $str[1];
-        $sa = explode(' ',$str);
-        $color = $sa[0];
-        $text = join(" ",array_slice($sa,1));
-        return chr(27).'[1m'.$text.chr(27).'[0m';
+        return chr(27).'[1m'.$str.chr(27).'[0m';
     }
     static function _cb_undl($str) {
         $str = $str[1];
-        $sa = explode(' ',$str);
-        $color = $sa[0];
-        $text = join(" ",array_slice($sa,1));
-        return chr(27).'[4m'.$text.chr(27).'[0m';
+        return chr(27).'[4m'.$str.chr(27).'[0m';
     }
     static function _cb_invert($str) {
         $str = $str[1];
-        $sa = explode(' ',$str);
-        $color = $sa[0];
-        $text = join(" ",array_slice($sa,1));
-        return chr(27).'[3m'.$text.chr(27).'[0m';
+        return chr(27).'[3m'.$str.chr(27).'[0m';
     }
     static function _cb_color($str) {
         $str = $str[1];

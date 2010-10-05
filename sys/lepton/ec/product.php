@@ -2,15 +2,66 @@
 	'version' => '0.1.0'
 ));
 
+class ProductCategory {
+
+	private $categoryid;
+	private $ambient = array();
+	private $db;
+	private $name;
+
+	public function __construct($categoryid = null) {
+		$this->categoryid = $categoryid;
+		$this->db = new DatabaseConnection();
+		$data = $this->db->getSingleRow("SELECT * FROM productcategories WHERE id=%d", $categoryid);
+	}
+	
+	public function __get($key) {
+		
+		switch($key) {
+			case 'name':
+				return $this->name;
+			case 'id':
+				return $this->id;
+			default:
+				return $this->ambient[$key];
+		}
+		
+	}
+
+	static function find($categoryslug) {
+		$db = new DatabaseConnection();
+		try {
+			$cat = $db->getRows("SELECT * FROM productcategories WHERE slug=%s", $categoryslug);
+			if ($cat) {
+				$id = $cat['id'];
+				return new ProductCategory($id);
+			} else {
+				return null;
+			}
+		} catch(Exception $e) {
+			return null;
+		}
+	}
+
+}
+
+function ProductCategory($categoryid = null) { return new ProductCategory($categoryid); }
+
 class Product {
 
 	private $ambient = array(); ///< @var Ambient properties
 	private $categories = array(); ///< @var Categories product belongs to
 	private $productid = null;
 	private $productname = null;
-	
-	public function __initialize($productid = null) {
-		$db = new DatabaseConnection();
+	private $db;
+
+	public function __construct($productid = null) {
+		$this->db = new DatabaseConnection();
+		if (null != $productid) {
+			$prod = $this->db->getSingleRow("SELECT * FROM products WHERE id=%s", $productid);
+			$pcat = $this->db->getRows("SELECT p.* FROM productcategories p,productcategorylinks l WHERE l.productid=%s AND l.categoryid=p.it", $productid);
+			// Parse product data and categories
+		}
 	}
 
 	public function __get($key) {
@@ -41,7 +92,9 @@ class Product {
 
 }
 
-class ProductList { }
+function Product($productid=null) { return new Product($productid); }
+
+class ProductList extends BasicList { }
 
 abstract class Products {
 

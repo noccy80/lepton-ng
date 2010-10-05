@@ -239,6 +239,34 @@
 
     }
 
+////// Structures /////////////////////////////////////////////////////////////
+
+	class BasicList implements IteratorAggregate {
+
+		private $list;
+
+		public function getIterator() {
+			return new ArrayIterator($list);
+		}
+
+		public function add($item) {
+			$this->list[] = $item;
+		}
+
+		public function item($index) {
+			return $this->list[$index];
+		}
+
+		public function find($item) {
+			return (in_array($item,$this->list));
+		}
+
+		public function count() {
+			return count($this->list);
+		}
+
+	}
+
 ////// Console ////////////////////////////////////////////////////////////////
 
     /**
