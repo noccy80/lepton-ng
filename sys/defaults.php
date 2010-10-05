@@ -47,5 +47,10 @@
     // What class should be responsible for showing the available payment options?
     config::set('lepton.ec.paymentselector', 'DefaultPaymentSelector');
 
+	// Loggers. Set first parameter of constructor to true to echo errors to
+	// stderr, parameter two can be used to set the target facility.
+	logger::registerFactory(new SyslogLoggerFactory());
+	// You can also register a DatabaseLoggerFacility:
+	//   logger::registerFactory(new DatabaseLoggerFacility("logtable"));
 
 ?>

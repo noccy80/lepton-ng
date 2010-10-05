@@ -17,6 +17,7 @@ class BaseActions {
             case 'set':            return "Set a configuration value (for the session)";
             case 'get':            return "Get a configuration value (or glob)";
             case 'push':        return "Push a value onto a configuration stack (for the session)";
+            case 'extensions':  return "List loaded extensions";
             default:            return "n/a";
         }
     }
@@ -206,19 +207,15 @@ class BaseActions {
 
     }
     private function checkExt($mod,$last=false,$lastp=false,$use='') {
-        $ry = Ansi::setColor(32,1);
-        $rn = Ansi::setColor(31,1);
-        $it = Ansi::setColor(33);
-        $rc = Ansi::setColor(0);
         $ext = $this->extn;
         Console::write(" %s   %s %-10s: %s",
             ($lastp==false)?'|':' ',
             ($last==false)?'|-':'\'-',
             $mod,
-            (isset($ext[$mod])?$ry.'yes':$rn.'no').$rc
+            (isset($ext[$mod])?'\c{32 yes}':'\c{31 no}')
         );
         if ($use) {
-            Console::write(" - %s\n",$it.$use.$rc);
+           // Console::write(" - %s\n",$it.$use.$rc);
         } else {
             Console::write("\n");
         }
@@ -255,28 +252,40 @@ class BaseActions {
         Console::writeLn();
     }
 
-    function extensions() {
+	function extensions() {
+		$cb = 0;
+		Console::writeLn(__astr("\b{Loaded extensions:}"));
+		$ext = get_loaded_extensions();
+		foreach($ext as $val) {
+			Console::write('  %-18s', $val);
+			$cb++;
+			if ($cb > 3) { Console::writeLn(); $cb = 0; }
+		}
+		Console::writeLn();
+	}
+
+    function extensions2() {
         $extn = get_loaded_extensions();
         foreach($extn as $val) { $ext[$val] = $val; }
         $this->extn = $ext;
 
-        Console::writeLn(Ansi::setBold()."Loaded extensions:".Ansi::clearBold());
-        Console::writeLn(Ansi::setBold()." |- Archive formats:".Ansi::clearBold());
+        Console::writeLn(__astr("\b{Loaded extensions:}"));
+        Console::writeLn(__astr(" |- \b{Archive formats:}"));
             $this->checkExt('zlib',false,false);
             $this->checkExt('bz2',false,false);
             $this->checkExt('zip',false,false);
             $this->checkExt('tar',true,false);
 
-        Console::writeLn(Ansi::setBold()." |- Imaging and metadata:".Ansi::clearBold());
+        Console::writeLn(__astr(" |- \b{Imaging and metadata:}"));
             $this->checkExt('gd',false,false,'Image manipulation library');
             $this->checkExt('exif',false,false,'Serves image metadata');
             $this->checkExt('imagick',true,false,'Image manipulation library');
 
-        Console::writeLn(Ansi::setBold()." |- Net and Sockets:".Ansi::clearBold());
+        Console::writeLn(__astr(" |- \b{Net and Sockets:}"));
             $this->checkExt('curl',false,false,'HTTP, FTP, and other requests');
             $this->checkExt('sockets',true,false);
 
-        Console::writeLn(Ansi::setBold()." '- Cryptography:".Ansi::clearBold());
+        Console::writeLn(__astr(" '- \b{Cryptography:}"));
             $this->checkExt('uuid',false,false,'Accelerates UUID generation');
             $this->checkExt('mcrypt',false,false,'Provides cryptographic features');
             $this->checkExt('mhash',true,false);

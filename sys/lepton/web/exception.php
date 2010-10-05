@@ -26,6 +26,8 @@
 
         function exception(Exception $e) {
 
+			logger::emerg("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
+
             header('HTTP/1.1 501 Server Error', true);
 
             $id = uniqid();
@@ -50,6 +52,8 @@
                  . "Platform: ".LEPTON_PLATFORM_ID."\n"
                  . sprintf("Runtime: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS)."\n"
                  ;
+
+			logger::emerg($dbg);
 
             if (config::get('lepton.mvc.exception.log',false)==true) {
                 $logfile = config::get('lepton.mvc.exception.logfile',"/tmp/".$_SERVER['HTTP_HOST']."-debug.log");

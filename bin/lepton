@@ -3,8 +3,6 @@
 
 require('sys/base.php');
 
-logger::log(LOG_INFO,'foo');
-
 ModuleManager::load('lepton.console.readline');
 ModuleManager::load('lepton.utils.tokenizer');
 ModuleManager::load('lepton.base.cmd.*');
@@ -80,5 +78,4 @@ class LeptonUtil extends ConsoleApplication {
 	}
 }
 
-return Lepton::run('LeptonUtil');
-
+Lepton::run('LeptonUtil');

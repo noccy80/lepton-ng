@@ -292,6 +292,7 @@ class ConsoleExceptionHandler extends ExceptionHandler {
 
     function exception(Exception $e) {
 
+        logger::emerg("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
         Console::debugEx(0, get_class($e), "Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
         $f = file($e->getFile());
         foreach($f as $i=>$line) {
@@ -305,8 +306,8 @@ class ConsoleExceptionHandler extends ExceptionHandler {
         Console::debugEx(0, get_class($e), Console::backtrace(0,$e->getTrace(),true));
         Console::debugEx(LOG_LOG,"Exception","Source dump of %s:\n%s", str_replace(BASE_PATH,'',$e->getFile()), $source);
         $rv = 1;
+        logger::emerg("Exiting with return code %d after exception.", $rv);
         Console::debugEx(LOG_BASIC,__CLASS__,"Exiting with return code %d after exception.", $rv);
-
     }
 
 }

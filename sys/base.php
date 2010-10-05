@@ -1,23 +1,23 @@
 <?php
+/**
+ * @file base.php
+ * @brief Lepton Bootstrap Code.
+ *
+ * This is the bootstrap code for all things lepton. Make sure it is included
+ * as require "sys/base.php" in your application.
+ *
+ * @example application.p
+ * @author Christopher Vagnetoft <noccy@chillat.net>
+ * @license GNU GPL Version 3
+ */
+
 
     declare(ticks = 1);
 
     define('RETURN_SUCCESS', 0);
     define('RETURN_ERROR', 1);
 
-    foreach(array(
-        'LEPTON_MAJOR_VERSION' => 1,
-        'LEPTON_MINOR_VERSION' => 0,
-        'LEPTON_RELEASE_VERSION' => 0,
-        'LEPTON_RELEASE_TAG' => "alpha",
-        'LEPTON_PLATFORM' => "Lepton Application Framework",
-        'PHP_RUNTIME_OS' => php_uname('s')
-    ) as $def=>$val) define($def,$val);
-    define("LEPTON_VERSION", LEPTON_MAJOR_VERSION.".".LEPTON_MINOR_VERSION.".".LEPTON_RELEASE_VERSION." ".LEPTON_RELEASE_TAG);
-    define("LEPTON_PLATFORM_ID", LEPTON_PLATFORM . " " . LEPTON_VERSION);
-    define('IS_WINNT', (strtolower(PHP_RUNTIME_OS) == 'windows'));
-    define('IS_LINUX', (strtolower(PHP_RUNTIME_OS) == 'linux'));
-
+	// Compatibility definitions
     foreach(array(
         'COMPAT_GETOPT_LONGOPTS' => (PHP_VERSION >= "5.3"),
         'COMPAT_SOCKET_BACKLOG' => (PHP_VERSION >= "5.3.3"),
@@ -28,6 +28,23 @@
         'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")
     ) as $compat=>$val) define($compat,$val);
 
+	// Version definitions
+    foreach(array(
+        'LEPTON_MAJOR_VERSION' => 1,
+        'LEPTON_MINOR_VERSION' => 0,
+        'LEPTON_RELEASE_VERSION' => 0,
+        'LEPTON_RELEASE_TAG' => "alpha",
+        'LEPTON_PLATFORM' => "Lepton Application Framework",
+        'PHP_RUNTIME_OS' => php_uname('s')
+    ) as $def=>$val) define($def,$val);
+    define("LEPTON_VERSION", LEPTON_MAJOR_VERSION.".".LEPTON_MINOR_VERSION.".".LEPTON_RELEASE_VERSION." ".LEPTON_RELEASE_TAG);
+    define("LEPTON_PLATFORM_ID", LEPTON_PLATFORM . " " . LEPTON_VERSION);
+
+    // Platform definitions
+    define('IS_WINNT', (strtolower(PHP_RUNTIME_OS) == 'windows'));
+    define('IS_LINUX', (strtolower(PHP_RUNTIME_OS) == 'linux'));
+
+	// PHP Version Definitions / Fixes
     if(!defined('PHP_VERSION_ID')) {
         $version = explode('.',PHP_VERSION);
         define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
@@ -38,6 +55,7 @@
         define('PHP_RELEASE_VERSION',  $version[2]);
     }
 
+	// Resolve application and system paths
     if(!defined('APP_PATH')) {
         if(getenv('APP_PATH')) {
             define('APP_PATH', realpath(getenv('APP_PATH')).'/');
@@ -60,7 +78,10 @@
         $path = APP_PATH;
     }
 
+	// Resolve base path
     define('BASE_PATH', realpath(APP_PATH.DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR);
+    
+    // Resolve system path
     if(getenv('SYS_PATH')) {
         define('SYS_PATH', realpath(getenv('SYS_PATH').DIRECTORY_SEPARATOR).'/');
     } else {
@@ -71,6 +92,7 @@
         define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')).'/');
     }
 
+	// Resolve temporary path
 	if(!defined("TMP_PATH")) {
 		if (file_exists(BASE_PATH.'tmp') && (is_writable(BASE_PATH.'tmp'))) {
 			$tmp = BASE_PATH.'tmp';
@@ -80,7 +102,7 @@
 		define('TMP_PATH', $tmp.'/');
 	}
 
-// Enable PHPs error reporting when the DEBUG envvar is set
+	// Enable PHPs error reporting when the DEBUG envvar is set
     if (getenv("DEBUG") >= 1) {
         define('DEBUGMODE',true);
         error_reporting(E_ALL);
@@ -471,6 +493,10 @@
 
         static $__exceptionhandler = null;
 
+        static function applicationExists() {
+        	return (file_exists(APP_PATH));        	
+        }
+
         /**
          *
          */
@@ -495,7 +521,7 @@
                     throw $e;
                 }
                 $ic--;
-                if ($ic == 0) exit( $rv );
+                if ($ic == 0) return( $rv );
             } else {
                 $ic--;
                 if ($ic == 0) {
@@ -528,7 +554,7 @@
         	if (isset($_SERVER['hostname'])) {
         		return $_SERVER['hostname'];
         	} else {
-        		return "script";
+        		return basename($_SERVER['SCRIPT_NAME']);
         	}
         }
         
@@ -571,7 +597,6 @@
 
 ////// Application Base ///////////////////////////////////////////////////////
 
-
     interface IApplication {
         function run();
     }
@@ -610,6 +635,20 @@
         } else {
             Console::warn("Module reported modinfo '%s' without being requested???", $string);
         }
+    }
+
+    function using($mod) { 
+        ModuleManager::load($mod); 
+    }
+
+    function __fmt($args=null) {
+        if (count($args) == 0) {
+            return "";
+        } else if (count($args) == 1) {
+    	    return $args[0];
+    	} else {
+    	    return call_user_func_array('sprintf',$args);
+    	}
     }
 
 ////// ModuleManager //////////////////////////////////////////////////////////
@@ -780,6 +819,7 @@
             }
         }
     }
+    
     class KeyStoreRequest {
         private $key;
         private $val;
@@ -794,34 +834,71 @@
             return $this->val;
         }
     }
+    
     function KeyStore($key) {
         return (string)(new KeyStoreRequest($key));
     }
 
+	interface ILoggerFactory {
+		function __logMessage($priority,$message);
+	}
+	
+	abstract class LoggerFactory implements ILoggerFactory {
+	
+	}
+	
+	class SyslogLoggerFactory extends LoggerFactory {
+		private $verbose;
+		private $logger;
+		function __construct($perror=false, $facility=LOG_LOCAL0) {
+			$this->verbose = $perror;
+			$flag = LOG_PID;
+			if ($perror) $flag |= LOG_PERROR;
+			$this->logger = openlog(Lepton::getServerHostname(), $flag, $facility);
+		}
+		function __logMessage($prio,$msg) {
+			if (!$this->logger) {
+			}
+			syslog($prio,$msg);
+		}	
+	}
+	
+	class DatabaseLoggerFactory extends LoggerFactory {
+		function __logMessage($prio,$msg) {
+			
+		}
+	}
 
 	abstract class Logger {
-		/*
-		LOG_EMERG - system is unusable
-		LOG_ALERT - action must be taken immediately
-		LOG_CRIT - critical conditions
-		LOG_ERR - error conditions
-		LOG_WARNING - warning conditions
-		LOG_NOTICE - normal, but significant, condition
-		LOG_INFO - informational message
-		LOG_DEBUG - debug info
-		*/
-	
-		function log($prio,$msg) {
-			$lmsg = '<'.Lepton::getServerHostname().'> '.$msg;
-			syslog($prio,$lmsg);
+
+		static $loggers = array();
+		static $logger = null;
+
+		function emerg($msgfmt)    { self::__log(LOG_EMERG,   __fmt(func_get_args())); }
+		function alert($msgfmt)    { self::__log(LOG_ALERT,   __fmt(func_get_args())); }
+		function crit($msgfmt)     { self::__log(LOG_CRIT,    __fmt(func_get_args())); }
+		function err($msgfmt)      { self::__log(LOG_ERR,     __fmt(func_get_args())); }
+		function warning($msgfmt)  { self::__log(LOG_WARNING, __fmt(func_get_args())); }
+		function notice($msgfmt)   { self::__log(LOG_NOTICE,  __fmt(func_get_args())); }
+		function info($msgfmt)     { self::__log(LOG_INFO,    __fmt(func_get_args())); }
+		function debug($msgfmt)    { self::__log(LOG_DEBUG,   __fmt(func_get_args())); }
+		function log($msgfmg)      { self::__log(LOG_INFO,    __fmt(func_get_args())); }
+		function registerFactory(LoggerFactory $factory) {
+			self::$loggers[] = $factory;
+		}
+		function __log($prio,$msg) {
+			foreach(self::$loggers as $logger) {
+				$logger->__logMessage($prio,$msg);
+			}
 		}
 	}
 
 
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
 
-    if (PHP_VERSION < "5")
+    if (PHP_VERSION < "5") {
         Console::warn("Lepton is running on an unsupported version of PHP. Behavior in versions prior to 5.0 may be unreliable");
+    }
 
     // Initial debug output
     Console::debugEx(LOG_BASIC,'(bootstrap)',"Base path: %s", BASE_PATH);
@@ -841,8 +918,6 @@
         ModuleManager::load('lepton.base.application');
     }
 
-    function using($mod) { ModuleManager::load($mod); }
-
     function class_inherits($cn,$base) {
         if (!class_exists($cn)) return false;
         $rc = new ReflectionClass($cn);
@@ -850,7 +925,7 @@
         if ($pc) return ($pc->name == $base);
         return false;
     }
-    
+  
     if (config::has('lepton.db.tableprefix')) {
 	    define('LEPTON_DB_PREFIX',config::get('lepton.db.tableprefix'));
 	} else {
