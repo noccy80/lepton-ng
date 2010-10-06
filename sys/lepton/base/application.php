@@ -55,12 +55,28 @@ class Ansi {
         return chr(27).'['.Ansi::$fgcolor[$color].'m'.$text.chr(27).'['.Ansi::$fgcolor['default'].'m';
     }
 }
+
+/**
+ * Helper function to format a string with ANSI markup
+ * 
+ * @param String $str The string with markup
+ * @return String The string with ANSI sequences
+ */
 function __astr($str) { return Ansi::parse($str); }
 
-
+/**
+ * @class ConsoleApplication
+ * @brief Abstract base class for console applications
+ *
+ *
+ */
 abstract class ConsoleApplication extends Application implements IConsoleApplication {
     protected $_args;
     protected $_params;
+    /**
+     * @brief Show usage information on the command.
+     *
+     */
     function usage() {
 
         Console::writeLn("%s - %s", $this->getName(), isset($this->description)?$this->description:"Untitled Lepton Application");
@@ -91,6 +107,12 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         Console::writeLn("    LOGFILE              Log file to output debug info to");
 
     }
+    
+    /**
+     * @brief Run the application. Invoked by Lepton.
+     * Will parse the arguments and make sure everything is in order.
+     *
+     */
     function run() {
         global $argc, $argv;
         if (isset($this->arguments)) {
@@ -140,10 +162,27 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         }
         return $this->main($argc,$argv);
     }
+    
+    /**
+     * @brief Return the name of the script.
+     * 
+     * @return string The name of the script executing
+     */
     function getName() {
         global $argv;
         return( basename($argv[0]) );
     }
+    
+    /**
+     * @brief Parse arguments.
+     * @internal
+     *
+     * Used internally to parse the options from the command line.
+     *
+     * @param string $options Options
+     * @param array $longopts Long options
+     * @return array,array Arguments and Parameters
+     */
     function parseArguments($options,$longopts=null) {
         global $argc, $argv;
         $matched = false;
@@ -168,29 +207,84 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         }
         return array($params,$default);
     }
+    
+    /**
+     * @brief Check if an argument is present.
+     *
+     * @param String $argument The argument to test for
+     * @return Bool True if the argument is present on the command line
+     */
     function hasArgument($argument) {
         return (isset($this->_args[$argument]));
     }
+    
+    /**
+     * @brief Return an argument value.
+     *
+     * Returns the argument value from the command line. Only valid for
+     * arguments that are defined with a ":" in their field definitions.
+     *
+     * @param String $argument The argument to retrieve
+     * @return String The argument value
+     */
     function getArgument($argument) {
         return $this->_args[$argument];
     }
+    
+    
+    /**
+     * @brief Return all arguments
+     *
+     * @return Array All arguments
+     */
     function getArguments() {
         return $this->_args;
     }
+    
+    /**
+     * @brief Return all parameters
+     *
+     * @return Array All parameters
+     */
     function getParameters() {
         return $this->_params;
     }
+    
+    /**
+     * @brief Return a parameter from its index
+     *
+     * @param Int $index The index to retrieve
+     * @return String The parameter
+     */
     function getParameter($index) {
         if ($index >= count($this->_params))
             return null;
         return $this->_params[$index];
     }
+    
+    /**
+     * @brief Return a range of parameters
+     *
+     * @param Int $first The first index to retrieve
+     * @param Int $last The last itndex to retrieve (or null)
+     * @return Array The parameters
+     */
     function getParameterSlice($first,$last=null) {
         return array_slice($this->_params,$first,($last)?$last:count($this->_params));
     }
+    /**
+     * @brief Return the number of parameters present
+     *
+     * @return Int The number of parameters present.
+     */
     function getParameterCount() {
         return count($this->_params);
     }
+    
+    /**
+     * @brief Sleep for a specific number of microseconds.
+     *
+     */
     function sleep($ms=100) {
         usleep($ms*1000);
     }
@@ -201,6 +295,11 @@ interface IConsoleService {
     function signal($sig);
 }
 
+/**
+ * @class ConsoleService
+ *
+ *
+ */
 abstract class ConsoleService extends ConsoleApplication implements IConsoleService {
 
     public function __construct() {
@@ -249,9 +348,20 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
 
 
 
+/**
+ * @interface IShutdownHandler
+ *
+ *
+ */
 interface IShutdownHandler {
     function shutdown();
 }
+
+/**
+ * @class ShutdownHandler
+ *
+ *
+ */
 abstract class ShutdownHandler implements IShutdownHandler {
     static $handlers = array();
     private $lasterror;
@@ -271,6 +381,11 @@ abstract class ShutdownHandler implements IShutdownHandler {
     }
 }
 
+/**
+ * @class ConsoleShutdownHandler
+ *
+ *
+ */
 class ConsoleShutdownHandler extends ShutdownHandler {
 
     function shutdown() {
@@ -288,6 +403,11 @@ ShutdownHandler::register('ConsoleShutdownHandler');
 
 
 
+/**
+ * @class ConsoleExceptionHandler
+ *
+ *
+ */
 class ConsoleExceptionHandler extends ExceptionHandler {
 
     function exception(Exception $e) {

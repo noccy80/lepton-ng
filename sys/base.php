@@ -460,7 +460,11 @@
         private $_running = false;        
 
         /**
+         * @brief Starts the timer.
+         * The timer will remain running until a call is made to stop()
          *
+         * @see Timer::stop()
+         * @see Timer::getElapsed()
          */
         function start() {
             $this->_running = true;
@@ -468,7 +472,10 @@
         }
 
         /**
+         * @brief Stops the timer again.
          *
+         * @see Timer::start()
+         * @see Timer::getElapsed()
          */
         function stop() {
             $this->_stoptime = microtime(true);
@@ -476,7 +483,11 @@
         }
 
         /**
+         * @brief Returns the elapsed time.
+         * The timer doesn't have to be stopped for this.
          *
+         * @see Timer::start()
+         * @return Float Seconds elapsed.
          */
         function getElapsed() {
             return ($this->_stoptime - $this->_starttime);
