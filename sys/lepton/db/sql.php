@@ -1,4 +1,4 @@
-y<?php __fileinfo("SQL Helpers and Tools");
+<?php __fileinfo("SQL Helpers and Tools");
 
 class TableDefinition {
 	private $fields = null;
@@ -10,16 +10,15 @@ class TableDefinition {
 	}
 	function createTable() {
 		$sql = array();
-		$sql[] = "CREATE TABLE ".$this->tablename;
+		$sql[] = "CREATE TABLE `".$this->tablename.'` (';
 		$field = array();
 		foreach($this->fields as $f) {
-			$field[] = $f['field'].' '.(string)$f['data'];
+			$field[] = '`'.$f['field'].'` '.(string)$f['data'];
 		}
 		$meta = array();
 		foreach($this->meta as $m) {
 			$meta[] = (string)$m;
 		}
-		$sql[] = '(';
 		$sql[] = '  '.join(",\n  ", $field);
 		$sql[] = ')';
 		$sqls = join(" ",
@@ -46,6 +45,7 @@ abstract class Field {
 	const FT_INT = 'int';
 	const FT_CHAR = 'char';
 	const FT_VARCHAR = 'varchar';
+	const FT_FLOAT = 'float';
 	// Field flags
 	const FF_AUTO = 'auto_increment';
 	const FF_NOTNULL ='not null';
@@ -70,28 +70,32 @@ class SqlTableFunction extends SqlTableMeta {
 class SqlTableSetting extends SqlTableMeta {
 	protected $fname = null;
 	protected $value = null;
+	protected $sep = '=';
 	function __construct($value) {
 		$this->value = $value;
 	}
 	function __toString() {
-		return sprintf("%s='%s'",$this->fname,$this->value);
+		return sprintf("%s%s%s",$this->fname,$this->sep,$this->value);
 	}
 	function set($value) {
 		$this->value = $value;
 	}
 }
 class Table extends SqlTableSetting {
-	function __construct($type,$value) {
+	function __construct($type,$sep,$value) {
 		$this->fname = $type;
+		$this->sep = $sep;
 		parent::__construct($value);
 	}
-	static function type($ft) { return new Table('type',$ft); }
+	static function type($ft) { 
+		return new Table('TYPE','=',strtoupper($ft)); 
+	}
+	static function charset($cs) { 
+		return new Table('CHARSET',' ',$cs);
+	}
 }
 
 class FieldType {
-	const TYP_INT = 'int';
-	const TYP_CHAR = 'char';
-	const TYP_VARCHAR = 'varchar';
 	private $type;
 	private $meta = array();
 	function __construct($type, $options=null) {
@@ -114,7 +118,7 @@ class FieldType {
 	}
 	function __toString() {
 		switch($this->type) {
-			case self::TYP_INT:
+			case field::FT_INT:
 				$size = $this->meta[0];
 				$props = array_slice($this->meta,1);
 				foreach($props as $i=>$k) {
@@ -124,7 +128,7 @@ class FieldType {
 					array("VARCHAR(".$size.")")
 					,$props));
 				return $r;
-			case self::TYP_CHAR:
+			case field::FT_CHAR:
 				$size = $this->meta[0];
 				$props = array_slice($this->meta,1);
 				foreach($props as $i=>$k) {
@@ -134,7 +138,7 @@ class FieldType {
 					array("VARCHAR(".$size.")")
 					,$props));
 				return $r;
-			case self::TYP_VARCHAR;
+			case field::FT_VARCHAR;
 				$size = $this->meta[0];
 				$props = array_slice($this->meta,1);
 				foreach($props as $i=>$k) {
@@ -142,15 +146,27 @@ class FieldType {
 				}
 				$r = join(" ", array_merge(
 					array("VARCHAR(".$size.")")
+					,$props));
+				return $r;
+			case field::FT_FLOAT;
+				$size = $this->meta[0];
+				$decimal = $this->meta[1];
+				$props = array_slice($this->meta,2);
+				foreach($props as $i=>$k) {
+					$props[$i] = strtoupper($k);
+				}
+				$r = join(" ", array_merge(
+					array("FLOAT(".join(',',array($size,$decimal)).")")
 					,$props));
 				return $r;
 		}	
 	}
 }
 
-function IntType($opt=null) { $arg=(is_array($opt)?$opt:func_get_args()); return new FieldType(FieldType::TYP_INT, $arg); }
-function CharType($opt=null) { $arg=(is_array($opt)?$opt:func_get_args()); return new FieldType(FieldType::TYP_CHAR, $arg); }
-function VarcharType($opt=null) { $arg=(is_array($opt)?$opt:func_get_args()); return new FieldType(FieldType::TYP_VARCHAR, $arg); }
+function IntType($opt=null) { $arg=(is_array($opt)?$opt:func_get_args()); return new FieldType(Field::FT_INT, $arg); }
+function CharType($opt=null) { $arg=(is_array($opt)?$opt:func_get_args()); return new FieldType(Field::FT_CHAR, $arg); }
+function VarcharType($opt=null) { $arg=(is_array($opt)?$opt:func_get_args()); return new FieldType(Field::FT_VARCHAR, $arg); }
+function FloatType($opt=null) { $arg=(is_array($opt)?$opt:func_get_args()); return new FieldType(Field::FT_FLOAT, $arg); }
 
 class TableField {
 

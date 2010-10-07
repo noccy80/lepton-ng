@@ -60,11 +60,19 @@ class TestActions {
     }
 
     function sqltest() {
+    	// We need the SQL support for this
         using('lepton.db.sql');
+        
+        // Create the table and make it an Innodb table
         $s = new TableDefinition("foo","pdo/mysql");
         $s->addMeta(Table::type('innodb'));
+        
+        // Add the columns
         $s->add("id",IntType(8,field::FF_AUTO,field::FF_NOTNULL));
         $s->add("username",VarcharType(32,field::FF_UNIQUE));
+        $s->add("flt",FloatType(5,5));
+
+		// Echo the create statement        
         echo $s->createTable();
     }
 
