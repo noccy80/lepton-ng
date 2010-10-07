@@ -1,7 +1,7 @@
 <?php
 
-	class UserException extends BaseException { }
-	    class AuthenticationException extends UserException { }
+    class UserException extends BaseException { }
+        class AuthenticationException extends UserException { }
 
     interface IAuthenticationBackend {
         function validateCredentials($username,$password);    
@@ -40,8 +40,20 @@
 
     }
 
+    /**
+     * @class User
+     * @example authentication.php
+     *
+     * Handle authentication and user management.
+     */
     abstract class User {
 
+        /**
+         * Attempt to authenticate the user through a provider.
+         *
+         * @param AuthenticationProvider $authrequest The authetication request
+         * @return Bool True on success
+         */
         static function authenticate($authrequest) {
         
             // Resolve the authentication backend
@@ -52,30 +64,40 @@
 
             if ($authrequest->isTokenValid()) {
                 $authrequest->login();
-		return true;
+                return true;
             }
             
         }
         
+        /**
+         * Create a user record and set up the authentication credentials.
+         *
+         * @param UserRecord $user The user record to create.
+         */
         static function create(UserRecord $user) {
 
             // Resolve the authentication backend
             $auth_backend = config::get('lepton.user.authbackend','defaultauthbackend');
             $auth_class = new $auth_backend();
             if ($auth_class->assignCredentials($user)) {
-	            $user->save();
-	        }
+                $user->save();
+            }
         
         }
         
+        /**
+         * Check if a user is authenticated.
+         *
+         * @return Bool True if the user is authenticated.
+         */
         static function isAuthenticated() {
         
-        	if (ModuleManager::has('lepton.mvc.session')) {
-        		if (session::get('lepton_uid',null) != null) {
-        			return true;
-        		}
-        		return false;
-        	}
+            if (ModuleManager::has('lepton.mvc.session')) {
+                if (session::get('lepton_uid',null) != null) {
+                    return true;
+                }
+                return false;
+            }
         
         }
         

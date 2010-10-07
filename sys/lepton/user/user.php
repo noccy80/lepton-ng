@@ -1,5 +1,25 @@
 <?php __fileinfo("User Classes");
 
+/**
+ * @class UserRecord
+ * @brief Contains a user record and passes on authentication credentials.
+ *
+ * Available authentication credential properties:
+ *   username - The username
+ *   password - The password (write only)
+ * Available profile properties:
+ *   userid - The unique user id
+ *   uuid - The user's UUID
+ *   displayname - The displayname of the user
+ *   email - The users e-mail address
+ *   website - The users website address
+ *   registerdate - The date the user record was created (read only)
+ *   lastlogindate - The date the user was last logged in (read only)
+ *   lastloginip - The IP of the users last log in
+ *   flags - The users flags
+ * Available ambient properties:
+ *   Any property can be used as an ambient property.
+ */
 class UserRecord {
 
 	private $userid = null;

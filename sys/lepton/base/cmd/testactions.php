@@ -13,7 +13,8 @@ class TestActions {
         'uuid' => "Generate a new UUID v4",
         'mem' => "Show memory usage",
         'void' => "Do nothing",
-        'httpd' => "Start up a httpd"
+        'httpd' => "Start up a httpd",
+        'sqltest' => 'SQL Test'
     );
     function _info($cmd) { return TestActions::$help[$cmd->name]; }
 
@@ -56,6 +57,15 @@ class TestActions {
         $peak = $peak / 1024;
         $use = $use / 1024;
         Console::writeLn(__astr("    \b{Memory} : %.2fkB Used (%.2fkB Peak)"), $use, $peak);
+    }
+
+    function sqltest() {
+        using('lepton.db.sql');
+        $s = new TableDefinition("foo","pdo/mysql");
+        $s->addMeta(Table::type('innodb'));
+        $s->add("id",IntType(8,field::FF_AUTO,field::FF_NOTNULL));
+        $s->add("username",VarcharType(32,field::FF_UNIQUE));
+        echo $s->createTable();
     }
 
 }

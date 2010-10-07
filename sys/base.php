@@ -154,7 +154,12 @@
         static $values = array();
 
         /**
+         * @brief Get a configuration value (or an array of them).
+         * Call with the key you want to query, or with a wildcard.
          *
+         * @param String $key The key to query
+         * @param Mixed $default The value to return if key is empty
+         * @return Mixed The value or the default value.
          */
         static function get($key,$default=null) {
             if (strpos($key,'*') !== false) {
@@ -175,14 +180,20 @@
         }
 
         /**
+         * @brief Set a configuration value.
          *
+         * @param String $key The key to set
+         * @param Mixed $value The value to set
          */
         static function set($key,$value) {
             Config::$values[$key] = $value;
         }
 
         /**
+         * @brief Push the value onto a configuration key
          *
+         * @param String $key The key to update
+         * @param Mixed $value The value to push
          */
         static function push($key,$value) {
             if (isset(Config::$values[$key])) {
@@ -195,21 +206,30 @@
         }
 
         /**
+         * @brief Check if a key is set.
          *
+         * @param String $key The key to check
+         * @return Bool True if the key is set
          */
         static function has($key) {
             return (isset(Config::$values[$key]));
         }
 
         /**
+         * @brief Set a default value.
+         * Will only change the value if it's not set.
          *
+         * @param String $key The key to set
+         * @param Mixed $default The default to set if empty
          */
         static function def($key,$default) {
             if (!isset(Config::$values[$key])) Config::$values[$key] = $default;
         }
 
         /**
+         * @brief Clear a configuration key
          *
+         * @param String $key The key to clear
          */
         static function clr($key) {
             if (strpos($key,'*') !== false) {
@@ -266,12 +286,22 @@
 	class BasicList implements IteratorAggregate {
 
 		private $list;
+		private $typeconst;
+
+		public function __construct($typeconst=null) {
+			$this->type = $typeconst;
+		}
 
 		public function getIterator() {
-			return new ArrayIterator($list);
+			return new ArrayIterator((array)$this->list);
 		}
 
 		public function add($item) {
+			if ($this->type) {
+				if (!is_a($item,$this->type)) {
+					throw new BaseException("Error; Pushing invalid type with add(). ".$item." is not a ".$this->type);
+				}
+			}
 			$this->list[] = $item;
 		}
 
