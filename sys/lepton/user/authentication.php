@@ -29,9 +29,9 @@
 
         protected function setUser($id) {
             // TODO: Assign to session
-        	if (ModuleManager::has('lepton.mvc.session')) {
-        		if (session::set('lepton_uid',$id));
-        	}
+            if (ModuleManager::has('lepton.mvc.session')) {
+                if (session::set('lepton_uid',$id));
+            }
         }
 
         protected function clearUser() {

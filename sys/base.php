@@ -885,15 +885,15 @@
 		static $loggers = array();
 		static $logger = null;
 
-		function emerg($msgfmt)    { self::__log(LOG_EMERG,   __fmt(func_get_args())); }
-		function alert($msgfmt)    { self::__log(LOG_ALERT,   __fmt(func_get_args())); }
-		function crit($msgfmt)     { self::__log(LOG_CRIT,    __fmt(func_get_args())); }
-		function err($msgfmt)      { self::__log(LOG_ERR,     __fmt(func_get_args())); }
-		function warning($msgfmt)  { self::__log(LOG_WARNING, __fmt(func_get_args())); }
-		function notice($msgfmt)   { self::__log(LOG_NOTICE,  __fmt(func_get_args())); }
-		function info($msgfmt)     { self::__log(LOG_INFO,    __fmt(func_get_args())); }
-		function debug($msgfmt)    { self::__log(LOG_DEBUG,   __fmt(func_get_args())); }
-		function log($msgfmg)      { self::__log(LOG_INFO,    __fmt(func_get_args())); }
+		function emerg($msgfmt)    { $arg = func_get_args(); self::__log(LOG_EMERG,   __fmt($arg)); }
+		function alert($msgfmt)    { $arg = func_get_args(); self::__log(LOG_ALERT,   __fmt($arg)); }
+		function crit($msgfmt)     { $arg = func_get_args(); self::__log(LOG_CRIT,    __fmt($arg)); }
+		function err($msgfmt)      { $arg = func_get_args(); self::__log(LOG_ERR,     __fmt($arg)); }
+		function warning($msgfmt)  { $arg = func_get_args(); self::__log(LOG_WARNING, __fmt($arg)); }
+		function notice($msgfmt)   { $arg = func_get_args(); self::__log(LOG_NOTICE,  __fmt($arg)); }
+		function info($msgfmt)     { $arg = func_get_args(); self::__log(LOG_INFO,    __fmt($arg)); }
+		function debug($msgfmt)    { $arg = func_get_args(); self::__log(LOG_DEBUG,   __fmt($arg)); }
+		function log($msgfmg)      { $arg = func_get_args(); self::__log(LOG_INFO,    __fmt($arg)); }
 		function registerFactory(LoggerFactory $factory) {
 			self::$loggers[] = $factory;
 		}
