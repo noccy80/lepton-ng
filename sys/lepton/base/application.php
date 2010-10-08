@@ -228,6 +228,9 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
      * @return String The argument value
      */
     function getArgument($argument) {
+    	if (!isset($this->_args[$argument])) {
+    		return null;
+    	}
         return $this->_args[$argument];
     }
     

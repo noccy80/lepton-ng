@@ -71,6 +71,9 @@ class TestActions {
         $s->add("id",IntType(8,field::FF_AUTO,field::FF_NOTNULL));
         $s->add("username",VarcharType(32,field::FF_UNIQUE));
         $s->add("flt",FloatType(5,5));
+        
+        $s->addIndex("id","primary");
+        $s->addIndex("userflt",'unique',array('username','flt'));
 
 		// Echo the create statement        
         echo $s->createTable();

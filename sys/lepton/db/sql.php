@@ -3,6 +3,7 @@
 class TableDefinition {
 	private $fields = null;
 	private $meta = array();
+	private $indexes = array();
 	private $tablename;
 	function __construct($tablename) {
 		$this->tablename = $tablename;
@@ -14,6 +15,9 @@ class TableDefinition {
 		$field = array();
 		foreach($this->fields as $f) {
 			$field[] = '`'.$f['field'].'` '.(string)$f['data'];
+		}
+		foreach($this->indexes as $i) {
+			$field[] = $i;
 		}
 		$meta = array();
 		foreach($this->meta as $m) {
@@ -28,6 +32,17 @@ class TableDefinition {
 			)
 		).";\n";
 		return $sqls;
+	}
+	function addIndex($name,$type,$fields=null) {
+		if ($fields != null) {
+			$this->indexes[] = sprintf("%s KEY `%s` (`%s`)", strtoupper($type),
+				$name, join('`,`', (array)$fields)
+			);
+		} else {
+			$this->indexes[] = sprintf("%s KEY `%s` (`%s`)", strtoupper($type),
+				$name, $name
+			);
+		}
 	}
 	function addMeta(SqlTableMeta $type) {
 		$this->meta[] = $type;

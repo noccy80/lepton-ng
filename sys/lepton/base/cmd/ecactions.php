@@ -10,7 +10,7 @@ class EcActions {
         'ecproduct' => "Manage products",
         'eccategory' => "Manage categories"
     );
-    function _info($cmd) { return TestActions::$help[$cmd->name]; }
+    function _info($cmd) { return self::$help[$cmd->name]; }
 
     function ecproduct() {
 
@@ -22,4 +22,3 @@ class EcActions {
 }
 
 config::push('lepton.cmd.actionhandlers','EcActions');
-
