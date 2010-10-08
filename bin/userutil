@@ -1,0 +1,53 @@
+#!/usr/bin/php
+<?php
+
+require("sys/base.php");
+using('lepton.base.application');
+using('lepton.console.readline');
+using('lepton.user.*');
+using('lepton.crypto.uuid');
+
+class UserutilApp extends ConsoleApplication {
+
+	var $arguments = array(
+		array('h','help','Show help'),
+		array('v','verbose','Verbose operation')
+	);
+
+	function usage() {
+		parent::usage();
+		console::writeLn();
+		console::writeLn("Commands:");
+		console::writeLn("    add [username]         add a user");
+		console::writeLn("    list                   list users");
+		console::writeLn("    activate [username]    activate user");
+		console::writeLn("    deactivate [username]  deactivate user");
+	}
+	
+	function main($argc,$argv) {
+		console::writeLn('Lepton Userutil Script v2.0');
+		if ($this->getParameterCount() == 0) {
+			$this->usage();
+			return 1;
+		}
+		switch($this->getParameter(0)) {
+		case 'add':
+			$user = readline::read("Username: ");
+			$pass = readline::read("Password: ");
+			$email = readline::read("E-Mail: ");
+			$flags = readline::read("Flags: ");
+			$u = new UserRecord();
+			$u->username = $user;
+			$u->password = $pass;
+			$u->email = $email;
+			$u->flags = $flags;
+			User::create($u);
+			break;
+		default:
+			break;
+		}
+	}
+
+}
+
+Lepton::run('UserutilApp');

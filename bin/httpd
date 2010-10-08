@@ -1,0 +1,47 @@
+#!/usr/bin/php
+<?php
+
+require("sys/base.php");
+
+using("lepton.base.application");
+
+class HttpServer extends ConsoleService {
+
+	var $arguments = array(
+		array('p:','port','The port to listen on'),
+		array('v','verbose','Verbose operation'),
+		array('h','help','Show this help')
+	);
+	private $daemon;
+
+	function main($argc,$argv) {
+		$this->ServiceMain();
+	}
+
+	function ServiceMain() {
+		if ($this->hasArgument('p')) {
+			$p = $this->getArgument('p');
+		} else {
+			$p = 9000;
+		}
+		console::writeLn("Listening on port %d", $p);
+		using("lepton.net.daemon.http");
+		$this->daemon = new HttpDaemon($p);
+		$this->daemon->run();
+	}
+	
+	function shutdown() {
+		$this->daemon->stop();
+		exit(0);
+	}
+
+	function signal($signal) {
+		Console::debug("Caught signal %d", $signal);
+		if ($signal === SIGINT || $signal === SIGTERM) {
+			$this->shutdown();
+		}
+	}
+
+}
+
+lepton::run("HttpServer");
