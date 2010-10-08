@@ -3,4 +3,6 @@
 
 require "sys/base.php";
 
+class TestApplication extends ConsoleApplication {
 
+}

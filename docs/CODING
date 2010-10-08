@@ -1,0 +1,72 @@
+= Coding Standards =
+
+Lepton has certain coding standards. And some of the standards we use may be
+useful for you too. Keeping your code clean and consistent is a good thing.
+
+ * [wiki:coding Coding Standards on the Wiki]
+
+Read on for the know how of working ''on'' the Lepton code as well as working
+''with'' the Lepton code.
+
+== Working on The Code ==
+
+ * Indentation should be done using 4 spaces per level.
+ * Doxygen comments should always be present to the extent possible. Feel free
+   to run doxygen yourself and take note of the warnings about undocumented
+   functions, and try to document some of them.
+ * Classes that can't be instantiated (like enums) should be abstract.
+ * Constants should be specified with uppercase letters, and belong to a class.
+   This way all constants are grouped. Use Doxygen to describe the keys.
+ * Variable names should be all lower case. Need I say, global variables are
+   bad so these should also belong somewhere and be available through accessor
+   methods.
+ * Indentation and placement of braces should be done on the same line as the
+   function/block. The body of the block should be intended by a "soft tab" of
+   4 spaces.
+ * Base indentation in a file is 4 spaces, except for the first line where the
+   `__fileinfo()` command can be used. Other than that 4 spaces is added for each
+   level of indentation.
+
+=== Coordination ===
+
+The development is coordinated using the Lepton Wiki as well as the Lepton
+mailing list. Basically, anything can be worked on. If you start working on a
+feature or function, please create a ticket regarding it. That way we avoid
+doing things twice, and can write better code.
+
+ * [wiki:coding/coordination Coordination on the Wiki]
+ * [http://groups.google.com/group/lepton-developers Lepton-Developers group]
+
+== Working with The Code ==
+
+There are things that are good to know when working with the code too. This
+section will list a few of those briefly.
+
+=== Databases ===
+
+ * Always escape your SQL. Always. getSingleRow, getRows, insertRow, updateRow
+   and exec already does this for you. SQL Injection is bad.
+ * Use the Webform class to read and validate input data. This is safer. And
+   it does all the hard work for you.
+   
+=== Goals ===
+
+The commons goals we all work for are listed here. Keep them in your mind at
+all times, and don't deflect from these guidelines if not absolutely neccessary.
+Any addition of functionality as well as modification and optimizations should
+strive towards these goals:
+   
+ * The databases should be interoperable. There should be no problem querying
+   one database using the same interface as another one. This is why NG needs
+   a ORM Database system.
+ * Classes that create and use other classes in constructors should have a
+   method named "factory", which should do the heavy lifting.
+   
+=== General ===
+
+ * Use the `__fileinfo()` method first thing in your files to describe your
+   dependencies, version, and what the file contains.
+ * The `__astr()` method can be used to add ANSI markup to strings.
+ * Only methods not starting with an underscore ("_") are exported as
+   controller methods etc. Making "personal" methods are easy by just prefixing
+   the method name with an underscore ("_").
