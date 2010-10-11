@@ -129,6 +129,53 @@
     define('LOG_WARN', 0);
     define('LOG_LOG', 0);
 
+////// Utility Functions and Aliases //////////////////////////////////////////
+
+    function dequote($str) {
+        $str = trim($str);
+        $qt = $str[0];
+        if (($qt == '"') || ($qt == "'" )) {
+            if ($str[strlen($str)-1] == $qt) {
+                return substr($str,1,strlen($str)-2);
+            }
+        }
+    }
+
+    function __fileinfo($strinfo,$vars=null) {
+        if (count(ModuleManager::$_order) > 0) {
+            $mod = ModuleManager::$_order[count(ModuleManager::$_order) - 1];
+            ModuleManager::$_modules[$mod]['modinfo'] = $strinfo;
+            if ($vars!=null) {
+                foreach($vars as $key=>$var) {
+                    ModuleManager::$_modules[$mod][$key] = $var;
+                }
+                if (isset($vars['depends']) && is_array($vars['depends'])) {
+                    $deps = (array)$vars['depends'];
+                    foreach($vars['depends'] as $dep) {
+                        ModuleManager::load($dep);
+                    }
+                }
+            }
+        } else {
+            Console::warn("Module reported modinfo '%s' without being requested???", $string);
+        }
+    }
+
+    function using($mod) {
+        ModuleManager::load($mod);
+    }
+
+    function __fmt($args=null) {
+        if (count($args) == 0) {
+            return "";
+        } else if (count($args) == 1) {
+    	    return $args[0];
+    	} else {
+    	    return call_user_func_array('sprintf',$args);
+    	}
+    }
+
+
 ////// Exceptions /////////////////////////////////////////////////////////////
 
     /*
@@ -646,52 +693,6 @@
 
     }
 
-////// Meta Information ///////////////////////////////////////////////////////
-
-    function dequote($str) {
-        $str = trim($str);
-        $qt = $str[0];
-        if (($qt == '"') || ($qt == "'" )) {
-            if ($str[strlen($str)-1] == $qt) {
-                return substr($str,1,strlen($str)-2);
-            }
-        }
-    }
-
-    function __fileinfo($strinfo,$vars=null) {
-        if (count(ModuleManager::$_order) > 0) {
-            $mod = ModuleManager::$_order[count(ModuleManager::$_order) - 1];
-            ModuleManager::$_modules[$mod]['modinfo'] = $strinfo;
-            if ($vars!=null) {
-                foreach($vars as $key=>$var) {
-                    ModuleManager::$_modules[$mod][$key] = $var;
-                }
-                if (isset($vars['depends']) && is_array($vars['depends'])) {
-                    $deps = (array)$vars['depends'];
-                    foreach($vars['depends'] as $dep) {
-                        ModuleManager::load($dep);
-                    }
-                }
-            }
-        } else {
-            Console::warn("Module reported modinfo '%s' without being requested???", $string);
-        }
-    }
-
-    function using($mod) { 
-        ModuleManager::load($mod); 
-    }
-
-    function __fmt($args=null) {
-        if (count($args) == 0) {
-            return "";
-        } else if (count($args) == 1) {
-    	    return $args[0];
-    	} else {
-    	    return call_user_func_array('sprintf',$args);
-    	}
-    }
-
 ////// ModuleManager //////////////////////////////////////////////////////////
 
     /**
@@ -880,6 +881,8 @@
         return (string)(new KeyStoreRequest($key));
     }
 
+////// Logging Functionality //////////////////////////////////////////////////
+
 	interface ILoggerFactory {
 		function __logMessage($priority,$message);
 	}
@@ -933,6 +936,30 @@
 			}
 		}
 	}
+
+////// Debugging Foundation ///////////////////////////////////////////////////
+
+/**
+ * Debugging Foundation. Gives access to handy debug functions.
+ *
+ */
+class Debug {
+	/**
+	 * Enable error reporting
+	 *
+	 * @param bool $notices Set to false to hide notices
+	 */
+	static function enable($notices = true) {
+		error_reporting(E_ERROR | E_WARNING | E_PARSE | (($notices)?E_NOTICE:0));
+	}
+	/**
+	 *
+	 *
+	 */
+	static function disable() {
+		error_reporting(0);
+	}
+}
 
 
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
