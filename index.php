@@ -15,11 +15,12 @@
  * @author Christopher Vagnetoft <noccy@chillat.net>
  */
 
-    // Load configuration and the base system.
-    require('sys/base.php');
+// Load configuration and the base system.
+require('sys/base.php');
+// debug::enable();
 
-    // Initialize an MVC application to handle the request for us
-    ModuleManager::load('lepton.base.mvc');
-    Lepton::run('MvcApplication','app');
+// Initialize an MVC application to handle the request for us
+ModuleManager::load('lepton.base.mvc');
+Lepton::run('MvcApplication','app');
 
 ?>

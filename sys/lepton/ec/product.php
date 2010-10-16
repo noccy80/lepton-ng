@@ -1,7 +1,13 @@
 <?php __fileinfo("Lepton EC: Product management",array(
-	'version' => '0.1.0'
+		'version' => '0.1.0'
 ));
 
+/**
+ * @class ProductCategory
+ * @brief A product category
+ *
+ * @author Christopher Vagnetoft <noccy@chillat.net>
+ */
 class ProductCategory {
 
 	private $categoryid;
@@ -14,9 +20,9 @@ class ProductCategory {
 		$this->db = new DatabaseConnection();
 		$data = $this->db->getSingleRow("SELECT * FROM productcategories WHERE id=%d", $categoryid);
 	}
-	
+
 	public function __get($key) {
-		
+
 		switch($key) {
 			case 'name':
 				return $this->name;
@@ -25,7 +31,15 @@ class ProductCategory {
 			default:
 				return $this->ambient[$key];
 		}
-		
+
+	}
+
+	function getProducts() {
+
+	}
+
+	function addProduct(Product $product) {
+
 	}
 
 	static function find($categoryslug) {
@@ -45,7 +59,9 @@ class ProductCategory {
 
 }
 
-function ProductCategory($categoryid = null) { return new ProductCategory($categoryid); }
+function ProductCategory($categoryid = null) {
+	return new ProductCategory($categoryid);
+}
 
 class Product {
 
@@ -65,19 +81,19 @@ class Product {
 	}
 
 	public function __get($key) {
-	
+
 	}
-	
+
 	public function __set($key,$value) {
-	
+
 	}
-	
+
 	public function __isset($key) {
-	
+
 	}
-	
+
 	public function __unset($key) {
-		
+
 	}
 
 
@@ -87,14 +103,18 @@ class Product {
 	 * products properties.
 	 */
 	public function save() {
-	
+
 	}
 
 }
 
-function Product($productid=null) { return new Product($productid); }
+function Product($productid=null) {
+	return new Product($productid);
+}
 
-class ProductList extends BasicList { }
+class ProductList extends BasicList {
+
+}
 
 abstract class Products {
 
@@ -104,9 +124,9 @@ abstract class Products {
 	static function get($productid) {
 		return new Product($productid);
 	}
-	
+
 	static function find($string,$search = Products::ST_FULLTEXT) {
-	
+
 	}
 
 }

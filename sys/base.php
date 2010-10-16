@@ -129,6 +129,18 @@
     define('LOG_WARN', 0);
     define('LOG_LOG', 0);
 
+////// Interfaces /////////////////////////////////////////////////////////////
+
+    interface IImportable {
+        function setData();
+    }
+    interface IExportable {
+        function getData();
+    }
+
+    abstract class IsImportable implements IImportable { }
+    abstract class IsExportable implements IExportable { }
+
 ////// Utility Functions and Aliases //////////////////////////////////////////
 
     function dequote($str) {

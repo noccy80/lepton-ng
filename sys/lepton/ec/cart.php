@@ -1,5 +1,5 @@
 <?php __fileinfo("Lepton EC: Shopping cart", array(
-	'version' => '0.1.0'
+		'version' => '0.1.0'
 ));
 
 /**
@@ -17,40 +17,40 @@ class Cart implements IteratorAggregate {
 		$this->products = (array)session::get('lepton.ec.cart.'.$cartid);
 		$this->cartid = $cartid;
 	}
-	
+
 	function __destruct() {
-	
+
 		session::set('lepton.ec.cart.'.$this->cartid,$this->products);
 
 	}
-	
+
 	function getIterator() {
-	
+
 		return new ArrayIterator($products);
 
 	}
 
 	function addItem(Product $product, $amount = 1) {
 
-		if (isset($this->products[$product->id]) {
+		if (isset($this->products[$product->id])) {
 			$this->products[$product->id]->count += $amount;
 		} else {
 			$this->products[$product->id] = new CartEntry($product,$amount);
 		}
-	
+
 	}
-	
+
 	function updateItem($index, $amount) {
 
 		$this->products[$index] = new CartEntry($product,$amount);
-	
+
 	}
-	
+
 	function removeItem($index) {
 
 		unset($this->products[$index]);
 		array_sort($this->products);
-	
+
 	}
 
 	function getProducts() {
@@ -58,7 +58,7 @@ class Cart implements IteratorAggregate {
 		return $this->products;
 
 	}
-	
+
 }
 
 class CartEntry {
