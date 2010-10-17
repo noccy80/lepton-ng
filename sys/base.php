@@ -66,8 +66,11 @@
             } else {
                 $path = getcwd();
             }
-			// If in /bin, assume base is at ..
+            // If in /bin, assume base is at ..
             if (substr($path,strlen($path)-4,4) == '/bin') {
+                $path = $path.'/../';
+            }
+            if (substr($path,strlen($path)-4,4) == '/app') {
                 $path = $path.'/../';
             }
             $path = $path.'/app';

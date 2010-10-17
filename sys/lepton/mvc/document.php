@@ -73,7 +73,7 @@
             @ob_start();
         }
 
-        function write() {
+        static function write() {
             $args = func_get_args();
             printf($args[0],array_slice($args,1));
         }

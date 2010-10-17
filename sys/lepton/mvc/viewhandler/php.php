@@ -20,7 +20,7 @@ class PlainViewHandler extends ViewHandler {
         }
     }
     function display() {
-        header('HTTP/1.1 200 Content Follows', true);
+        if (!headers_sent()) header('200 Content Follows', true);
         require($this->path);
     }
     function import($view) {

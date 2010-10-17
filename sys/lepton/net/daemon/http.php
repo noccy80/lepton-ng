@@ -4,17 +4,20 @@
 		)
 	));
 
+class SocketException extends BaseException { }
 
 class HttpDaemon {
 
 	private $ls;
 	private $exit = false;
+	private $handler = null;
 
-	function __construct($port=9090) {
+	function __construct($port=9090,$handler=null) {
 		$this->ls = socket_create_listen($port);
+		$this->handler = $handler;
 		if (!$this->ls) {
 			$err = socket_strerror(socket_last_error());
-			throw new BaseException("Error when trying to open socket: ".$err);
+			throw new SocketException("Error when trying to open socket: ".$err);
 		}
 	}
 
@@ -22,7 +25,7 @@ class HttpDaemon {
 		while(true != $this->exit) {
 			$sock = socket_accept($this->ls);
 			if ($sock) {
-				$hs = new Thread(new HttpHandler($sock));
+				$hs = new Thread(new HttpHandler($sock,$this->handler));
 				$hs->start();
 			}
 		}
@@ -38,8 +41,10 @@ class HttpDaemon {
 class HttpHandler extends Runnable {
 	private $sock;
 	private $buffer;
-	function __construct($sock) {
+	private $handler;
+	function __construct($sock,$handler) {
 		$this->sock = $sock;
+		$this->handler = $handler;
 	}
 	function threadmain() {
 		// Read request block
@@ -53,7 +58,6 @@ class HttpHandler extends Runnable {
 				$buf = $buf . $rl;
 			}
 			if (strpos($buf, "\r\n\r\n")) {
-				console::writeLn("Got what I need");
 				break;
 			} else {
 				console::writeLn('%s', $buf);
@@ -61,16 +65,21 @@ class HttpHandler extends Runnable {
 		}
 		$db = explode("\r\n\r\n", $buf);
 		$data = $db[0];
+		// Put back the rest of the buffer for posts etc
+		$buf = join('',array_slice($db,1));
 		$request = new HttpRequest($data); // data
 		$response = new HttpResponse();
+
 		// Pop the header off the buffer
-		$d = new DaemonHandler();
-		$d->handleRequest(&$request,&$response);
-		printf("Writing headers\n");
-		$response->writeHeaders($this->sock);
-		printf("Writing content\n");
+		$status = call_user_func_array($this->handler,array(&$request,&$response));
+		if ($status == 0) $status = 200;
+
+		$peer = ""; $port = 0;
+		socket_getpeername($this->sock, $peer, $port);
+		console::writeLn("%s %s:%d %d %s", $request->getMethod(), $peer, $port, $status, $request->getUri());
+
+		$response->writeHeaders($this->sock,200);
 		$response->writeContent($this->sock);
-		printf("Closing socket\n");
 		socket_shutdown($this->sock,2);
 		usleep(50000);
 		socket_close($this->sock);
@@ -122,6 +131,9 @@ class HttpResponse {
 	private $contenttype;
 	private $headers_sent = false;
 	private $headers = array();
+	private $status = array(
+		200 => 'Content Follows'
+	);
 	function __construct() {
 		$this->headers = array(
 			'content-type' => 'text/php',
@@ -138,14 +150,14 @@ class HttpResponse {
 	function setHeader($header,$value) {
 		$this->headers[$header] = $value;
 	}
-	function getHeader($header) {
-		return $this->headers[$header];
-	}
 	function write($data) {
 		$this->data .= $data;
 		$this->setHeader('content-length', strlen($this->data));
 	}
-	function writeHeaders($sock) {
+	function writeHeaders($sock,$status='200') {
+		$headers = array();
+		$statusmsg = $this->status[$status];
+		$headers[] = "HTTP/1.0 ".$status." ".$statusmsg;
 		foreach($this->headers as $hk=>$hd) {
 			$headers[] = $hk.': '.$hd;
 		}
@@ -160,20 +172,18 @@ class HttpResponse {
 	}
 	function writeContent($sock) {
 		$bd = $this->ds;
-		printf("Writing: ");
 		$bw = socket_write($sock,$bd);
-		printf("Done\n");
 		if ($bw != strlen($bd)) {
 			throw new BaseException("Couldn't write buffer");
 		}
 	}
 }
 
-abstract class HttpRequestHandler {
-	function handleRequest(HttpRequest &$request, HttpResponse &$response) {
-		$response->setContentType("text/html");
-		$response->write("<h1>Website!</h1><p>This is awesome.</p>");
-	}
+interface IHttpRequestHandler {
+	function handleRequest(HttpRequest $request, HttpResponse $reponse);
 }
 
-class DaemonHandler extends HttpRequestHandler { }
+abstract class HttpRequestHandler implements IHttpRequestHandler {
+}
+
+

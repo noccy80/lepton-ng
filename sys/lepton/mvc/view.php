@@ -120,6 +120,16 @@
             throw new ViewHandlerNotFoundException("No matching handler found for requested view");
         }
 
+        static function embed($view,$data=null) {
+            $vp = APP_PATH.'/views/'.$view;
+            if (file_exists($vp)) {
+				View::load($view);
+			} else {
+                printf('<span style="color:red;">View %s not found</span>', $view);
+            }
+        }
+
+
     }
 
 
