@@ -130,6 +130,11 @@
 
         }
 
+		static function findUser($username) {
+			__deprecated('user::findUser', 'user::find');
+			return user::find($username);
+		}
+
     }
 
     ModuleManager::load('lepton.user.backends.*');

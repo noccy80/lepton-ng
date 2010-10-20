@@ -190,6 +190,27 @@
     	}
     }
 
+	function __deprecated($oldfunc,$newfunc = null) {
+
+		$stack = debug_backtrace(false);
+		$method = $stack[1];
+		if (!isset($method['file'])) {
+			$caller = sprintf("%s%s%s (%s:%d)", $method['class'], $method['type'], $method['function'], '???', 0);
+		} else {
+			if (isset($method['type'])) {
+				$caller = sprintf("%s%s%s (%s:%d)", $method['class'], $method['type'], $method['function'], str_replace(SYS_PATH,'',$method['file']), $method['line']);
+			} else {
+				$caller = sprintf("%s (%s:%d)", $method['function'],  str_replace(SYS_PATH,'',$method['file']), $method['line']);
+			}
+		}
+
+		if ($newfunc) {
+			logger::warning('%s: Function %s is deprecated in favor of %s',$caller, $oldfunc, $newfunc);
+		} else {
+			logger::warning('%s. Function %s is deprecated', $caller, $oldfunc);
+		}
+
+	}
 
 ////// Exceptions /////////////////////////////////////////////////////////////
 
