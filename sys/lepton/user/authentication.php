@@ -20,12 +20,22 @@
 
         protected $auth_backend = null;
 
-        public function setAuthBackend($backend) {
+		/**
+		 * Sets the authentication backend to use.
+		 *
+		 * @param IAuthenticationBackend $backend The backend to authenticate with
+		 */
+        public function setAuthBackend(IAuthenticationBackend $backend) {
 
             $this->auth_backend = $backend;
 
         }
 
+		/**
+		 * @brief Assign a user to the current session.
+		 *
+		 * @param int $id The user id to assign
+		 */
         protected function setUser($id) {
             // TODO: Assign to session
             if (ModuleManager::has('lepton.mvc.session')) {
@@ -33,6 +43,10 @@
             }
         }
 
+		/**
+		 * @brief Clear the active user.
+		 *
+		 */
         protected function clearUser() {
 			User::clearUser();
         }
@@ -130,6 +144,33 @@
 
         }
 
+		/**
+		 * @brief Checks to see if a username is available.
+		 * Keep in mind that if the username is available, true is returned.
+		 * This is contrary to the find() methods.
+		 *
+		 * @see User::find
+		 * @param string $username The username to check
+		 * @return bool True if the username is valid, false otherwise
+		 */
+		static function checkUsername($username) {
+
+			$db = new DatabaseConnection();
+			$record = $db->getSingleRow(
+				"SELECT * FROM ".LEPTON_DB_PREFIX."users WHERE username=%s",
+				$username
+			);
+			return ($record != null);
+
+		}
+
+		/**
+		 * Find a user in the database. Deprecated in favor of User::find()
+		 *
+		 * @deprecated since 1.0.0
+		 * @param string $username
+		 * @return UserRecord The user record if any. Null otherwise.
+		 */
 		static function findUser($username) {
 			__deprecated('user::findUser', 'user::find');
 			return user::find($username);

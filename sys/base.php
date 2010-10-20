@@ -1,6 +1,5 @@
 <?php
 /**
- * @file base.php
  * @brief Lepton Bootstrap Code.
  *
  * This is the bootstrap code for all things lepton. Make sure it is included
