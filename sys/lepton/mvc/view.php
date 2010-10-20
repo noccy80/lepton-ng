@@ -93,6 +93,7 @@
 
         // TODO: Replace with ViewHandler::register() and ViewHandler::getHandler()
         static $_handlers = array();
+		static $_viewdata = array();
 
         /**
          * @brief Load and display a view
@@ -110,6 +111,7 @@
                     if (($ctl) && count($ctl->getState()) > 0) {
                         $vc->setViewData($ctl->getState());
                     }
+					$vc->setViewData(View::$_viewdata);
                     $vc->loadView($view);
                     $vc->display();
                     return true;
@@ -128,6 +130,11 @@
                 printf('<span style="color:red;">View %s not found</span>', $view);
             }
         }
+
+
+		static function set($key,$value) {
+			view::$_viewdata[$key] = $value;
+		}
 
 
     }

@@ -223,8 +223,10 @@
         class UnsupportedPlatformException extends BaseException { }
 		class SystemException extends BaseException { }
 			class ClassNotFoundException extends SystemException { }
-        
+
+/*
 	function __autoload($class) {
+		if (class_exists($class)) return;
 		if (PHP_VERSION_ID < 50300) {
 			console::backtrace();
 			console::fatal('Could not load class %s!', $class);
@@ -233,6 +235,7 @@
 			throw new ClassNotFoundException('Could not load class '.$class);
 		}
 	}
+*/
 
 ////// Configuration //////////////////////////////////////////////////////////
 
@@ -482,7 +485,11 @@
                     }
                     $mark = (($i == ($trim))?'in':'  invoked from');
                     if (!isset($method['file'])) {
-                        $trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), '???', 0);
+                        if (isset($method['type'])) {
+                            $trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), '???', 0);
+                        } else {
+                            $trace[] = sprintf("  %s %s(%s) - %s:%d", $mark, $method['function'], join(',',$args), '???', 0);
+                        }
                     } else {
                         if (isset($method['type'])) {
                             $trace[] = sprintf("  %s %s%s%s(%s) - %s:%d", $mark, $method['class'], $method['type'], $method['function'], join(',',$args), str_replace(SYS_PATH,'',$method['file']), $method['line']);
