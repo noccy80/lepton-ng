@@ -96,7 +96,11 @@
         	}
         
         }
-        
+
+		/**
+		 *
+		 * @return int The user id or null.
+		 */
         function getUserId() {
             return $this->userid;
         }

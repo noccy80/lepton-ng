@@ -201,8 +201,21 @@
             class FileNotFoundException extends FilesystemException { }
             class FileAccessException extends FilesystemException { }
         class UnsupportedPlatformException extends BaseException { }
+		class SystemException extends BaseException { }
+			class ClassNotFoundException extends SystemException { }
         
-        
+	function __autoload($class) {
+		if (PHP_VERSION_ID < 50300) {
+			console::backtrace();
+			console::fatal('Could not load class %s!', $class);
+			die(1);
+		} else {
+			throw new ClassNotFoundException('Could not load class '.$class);
+		}
+	}
+
+////// Configuration //////////////////////////////////////////////////////////
+
     /**
      * @class Config
      * @brief Configuration management
@@ -954,27 +967,27 @@
 
 ////// Debugging Foundation ///////////////////////////////////////////////////
 
-/**
- * Debugging Foundation. Gives access to handy debug functions.
- *
- */
-class Debug {
 	/**
-	 * Enable error reporting
-	 *
-	 * @param bool $notices Set to false to hide notices
-	 */
-	static function enable($notices = true) {
-		error_reporting(E_ERROR | E_WARNING | E_PARSE | (($notices)?E_NOTICE:0));
-	}
-	/**
-	 *
+	 * Debugging Foundation. Gives access to handy debug functions.
 	 *
 	 */
-	static function disable() {
-		error_reporting(0);
+	class Debug {
+		/**
+		 * Enable error reporting
+		 *
+		 * @param bool $notices Set to false to hide notices
+		 */
+		static function enable($notices = true) {
+			error_reporting(E_ERROR | E_WARNING | E_PARSE | (($notices)?E_NOTICE:0));
+		}
+		/**
+		 *
+		 *
+		 */
+		static function disable() {
+			error_reporting(0);
+		}
 	}
-}
 
 
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
