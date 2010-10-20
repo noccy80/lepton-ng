@@ -26,8 +26,12 @@ class HttpServer extends ConsoleService {
 		}
 		console::writeLn("Listening on port %d", $p);
 		using("lepton.net.daemon.http");
-		$this->daemon = new HttpDaemon($p);
-		$this->daemon->run();
+		try {
+			$this->daemon = new HttpDaemon($p, array(&$this, 'handleRequest'));
+			$this->daemon->run();
+		} catch(SocketException $e) {
+			console::writeLn("SocketException: %s", $e->getMessage());
+		}
 	}
 	
 	function shutdown() {
@@ -40,6 +44,11 @@ class HttpServer extends ConsoleService {
 		if ($signal === SIGINT || $signal === SIGTERM) {
 			$this->shutdown();
 		}
+	}
+
+	function handleRequest(HttpRequest $request, HttpResponse $response) {
+		$response->setContentType("text/html");
+		$response->write("<h1>Website!</h1><p>This is awesome.</p>");
 	}
 
 }
