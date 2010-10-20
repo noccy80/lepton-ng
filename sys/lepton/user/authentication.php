@@ -14,7 +14,6 @@
     interface IAuthenticationProvider {
         function isTokenValid(); /// Returns true if the tokens match
         function login();
-        function logout();
     }
 
     abstract class AuthenticationProvider implements IAuthenticationProvider {
@@ -30,12 +29,12 @@
         protected function setUser($id) {
             // TODO: Assign to session
             if (ModuleManager::has('lepton.mvc.session')) {
-                if (session::set('lepton_uid',$id));
+                if (session::set(User::KEY_USER_AUTH,$id));
             }
         }
 
         protected function clearUser() {
-
+			User::clearUser();
         }
 
     }
@@ -47,6 +46,8 @@
      * Handle authentication and user management.
      */
     abstract class User {
+
+		const KEY_USER_AUTH = 'lepton.user.identity';
 
         /**
          * Attempt to authenticate the user through a provider.
@@ -63,11 +64,22 @@
             $authrequest->setAuthBackend($auth_class);
 
             if ($authrequest->isTokenValid()) {
-                $authrequest->login();
+				$authrequest->login();
                 return true;
             }
             
         }
+
+		/**
+		 * Log out the currently active user
+		 *
+		 * @TODO Implement logout.
+		 */
+		static function logout() {
+
+			session::set(User::KEY_USER_AUTH, null);
+
+		}
         
         /**
          * Create a user record and set up the authentication credentials.
@@ -93,16 +105,29 @@
         static function isAuthenticated() {
         
             if (ModuleManager::has('lepton.mvc.session')) {
-                if (session::get('lepton_uid',null) != null) {
+                if (session::get(User::KEY_USER_AUTH,null) != null) {
                     return true;
                 }
                 return false;
             }
         
         }
-        
-        static function findUser($username) {
-        
+
+		/**
+		 * Find a user by username.
+		 *
+		 * @param string $username The username to search for
+		 * @return UserRecord The matching user record or null if none
+		 */
+        static function find($username) {
+
+			$db = new DatabaseConnection();
+			$record = $db->getSingleRow(
+				"SELECT a.*,u.* FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.username=%s",
+				$username
+			);
+			return $record;
+
         }
 
     }

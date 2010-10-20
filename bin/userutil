@@ -20,6 +20,7 @@ class UserutilApp extends ConsoleApplication {
 		console::writeLn("Commands:");
 		console::writeLn("    add [username]         add a user");
 		console::writeLn("    list                   list users");
+		console::writeLn("    find [username]        find a user");
 		console::writeLn("    activate [username]    activate user");
 		console::writeLn("    deactivate [username]  deactivate user");
 	}
@@ -42,6 +43,10 @@ class UserutilApp extends ConsoleApplication {
 			$u->email = $email;
 			$u->flags = $flags;
 			User::create($u);
+			break;
+		case 'find':
+			$user = User::find($this->getParameter(1));
+			var_dump($user);
 			break;
 		default:
 			break;

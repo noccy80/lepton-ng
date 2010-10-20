@@ -33,7 +33,7 @@ class UserRecord {
 	private $registerdate = null;
 	private $lastlogindate = null;
 	private $lastloginip = null;
-	
+
 	private $properties = array();
 	private $ambient = array();
 	private $modified = array();
@@ -41,6 +41,7 @@ class UserRecord {
 	/**
 	 * Constructor
 	 *
+	 * @param int $userid An optional user id to load
 	 */
 	function __construct($userid=null) {
 
@@ -53,12 +54,13 @@ class UserRecord {
 	/**
 	 * Load a user record from the database.
 	 *
+	 * @param int $userid The user ID
 	 */
 	function loadUser($userid) {
 		$db = new DatabaseConnection();
 		$record = $db->getSingleRow(
-			"SELECT a.*,u.* FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d", 
-			$userid
+				"SELECT a.*,u.* FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
+				$userid
 		);
 		if ($record) {
 			$this->userid = $userid;
@@ -66,7 +68,13 @@ class UserRecord {
 			throw new UserException("No such user ({$userid})");
 		}
 	}
-	
+
+	/**
+	 * Set a user property.
+	 *
+	 * @param string $key The key to set
+	 * @param string $value The value to set
+	 */
 	public function __set($key,$value) {
 		switch($key) {
 			case 'userid':
@@ -86,7 +94,7 @@ class UserRecord {
 				$this->password = $value;
 				break;
 			case 'flags':
-				// TODO: This needs updating in the user table.
+			// TODO: This needs updating in the user table.
 				$this->flags = $value;
 				break;
 			default:
@@ -97,14 +105,20 @@ class UserRecord {
 			$this->modified[] = $key;
 		}
 	}
-	
+
+	/**
+	 * Retrieves a user property.
+	 *
+	 * @param string $key The key to get
+	 * @return mixed
+	 */
 	public function __get($key) {
 		switch($key) {
-			case 'userid': 
+			case 'userid':
 				return $this->userid;
-			case 'username': 
+			case 'username':
 				return $this->username;
-			case 'email': 
+			case 'email':
 				return $this->email;
 			case 'flags':
 				return $this->flags;
@@ -115,8 +129,8 @@ class UserRecord {
 				} else {
 					return $this->password;
 				}
-			
-			default: 
+
+			default:
 				if (isset($this->ambient[$key])) {
 					return $this->ambient[$key];
 				} else {

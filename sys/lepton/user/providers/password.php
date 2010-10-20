@@ -30,10 +30,6 @@
             }
             throw new AuthenticationException("No user available to login()");
         }
-        
-        function logout() {
-            $this->clearUser();
-        }
 
     }
 
