@@ -60,7 +60,7 @@ class SoapServiceConsumer extends ServiceConsumer {
             $this->mustParseNulls = false; 
             $request = preg_replace('/<ns1:(\w+)>'.self::_NULL_.'<\/ns1:\\1>/', 
                 '<ns1:$1 xsi:nil="true"/>', 
-            $request, -1, &$count); 
+            $request, -1, $count); 
             if ($count > 0) { 
                 $request = preg_replace('/(<SOAP-ENV:Envelope )/', 
                     '\\1 xmlns:xsi="'.self::XSI_NS.'" ', 
