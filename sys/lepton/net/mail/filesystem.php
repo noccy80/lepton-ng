@@ -110,6 +110,8 @@ class FilesystemMailStorage extends MailStorage {
 
         $this->mbox->documentElement->appendChild($msgel);
 
+        return true;
+
     }
 
     /**
@@ -192,15 +194,6 @@ class FilesystemMailStorage extends MailStorage {
         $mailmsg->body = $messages->item(0)->nodeValue;
 
         return $mailmsg;
-    }
-
-    /**
-     * Makes sure everything is properly closed.
-     */
-    function __destruct() {
-
-        $this->close();
-
     }
 
 }
