@@ -3,6 +3,8 @@
     'version' => '1.0.0'
 ));
 
+using('lepton.mvc.model');
+
 class MailException extends BaseException { }
 
 class Mailbox {
@@ -50,14 +52,27 @@ class Mailbox {
     }
 
     function saveMessage(MailMessage $message) {
-
         if ($this->mailbox) {
             return $this->mailbox->addMessage($message);
         } else {
             throw new MailException("Mailbox not opened!");
         }
+    }
 
+    function getMessageList() {
+        if ($this->mailbox) {
+            return $this->mailbox->getMessageList();
+        } else {
+            throw new MailException("Mailbox not opened!");
+        }
+    }
 
+    function getMessage($msgid) {
+        if ($this->mailbox) {
+            return $this->mailbox->getMessage($msgid);
+        } else {
+            throw new MailException("Mailbox not opened!");
+        }
     }
 
     function getUnreadCount() {
@@ -71,11 +86,16 @@ class Mailbox {
 }
 
 
-class MailMessage {
-    public $from;
-    public $to;
-    public $subject;
-    public $body;
+class MailMessage extends AbstractModel {
+    var $model = 'MailMessage';
+    var $fields = array(
+        'msgid' => 'string',
+        'from' => 'int',
+        'to' => 'int',
+        'read' => 'int between 0 and 1 default 0',
+        'subject' => 'string',
+        'body' => 'string'
+    );
 }
 
 interface IMailStorage {
@@ -131,6 +151,17 @@ class MailTest extends ConsoleApplication {
                 case 'open':
                     $this->sess = new Mailbox($c[1]);
                     console::writeLn("Unread messages: %d", $this->sess->getUnreadCount());
+                    break;
+                case 'list':
+                    $this->msgs = $this->sess->getMessageList();
+                    foreach($this->msgs as $index=>$msg) {
+                        console::writeLn("%d: %s (%s) %db", $index, $msg['subject'], $msg['from'], $msg['size']);
+                    }
+                    break;
+                case 'read':
+                    if (!isset($this->msgs)) $this->msgs = $this->sess->getMessageList();
+                    $msg = $this->sess->getMessage($this->msgs[$c[1]]['msgid']);
+                    console::writeLn($msg->body);
                     break;
                 case 'help':
                     console::writeLn("Commands: open close read compose delete list");

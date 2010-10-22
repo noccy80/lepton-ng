@@ -1,5 +1,7 @@
 <?php __fileinfo("Mail store: Filesystem");
 
+using('lepton.crypto.uuid');
+
 /**
  * @brief Filesystem-based XML backend for the Mailbox class.
  *
@@ -88,14 +90,19 @@ class FilesystemMailStorage extends MailStorage {
 
     }
 
+    /**
+     * Add a message to the message store.
+     *
+     * @param MailMessage $message The message
+     */
     function addMessage($message) {
 
         $msgel = $this->mbox->createElement('message');
 
-        using('lepton.crypto.uuid');
         $message->msgid = uuid::v4();
 
         $msgel->setAttribute('read', $message->read);
+        $msgel->setAttribute('subject', $message->subject);
         $msgel->setAttribute('msgid', $message->msgid);
 
         $msgbody = $this->mbox->createTextNode($message->body);
@@ -128,6 +135,7 @@ class FilesystemMailStorage extends MailStorage {
         }
 
         return $nodes->length;
+        
     }
 
     /**
@@ -155,16 +163,17 @@ class FilesystemMailStorage extends MailStorage {
 
         for($n = 0; $n < $nodes->length; $n++) {
             $messages[] = array(
-                'msgid' => $nodes->item($n)->getAttribute('msgid'),
-                'unread' => ($nodes->item($n)->getAttribute('read') != '1'),
-                'from' => null,
-                'date' => null,
-                'size' => null,
-                'subject' => null
+                'msgid' =>    $nodes->item($n)->getAttribute('msgid'),
+                'unread' =>   ($nodes->item($n)->getAttribute('read') != '1'),
+                'from' =>     $nodes->item($n)->getAttribute('from'),
+                'date' =>     $nodes->item($n)->getAttribute('date'),
+                'size' =>     strlen($nodes->item($n)->nodeValue),
+                'subject' =>  $nodes->item($n)->getAttribute('subject')
             );
         }
 
         return $messages;
+
     }
 
     /**
@@ -175,6 +184,14 @@ class FilesystemMailStorage extends MailStorage {
      */
     function getMessage($msgid) {
 
+        console::debugEx(LOG_DEBUG,__CLASS__,"Fetching message %s...", $msgid);
+        $messages = $this->xp->query("message[@msgid='". $msgid ."']");
+
+        $mailmsg = new MailMessage();
+        $mailmsg->subject = $messages->item(0)->getAttribute('subject');
+        $mailmsg->body = $messages->item(0)->nodeValue;
+
+        return $mailmsg;
     }
 
     /**

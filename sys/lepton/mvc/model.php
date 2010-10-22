@@ -175,7 +175,7 @@
         public function __set($field,$value) {
             if (isset($this->_fields[$field])) {
                 $this->_data[$field] = $value;
-                Console::writeLn("Setting %s.%s to %s", $this->model, $field, $value);
+                console::debugEx(LOG_DEBUG,__CLASS__,"Setting %s.%s to %s", $this->model, $field, $value);
             } else {
                 throw new Exception("No such field in model");
             }
