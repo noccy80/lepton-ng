@@ -11,8 +11,9 @@ class Readline {
     static function read($prompt = null) {
         if (self::$autocompleter != null) readline_completion_function(self::$autocompleter);
         $ret = readline($prompt);
-        if ($ret) return $ret;
-        return true;
+        // if ($ret) return $ret;
+        // return true;
+        return $ret;
     }
     static function addHistory($command) {
         readline_add_history($command);

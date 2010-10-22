@@ -131,6 +131,7 @@
     define('LOG_WARN', 0);
     define('LOG_LOG', 0);
 
+
 ////// Interfaces /////////////////////////////////////////////////////////////
 
     interface IImportable {
@@ -457,6 +458,7 @@
          */
         static function warn() {
             $args = func_get_args();
+            @call_user_func_array(array('logger','warn'), $args);
             @call_user_func_array(array('Console','debugEx'),array_merge(array(LOG_WARN,'Warning'),array_slice($args,0)));
         }
 
@@ -465,6 +467,7 @@
          */
         static function fatal() {
             $args = func_get_args();
+            @call_user_func_array(array('logger','emerg'), $args);
             @call_user_func_array(array('Console','debugEx'),array_merge(array(LOG_LOG,'Fatal'),array_slice($args,0)));
             die(RETURN_ERROR);
         }
@@ -592,6 +595,15 @@
         private $_running = false;        
 
         /**
+         * Creates the timer.
+         *
+         * @param bool $start If true, the timer will start when constructed
+         */
+        function __construct($start=false) {
+            if ($start) $this->start();
+        }
+
+        /**
          * @brief Starts the timer.
          * The timer will remain running until a call is made to stop()
          *
@@ -622,7 +634,11 @@
          * @return Float Seconds elapsed.
          */
         function getElapsed() {
-            return ($this->_stoptime - $this->_starttime);
+            if ($this->_running) {
+                return (microtime(true) - $this->_starttime);
+            } else {
+                return ($this->_stoptime - $this->_starttime);
+            }
         }
 
     }
@@ -835,7 +851,7 @@
                 try {
                     ModuleManager::$_modules[strtolower($module)] = array();
                     ModuleManager::$_order[] = strtolower($module);
-                    Console::debugEx(LOG_DEBUG2,__CLASS__,"  path = %s", $path);
+                    // Console::debugEx(LOG_DEBUG2,__CLASS__,"  path = %s", $path);
                     require($path);
                     array_pop(ModuleManager::$_order);
                 } catch(ModuleException $e) {

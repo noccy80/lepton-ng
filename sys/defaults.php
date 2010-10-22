@@ -54,3 +54,7 @@
     logger::registerFactory(new SyslogLoggerFactory());
     // You can also register a DatabaseLoggerFacility:
     // logger::registerFactory(new DatabaseLoggerFacility("logtable"));
+
+    config::set('lepton.mail.backends', array(
+       'lepton.net.mail.filesystem'
+    ));

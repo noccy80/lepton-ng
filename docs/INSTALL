@@ -14,6 +14,6 @@
 3. Making sure the files can be found
 =====================================
 
- * You can also use the LEPTON_PATH, SYS_PATH and APP_PATH environment variables. Unless explicitly defined,
-   the base path is used for all three paths. The LEPTON_PATH points to the root of the project, while the
-   SYS_PATH and APP_PATH points to the folder CONTAINING the app and sys folders respectively.
+ * You can also use the BASE_PATH, SYS_PATH and APP_PATH environment variables. Unless explicitly defined,
+   the base path is used for all three paths. The BASE_PATH points to the root of the project, while the
+   SYS_PATH and APP_PATH points to the app and sys folders respectively.

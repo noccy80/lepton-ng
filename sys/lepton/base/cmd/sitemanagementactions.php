@@ -9,7 +9,7 @@ class SiteManagementActions {
     static $help = array(
         'deploy' => 'Deploy a Lepton instance'
     );
-    function _info($cmd) { return TestActions::$help[$cmd->name]; }
+    function _info($cmd) { return self::$help[$cmd->name]; }
 
     function _copy($from,$to) {
         if (@file_exists($to)) {

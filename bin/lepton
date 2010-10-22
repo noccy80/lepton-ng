@@ -54,7 +54,11 @@ class LeptonUtil extends ConsoleApplication {
 		foreach(config::get('lepton.cmd.actionhandlers') as $handler) {
 			if (method_exists($handler,$cmd[0])) {
 				$oi = new $handler;
-				call_user_func_array(array(&$oi,$cmd[0]), array_slice($cmd,1));
+				try {
+					call_user_func_array(array(&$oi,$cmd[0]), array_slice($cmd,1));
+				} catch (Exception $e) {
+					console::writeLn($e);
+				}
 				unset($oi);
 				return true;
 			}
