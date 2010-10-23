@@ -74,10 +74,6 @@ abstract class Controller implements IController {
         } else {
             throw new BaseException("Could not find controller method ".$method);
         }
-        protected function loadLibrary($lib,$as=null) {
-            if ($as == null) $as = $lib;
-            $this->{$as} = new $lib();
-        }
     }
 
     /**
@@ -124,6 +120,18 @@ abstract class Controller implements IController {
     function __unset($key) {
         unset($this->_state[$key]);
     }
+
+    /**
+     * @brief Load a library into the controller.
+     *
+     * @param string $lib Library to attach
+     * @param string $as Attach class as
+     */
+    protected function loadLibrary($lib,$as=null) {
+        if ($as == null) $as = $lib;
+        $this->{$as} = new $lib();
+    }
+
 }
 
 ?>
