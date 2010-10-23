@@ -111,7 +111,7 @@
                     if (($ctl) && count($ctl->getState()) > 0) {
                         $vc->setViewData($ctl->getState());
                     }
-					$vc->setViewData(View::$_viewdata);
+					$vc->setViewData(view::$_viewdata);
                     $vc->loadView($view);
                     $vc->display();
                     return true;

@@ -11,7 +11,7 @@ class PlainViewHandler extends ViewHandler {
         $path = APP_PATH.'views/'.$view;
         Console::debugEx(LOG_BASIC,__CLASS__,"Attempting to invoke view from %s", $path);
         $data = $this->getViewData();
-        extract($data, EXTR_SKIP);
+        extract($this->_data, EXTR_SKIP);
         if (file_exists($path)) {
             Console::debugEx(LOG_BASIC,__CLASS__,"Invoking as Pure PHP View");
             $this->path = $path;
