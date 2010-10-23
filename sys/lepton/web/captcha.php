@@ -1,6 +1,6 @@
-<?php
+<?php __fileinfo("Captcha generation");
 
-	Lepton::using('graphics');
+	using('lepton.graphics.*');
 
 	/**
 	 * Captcha Protection Library for Lepton
@@ -13,7 +13,7 @@
 	 * @todo Implement width and height properly
 	 * @author Christopher Vagnetoft <noccy@chillat.net>
 	 */
-	class Captcha extends Library {
+	class Captcha {
 
 		/**
 		 * Generate and save a new captcha challenge. The returned ID can be
@@ -147,10 +147,5 @@
 		}
 
 	}
-
-	Library::register('captcha', array(
-		'baseclass' => 'Captcha',
-		'alias' => 'captcha'
-	));
 
 ?>

@@ -56,6 +56,10 @@
         function __unset($key) {
             unset($this->_state[$key]);
         }
+        protected function loadLibrary($lib,$as=null) {
+            if ($as == null) $as = $lib;
+            $this->{$as} = new $lib();
+        }
     }
 
 ?>
