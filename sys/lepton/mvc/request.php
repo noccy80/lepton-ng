@@ -70,6 +70,7 @@ class Request {
      * @return bool True if the request is a http post request
      */
     function isPost() {
+        if (!isset($_SERVER['REQUEST_METHOD'])) return (count($_POST)>0);
         return ($_SERVER['REQUEST_METHOD'] == 'POST');
     }
 
@@ -79,6 +80,7 @@ class Request {
      * @return bool True if the request is a http get request
      */
     function isGet() {
+        if (!isset($_SERVER['REQUEST_METHOD'])) return (count($_GET)>0);
         return ($_SERVER['REQUEST_METHOD'] == 'GET');
     }
 

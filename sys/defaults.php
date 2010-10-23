@@ -33,6 +33,9 @@
     // Log to audit log (in db)
     config::set('lepton.mvc.exception.audit',true);
 
+    // Should view::embed throw exceptions? This will force output buffering.
+    config::set('lepton.mvc.embed.exception',false);
+
 
     // Session save handler - default to null
     config::set('lepton.session.savehandler', null);

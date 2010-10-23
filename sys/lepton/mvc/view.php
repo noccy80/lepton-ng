@@ -101,9 +101,12 @@ ModuleManager::load('lepton.mvc.viewhandler.*');
  */
 class View {
 
+    const KEY_EMBED_EXCEPTION = 'lepton.mvc.embed.exception';
+
     // TODO: Replace with ViewHandler::register() and ViewHandler::getHandler()
     static $_handlers = array();
     static $_viewdata = array();
+    static $_primaryview = null;
 
     /**
      * @brief Load and display a view
@@ -111,6 +114,11 @@ class View {
      *
      */
     static function load($view,$ctl=null) {
+
+        if (!self::$_primaryview) {
+            if (config::get(self::KEY_EMBED_EXCEPTION,false) == true) ob_start();
+            self::$_primaryview == $view;
+        }
 
         // Go over the registered handlers and see which one match the file name
         foreach((array)View::$_handlers as $handler=>$match) {
@@ -143,6 +151,9 @@ class View {
         if (file_exists($vp)) {
             View::load($view);
         } else {
+            if (config::get(self::KEY_EMBED_EXCEPTION,false) == true) {
+                throw new ViewException("Embedded view ".$view." not found");
+            }
             printf('<span style="color:red;">View %s not found</span>', $view);
         }
     }
