@@ -20,12 +20,14 @@
     ModuleManager::load('lepton.web.*');
 
     class MvcApplication extends Application {
+        const KEY_MVC_ROUTER = 'lepton.mvc.router';
         static $app;
         function run($app='app') {
             MvcApplication::$app = $app;
             Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking router...');
             // Create new router and invoke it
-            $r = new DefaultRouter();
+            $router = config::get(self::KEY_MVC_ROUTER,'DefaultRouter');
+            $r = new $router();
             $r->route();
             return 0;
         }
