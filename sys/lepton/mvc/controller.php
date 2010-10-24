@@ -91,7 +91,7 @@ abstract class Controller implements IController {
      * @param string $key The key to set
      * @param mixed $value The value to set
      */
-    function __set($key,$value) {
+    function set($key,$value) {
         $this->_state[$key] = $value;
     }
 
@@ -100,7 +100,10 @@ abstract class Controller implements IController {
      * @param string $key The key to retrieve
      * @return mixed The data
      */
-    function __get($key) {
+    function get($key) {
+        if (!isset($this->_state[$key])) {
+            return null;
+        }
         return($this->_state[$key]);
     }
 
