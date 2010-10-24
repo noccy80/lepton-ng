@@ -154,7 +154,7 @@ class View {
             if (config::get(self::KEY_EMBED_EXCEPTION,false) == true) {
                 throw new ViewException("Embedded view ".$view." not found");
             }
-            printf('<div style="color:white; background-color:red; border:dotted 1px white;">View %s not found</div>', $view);
+            printf('<div style="display:block;"><div style="color:white; background-color:red; border:dotted 1px white; padding:5px; margin:1px;">View %s not found</div></div>', $view);
         }
     }
 

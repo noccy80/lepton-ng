@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @class  Canvas
+     * @class  ImageCanvas
      * @author Christopher Vagnetoft <noccy@chillat.net>
      *
      * The ImageCanvas class contains all the methods needed to work with an
@@ -14,7 +14,7 @@
      *         drawing related functions will load the image. Polling the width
      *         or image format will read the metadata.
      */
-    class Canvas {
+    class ImageCanvas {
 
         private $himage = null;
         private $width = 0;
