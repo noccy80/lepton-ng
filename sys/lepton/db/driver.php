@@ -1,11 +1,13 @@
 <?php __fileinfo("Database Driver Base Class");
 
-    interface IDatabaseDriver {
-        function connect();
-        function disconnect();
-        function escapeString($args);
-        function query($sql);
-    }
+interface IDatabaseDriver {
+    function connect();
+    function disconnect();
+    function escapeString($args);
+    function query($sql);
+}
 
-    abstract class DatabaseDriver implements IDatabaseDriver { }
+abstract class DatabaseDriver implements IDatabaseDriver {
+
+}
 
