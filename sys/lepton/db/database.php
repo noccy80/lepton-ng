@@ -41,6 +41,11 @@
 
 
 
+    /**
+     * @brief Query a database using SQL statements
+     *
+     * @example database.php
+     */
     final class DatabaseConnection {
     
         private $db_conn;

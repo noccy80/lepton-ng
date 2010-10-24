@@ -2,7 +2,7 @@
 
 ModuleManager::load('lepton.mvc.forms');
 
-class ExampleController extends Controller {
+class FormController extends Controller {
 
 	var $gbform = array(
 		'name'    => 'required',
