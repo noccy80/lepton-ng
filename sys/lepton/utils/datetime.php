@@ -7,7 +7,7 @@
 	 * The string can be specified as "5d" for 5 days, "2:30" or "2h 30m"
 	 * for 2 hours 30 minutes etc.
 	 */
-	class duration {
+	abstract class Duration {
 
 		static function toSeconds($str) {
 			if (is_string($str)) {
@@ -62,7 +62,7 @@
 
 ////////// Timestamp //////////////////////////////////////////////////////////
 
-	class Timestamp extends Library {
+	class Timestamp {
 
 		private $_time = null;
 
@@ -101,7 +101,7 @@
 		    $cur_tm = time(); $dif = $cur_tm-$tm;
 		    $pds = array('second','minute','hour','day','week','month','year','decade');
 		    $pdsp = array('seconds','minutes','hours','days','weeks','months','years','decades');
-			if (Lepton::has('i18n')) {
+			if (modulemanager::has('i18n')) {
 				foreach($pds as &$pd) $pd = intl::str($pd);
 				foreach($pdsp as &$pd) $pd = intl::str($pd);
 			}
