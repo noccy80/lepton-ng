@@ -41,6 +41,12 @@
                 $this->conn = new PDO($this->dsn,$this->user,$this->pass);
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 if (isset($this->db)) $this->exec("USE ".$this->db);
+                $cs = config::get('lepton.charset');
+                $cs = str_replace('utf-','utf',$cs); // 'utf8';
+		// $this->exec("CHARSET ".$cs);
+		$this->exec("SET NAMES '".$cs."'");
+		$this->exec("SET character_set_results='".$cs."'");
+
             } catch (PDOException $e) {
                 throw new BaseException("Could not connect to database type '".$cfg['driver']."'. ".$e->getMessage());
             }
