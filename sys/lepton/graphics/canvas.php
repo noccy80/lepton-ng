@@ -297,7 +297,7 @@ class Canvas {
      * @param Integer $keepaspect One of KEEP_NONE, KEEP_CROP, and KEEP_FILL
      * @param Color $fillcolor The color to fill with (if KEEP_FILL)
      */
-    function resize($width,$height,$keepaspect=ImageCanvas::KEEP_NONE,Color $fillcolor=null) {
+    function resize($width,$height,$keepaspect=Canvas::KEEP_NONE,Color $fillcolor=null) {
 
         $this->checkImage();
         $cw = imageSX($this->himage);
@@ -306,11 +306,11 @@ class Canvas {
         $cr = (float)($cw/$ch); // Get current aspect ratio
 
         switch($keepaspect) {
-            case ImageCanvas::KEEP_NONE:
+            case Canvas::KEEP_NONE:
                 $n = imagecreatetruecolor($width,$height);
                 imagecopyresampled($n,$this->himage,0,0,0,0,$width,$height,$cw,$ch);
                 break;
-            case ImageCanvas::KEEP_CROP:
+            case Canvas::KEEP_CROP:
                 $ratio = $cw/$ch;
                 if ($width/$height > $ratio) {
                     $nh = round($width/$ratio);
@@ -326,7 +326,7 @@ class Canvas {
                     $width, $height, $width, $height);
                 imagedestroy($m);
                 break;
-            case ImageCanvas::KEEP_FILL:
+            case Canvas::KEEP_FILL:
                 $ratio = $cw/$ch;
                 $cw <= $width ? $nw = $cw : $nw = $width;
                 $nh = round($ch * $nw / $cw);
