@@ -15,6 +15,7 @@
 
     define('RETURN_SUCCESS', 0);
     define('RETURN_ERROR', 1);
+    define('PI',3.1415926535897931);
 
 	// Compatibility definitions
     foreach(array(
@@ -972,10 +973,11 @@
 			$this->logger = openlog(Lepton::getServerHostname(), $flag, $facility);
 		}
 		function __logMessage($prio,$msg) {
-			if (!$this->logger) {
-			}
 			syslog($prio,$msg);
-		}	
+        }
+        function __destruct() {
+            closelog();
+        }
 	}
 	
 	class DatabaseLoggerFactory extends LoggerFactory {
