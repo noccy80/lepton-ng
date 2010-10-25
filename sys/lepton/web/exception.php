@@ -48,7 +48,7 @@ class MvcExceptionHandler extends ExceptionHandler {
             . "Request method: ".$_SERVER['REQUEST_METHOD']."\n"
             . "Remote IP: ".$_SERVER['REMOTE_ADDR']." (".gethostbyaddr($_SERVER['REMOTE_ADDR']).")\n"
             . "Hostname: ".$_SERVER['HTTP_HOST']."\n"
-            . "Referrer: ".$_SERVER['HTTP_REFERER']."\n"
+            . "Referrer: ".(isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'null')."\n"
             . sprintf("Running as: %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid())."\n"
             . sprintf("Server: %s", $_SERVER['SERVER_SOFTWARE'])."\n"
             . sprintf("Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024))."\n"
@@ -61,9 +61,11 @@ class MvcExceptionHandler extends ExceptionHandler {
         if (config::get('lepton.mvc.exception.log',false)==true) {
             $logfile = config::get('lepton.mvc.exception.logfile',"/tmp/".$_SERVER['HTTP_HOST']."-debug.log");
             $log = "=== Unhandled Exception ===\n\n".$dbg."\n";
-            $lf = fopen($logfile, "a+");
-            fputs($lf,$log);
-            fclose($lf);
+            $lf = @fopen($logfile, "a+");
+            if ($lf) {
+                fputs($lf,$log);
+                fclose($lf);
+            }
         }
 
         header('content-type: text/html; charset=utf-8');

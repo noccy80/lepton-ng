@@ -72,14 +72,13 @@ class Captcha {
         // Make sure that we can grab a valid string
         $keys = Session::get('lepton.captcha.keys', array());
         $id = ($id)?$id:$keys['__default'];
-        if (!$id) {
+        if (!($id && isset($keys[$id]))) {
             throw new Exception("No captcha generated or invalid ID passed, call generate() first!");
         }
         $str = $keys[$id];
 
         // And render the captcha
-        $this->loadLibrary('graphics');
-        $c = $this->graphics->create(160,40);
+        $c = new Canvas(160,40);
 
         // Fill with color
         $c->drawFilledRect(-1,-1,161,41,
@@ -96,7 +95,7 @@ class Captcha {
         }
 
         // Draw the letters of the captcha
-        $f = new ImageFont($font,20);
+        $f = new Font($font,20);
         $wid = 160 / (strlen($str)+1);
         for ($n = 0; $n < strlen($str); $n++) {
             $f->setAngle(rand(-45,45));

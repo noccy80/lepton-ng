@@ -138,6 +138,11 @@
          */
         static function redirect($to,$code=302) {
 
+            if (!isset($_SERVER['SERVER_PORT'])) {
+            	console::debug('Redirect (%d) requested to %s', $code, $to);
+            	return;
+            }
+
             $location = null;
             $sn = $_SERVER['SCRIPT_NAME'];
             $cp = dirname($sn);
