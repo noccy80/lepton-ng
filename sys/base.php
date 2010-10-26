@@ -1034,10 +1034,10 @@
 			error_reporting(0);
 		}
 
-		static function inspect($array) {
+		static function inspect(array $array) {
 			echo '<style type="text/css">';
 			echo 'table { font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
-			echo 'th { text-align:left; padding:3px; border:solid 1px #BBB; background-color:#EEE; }';
+			echo 'th { text-align:left; padding:3px; border:solid 1px #BBB; background-color:#EEE; width:10%; }';
 			echo 'td { padding:3px; border:solid 1px #BBB}';
 			echo '</style>';
 			echo debug::inspectArray($array);
@@ -1093,7 +1093,7 @@
         if ($pc) return ($pc->name == $base);
         return false;
     }
-  
+
     if (config::has('lepton.db.tableprefix')) {
 	    define('LEPTON_DB_PREFIX',config::get('lepton.db.tableprefix'));
 	} else {
