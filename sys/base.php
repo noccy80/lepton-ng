@@ -223,8 +223,9 @@
             class FileNotFoundException extends FilesystemException { }
             class FileAccessException extends FilesystemException { }
         class UnsupportedPlatformException extends BaseException { }
-		class SystemException extends BaseException { }
-			class ClassNotFoundException extends SystemException { }
+            class SystemException extends BaseException { }
+                class ClassNotFoundException extends SystemException { }
+
 
 /*
 	function __autoload($class) {
@@ -1032,6 +1033,32 @@
 		static function disable() {
 			error_reporting(0);
 		}
+
+		static function inspect($array) {
+			echo '<style type="text/css">';
+			echo 'table { font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
+			echo 'th { text-align:left; padding:3px; border:solid 1px #BBB; background-color:#EEE; }';
+			echo 'td { padding:3px; border:solid 1px #BBB}';
+			echo '</style>';
+			echo debug::inspectArray($array);
+			die();
+		}
+
+		static function inspectArray($data) {
+			$ret = '<table>';
+			foreach($data as $key=>$value) {
+				$ret.='<tr><th>'.htmlentities($key).'</th><td>';
+				if (is_array($value)) {
+					$ret.= debug::inspectArray($value);
+				} else {
+					$ret.= htmlentities($value);
+				}
+				$ret.='</td></tr>';
+			}
+			$ret.= '</table>';
+			return $ret;
+		}
+
 	}
 
 

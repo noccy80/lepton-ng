@@ -131,10 +131,13 @@ abstract class Controller implements IController {
      * @param string $as Attach class as
      */
     protected function loadLibrary($lib,$as=null) {
-        if ($as == null) $as = $lib;
-        $this->{$as} = new $lib();
+        if (class_exists($lib)) {
+            if ($as == null) $as = $lib;
+            $this->{$as} = new $lib();
+        } else {
+            throw new ClassNotFoundException("Cound not find requested class ".$lib);
+        }
     }
 
 }
 
-?>

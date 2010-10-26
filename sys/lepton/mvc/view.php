@@ -169,7 +169,10 @@ class View {
     }
 
 
-}
+    static function inspect() {
+        debug::inspect(view::$_viewdata);
+    }
 
+}
 
 ?>
