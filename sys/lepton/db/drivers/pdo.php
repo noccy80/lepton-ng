@@ -68,7 +68,9 @@
         
         function escapeString($args) {
             for($n = 1; $n < count($args); $n++) {
-                $args[$n] = $this->conn->quote($args[$n]);
+                if (!is_numeric($args[$n])) {
+                    $args[$n] = $this->conn->quote($args[$n]);
+                }
             }
             $str = call_user_func_array("sprintf",$args);
             return $str;

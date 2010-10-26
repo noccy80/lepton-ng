@@ -161,11 +161,19 @@ class View {
     /**
      * @brief Set a view key
      *
-     * @param string $key The key to set
+     * @param string $key The key to set, or an associative array of keys and values to set
      * @param mixed $value Data to set
      */
-    static function set($key,$value) {
-        view::$_viewdata[$key] = $value;
+    static function set($key,$value=null) {
+        if (is_array($key)) {
+            // Set the contents of the array
+            view::$_viewdata = array_merge(
+            	view::$_viewdata, 
+            	$key
+            );
+        } else {
+            view::$_viewdata[$key] = $value;
+        }
     }
 
 

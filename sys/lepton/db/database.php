@@ -68,6 +68,7 @@ abstract class DatabaseManager {
 final class DatabaseConnection {
 
     private $db_conn;
+    private $debug = array();
 
     /**
      *
@@ -90,6 +91,7 @@ final class DatabaseConnection {
 
         $args = func_get_args();
         $sql = $this->db_conn->escapeString($args);
+        $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetRows: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
@@ -109,6 +111,7 @@ final class DatabaseConnection {
 
         $args = func_get_args();
         $sql = $this->db_conn->escapeString($args);
+        $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleRow: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
@@ -160,6 +163,7 @@ final class DatabaseConnection {
 
         $args = func_get_args();
         $sql = $this->db_conn->escapeString($args);
+        $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"InsertRow: %s", $sql);
         Database::$counter++;
         Database::$queries['UPDATING']++;
@@ -179,6 +183,7 @@ final class DatabaseConnection {
 
         $args = func_get_args();
         $sql = $this->db_conn->escapeString($args);
+        $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"UpdateRow: %s", $sql);
         Database::$counter++;
         Database::$queries['UPDATING']++;
@@ -199,6 +204,7 @@ final class DatabaseConnection {
 
         $args = func_get_args();
         $sql = $this->db_conn->escapeString($args);
+        $this->debug[] = $sql;
         Database::$counter++;
         Database::$queries['EXECUTING']++;
         $queryresult = $this->db_conn->exec($sql);
@@ -223,7 +229,10 @@ final class DatabaseConnection {
         return false;
     }
 
-
+    function getDebug() {
+        return $this->debug;
+        $this->debug = array();
+    }
 
 }
 
