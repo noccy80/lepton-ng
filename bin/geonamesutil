@@ -1,0 +1,249 @@
+#!/usr/bin/php
+<?php
+/*
+	This file is part of Lepton Framework.
+	Copyright (C) 2001-2010  Noccy Labs
+
+	Lepton Framework is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	Lepton Framework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Warzone 2100; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+*/
+
+require('sys/base.php');
+
+/**
+ * @class GeonamesUtility
+ * @brief Handles import and updates of a GeoNames table containing country
+ *   and region information.
+ *
+ * @author Christopher Vagnetoft <noccy@chillat.net>
+ * @copyright (c) 2001-2010, Noccy Labs
+ * @license GPL v3
+ */
+class GeonamesUtility extends ConsoleApplication {
+
+	/// Arguments that are accepted on the command line
+	var $arguments = array(
+		array('h','help','Show help'),
+		array('v','verbose','Verbose operation'),
+		array('d','download','Download the data, use with -i to import'),
+		array('i','import','Import the (downloaded) data from the cache'),
+		array('t:','table-type','Table type to create (default: InnoDB)'),
+		array('p:','prefix','Database prefix (default: none)'),
+		array('f','force','Force reinitialization of the database')
+	);
+	/// Application description
+	var $description = "Management utility for Geonames tables";
+	/// Base path of the geonames export dump
+	var $geonames = 'http://download.geonames.org/export/dump/';
+	
+	/// Flag for verbose operation
+	private $verbose = false;
+	
+	/**
+	 * @brief Main method
+	 *
+	 * @param int $argc The argument count
+	 * @param array $argv The arguments
+	 */
+	function main($argc,$argv) {
+		$op = false; // variable to keep track of if an operation was invoked
+		if ($this->hasArgument('v')) $this->verbose = true;
+		if ($this->hasArgument('d')) {
+			console::write("Downloading index ... ");
+			$files = $this->getIndex();
+			console::writeLn("Done");
+			$this->download($files);
+			$op = true;
+		}
+		if ($this->hasArgument('i')) {
+			if (file_exists(APP_PATH.'/geonames.cache')) {
+				$this->createTable();
+				$f = glob(APP_PATH.'/geonames.cache/??.txt.gz');
+				foreach($f as $file) {
+					$this->import(basename($file,'.txt.gz'));
+				}
+			} else {
+				console::writeLn("Could not find cache, run with the -d option first.");
+			}
+			$op = true;
+		}
+		if (!$op) $this->usage();
+	}
+	
+	/**
+	 * @brief Method to handle downloading of the needed files
+	 *
+	 */
+	private function download($filelist) {
+		$index = 0;
+		$total = count($filelist);
+		foreach($filelist as $file) {
+//			if (__fileext($file) != 'zip') {
+				$index++;
+				if (file_exists(APP_PATH.'geonames.cache')) mkdir(APP_PATH.'geonames.cache');
+				$dest = APP_PATH.'geonames.cache/'.basename($file);
+				console::write("%d of %d, %s: ", $index, $total, basename($file), $dest);
+				$fd = fopen($dest,'wb');
+				$fr = fopen($file,'rb');
+				$size = 0;
+				if (($fr) && ($fd)) {
+					while (!feof($fr)) {
+						$data = fread($fr,8192);
+						fwrite($fd,$data);
+						$size+=strlen($data);
+					}
+				} else {
+					die("Error!");
+				}
+				console::write("%d bytes ... ", $size);
+				fclose($fd);
+				fclose($fr);
+				if (__fileext($dest) == 'zip') {
+					$fz = fopen('zip://'.$dest.'#'.basename($dest,'.zip').'.txt','rb');
+					$fo = gzopen(APP_PATH.'cache/'.basename($dest,'.zip').'.txt.gz','w5');
+					if (($fz) && ($fo)) {
+						while (!feof($fz)) {
+							$data = fread($fz,8192);
+							gzwrite($fo,$data);
+						}
+					} else {
+						die("Error");
+					}
+					gzclose($fo);
+					fclose($fz);
+					// Delete zipfile after download
+					unlink($dest);
+				}		    
+				console::writeLn("Done");
+//			}
+		}		
+	}
+
+	/**
+	 * @brief Get the index of available files from GeoNames
+	 *
+	 * @return array The files available
+	 */
+	private function getIndex() {
+		$f = file_get_contents($this->geonames);
+		$h = new DomDocument();
+		$h->loadHtml($f);
+		$a = $h->getElementsByTagName('a');
+		$ret = array();
+		$blocked = array(
+			'allCountries.zip'
+		);
+		for($n = 0; $n < $a->length; $n++) {
+			$url = $a->item($n)->getAttribute('href');
+			if ((strToUpper($url[0])>='A') && (strToUpper($url[0])<='Z') && (strpos($url,'/') === false)) {
+				if (!in_array($url,$blocked)) {
+					$ret[] = $this->geonames.$url;
+				}
+			}
+		}
+		return $ret;
+	}
+	
+	private function createTable() {
+		$prefix = ($this->hasArgument('p')?$this->getArgument('p'):'');
+		switch(strtolower($this->getArgument('t'))) {
+			case null:
+			case 'innodb':
+				$tabletype = 'InnoDB';
+				break;
+			case 'myisam':
+				$tabletype = 'MyISAM';
+				break;
+			default:
+				console::writeLn("Table type must be 'innodb' or 'myisam'.");
+				die(RETURN_ERROR);
+				break;
+		}
+		
+		$sql = 'CREATE TABLE IF NOT EXISTS '.$prefix.'geonames ('.
+				'id INT NOT NULL PRIMARY KEY, '.
+				'name VARCHAR(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci, '.
+				'asciiname VARCHAR(200), '.
+				'alternatenames VARCHAR(200), '.
+				'latitude DECIMAL(9,5), '.
+				'longitude DECIMAL(9,5), '.
+				'featureclass CHAR(1), '.
+				'featurecode VARCHAR(10), '.
+				'countrycode CHAR(2), '.
+				'cc2 VARCHAR(60), '.
+				'admin1code VARCHAR(20), '.
+				'admin2code VARCHAR(80), '.
+				'admin3code VARCHAR(20), '.
+				'admin4code VARCHAR(20), '.
+				'population BIGINT, '.
+				'elevation INT, '.
+				'gtopo30 INT, '.
+				'timezoneid VARCHAR(64), '.
+				'modificationdate DATE'.
+				') TYPE='.$tabletype.' CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+		$db = new DatabaseConnection();
+		console::write("Creating tables: ");
+		$db->exec($sql);
+		if ($this->hasArgument('f')) {
+			$sql = 'TRUNCATE TABLE '.$prefix.'geonames';
+			$db->exec($sql);
+		}
+		console::writeLn("Done");
+	}
+	
+	private function import($cc) {
+		$fh = fopen('compress.zlib://'.APP_PATH.'cache/'.strtoupper($cc).'.txt.gz','r');
+		if (!$fh) { die("Error!"); }
+		$batch = array();
+		$batchsize = 1024;
+		console::write("Importing %s: ", $cc);
+		while (!feof($fh)) {
+			$l = fgetcsv($fh,8192,"\t");
+			$batch[] = $l;
+			if (count($batch) >= $batchsize) { 
+				console::write('.');
+				$this->insertBatch($batch);
+				$batch = array();
+			}
+		}
+		if (count($batch) > 0) { 
+			$this->insertBatch($batch);
+		}
+		console::writeLn("Done");
+		fclose($fh);
+	}
+	
+	private function insertBatch($batch) {
+	
+		$db = new DatabaseConnection();
+		$prefix = ($this->hasArgument('p')?$this->getArgument('p'):'');
+		
+		$sql = 'REPLACE INTO '.$prefix.'geonames VALUES ';
+
+		$rowdata = array();
+		foreach($batch as $row) {
+			foreach($row as $id=>$data) {
+				$row[$id] = str_replace("'","\\'",$data);
+			}
+			$rowdata[] = "('".join("','", $row)."')";
+		}
+		$sql.= join(',',$rowdata);
+		if ($this->verbose) var_dump($sql);
+		$db->exec($sql);
+	
+	}
+
+}
+
+lepton::run('GeonamesUtility');
