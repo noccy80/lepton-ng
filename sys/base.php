@@ -212,6 +212,10 @@
 		}
 
 	}
+	
+	function __fileext($filename) {
+		return pathinfo($filename, PATHINFO_EXTENSION);
+	}
 
 ////// Exceptions /////////////////////////////////////////////////////////////
 
