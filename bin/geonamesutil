@@ -73,6 +73,7 @@ class GeonamesUtility extends ConsoleApplication {
 				foreach($f as $file) {
 					$this->import(basename($file,'.txt.gz'));
 				}
+				$this->import('CZ');
 			} else {
 				console::writeLn("Could not find cache, run with the -d option first.");
 			}
@@ -203,14 +204,14 @@ class GeonamesUtility extends ConsoleApplication {
 	}
 	
 	private function import($cc) {
-		$fh = fopen('compress.zlib://'.APP_PATH.'cache/'.strtoupper($cc).'.txt.gz','r');
+		$fh = fopen('compress.zlib://'.APP_PATH.'geonames.cache/'.strtoupper($cc).'.txt.gz','r');
 		if (!$fh) { die("Error!"); }
 		$batch = array();
-		$batchsize = 1024;
+		$batchsize = 2048;
 		console::write("Importing %s: ", $cc);
 		while (!feof($fh)) {
 			$l = fgetcsv($fh,8192,"\t");
-			$batch[] = $l;
+			if (count($l) == 19) $batch[] = $l;
 			if (count($batch) >= $batchsize) { 
 				console::write('.');
 				$this->insertBatch($batch);
@@ -234,13 +235,21 @@ class GeonamesUtility extends ConsoleApplication {
 		$rowdata = array();
 		foreach($batch as $row) {
 			foreach($row as $id=>$data) {
-				$row[$id] = str_replace("'","\\'",$data);
+				$row[$id] = $db->quote($data);
+				// $row[$id] = str_replace("'","\\'",$data);
+				// $row[$id] = str_replace("%","%%'",$data);
 			}
-			$rowdata[] = "('".join("','", $row)."')";
+			$rowdata[] = "(".join(",", $row).")";
 		}
 		$sql.= join(',',$rowdata);
 		if ($this->verbose) var_dump($sql);
+		try {
 		$db->exec($sql);
+		} catch (Exception $e) {
+			var_dump($sql);
+			echo $e;
+			die();
+		}
 	
 	}
 
