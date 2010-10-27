@@ -67,15 +67,23 @@
         }
         
         function escapeString($args) {
-            for($n = 1; $n < count($args); $n++) {
-                if (!is_numeric($args[$n])) {
-                    $args[$n] = $this->conn->quote($args[$n]);
+            if (is_array($args)) {
+                for($n = 1; $n < count($args); $n++) {
+                    if (!is_numeric($args[$n])) {
+                        $args[$n] = $this->conn->quote($args[$n]);
+                    }
                 }
+                if (count($args) > 1) {
+                    $str = call_user_func_array("sprintf",$args);
+                } else {
+                    $str = $args[0];
+                }
+            } else {
+                $str = $this->conn->quote($args);
             }
-            $str = call_user_func_array("sprintf",$args);
             return $str;
         }
-
+        
         function exec($sql) {
             Console::debugEx(LOG_DEBUG2,__CLASS__,"SQL Exec: %s", $sql);
             $query = $this->conn->exec($sql);

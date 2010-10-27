@@ -213,6 +213,10 @@ final class DatabaseConnection {
 
     }
 
+    function quote($string) {
+        return $this->db_conn->escapeString($string);
+    }
+
     /**
      *
      * @return null Not implemented
