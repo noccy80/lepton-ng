@@ -91,7 +91,7 @@ class GeonamesUtility extends ConsoleApplication {
 		foreach($filelist as $file) {
 //			if (__fileext($file) != 'zip') {
 				$index++;
-				if (file_exists(APP_PATH.'geonames.cache')) mkdir(APP_PATH.'geonames.cache');
+				if (!file_exists(APP_PATH.'geonames.cache')) mkdir(APP_PATH.'geonames.cache');
 				$dest = APP_PATH.'geonames.cache/'.basename($file);
 				console::write("%d of %d, %s: ", $index, $total, basename($file), $dest);
 				$fd = fopen($dest,'wb');
