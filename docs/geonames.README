@@ -1,0 +1,55 @@
+About
+=====
+
+The GeoNames geographical database is available for download free of charge 
+under a creative commons attribution license. It contains over 10 million 
+geographical names and consists of 7.5 million unique features whereof 2.8 
+million populated places and 5.5 million alternate names. All features are 
+categorized into one out of nine feature classes and further subcategorized 
+into one out of 645 feature codes.
+
+The data is accessible free of charge through a number of webservices and a
+daily database export. GeoNames is already serving up to over 11 million web
+service requests per day.
+
+GeoNames is integrating geographical data such as names of places in various
+languages, elevation, population and others from various sources. All lat/long
+coordinates are in WGS84 (World Geodetic System 1984). Users may manually
+edit, correct and add new names using a user friendly wiki interface.
+
+GeoNames has Ambassadors in many countries who assist with their help and
+expertise. 
+
+LICENSE
+=======
+
+You are free:
+
+  to Share — to copy, distribute and transmit the work
+  to Remix — to adapt the work
+
+Under the following conditions:
+
+  Attribution — You must attribute the work in the manner specified by the
+  author or licensor (but not in any way that suggests that they endorse 
+  you or your use of the work).
+  
+With the understanding that:
+
+  Waiver — Any of the above conditions can be waived if you get permission
+  from the copyright holder.
+  Public Domain — Where the work or any of its elements is in the public
+  domain under applicable law, that status is in no way affected by the
+  license.
+  Other Rights — In no way are any of the following rights affected by the
+  license:
+   * Your fair dealing or fair use rights, or other applicable copyright
+     exceptions and limitations;
+   * The author's moral rights;
+   * Rights other persons may have either in the work itself or in how the 
+     work is used, such as publicity or privacy rights.
+  Notice — For any reuse or distribution, you must make clear to others the
+  license terms of this work. The best way to do this is with a link to this
+  web page.
+  
+http://creativecommons.org/licenses/by/3.0/
