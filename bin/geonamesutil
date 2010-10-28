@@ -51,6 +51,7 @@ class GeonamesUtility extends ConsoleApplication {
 	/// Flag for verbose operation
 	private $verbose = false;
 	private $countries = null;
+	private $records = 0;
 	
 	/**
 	 * @brief Main method
@@ -62,7 +63,7 @@ class GeonamesUtility extends ConsoleApplication {
 		$op = false; // variable to keep track of if an operation was invoked
 		if ($this->hasArgument('v')) $this->verbose = true;
 		if ($this->hasArgument('c')) {
-			$this->countries = $this->getArgument('c');
+			$this->countries = (array)$this->getArgument('c');
 		}
 		if ($this->hasArgument('d')) {
 			$this->download();
@@ -79,9 +80,13 @@ class GeonamesUtility extends ConsoleApplication {
 						$f[] = APP_PATH.'/geonames.cache/'.strtoupper($country).'.txt.gz';
 					}
 				}
+				$t = new Timer();
+				$t->start();
 				foreach($f as $file) {
 					$this->import(basename($file,'.txt.gz'));
 				}
+				$t->stop();
+				console::writeLn("%d records in %.2d seconds (%.2d records/second)", $this->records, $t->getElapsed(), ($this->records / $t->getElapsed()));
 			} else {
 				console::writeLn("Could not find cache, run with the -d option first.");
 			}
@@ -243,7 +248,7 @@ class GeonamesUtility extends ConsoleApplication {
 		if (count($batch) > 0) { 
 			$this->insertBatch($batch);
 		}
-		console::writeLn("Done");
+		console::writeLn(" Done");
 		fclose($fh);
 	}
 	
@@ -263,6 +268,7 @@ class GeonamesUtility extends ConsoleApplication {
 			}
 			$rowdata[] = "(".join(",", $row).")";
 		}
+		$this->records+=count($rowdata);
 		$sql.= join(',',$rowdata);
 		if ($this->verbose) var_dump($sql);
 		try {
