@@ -40,6 +40,7 @@ class GeonamesUtility extends ConsoleApplication {
 		array('i','import','Import the (downloaded) data from the cache'),
 		array('t:','table-type','Table type to create (default: InnoDB)'),
 		array('p:','prefix','Database prefix (default: none)'),
+		array('c::','country','Import country codes specified (default: all)'),
 		array('f','force','Force reinitialization of the database')
 	);
 	/// Application description
@@ -49,6 +50,7 @@ class GeonamesUtility extends ConsoleApplication {
 	
 	/// Flag for verbose operation
 	private $verbose = false;
+	private $countries = null;
 	
 	/**
 	 * @brief Main method
@@ -59,17 +61,24 @@ class GeonamesUtility extends ConsoleApplication {
 	function main($argc,$argv) {
 		$op = false; // variable to keep track of if an operation was invoked
 		if ($this->hasArgument('v')) $this->verbose = true;
+		if ($this->hasArgument('c')) {
+			$this->countries = $this->getArgument('c');
+		}
 		if ($this->hasArgument('d')) {
-			console::write("Downloading index ... ");
-			$files = $this->getIndex();
-			console::writeLn("Done");
-			$this->download($files);
+			$this->download();
 			$op = true;
 		}
 		if ($this->hasArgument('i')) {
 			if (file_exists(APP_PATH.'/geonames.cache')) {
 				$this->createTable();
-				$f = glob(APP_PATH.'/geonames.cache/??.txt.gz');
+				if ($this->countries == null) {
+					$f = glob(APP_PATH.'/geonames.cache/??.txt.gz');
+				} else {
+					$f = array();
+					foreach($this->countries as $country) {
+						$f[] = APP_PATH.'/geonames.cache/'.strtoupper($country).'.txt.gz';
+					}
+				}
 				foreach($f as $file) {
 					$this->import(basename($file,'.txt.gz'));
 				}
@@ -86,48 +95,59 @@ class GeonamesUtility extends ConsoleApplication {
 	 * @brief Method to handle downloading of the needed files
 	 *
 	 */
-	private function download($filelist) {
+	private function download() {
+
+		if ($this->countries == null) {
+			console::write("Downloading index ... ");
+			$files = $this->getIndex();
+			console::writeLn("Done");
+		} else {
+			$files = array();
+			foreach($this->countries as $country) {
+				$files[] = $this->geonames.strtoupper($country).'.zip';
+			}
+		}
+
+
 		$index = 0;
-		$total = count($filelist);
-		foreach($filelist as $file) {
-//			if (__fileext($file) != 'zip') {
-				$index++;
-				if (!file_exists(APP_PATH.'geonames.cache')) mkdir(APP_PATH.'geonames.cache');
-				$dest = APP_PATH.'geonames.cache/'.basename($file);
-				console::write("%d of %d, %s: ", $index, $total, basename($file), $dest);
-				$fd = fopen($dest,'wb');
-				$fr = fopen($file,'rb');
-				$size = 0;
-				if (($fr) && ($fd)) {
-					while (!feof($fr)) {
-						$data = fread($fr,8192);
-						fwrite($fd,$data);
-						$size+=strlen($data);
+		$total = count($files);
+		foreach($files as $file) {
+			$index++;
+			if (!file_exists(APP_PATH.'geonames.cache')) mkdir(APP_PATH.'geonames.cache');
+			$dest = APP_PATH.'geonames.cache/'.basename($file);
+			console::write("%d of %d, %s: ", $index, $total, basename($file), $dest);
+			$fd = fopen($dest,'wb');
+			$fr = fopen($file,'rb');
+			$size = 0;
+			if (($fr) && ($fd)) {
+				while (!feof($fr)) {
+					$data = fread($fr,8192);
+					fwrite($fd,$data);
+					$size+=strlen($data);
+				}
+			} else {
+				die("Error!");
+			}
+			console::write("%d bytes ... ", $size);
+			fclose($fd);
+			fclose($fr);
+			if (__fileext($dest) == 'zip') {
+				$fz = fopen('zip://'.$dest.'#'.basename($dest,'.zip').'.txt','rb');
+				$fo = gzopen(APP_PATH.'cache/'.basename($dest,'.zip').'.txt.gz','w5');
+				if (($fz) && ($fo)) {
+					while (!feof($fz)) {
+						$data = fread($fz,8192);
+						gzwrite($fo,$data);
 					}
 				} else {
-					die("Error!");
+					die("Error");
 				}
-				console::write("%d bytes ... ", $size);
-				fclose($fd);
-				fclose($fr);
-				if (__fileext($dest) == 'zip') {
-					$fz = fopen('zip://'.$dest.'#'.basename($dest,'.zip').'.txt','rb');
-					$fo = gzopen(APP_PATH.'cache/'.basename($dest,'.zip').'.txt.gz','w5');
-					if (($fz) && ($fo)) {
-						while (!feof($fz)) {
-							$data = fread($fz,8192);
-							gzwrite($fo,$data);
-						}
-					} else {
-						die("Error");
-					}
-					gzclose($fo);
-					fclose($fz);
-					// Delete zipfile after download
-					unlink($dest);
-				}		    
-				console::writeLn("Done");
-//			}
+				gzclose($fo);
+				fclose($fz);
+				// Delete zipfile after download
+				unlink($dest);
+			}		    
+			console::writeLn("Done");
 		}		
 	}
 
@@ -172,6 +192,11 @@ class GeonamesUtility extends ConsoleApplication {
 				break;
 		}
 		
+		$db = new DatabaseConnection();
+		if ($this->hasArgument('f')) {
+			$sql = 'DROP TABLE IF EXISTS '.$prefix.'geonames';
+			$db->exec($sql);
+		}
 		$sql = 'CREATE TABLE IF NOT EXISTS '.$prefix.'geonames ('.
 				'id INT NOT NULL PRIMARY KEY, '.
 				'name VARCHAR(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci, '.
@@ -191,15 +216,13 @@ class GeonamesUtility extends ConsoleApplication {
 				'elevation INT, '.
 				'gtopo30 INT, '.
 				'timezoneid VARCHAR(64), '.
-				'modificationdate DATE'.
+				'modificationdate DATE, '.
+				'INDEX name(name), '.
+				'INDEX countrycode(countrycode), '.
+				'INDEX latlong(latitude,longitude)'.
 				') TYPE='.$tabletype.' CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-		$db = new DatabaseConnection();
 		console::write("Creating tables: ");
 		$db->exec($sql);
-		if ($this->hasArgument('f')) {
-			$sql = 'TRUNCATE TABLE '.$prefix.'geonames';
-			$db->exec($sql);
-		}
 		console::writeLn("Done");
 	}
 	
@@ -246,7 +269,7 @@ class GeonamesUtility extends ConsoleApplication {
 		try {
 		$db->exec($sql);
 		} catch (Exception $e) {
-			var_dump($sql);
+			// var_dump($sql);
 			echo $e;
 			die();
 		}
