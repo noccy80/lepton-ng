@@ -82,7 +82,6 @@ class GeonamesUtility extends ConsoleApplication {
 				foreach($f as $file) {
 					$this->import(basename($file,'.txt.gz'));
 				}
-				$this->import('CZ');
 			} else {
 				console::writeLn("Could not find cache, run with the -d option first.");
 			}
