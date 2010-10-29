@@ -139,6 +139,7 @@ final class DatabaseConnection {
 
         $args = func_get_args();
         $sql = $this->db_conn->escapeString($args);
+        $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleValue: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
@@ -234,8 +235,9 @@ final class DatabaseConnection {
     }
 
     function getDebug() {
-        return $this->debug;
+        $ret = $this->debug;
         $this->debug = array();
+        return $ret;
     }
 
 }
