@@ -46,6 +46,19 @@ abstract class Controller implements IController {
                 return RETURN_ERROR;
             }
         }
+        $cr = new ReflectionClass($cc);
+        if ($cr->hasMethod($method)) {
+            $mr = $cr->getMethod($method);
+            $args = Array();
+            for ($n = 0; $n < $mr->getNumberOfParameters(); $n++) {
+                if ($n < count($arguments)) { 
+                    $args[$n] = $arguments[$n];
+                } else {
+                    $args[$n] = null;
+                }
+            }
+            $arguments = $args;
+        }
 
         $ci = new $cc;
         if (!$ci->__request($method,(array)$arguments)) {
