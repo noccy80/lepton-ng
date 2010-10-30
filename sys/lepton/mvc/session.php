@@ -1,9 +1,8 @@
 <?php
 
-    if (!headers_sent()) {
-    	session_start();
-    }
-
+    /**
+     *
+     */
     abstract class Session {
 
         const KEY_STRICT_SESSIONS = 'lepton.security.strictsessions';
@@ -44,6 +43,22 @@
 
         }
 
+        static function begin() {
+            if (!headers_sent()) {
+    	        session_start();
+    	    }
+            session::$id = session_id();
+        }
+
+        /**
+         * @brief Validate the session.
+         * Activated using the configuration key
+         *   'lepton.security.strictsessions'. A session-bound validation
+         *   cookie is matched against the information of the current
+         *   request.
+         *
+         * Will stop execution if the details mismatch.
+         */
         static function validate() {
 
             // Grab the validation cookie
@@ -55,9 +70,19 @@
                 session::set(session::KEY_VALIDATION,$vc);
             } else {
                 if ($vc['ip'] != request::getRemoteIp()) {
-                    die("Session integrity compromised.");
+                    session::abandon();
+                    die("Session integrity compromised. Session abandoned.");
                 }
             }
+
+        }
+
+        /**
+         * @brief Abandon the current session.
+         */
+        static function abandon() {
+
+            session_destroy();
 
         }
 
@@ -93,7 +118,8 @@
 
     }
 
-    session::$id = session_id();
+    session::begin();
+    // Strict session support to prevent hijacking
     if (config::get(session::KEY_STRICT_SESSIONS,true)==true) {
         session::validate();
     }
