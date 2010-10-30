@@ -4,7 +4,7 @@
     'updater' => null
 ));
 
-class AuditActions {
+class AuditActions extends ConsoleActions {
     static $help = array(
         'audit' => "Audit log management functions"
     );

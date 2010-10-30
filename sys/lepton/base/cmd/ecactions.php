@@ -4,7 +4,7 @@
     'updater' => null
 ));
 
-class EcActions {
+class EcActions extends ConsoleActions {
 
     static $help = array(
         'ecproduct' => "Manage products",

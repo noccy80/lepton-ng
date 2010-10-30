@@ -4,7 +4,7 @@
     'updater' => null
 ));
 
-class TestActions {
+class TestActions extends ConsoleActions {
 
     static $help = array(
         'exception' => "Throw an exception",

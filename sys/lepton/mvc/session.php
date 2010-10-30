@@ -6,6 +6,9 @@
 
     abstract class Session {
 
+        const KEY_STRICT_SESSIONS = 'lepton.security.strictsessions';
+        const KEY_VALIDATION = 'lepton.security.validationcookie';
+
         const FLASH_INITIAL = 2;
         const FLASH_EXPIRES = 1;
         const FLASH_EXPIRED = 0;
@@ -37,6 +40,23 @@
 
                 unset($_SESSION[$key]);
 
+            }
+
+        }
+
+        static function validate() {
+
+            // Grab the validation cookie
+            $vc = session::get(session::KEY_VALIDATION,null);
+            if (!$vc) {
+                $vc = array(
+                    'ip' => request::getRemoteIp()
+                );
+                session::set(session::KEY_VALIDATION,$vc);
+            } else {
+                if ($vc['ip'] != request::getRemoteIp()) {
+                    die("Session integrity compromised.");
+                }
             }
 
         }
@@ -73,4 +93,7 @@
 
     }
 
-    Session::$id = session_id();
+    session::$id = session_id();
+    if (config::get(session::KEY_STRICT_SESSIONS,true)==true) {
+        session::validate();
+    }

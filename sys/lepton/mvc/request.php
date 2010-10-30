@@ -52,7 +52,7 @@ class Request {
     /**
      * @brief Configures whether the script should continue even if the client
      *   disconnects.
-     * 
+     *
      * You can use Request::clientConnected() to check if the user is still
      * connected.
      *
@@ -76,7 +76,7 @@ class Request {
 
     /**
      * @brief Check if a request is a http get request.
-     * 
+     *
      * @return bool True if the request is a http get request
      */
     function isGet() {
@@ -84,8 +84,33 @@ class Request {
         return ($_SERVER['REQUEST_METHOD'] == 'GET');
     }
 
+    /**
+     * @brief Inspect the state of the request
+     */
     static function inspect() {
         debug::inspect($_REQUEST);
+    }
+
+    /**
+     * @brief Return the remote IP
+     * @see request::getRemoteHost
+     * @return string The remote IP address
+     */
+    static function getRemoteIp() {
+        if (!isset($_SERVER['REMOTE_ADDR'])) {
+            return '127.0.0.1';
+        } else {
+            return $_SERVER['REMOTE_ADDR'];
+        }
+    }
+
+    /**
+     * @brief Return the remote hostname
+     * @see request::getRemoteIp
+     * @return string The remote hostname
+     */
+    static function getRemoteHost() {
+        return GetHostByName($ip);
     }
 
 }

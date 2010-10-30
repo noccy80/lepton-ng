@@ -6,7 +6,7 @@
 
 ModuleManager::load('app.air.binder');
 
-class AirActions {
+class AirActions extends ConsoleActions {
 
     static $help = array(
         'airmake' => 'Update bindings for AirBinder',

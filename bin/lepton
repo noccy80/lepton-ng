@@ -5,6 +5,14 @@ require('sys/base.php');
 
 ModuleManager::load('lepton.console.readline');
 ModuleManager::load('lepton.utils.tokenizer');
+
+interface IConsoleActions {
+	function _info($cmd);
+}
+abstract class ConsoleActions implements IConsoleActions {
+		
+}
+
 ModuleManager::load('lepton.base.cmd.*');
 
 class LeptonUtil extends ConsoleApplication {

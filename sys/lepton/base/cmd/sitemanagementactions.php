@@ -4,7 +4,7 @@
     'updater' => null
 ));
 
-class SiteManagementActions {
+class SiteManagementActions extends ConsoleActions {
 
     static $help = array(
         'deploy' => 'Deploy a Lepton instance'

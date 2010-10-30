@@ -4,7 +4,7 @@
     'updater' => null
 ));
 
-class BaseActions {
+class BaseActions extends ConsoleActions {
     private $extn;
     function _info($cmd) {
         switch($cmd->getName()) {
