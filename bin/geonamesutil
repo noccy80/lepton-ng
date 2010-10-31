@@ -137,7 +137,7 @@ class GeonamesUtility extends ConsoleApplication {
 			console::write("%d bytes ... ", $size);
 			fclose($fd);
 			fclose($fr);
-			if (__fileext($dest) == 'zip') {
+			if ((__fileext($dest) == 'zip') && strlen(basename($file) == 6)) {
 				$fz = fopen('zip://'.$dest.'#'.basename($dest,'.zip').'.txt','rb');
 				$fo = gzopen(APP_PATH.'geonames.cache/'.basename($dest,'.zip').'.txt.gz','w5');
 				if (($fz) && ($fo)) {
@@ -225,7 +225,11 @@ class GeonamesUtility extends ConsoleApplication {
 				'modificationdate DATE, '.
 				'INDEX name(name), '.
 				'INDEX countrycode(countrycode), '.
-				'INDEX latlong(latitude,longitude)'.
+				'INDEX latlong(latitude,longitude), '.
+				'INDEX features(featureclass,featurecode), '.
+				'INDEX admincodes(admin1code,admin2code,admin3code,admin4code), '.
+				'INDEX population(population), '.
+				'INDEX timezoneid(timezoneid)'.
 				') TYPE='.$tabletype.' CHARACTER SET utf8 COLLATE utf8_unicode_ci';
 		console::write("Creating tables: ");
 		$db->exec($sql);
@@ -250,7 +254,7 @@ class GeonamesUtility extends ConsoleApplication {
 		if (count($batch) > 0) { 
 			$this->insertBatch($batch);
 		}
-		console::writeLn(" Done");
+		console::writeLn(". Done");
 		fclose($fh);
 	}
 	
