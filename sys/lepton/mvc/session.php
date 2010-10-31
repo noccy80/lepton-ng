@@ -67,6 +67,8 @@
                 $vc = array(
                     'ip' => request::getRemoteIp()
                 );
+                // 'ua' => request::getUserAgent()
+                session::refresh();
                 session::set(session::KEY_VALIDATION,$vc);
             } else {
                 if ($vc['ip'] != request::getRemoteIp()) {
@@ -74,6 +76,15 @@
                     die("Session integrity compromised. Session abandoned.");
                 }
             }
+
+        }
+
+        /**
+         * @brief Refresh the session by regenerating a new ID
+         */
+        static function refresh() {
+
+            session_regenerate_id();
 
         }
 
