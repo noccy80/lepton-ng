@@ -101,6 +101,10 @@ class GeonamesUtility extends ConsoleApplication {
 	 */
 	private function download() {
 
+		if (!file_exists(APP_PATH.'geonames.cache')) {
+			mkdir(APP_PATH.'geonames.cache');
+		}
+
 		if ($this->countries == null) {
 			console::write("Downloading index ... ");
 			$files = $this->getIndex();
@@ -112,12 +116,10 @@ class GeonamesUtility extends ConsoleApplication {
 			}
 		}
 
-
 		$index = 0;
 		$total = count($files);
 		foreach($files as $file) {
 			$index++;
-			if (!file_exists(APP_PATH.'geonames.cache')) mkdir(APP_PATH.'geonames.cache');
 			$dest = APP_PATH.'geonames.cache/'.basename($file);
 			console::write("%d of %d, %s: ", $index, $total, basename($file), $dest);
 			$fd = fopen($dest,'wb');
@@ -137,7 +139,7 @@ class GeonamesUtility extends ConsoleApplication {
 			fclose($fr);
 			if (__fileext($dest) == 'zip') {
 				$fz = fopen('zip://'.$dest.'#'.basename($dest,'.zip').'.txt','rb');
-				$fo = gzopen(APP_PATH.'cache/'.basename($dest,'.zip').'.txt.gz','w5');
+				$fo = gzopen(APP_PATH.'geonames.cache/'.basename($dest,'.zip').'.txt.gz','w5');
 				if (($fz) && ($fo)) {
 					while (!feof($fz)) {
 						$data = fread($fz,8192);
