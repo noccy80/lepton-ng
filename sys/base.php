@@ -17,7 +17,7 @@
     define('RETURN_ERROR', 1);
     define('PI',3.1415926535897931);
 
-	// Compatibility definitions
+    // Compatibility definitions
     foreach(array(
         'COMPAT_GETOPT_LONGOPTS' => (PHP_VERSION >= "5.3"),
         'COMPAT_SOCKET_BACKLOG' => (PHP_VERSION >= "5.3.3"),
@@ -28,7 +28,7 @@
         'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")
     ) as $compat=>$val) define($compat,$val);
 
-	// Version definitions
+    // Version definitions
     foreach(array(
         'LEPTON_MAJOR_VERSION' => 1,
         'LEPTON_MINOR_VERSION' => 0,
@@ -44,7 +44,7 @@
     define('IS_WINNT', (strtolower(PHP_RUNTIME_OS) == 'windows'));
     define('IS_LINUX', (strtolower(PHP_RUNTIME_OS) == 'linux'));
 
-	// PHP Version Definitions / Fixes
+    // PHP Version Definitions / Fixes
     if(!defined('PHP_VERSION_ID')) {
         $version = explode('.',PHP_VERSION);
         define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
@@ -55,7 +55,7 @@
         define('PHP_RELEASE_VERSION',  $version[2]);
     }
 
-	// Resolve application and system paths
+    // Resolve application and system paths
     if(!defined('APP_PATH')) {
         if(getenv('APP_PATH')) {
             define('APP_PATH', realpath(getenv('APP_PATH')).'/');
@@ -81,7 +81,7 @@
         $path = APP_PATH;
     }
 
-	// Resolve base path
+    // Resolve base path
     define('BASE_PATH', realpath(APP_PATH.DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR);
     
     // Resolve system path
@@ -95,17 +95,17 @@
         define('APP_PATH', join(DIRECTORY_SEPARATOR,array($path,'app')).'/');
     }
 
-	// Resolve temporary path
-	if(!defined("TMP_PATH")) {
-		if (file_exists(BASE_PATH.'tmp') && (is_writable(BASE_PATH.'tmp'))) {
-			$tmp = BASE_PATH.'tmp';
-		} else {
-			$tmp = sys_get_temp_dir();
-		}
-		define('TMP_PATH', $tmp.'/');
-	}
+    // Resolve temporary path
+    if(!defined("TMP_PATH")) {
+        if (file_exists(BASE_PATH.'tmp') && (is_writable(BASE_PATH.'tmp'))) {
+            $tmp = BASE_PATH.'tmp';
+        } else {
+            $tmp = sys_get_temp_dir();
+        }
+        define('TMP_PATH', $tmp.'/');
+    }
 
-	// Enable PHPs error reporting when the DEBUG envvar is set
+    // Enable PHPs error reporting when the DEBUG envvar is set
     if (getenv("DEBUG") >= 1) {
         define('DEBUGMODE',true);
         error_reporting(E_ALL);
@@ -185,37 +185,37 @@
         if (count($args) == 0) {
             return "";
         } else if (count($args) == 1) {
-    	    return $args[0];
-    	} else {
-    	    return call_user_func_array('sprintf',$args);
-    	}
+            return $args[0];
+        } else {
+            return call_user_func_array('sprintf',$args);
+        }
     }
 
-	function __deprecated($oldfunc,$newfunc = null) {
+    function __deprecated($oldfunc,$newfunc = null) {
 
-		$stack = debug_backtrace(false);
-		$method = $stack[1];
-		if (!isset($method['file'])) {
-			$caller = sprintf("%s%s%s (%s:%d)", $method['class'], $method['type'], $method['function'], '???', 0);
-		} else {
-			if (isset($method['type'])) {
-				$caller = sprintf("%s%s%s (%s:%d)", $method['class'], $method['type'], $method['function'], str_replace(SYS_PATH,'',$method['file']), $method['line']);
-			} else {
-				$caller = sprintf("%s (%s:%d)", $method['function'],  str_replace(SYS_PATH,'',$method['file']), $method['line']);
-			}
-		}
+        $stack = debug_backtrace(false);
+        $method = $stack[1];
+        if (!isset($method['file'])) {
+            $caller = sprintf("%s%s%s (%s:%d)", $method['class'], $method['type'], $method['function'], '???', 0);
+        } else {
+            if (isset($method['type'])) {
+                $caller = sprintf("%s%s%s (%s:%d)", $method['class'], $method['type'], $method['function'], str_replace(SYS_PATH,'',$method['file']), $method['line']);
+            } else {
+                $caller = sprintf("%s (%s:%d)", $method['function'],  str_replace(SYS_PATH,'',$method['file']), $method['line']);
+            }
+        }
 
-		if ($newfunc) {
-			logger::warning('%s: Function %s is deprecated in favor of %s',$caller, $oldfunc, $newfunc);
-		} else {
-			logger::warning('%s. Function %s is deprecated', $caller, $oldfunc);
-		}
+        if ($newfunc) {
+            logger::warning('%s: Function %s is deprecated in favor of %s',$caller, $oldfunc, $newfunc);
+        } else {
+            logger::warning('%s. Function %s is deprecated', $caller, $oldfunc);
+        }
 
-	}
-	
-	function __fileext($filename) {
-		return pathinfo($filename, PATHINFO_EXTENSION);
-	}
+    }
+    
+    function __fileext($filename) {
+        return pathinfo($filename, PATHINFO_EXTENSION);
+    }
 
 ////// Exceptions /////////////////////////////////////////////////////////////
 
@@ -232,16 +232,16 @@
 
 
 /*
-	function __autoload($class) {
-		if (class_exists($class)) return;
-		if (PHP_VERSION_ID < 50300) {
-			console::backtrace();
-			console::fatal('Could not load class %s!', $class);
-			die(1);
-		} else {
-			throw new ClassNotFoundException('Could not load class '.$class);
-		}
-	}
+    function __autoload($class) {
+        if (class_exists($class)) return;
+        if (PHP_VERSION_ID < 50300) {
+            console::backtrace();
+            console::fatal('Could not load class %s!', $class);
+            die(1);
+        } else {
+            throw new ClassNotFoundException('Could not load class '.$class);
+        }
+    }
 */
 
 ////// Configuration //////////////////////////////////////////////////////////
@@ -388,41 +388,41 @@
 
 ////// Structures /////////////////////////////////////////////////////////////
 
-	class BasicList implements IteratorAggregate {
+    class BasicList implements IteratorAggregate {
 
-		private $list;
-		private $typeconst;
+        private $list;
+        private $typeconst;
 
-		public function __construct($typeconst=null) {
-			$this->type = $typeconst;
-		}
+        public function __construct($typeconst=null) {
+            $this->type = $typeconst;
+        }
 
-		public function getIterator() {
-			return new ArrayIterator((array)$this->list);
-		}
+        public function getIterator() {
+            return new ArrayIterator((array)$this->list);
+        }
 
-		public function add($item) {
-			if ($this->type) {
-				if (!is_a($item,$this->type)) {
-					throw new BaseException("Error; Pushing invalid type with add(). ".$item." is not a ".$this->type);
-				}
-			}
-			$this->list[] = $item;
-		}
+        public function add($item) {
+            if ($this->type) {
+                if (!is_a($item,$this->type)) {
+                    throw new BaseException("Error; Pushing invalid type with add(). ".$item." is not a ".$this->type);
+                }
+            }
+            $this->list[] = $item;
+        }
 
-		public function item($index) {
-			return $this->list[$index];
-		}
+        public function item($index) {
+            return $this->list[$index];
+        }
 
-		public function find($item) {
-			return (in_array($item,$this->list));
-		}
+        public function find($item) {
+            return (in_array($item,$this->list));
+        }
 
-		public function count() {
-			return count($this->list);
-		}
+        public function count() {
+            return count($this->list);
+        }
 
-	}
+    }
 
 ////// Console ////////////////////////////////////////////////////////////////
 
@@ -659,7 +659,7 @@
         static $__exceptionhandler = null;
 
         static function applicationExists() {
-        	return (file_exists(APP_PATH));        	
+            return (file_exists(APP_PATH));            
         }
 
         /**
@@ -716,11 +716,11 @@
         }
         
         function getServerHostname() {
-        	if (isset($_SERVER['hostname'])) {
-        		return $_SERVER['hostname'];
-        	} else {
-        		return basename($_SERVER['SCRIPT_NAME']);
-        	}
+            if (isset($_SERVER['hostname'])) {
+                return $_SERVER['hostname'];
+            } else {
+                return basename($_SERVER['SCRIPT_NAME']);
+            }
         }
         
         /**
@@ -747,10 +747,20 @@
                 die("Unhandled exception and no exception handler loaded.");
             }
         }
+        
+        static function handleShutdown() {
+            $error = error_get_last(); 
+            if ($error['type'] == 1) { 
+                var_dump($error);
+                die();
+            } 
+        }
 
     }
 
     set_exception_handler( array('Lepton','handleException') );
+    register_shutdown_function( array('Lepton','handleShutdown') ); 
+
 
     interface IExceptionHandler {
         function exception(Exception $e);
@@ -960,110 +970,110 @@
 
 ////// Logging Functionality //////////////////////////////////////////////////
 
-	interface ILoggerFactory {
-		function __logMessage($priority,$message);
-	}
-	
-	abstract class LoggerFactory implements ILoggerFactory {
-	
-	}
-	
-	class SyslogLoggerFactory extends LoggerFactory {
-		private $verbose;
-		private $logger;
-		function __construct($perror=false, $facility=LOG_LOCAL0) {
-			$this->verbose = $perror;
-			$flag = LOG_PID;
-			if ($perror) $flag |= LOG_PERROR;
-			$this->logger = openlog(Lepton::getServerHostname(), $flag, $facility);
-		}
-		function __logMessage($prio,$msg) {
-			syslog($prio,$msg);
+    interface ILoggerFactory {
+        function __logMessage($priority,$message);
+    }
+
+    abstract class LoggerFactory implements ILoggerFactory {
+
+    }
+
+    class SyslogLoggerFactory extends LoggerFactory {
+        private $verbose;
+        private $logger;
+        function __construct($perror=false, $facility=LOG_LOCAL0) {
+            $this->verbose = $perror;
+            $flag = LOG_PID;
+            if ($perror) $flag |= LOG_PERROR;
+            $this->logger = openlog(Lepton::getServerHostname(), $flag, $facility);
+        }
+        function __logMessage($prio,$msg) {
+            syslog($prio,$msg);
         }
         function __destruct() {
             closelog();
         }
-	}
-	
-	class DatabaseLoggerFactory extends LoggerFactory {
-		function __logMessage($prio,$msg) {
-			
-		}
-	}
+    }
 
-	abstract class Logger {
+    class DatabaseLoggerFactory extends LoggerFactory {
+        function __logMessage($prio,$msg) {
 
-		static $loggers = array();
-		static $logger = null;
+        }
+    }
 
-		function emerg($msgfmt)    { $arg = func_get_args(); self::__log(LOG_EMERG,   __fmt($arg)); }
-		function alert($msgfmt)    { $arg = func_get_args(); self::__log(LOG_ALERT,   __fmt($arg)); }
-		function crit($msgfmt)     { $arg = func_get_args(); self::__log(LOG_CRIT,    __fmt($arg)); }
-		function err($msgfmt)      { $arg = func_get_args(); self::__log(LOG_ERR,     __fmt($arg)); }
-		function warning($msgfmt)  { $arg = func_get_args(); self::__log(LOG_WARNING, __fmt($arg)); }
-		function notice($msgfmt)   { $arg = func_get_args(); self::__log(LOG_NOTICE,  __fmt($arg)); }
-		function info($msgfmt)     { $arg = func_get_args(); self::__log(LOG_INFO,    __fmt($arg)); }
-		function debug($msgfmt)    { $arg = func_get_args(); self::__log(LOG_DEBUG,   __fmt($arg)); }
-		function log($msgfmg)      { $arg = func_get_args(); self::__log(LOG_INFO,    __fmt($arg)); }
-		function registerFactory(LoggerFactory $factory) {
-			self::$loggers[] = $factory;
-		}
-		function __log($prio,$msg) {
-			foreach(self::$loggers as $logger) {
-				$logger->__logMessage($prio,$msg);
-			}
-		}
-	}
+    abstract class Logger {
+
+        static $loggers = array();
+        static $logger = null;
+
+        function emerg($msgfmt)    { $arg = func_get_args(); self::__log(LOG_EMERG,   __fmt($arg)); }
+        function alert($msgfmt)    { $arg = func_get_args(); self::__log(LOG_ALERT,   __fmt($arg)); }
+        function crit($msgfmt)     { $arg = func_get_args(); self::__log(LOG_CRIT,    __fmt($arg)); }
+        function err($msgfmt)      { $arg = func_get_args(); self::__log(LOG_ERR,     __fmt($arg)); }
+        function warning($msgfmt)  { $arg = func_get_args(); self::__log(LOG_WARNING, __fmt($arg)); }
+        function notice($msgfmt)   { $arg = func_get_args(); self::__log(LOG_NOTICE,  __fmt($arg)); }
+        function info($msgfmt)     { $arg = func_get_args(); self::__log(LOG_INFO,    __fmt($arg)); }
+        function debug($msgfmt)    { $arg = func_get_args(); self::__log(LOG_DEBUG,   __fmt($arg)); }
+        function log($msgfmg)      { $arg = func_get_args(); self::__log(LOG_INFO,    __fmt($arg)); }
+        function registerFactory(LoggerFactory $factory) {
+            self::$loggers[] = $factory;
+        }
+        function __log($prio,$msg) {
+            foreach(self::$loggers as $logger) {
+                $logger->__logMessage($prio,$msg);
+            }
+        }
+    }
 
 ////// Debugging Foundation ///////////////////////////////////////////////////
 
-	/**
-	 * Debugging Foundation. Gives access to handy debug functions.
-	 *
-	 */
-	class Debug {
-		/**
-		 * Enable error reporting
-		 *
-		 * @param bool $notices Set to false to hide notices
-		 */
-		static function enable($notices = true) {
-			error_reporting(E_ERROR | E_WARNING | E_PARSE | (($notices)?E_NOTICE:0));
-		}
-		/**
-		 *
-		 *
-		 */
-		static function disable() {
-			error_reporting(0);
-		}
+    /**
+     * Debugging Foundation. Gives access to handy debug functions.
+     *
+     */
+    class Debug {
+        /**
+         * Enable error reporting
+         *
+         * @param bool $notices Set to false to hide notices
+         */
+        static function enable($notices = true) {
+            error_reporting(E_ERROR | E_WARNING | E_PARSE | (($notices)?E_NOTICE:0));
+        }
+        /**
+         *
+         *
+         */
+        static function disable() {
+            error_reporting(0);
+        }
 
-		static function inspect(array $array) {
-			echo '<style type="text/css">';
-			echo 'table { font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
-			echo 'th { text-align:left; padding:3px; border:solid 1px #BBB; background-color:#EEE; width:10%; }';
-			echo 'td { padding:3px; border:solid 1px #BBB}';
-			echo '</style>';
-			echo debug::inspectArray($array);
-			die();
-		}
+        static function inspect(array $array) {
+            echo '<style type="text/css">';
+            echo 'table { font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
+            echo 'th { text-align:left; padding:3px; border:solid 1px #BBB; background-color:#EEE; width:10%; }';
+            echo 'td { padding:3px; border:solid 1px #BBB}';
+            echo '</style>';
+            echo debug::inspectArray($array);
+            die();
+        }
 
-		static function inspectArray($data) {
-			$ret = '<table>';
-			foreach($data as $key=>$value) {
-				$ret.='<tr><th>'.htmlentities($key).'</th><td>';
-				if (is_array($value)) {
-					$ret.= debug::inspectArray($value);
-				} else {
-					$ret.= htmlentities($value);
-				}
-				$ret.='</td></tr>';
-			}
-			$ret.= '</table>';
-			return $ret;
-		}
+        static function inspectArray($data) {
+            $ret = '<table>';
+            foreach($data as $key=>$value) {
+                $ret.='<tr><th>'.htmlentities($key).'</th><td>';
+                if (is_array($value)) {
+                    $ret.= debug::inspectArray($value);
+                } else {
+                    $ret.= htmlentities($value);
+                }
+                $ret.='</td></tr>';
+            }
+            $ret.= '</table>';
+            return $ret;
+        }
 
-	}
+    }
 
 
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
@@ -1099,8 +1109,8 @@
     }
 
     if (config::has('lepton.db.tableprefix')) {
-	    define('LEPTON_DB_PREFIX',config::get('lepton.db.tableprefix'));
-	} else {
+        define('LEPTON_DB_PREFIX',config::get('lepton.db.tableprefix'));
+    } else {
         define('LEPTON_DB_PREFIX','');
     }
 
