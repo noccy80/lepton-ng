@@ -220,7 +220,7 @@ class ImageExif extends ImageTagCollection {
     }
 
     function set($key,$value) {
-        $this->lldata[$key] = $value;
+        $this->ldata[$key] = $value;
     }
 
     function getAll() {
@@ -236,7 +236,7 @@ class ImageExif extends ImageTagCollection {
     }
 
     private function __getShutter() {
-        $exif = $this->exif;
+        $exif = $this->ldata;
         if (!isset($exif['ShutterSpeedValue'])) return false;
         $apex    = $this->exif_get_float($exif['ShutterSpeedValue']);
         $shutter = pow(2, -$apex);
@@ -246,7 +246,7 @@ class ImageExif extends ImageTagCollection {
     }
 
     private function __getFstop() {
-        $exif = $this->exif;
+        $exif = $this->ldata;
         if (!isset($exif['ApertureValue'])) return false;
         $apex  = $this->exif_get_float($exif['ApertureValue']);
         $fstop = pow(2, $apex/2);

@@ -1,14 +1,35 @@
 <?php __fileinfo("SQL Helpers and Tools");
 
+/**
+ * @brief Class to assist in table creation and management.
+ *
+ * This class is able to construct SQL data to create tables. Support to load
+ * existing table definitions, and updating them as needed needs to be
+ * implemented.
+ *
+ * @author Christopher Vagnetoft <noccy@chillat.net>
+ */
 class TableDefinition {
 	private $fields = null;
 	private $meta = array();
 	private $indexes = array();
 	private $tablename;
+
+	/**
+	 * @brief Constructor for table definitions
+	 *
+	 * @param string $tablename The table name
+	 */
 	function __construct($tablename) {
 		$this->tablename = $tablename;
 		$this->fields = new BasicList();
 	}
+
+	/**
+	 * @brief Create and return the SQL statement for the defined table.
+	 *
+	 * @return string The SQL statement.
+	 */
 	function createTable() {
 		$sql = array();
 		$sql[] = "CREATE TABLE `".$this->tablename.'` (';
@@ -33,6 +54,14 @@ class TableDefinition {
 		).";\n";
 		return $sqls;
 	}
+	
+	/**
+	 * @brief Adds an index to the table definition.
+	 *
+	 * @param string $name The index name
+	 * @param string $type The index type
+	 * @param array $fields The fields
+	 */
 	function addIndex($name,$type,$fields=null) {
 		if ($fields != null) {
 			$this->indexes[] = sprintf("%s KEY `%s` (`%s`)", strtoupper($type),
@@ -44,9 +73,22 @@ class TableDefinition {
 			);
 		}
 	}
+
+    /**
+     * @brief Assign metadata to the table.
+     *
+     * @param SqlTableMeta $type The metadata
+     */
 	function addMeta(SqlTableMeta $type) {
 		$this->meta[] = $type;
 	}
+
+    /**
+     * @brief Add a field to the table.
+     *
+     * @param string $fieldname The name of the field
+     * @param FieldType $type The field typ
+     */
 	function add($fieldname,FieldType $type) {
 		$this->fields->add(array(
 			'field' => $fieldname,

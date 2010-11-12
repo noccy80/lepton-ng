@@ -1,5 +1,96 @@
 <?php __fileinfo("Request wrapper for MVC support");
 
+interface IRequestObject {
+	function __construct($data);
+	function getType();
+	function sanitize($options);
+	function validate($options);
+	function __toString();
+}
+abstract class RequestObject implements IRequestObject {
+	function getType() { return class_name($this); }
+	function toString() {
+		return $this->__toString();
+	}
+}
+class RequestString extends RequestObject {
+	private $data = null;
+	function __construct($data) { $this->data = $data; }
+	function __toString() { return sprintf('%s',(string)$this->data); }
+	function sanitize($options) { }
+	function validate($options) { }
+}
+class RequestFile extends RequestObject {
+	private $key = null;
+	private $name = null;
+	private $type = null;
+	private $tempname = null;
+	private $size = null;
+	private $md5 = null;
+	function __construct($key) {
+		$this->key = $key;
+		$this->name = $_FILES[$key]['name'];
+		$this->type = $_FILES[$key]['type'];
+		$this->size = $_FILES[$key]['size'];
+		$this->error = $_FILES[$key]['error'];
+		$this->tempname = $_FILES[$key]['tmp_name'];
+		if ($this->error == UPLOAD_ERR_OK) {
+			if (function_exists('mime_content_type')) {
+				$this->type = @mime_content_type($this->tempname);
+			} else {
+				if (function_exists('finfo_open')) {
+					$finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+    				$this->type = finfo_file($finfo, $this->tempname);
+					finfo_close($finfo);
+				}
+			}
+			$this->md5 = md5_file($this->tempname);
+		}
+	}
+	function sanitize($options) { }
+	function validate($options) { }
+	function save($dest) {
+		if (is_writable(dirname($dest))) {
+			return (move_uploaded_file($this->tempname, $dest));
+		} else {
+			throw new SecurityException("Can not write to destination file ".$dest." during upload");
+		}
+	}
+	function getContents() {
+		return file_get_contents($this->tempname);
+	}
+	function __toString() {
+		$size = $this->size; $unit='b';
+		if ($size>1024) { $size=$size/1024; $unit='Kb'; }
+		if ($size>1024) { $size=$size/1024; $unit='Mb'; }
+		return sprintf('%s (%s) %.1f%s, %s', $this->name, $this->type, $size, $unit, $this->getErrorString());
+	}
+	function getSize() { return $this->size; }
+	function getName() { return $this->name; }
+	function getType() { return $this->type; }
+	function isError() { return ($this->error != UPLOAD_ERR_OK); }
+	function getError() { return $this->error; }
+	function getErrorString() {
+		switch($this->error) {
+			case UPLOAD_ERR_OK:
+				return 'Success';
+			case UPLOAD_ERR_INI_SIZE:
+			case UPLOAD_ERR_FORM_SIZE:
+				return 'Maximum size of upload exceeded.';
+			case UPLOAD_ERR_PARTIAL:
+				return 'The uploaded file was only partially uploaded.';
+			case UPLOAD_ERR_NO_FILE:
+				return 'No file was uploaded.';
+			case UPLOAD_ERR_NO_TMP_DIR:
+				return 'Missing a temporary folder.';
+			case UPLOAD_ERR_CANT_WRITE:
+				return 'Failed to write file to disk.';
+			case UPLOAD_ERR_EXTENSION:
+				return 'The upload was blocked by an extension.';
+		}
+	}
+}
+
 /**
  * 
  */
@@ -13,8 +104,15 @@ class Request {
      * @return string The posted data or the default value if not present
      */
     function get($key, $def = null) {
-        if (isset($_REQUEST[$key])) return($_REQUEST[$key]);
-        return $def;
+        if (isset($_REQUEST[$key])) return(new RequestString($_REQUEST[$key]));
+        return new RequestString($def);
+    }
+    
+    function post($key, $def = null) {
+    	// Check if file
+    	if (isset($_FILES[$key])) return(new RequestFile($key));
+        if (isset($_POST[$key])) return(new RequestString($_POST[$key]));
+        return new RequestString($def);
     }
 
     /**

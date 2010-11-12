@@ -1,4 +1,4 @@
-<?php
+<?php __fileinfo("Default Authentication Backend (DB)");
 
 	using('lepton.crypto.uuid');
 

@@ -1,6 +1,6 @@
-<?php
-
-using('lepton.graphics.canvas');
+<?php __fileinfo("Font Wrapper", array(
+	'depends' => array('lepton.graphics.canvas')
+));
 
 /**
  * Class to wrap a font instance. Allows manipulation of the font once
@@ -18,7 +18,13 @@ class Font {
      * @param int $fontsize The size
      */
     function __construct($fontname, $fontsize) {
-        $p = config::get('lepton.graphics.fontpaths', array(APP_PATH,'./',APP_PATH.'/fonts/','../','/usr/share/fonts/truetype/'));
+        $p = config::get('lepton.graphics.fontpaths', array(
+        	APP_PATH,
+        	'./',
+        	APP_PATH.'/fonts/',
+        	'../',
+        	'/usr/share/fonts/truetype/'
+        ));
         foreach($p as $fp) {
             if (@file_exists($fp.$fontname) === true) {
                 $fullname = $fp.$fontname;

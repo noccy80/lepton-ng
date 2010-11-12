@@ -59,7 +59,7 @@ class Canvas {
     /**
      * Attempts to retrieve the Exif data from the image.
      *
-     * @deprecated since 0.2.1
+     * @deprecated since 0.2.1 - In favor of exif property
      * @return ImageExif The exif information object
      */
     function getExif() {
@@ -69,7 +69,7 @@ class Canvas {
     /**
      * Attempts to retrieve the Iptc data from the image.
      *
-     * @deprecated since 0.2.1
+     * @deprecated since 0.2.1 - In favor of iptc property
      * @return ImageIptc The itpc information object
      */
     function getIptc() {
@@ -92,6 +92,12 @@ class Canvas {
         } else {
             throw new GraphicsException("File not found", GraphicsException::ERR_FILE_NOT_FOUND);
         }
+    }
+    
+    static function load($filename) {
+        $i = new Canvas();
+        $i->loadImage($filename);
+        return $i;
     }
 
     function __construct($width=null,$height=null,Color $color = null) {

@@ -1,4 +1,10 @@
-<?php
+<?php __fileinfo("Authentication Provider Base Classes", array(
+    'depends' => array(
+        'lepton.user.user'
+    )
+));
+
+
 
     class UserException extends BaseException { }
         class AuthenticationException extends UserException { }
@@ -34,7 +40,7 @@
 		/**
 		 * @brief Assign a user to the current session.
 		 *
-		 * @param int $id The user id to assign
+		 * @param $id The user id to assign
 		 */
         protected function setUser($id) {
             // TODO: Assign to session
@@ -140,7 +146,12 @@
 				"SELECT a.*,u.* FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.username=%s",
 				$username
 			);
-			return $record;
+			if ($record) {
+			    $u = new UserRecord();
+			    $u->assign($record);
+			    return $u;
+			}
+			return null;
 
         }
 

@@ -37,11 +37,13 @@ class GeonamesUtility extends ConsoleApplication {
 		array('h','help','Show help'),
 		array('v','verbose','Verbose operation'),
 		array('d','download','Download the data, use with -i to import'),
+		array('l','list','List the available supported data sets'),
 		array('i','import','Import the (downloaded) data from the cache'),
 		array('t:','table-type','Table type to create (default: InnoDB)'),
 		array('p:','prefix','Database prefix (default: none)'),
 		array('c::','country','Import country codes specified (default: all)'),
-		array('f','force','Force reinitialization of the database')
+		array('f','force','Force reinitialization of the database'),
+		array('n','interactive','Ask what to download')
 	);
 	/// Application description
 	var $description = "Management utility for Geonames tables";
@@ -91,6 +93,9 @@ class GeonamesUtility extends ConsoleApplication {
 				console::writeLn("Could not find cache, run with the -d option first.");
 			}
 			$op = true;
+		}
+		if ($this->hasArgument('n')) {
+
 		}
 		if (!$op) $this->usage();
 	}
@@ -163,6 +168,9 @@ class GeonamesUtility extends ConsoleApplication {
 	 * @return array The files available
 	 */
 	private function getIndex() {
+
+		console::write("Updating index");
+
 		$f = file_get_contents($this->geonames);
 		$h = new DomDocument();
 		$h->loadHtml($f);
@@ -179,7 +187,12 @@ class GeonamesUtility extends ConsoleApplication {
 				}
 			}
 		}
+		$fh = fopen(APP_PATH.'/geonames.cachedb','wb');
+		fwrite($fh,serialize($ret));
+		fclose($fh);
 		return $ret;
+		console::writeLn("Parsed");
+
 	}
 	
 	private function createTable() {
@@ -289,4 +302,75 @@ class GeonamesUtility extends ConsoleApplication {
 
 }
 
+interface IGeonamesImporter {
+	function import($set);
+	static function getAvailableDatasets();
+}
+abstract class GeonamesImporter implements IGeonamesImporter {
+	protected function getIndex() {
+		if (!file_exists(APP_PATH.'/geonames.cachedb')) {
+			GeonamesImporter::updateIndex();
+		} else {
+			$res = unserialize(file_get_contents(APP_PATH.'/geonames.cachedb'));
+			if (time() - $res['generated'] > 3600) {
+				GeonamesImporter::updateIndex();
+			}
+		}
+		$res = unserialize(file_get_contents(APP_PATH.'/geonames.cachedb'));
+		return $res['data'];
+		
+	}
+	static function updateIndex() {
+		console::write("Updating index");
+
+		$f = file_get_contents($this->geonames);
+		$h = new DomDocument();
+		$h->loadHtml($f);
+		$a = $h->getElementsByTagName('a');
+		$ret = array();
+		$blocked = array(
+			'allCountries.zip'
+		);
+		for($n = 0; $n < $a->length; $n++) {
+			$url = $a->item($n)->getAttribute('href');
+			if ((strToUpper($url[0])>='A') && (strToUpper($url[0])<='Z') && (strpos($url,'/') === false)) {
+				if (!in_array($url,$blocked)) {
+					$ret['data'][] = $this->geonames.$url;
+				}
+			}
+		}
+		$fh = fopen(APP_PATH.'/geonames.cachedb','wb'); 
+		$ret['created'] = fwrite($fh,serialize($ret));
+		fclose($fh);
+
+		console::writeLn(": Done");
+
+		return $ret['data']; 
+	
+	}
+}
+
+class CountryImporter extends GeonamesImporter {
+	static function getAvailableDatasets() {
+		
+	}
+	function import($set) {
+		
+	}
+}
+
+class TextMenu {
+	private $title;
+	private $options = array();
+	function __construct($title,$options) {
+		$this->title = $title;
+		$this->options = $options;
+	}
+	function printMenu() {
+		console::writeLn($this->title);
+		console::writeL
+	}
+}
+
+using('lepton.sys.fs');
 lepton::run('GeonamesUtility');

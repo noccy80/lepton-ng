@@ -22,121 +22,186 @@
  */
 class UserRecord {
 
-	private $userid = null;
-	private $username = null;
-	private $password = null;
-	private $email = null;
-	private $flags = null;
-	private $uuid = null;
-	private $displayname = null;
-	private $website = null;
-	private $registerdate = null;
-	private $lastlogindate = null;
-	private $lastloginip = null;
+    private $userid = null;
+    private $username = null;
+    private $password = null;
+    private $email = null;
+    private $flags = null;
+    private $uuid = null;
+    private $displayname = null;
+    private $website = null;
+    private $registerdate = null;
+    private $lastlogindate = null;
+    private $lastloginip = null;
 
-	private $properties = array();
-	private $ambient = array();
-	private $modified = array();
+    private $properties = array();
+    private $ambient = array();
+    private $modified = array();
 
-	/**
-	 * Constructor
-	 *
-	 * @param int $userid An optional user id to load
-	 */
-	function __construct($userid=null) {
+    /**
+     * @brief Constructor, sets things up.
+     *
+     * @param int $userid An optional user id to load
+     */
+    function __construct($userid=null) {
 
-		if ($userid) {
-			$this->loadUser($userid);
-		}
+        if ($userid) {
+            $this->loadUser($userid);
+        }
 
-	}
+    }
+    
+    /**
+     * @brief Destructor, saves the modified attributes if any.
+     *
+     * This method makes use of the $modified array to figure out what needs
+     * to be saved to what tables.
+     */
+    function __destruct() {
+        
+        if (count($modified) > 0) {
+            // Determine what needs to be updated.
+            $mtable = array(
+                'user' => false,
+                'userdata' => false,
+                'ambient' => false
+            );
+            foreach($this->modified as $mod) {
+                switch($mod) {
+                    case 'ambient'     : $mtable['ambient'] = true; break;
+                    case 'username'    : $mtable['user'] = true; break;
+                    case 'password'    : $mtable['user'] = true; break;
+                    case 'email'       : $mtable['user'] = true; break;
+                    case 'uuid'        : $mtable['user'] = true; break;
+                    case 'active'      : $mtable['user'] = true; break;
+                    case 'displayname' : $mtable['userdata'] = true; break;
+                    case 'firstname'   : $mtable['userdata'] = true; break;
+                    case 'lastname'    : $mtable['userdata'] = true; break;
+                    case 'sex'         : $mtable['userdata'] = true; break;
+                    case 'country'     : $mtable['userdata'] = true; break;
+                    default:
+                        throw new BadArgumentException("Unknown field modified: {$mod}");
+                }
+            }
+            if (($mtable['ambient']) && ($mtable['userdata'])) {
+                // Update complete userdata table
+            } elseif ($mtable['ambient']) {
+                // Update the ambient column
+            } elseif ($mtable['userdata']) {
+                // Update the userdata columns
+            }
+            if ($mtable['user']) {
+                // Update users table
+            }
+            
+        }
+        
+    }
 
-	/**
-	 * Load a user record from the database.
-	 *
-	 * @param int $userid The user ID
-	 */
-	function loadUser($userid) {
-		$db = new DatabaseConnection();
-		$record = $db->getSingleRow(
-				"SELECT a.*,u.* FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
-				$userid
-		);
-		if ($record) {
-			$this->userid = $userid;
-		} else {
-			throw new UserException("No such user ({$userid})");
-		}
-	}
+    /**
+     * @brief Load a user record from the database.
+     *
+     * @param int $userid The user ID
+     */
+    function loadUser($userid) {
+        if (is_int($userid)) {
+            $db = new DatabaseConnection();
+            $record = $db->getSingleRow(
+                    "SELECT a.*,u.* FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
+                    $userid
+            );
+            if ($record) {
+                $this->assign($record);
+            } else {
+                throw new UserException("No such user ({$userid})");
+            }
+        } else {
+            throw new BadArgumentException("User ID must be an integer");
+        }
+    }
+    
+    /**
+     * @brief Assign the user data from a recordset row
+     *
+     * @param array $userrecord The recordset row containing the user data.
+     */
+    function assign($userrecord) {
+        $this->userid = $userid;
+        $this->username = $userrecord['username'];
+        $this->email = $userrecord['email'];
+        $this->uuid = $userrecord['uuid'];
+        $this->ambient = unserialize($userrecord['ambient']);
+        $this->displayname = $userrecord['displayname'];
+    }
 
-	/**
-	 * Set a user property.
-	 *
-	 * @param string $key The key to set
-	 * @param string $value The value to set
-	 */
-	public function __set($key,$value) {
-		switch($key) {
-			case 'userid':
-				if ($this->userid == null) {
-					$this->userid = $value;
-				} else {
-					throw new UserException("Can't change assigned user id on created users");
-				}
-				break;
-			case 'username':
-				$this->username = $value;
-				break;
-			case 'email':
-				$this->email = $value;
-				break;
-			case 'password':
-				$this->password = $value;
-				break;
-			case 'flags':
-			// TODO: This needs updating in the user table.
-				$this->flags = $value;
-				break;
-			default:
-				$this->ambient[$key] = $value;
-				break;
-		}
-		if (!in_array($key, $this->modified)) {
-			$this->modified[] = $key;
-		}
-	}
+    /**
+     * @brief Set a user property.
+     *
+     * @param string $key The key to set
+     * @param string $value The value to set
+     */
+    public function __set($key,$value) {
+        switch($key) {
+            case 'userid':
+                if ($this->userid == null) {
+                    $this->userid = $value;
+                } else {
+                    throw new UserException("Can't change assigned user id on created users");
+                }
+                break;
+            case 'username':
+                $this->username = $value;
+                break;
+            case 'email':
+                $this->email = $value;
+                break;
+            case 'password':
+                $this->password = $value;
+                break;
+            case 'flags':
+            // TODO: This needs updating in the user table.
+                $this->flags = $value;
+                break;
+            default:
+                $this->ambient[$key] = $value;
+                break;
+        }
+        if (!in_array($key, $this->modified)) {
+            $this->modified[] = $key;
+        }
+    }
 
-	/**
-	 * Retrieves a user property.
-	 *
-	 * @param string $key The key to get
-	 * @return mixed
-	 */
-	public function __get($key) {
-		switch($key) {
-			case 'userid':
-				return $this->userid;
-			case 'username':
-				return $this->username;
-			case 'email':
-				return $this->email;
-			case 'flags':
-				return $this->flags;
+    /**
+     * @brief Retrieves a user property.
+     *
+     * @param string $key The key to get
+     * @return mixed The property
+     */
+    public function __get($key) {
+        switch($key) {
+            case 'userid':
+                return $this->userid;
+            case 'username':
+                return $this->username;
+            case 'email':
+                return $this->email;
+            case 'flags':
+                return $this->flags;
 
-			case 'password':
-				if ($this->password == null) {
-					throw new UserException("Can't access protected property {$key}");
-				} else {
-					return $this->password;
-				}
+            case 'password':
+                if ($this->password == null) {
+                    throw new UserException("Can't access protected property {$key}");
+                } else {
+                    return $this->password;
+                }
 
-			default:
-				if (isset($this->ambient[$key])) {
-					return $this->ambient[$key];
-				} else {
-					return null;
-				}
-		}
-	}
+            default:
+                if (isset($this->ambient[$key])) {
+                    return $this->ambient[$key];
+                } else {
+                    return null;
+                }
+        }
+    }
 
 }

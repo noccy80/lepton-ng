@@ -147,6 +147,6 @@
 
     }
 
-    ModuleManager::load('lepton.graphics.colorspace.rgb');
+    ModuleManager::load('lepton.graphics.colorspaces.*');
 
 ?>

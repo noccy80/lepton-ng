@@ -135,15 +135,16 @@
 
 ////// Interfaces /////////////////////////////////////////////////////////////
 
-    interface IImportable {
-        function setData();
+    interface IDataConsumer {
+        function setData($data);
+        function checkData($data);
     }
-    interface IExportable {
+    interface IDataProvider {
         function getData();
     }
 
-    abstract class IsImportable implements IImportable { }
-    abstract class IsExportable implements IExportable { }
+    abstract class DataConsumer implements IDataConsumer { }
+    abstract class DataProvider implements IDataProvider { }
 
 ////// Utility Functions and Aliases //////////////////////////////////////////
 
@@ -216,7 +217,7 @@
     function __fileext($filename) {
         return pathinfo($filename, PATHINFO_EXTENSION);
     }
-
+    
 ////// Exceptions /////////////////////////////////////////////////////////////
 
     /*
@@ -229,6 +230,8 @@
         class UnsupportedPlatformException extends BaseException { }
             class SystemException extends BaseException { }
                 class ClassNotFoundException extends SystemException { }
+        class CriticalException extends BaseException { }
+            class SecurityException extends CriticalException { }
 
 
 /*
@@ -748,6 +751,9 @@
             }
         }
         
+        /**
+         * @brief Handle shutdown (for debugging and error reporting)
+         */
         static function handleShutdown() {
             $error = error_get_last(); 
             if ($error['type'] == 1) { 
