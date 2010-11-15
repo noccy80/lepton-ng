@@ -64,3 +64,7 @@
 
     // Strict sessions protect against session hijacking attacks
     config::set('lepton.security.strictsessions', true);
+    // Use SecurityException in case of a security-related failure. Unless
+    // you specifically handle the exceptions, you should leave this as
+    // false, causing the execution to end.
+    config::set('lepton.security.useexceptions', false);
