@@ -105,6 +105,7 @@
          * Create a user record and set up the authentication credentials.
          *
          * @param UserRecord $user The user record to create.
+         * @return Boolean True on success
          */
         static function create(UserRecord $user) {
 
@@ -113,6 +114,9 @@
             $auth_class = new $auth_backend();
             if ($auth_class->assignCredentials($user)) {
                 $user->save();
+                return true;
+            } else {
+                return false;
             }
         
         }
@@ -143,7 +147,7 @@
 
 			$db = new DatabaseConnection();
 			$record = $db->getSingleRow(
-				"SELECT a.*,u.* FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.username=%s",
+				"SELECT a.*,u.*,a.id AS userid FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.username=%s",
 				$username
 			);
 			if ($record) {

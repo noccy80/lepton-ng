@@ -54,12 +54,12 @@ class PppAuthentication extends AuthenticationProvider {
     static function getNextIdentifier($username) {
         $user = User::find($username);
         if ($user) {
-            $userid = $user->id;
+            $userid = $user->userid;
             $db = new DatabaseConnection();
             $rs = $db->getSingleRow("SELECT * FROM userppp WHERE id=%d", $userid);
             if ($rs) {
                 $code = $rs['codeindex'];
-                return toint($code);
+                return intval($code);
             } else {
                 return null;
             }
@@ -85,7 +85,7 @@ class PppAuthentication extends AuthenticationProvider {
         }
         $user = User::find($username);
         if ($user) {
-            $userid = $user->id;
+            $userid = $user->userid;
             $db = new DatabaseConnection();
             $db->updateRow(
                 "REPLACE INTO userppp (id,secretkey,codeindex) VALUES (%d,%s,0)",
@@ -103,14 +103,16 @@ class PppAuthentication extends AuthenticationProvider {
     public function isTokenValid() {
         $user = User::find($this->username);
         if ($user) {
-            $userid = $user->id;
+            $userid = $user->userid;
             $db = new DatabaseConnection();
             $rs = $db->getSingleRow("SELECT * FROM userppp WHERE id=%d", $userid);
-            $db->updateRow("UPDATE userppp SET codeindex+1 WHERE id=%d", $userid);
+            $db->updateRow("UPDATE userppp SET codeindex=codeindex+1 WHERE id=%d", $userid);
             if ($rs) {
                 $codekey = $rs['secretkey'];
                 $codeindex = $rs['codeindex'];
                 $codematch = self::getCode($codekey, $codeindex);
+                printf('Key <b>%s</b>, index: <b>%s</b>, code: <b>%s</b>, token: <b>%s</b>',
+                    $codekey, $codeindex, $codematch, $this->passcode);
                 if ($codematch == $this->passcode) {
                     return true;
                 } else {
@@ -142,10 +144,29 @@ class PppAuthentication extends AuthenticationProvider {
     /**
      * @brief Regenerate the user's key.
      *
-     * @param <type> $userid
+     * This is an alias for setSecretKey.
+     *
+     * @param String $username The username to regenerate the key for
      */
-    function regenerateKeyForUser($userid) {
+    function regenerateKeyForUser($username) {
+        self::setSecretKey($username,null);
+    }
 
+    function getKeyForUser($username) {
+        $user = User::find($username);
+        if ($user) {
+            $userid = $user->userid;
+            $db = new DatabaseConnection();
+            $rs = $db->getSingleRow("SELECT * FROM userppp WHERE id=%d", $userid);
+            if ($rs) {
+                $codekey = $rs['secretkey'];
+            } else {
+                $codekey = null;
+            }
+            return $codekey;
+        } else {
+            throw new UserException('User not found.');
+        }
     }
 
     /**
@@ -155,12 +176,9 @@ class PppAuthentication extends AuthenticationProvider {
      * @return <type>
      */
     function cardIndexToString($index) {
-        $codeindex = $index % 70;
-        $card = (floor($index / 70) + 1);
-        $col = ($codeindex % 7);
-        $row = (floor($codeindex / ($col + 1)) + 1);
-        $colchar = substr('ABCDEF', $col, 1);
-        return "Card ".$card." code ".$colchar.$row;
+        $cardinfo = self::cardIndexToArray($index);
+        var_dump($index);
+        return sprintf('%s (Card %d)', $cardinfo['code'], $cardinfo['card']);
     }
 
     /**
@@ -170,16 +188,17 @@ class PppAuthentication extends AuthenticationProvider {
      * @return <type>
      */
     function cardIndexToArray($index) {
-        $codeindex = $index % 70;
-        $card = (floor($index / 70) + 1);
-        $col = ($codeindex % 7);
-        $row = (floor($codeindex / ($col + 1)) + 1);
+        $row = floor($index / 6);
+        $col = $index - ($row * 6);
         $colchar = substr('ABCDEF', $col, 1);
+        $card = (floor($row / 10));
+        $row = $row - ($card * 10);
         return array(
-            'card' => $card,
-            'code' => $colchar.$row,
+            'index' => $index,
+            'card' => ($card+1),
+            'code' => $colchar.($row+1),
             'column' => $col,
-            'row' => $row
+            'row' => ($row+1)
         );
     }
 
@@ -406,7 +425,7 @@ class PppAuthentication extends AuthenticationProvider {
      */
     function printPasswordCard($key,$codelength=4,$cardnum=0,$title="PPP Card") {
         $charset = self::sortchars(config::get(PppAuthentication::KEY_CHARSET, PppAuthentication::STR_CHARSET));
-        printf("%-30.30s%8s\n",$title,"[".$cardnum."]");
+        printf("%-30.30s%8s\n",$title,"[".($cardnum+1)."]");
         $rows = 10;
         $cols = floor(35/($codelength+1));
         $total = $rows*$cols;

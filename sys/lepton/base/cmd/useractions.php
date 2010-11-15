@@ -10,9 +10,26 @@ class UserActions extends ConsoleActions {
 
     static $help = array(
         'ppp' => 'Perfect Paper Passwords test utilities',
-        'pppuser' => 'Manipulate PPP-data for users'
+        'pppuser' => 'Manipulate PPP-data for users',
+        'adduser' => 'Add a user'
     );
     function _info($cmd) { return self::$help[$cmd->name]; }
+
+    function adduser($username=null,$password=null) {
+        using('lepton.user.*');
+        if ($username && $password) {
+            $u = new UserRecord();
+            $u->username = $username;
+            $u->password = $password;
+            if (User::create($u)) {
+                console::writeLn("User created.");
+            } else {
+                console::writeLn("Couldn't create user.");
+            }
+        } else {
+            console::writeLn("Not enough arguments");
+        }
+    }
 
     function pppuser($command=null) {
         $args = func_get_args();
@@ -22,34 +39,27 @@ class UserActions extends ConsoleActions {
             case 'genkey':
                 if (count($args)>0) {
                     if (count($args)>1) {
-                        $key = PppAuthentication::generateSequenceKeyFromString($args[0]);
-                        console::writeLn(__astr("Plaintext String:   \b{%s}"), $args[0]);
-                        console::writeLn(__astr("Generated key:      \b{%s}"), $key);
+                        $key = $args[0];
                     } else {
-                        $key = PppAuthentication::generateRandomSequenceKey();
-                        console::writeLn(__astr("Generated key:      \b{%s}"), $key);
+                        $key = null;
                     }
                     $user = $args[0];
+                    PppAuthentication::setSecretKey($user,$key);
                     console::writeLn("Updated key for %s. Use 'pppuser printcard' to print a new card for this user.", $user);
                 } else {
-                    console::writeLn("Bad number of parameters");
+                    console::writeLn("Not enough parameters.");
                 }
                 break;
             case 'printcard':
                 if (count($args)>1) {
-                    $key = PppAuthentication::generateSequenceKeyFromString($args[1]);
-                    console::writeLn(__astr("Plaintext String:   \b{%s}"), $args[1]);
-                    console::writeLn(__astr("Generated key:      \b{%s}"), $key);
+                    $user = $args[0];
+                    $key = PppAuthentication::getKeyForUser($user);
+                    $card = (intval($args[1]) - 1);
+                    var_dump($key);
+                    PppAuthentication::printPasswordCard($key, 4, $card);
                 } else {
-                    $key = PppAuthentication::generateRandomSequenceKey();
-                    console::writeLn(__astr("Generated key:      \b{%s}"), $key);
+                    console::writeLn("Not enough parameters.");
                 }
-                if (count($args)>0) {
-                    $card = $args[0];
-                } else {
-                    $card = 0;
-                }
-                PppAuthentication::printPasswordCard($key, 4, $card);
                 break;
             case '':
                 console::writeLn(__astr("pppuser \b{genkey} \u{username} [\u{string}]   -- (Re)generate key for user"));
@@ -83,7 +93,7 @@ class UserActions extends ConsoleActions {
                 }
                 console::writeLn(__astr("Generated key:      \b{%s}"), $key);
                 if (count($args)>0) {
-                    $card = $args[0];
+                    $card = (intval($args[0]) - 1);
                 } else {
                     $card = 0;
                 }

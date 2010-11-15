@@ -59,7 +59,7 @@ class UserRecord {
      */
     function __destruct() {
         
-        if (count($modified) > 0) {
+        if (count($this->modified) > 0) {
             // Determine what needs to be updated.
             $mtable = array(
                 'user' => false,
@@ -107,7 +107,7 @@ class UserRecord {
         if (is_int($userid)) {
             $db = new DatabaseConnection();
             $record = $db->getSingleRow(
-                    "SELECT a.*,u.* FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
+                    "SELECT a.*,u.*,a.id AS userid FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
                     $userid
             );
             if ($record) {
@@ -126,7 +126,7 @@ class UserRecord {
      * @param array $userrecord The recordset row containing the user data.
      */
     function assign($userrecord) {
-        $this->userid = $userid;
+        $this->userid = $userrecord['userid'];
         $this->username = $userrecord['username'];
         $this->email = $userrecord['email'];
         $this->uuid = $userrecord['uuid'];
