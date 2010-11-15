@@ -55,7 +55,6 @@ class UserActions extends ConsoleActions {
                     $user = $args[0];
                     $key = PppAuthentication::getKeyForUser($user);
                     $card = (intval($args[1]) - 1);
-                    var_dump($key);
                     PppAuthentication::printPasswordCard($key, 4, $card);
                 } else {
                     console::writeLn("Not enough parameters.");

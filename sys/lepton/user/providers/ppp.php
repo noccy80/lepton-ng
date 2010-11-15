@@ -111,9 +111,10 @@ class PppAuthentication extends AuthenticationProvider {
                 $codekey = $rs['secretkey'];
                 $codeindex = $rs['codeindex'];
                 $codematch = self::getCode($codekey, $codeindex);
-                printf('Key <b>%s</b>, index: <b>%s</b>, code: <b>%s</b>, token: <b>%s</b>',
-                    $codekey, $codeindex, $codematch, $this->passcode);
+                // printf('Key <b>%s</b>, index: <b>%s</b>, code: <b>%s</b>, token: <b>%s</b>',
+                // $codekey, $codeindex, $codematch, $this->passcode);
                 if ($codematch == $this->passcode) {
+                    $this->userid = $user->userid;
                     return true;
                 } else {
                     return false;
@@ -132,7 +133,6 @@ class PppAuthentication extends AuthenticationProvider {
      * @return boolean True on success
      */
     function login() {
-        $this->userid = $this->auth_backend->getUserid();
         if ($this->userid) {
             $this->setUser($this->userid);
             // console::writeLn("Authenticated as user %d", $this->userid);
@@ -177,7 +177,7 @@ class PppAuthentication extends AuthenticationProvider {
      */
     function cardIndexToString($index) {
         $cardinfo = self::cardIndexToArray($index);
-        var_dump($index);
+        // var_dump($cardinfo);
         return sprintf('%s (Card %d)', $cardinfo['code'], $cardinfo['card']);
     }
 
@@ -188,9 +188,9 @@ class PppAuthentication extends AuthenticationProvider {
      * @return <type>
      */
     function cardIndexToArray($index) {
-        $row = floor($index / 6);
-        $col = $index - ($row * 6);
-        $colchar = substr('ABCDEF', $col, 1);
+        $row = ceil($index / 7) - 1;
+        $col = ($index - ($row * 7));
+        $colchar = substr('ABCDEFG', $col, 1);
         $card = (floor($row / 10));
         $row = $row - ($card * 10);
         return array(
@@ -429,6 +429,7 @@ class PppAuthentication extends AuthenticationProvider {
         $rows = 10;
         $cols = floor(35/($codelength+1));
         $total = $rows*$cols;
+        // var_dump($total);
         echo "    ";
         for ($i = 0; $i < $cols; $i++) {
             echo str_pad(chr(ord("A")+$i), $codelength+1, " ", STR_PAD_BOTH);
