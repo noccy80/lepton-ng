@@ -151,6 +151,10 @@ abstract class Controller implements IController {
             throw new ClassNotFoundException("Cound not find requested class ".$lib);
         }
     }
+    
+    protected function import($lib) {
+    	$this->loadLibrary($lib,$lib);
+    }
 
 }
 

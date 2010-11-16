@@ -114,6 +114,14 @@ class Request {
         if (isset($_POST[$key])) return(new RequestString($_POST[$key]));
         return new RequestString($def);
     }
+    
+    function getQueryString() {
+    	$data = $_GET;
+    	if (isset($data['/index_php'])) {
+    		$data = array_slice($data,2);
+    	}
+    	return $data;
+    }
 
     /**
      * @brief Return the raw data of a post request.

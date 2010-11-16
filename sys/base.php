@@ -228,10 +228,12 @@
             class FileNotFoundException extends FilesystemException { }
             class FileAccessException extends FilesystemException { }
         class UnsupportedPlatformException extends BaseException { }
-            class SystemException extends BaseException { }
-                class ClassNotFoundException extends SystemException { }
+        class SystemException extends BaseException { }
+        class ClassNotFoundException extends BaseException { }
+        class BadPropertyException extends BaseException { }
         class CriticalException extends BaseException { }
             class SecurityException extends CriticalException { }
+
 
 
 /*
@@ -423,6 +425,42 @@
 
         public function count() {
             return count($this->list);
+        }
+
+    }
+
+    class BasicContainer {
+
+        protected $propertyvalues = array();
+
+        function __construct() {
+            if (!isset($this->properties)) {
+                throw new RuntimeException("BasicContainer descendant doesn't have a protected variable properties");
+            }
+        }
+
+        function __get($property) {
+            if (isset($this->properties[$property])) {
+                return $this->properties[$property];
+            } else {
+                throw new BadPropertyException("No such property: $property");
+            }
+        }
+
+        function __set($property,$value) {
+            if (isset($this->properties[$property])) {
+                if (isarray($this->properties[$property]) &&
+                    (!isarray($value))) {
+                    throw new RuntimeException("Attempting to assign non-array to array property");
+                }
+                $this->properties[$property] = $value;
+            } else {
+                throw new BadPropertyException("No such property: $property");
+            }
+        }
+
+        function __isset($property) {
+            return (isset($this->properties[$property]));
         }
 
     }
@@ -785,6 +823,61 @@
     abstract class Application implements IApplication {
 
     }
+
+////// Variable Casting / Utils ///////////////////////////////////////////////
+
+	abstract class string {
+		
+		const CHS_ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
+		const CHS_NUMERIC='0123456789';
+		
+		static function strip($string,$charset) {
+			$out = '';
+			for ($ci = 0; $ci<strlen($string); $ci++) {
+				if (strpos($charset,$string[$ci]) !== false) {
+					$out.=$string[$ci];
+				}
+			}
+			return $out;
+		}
+		
+		static function toSlug($string) {
+			// TODO: Implement
+		}
+		
+		static function cast($var) {
+			return strval($var);
+		}
+		
+	}
+
+	abstract class integer {
+	
+		static function cast($var) {
+			return intval($var);
+		}
+	
+	}
+	
+	abstract class float {
+	
+		static function cast($var) {
+			return floatval($var);
+		}
+		
+	}
+	
+	abstract class arr {
+	
+		static function apply($dest,$array) {
+			foreach($array as $k=>$v) {
+				$dest[$k] = $v;
+			}
+			return $dest;
+		}
+	
+	}
+
 
 ////// ModuleManager //////////////////////////////////////////////////////////
 

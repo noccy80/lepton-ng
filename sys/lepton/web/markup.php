@@ -113,6 +113,10 @@ abstract class MarkupParser implements IMarkupParser {
         }
     }
 
+}
+
+abstract class Markup {
+
     /**
      * @brief Factory method to create a parser and feed it relevant data.
      *
@@ -121,7 +125,7 @@ abstract class MarkupParser implements IMarkupParser {
      * @param array $options The options to assign to the parser
      * @return MarkupParser The parser instance
      */
-    static function factory($parser,$string,$options=null) {
+    static function factory($parser,$string='',$options=null) {
         $parserclass = $parser.'MarkupParser';
         if (class_exists($parserclass)) {
             return new $parserclass($string,$options);
