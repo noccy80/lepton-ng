@@ -239,6 +239,15 @@ final class DatabaseConnection {
         $this->debug = array();
         return $ret;
     }
+    
+    /**
+     * @brief Return query statistics as an associative array.
+     *
+     * @return Array Statistics for QUERYING, UPDATING and EXECUTING queries.
+     */
+    function getStatistics() {
+    	return Database::$queries;
+    }
 
 }
 
