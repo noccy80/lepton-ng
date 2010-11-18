@@ -49,10 +49,12 @@ class WikiMarkupParser extends MarkupParser {
 		$str = string::rereplace($str,"/\[mailto:(.*?)\s(.*?)\]/",'<a class="mailto-link" href="mailto:$1">$2</a>');
 		$str = string::rereplace($str,"/\[([http:\/\/|https:\/\/]?)(.*?)\s(.*?)\]/",'<a class="external-link" href="$1$2">$3</a>');
 		$str = string::rereplace($str,"/\[\/(.*?)\s(.*?)\]/",'<a href="/$1">$2</a>');
+        /*
 		$str = string::rereplace($str,"/\[\[embed:(.*?)\]\]/i", new Callback(MarkupUtil,'embed'));
 		$str = string::rereplace($str,"/\[\[video:(.*?)\]\]/i", new Callback(MarkupUtil,'video'));
-		$str = string::rereplace($str,"/\[\[image:(.*?)\]\]/i",'<img src="$1"></img>');
-		$str = string::rereplace($str,"/<nowiki>(.*)<\/nowiki>/",'$1');
+		*/
+        $str = string::rereplace($str,"/\[\[image:(.*?)\]\]/i",'<img src="$1"></img>');
+        $str = string::rereplace($str,"/<nowiki>(.*)<\/nowiki>/",'$1');
 		
 		return $str;
 	}

@@ -166,6 +166,7 @@
                 foreach($vars as $key=>$var) {
                     ModuleManager::$_modules[$mod][$key] = $var;
                 }
+                // Load dependencies
                 if (isset($vars['depends']) && is_array($vars['depends'])) {
                     $deps = (array)$vars['depends'];
                     foreach($vars['depends'] as $dep) {
@@ -174,7 +175,7 @@
                 }
             }
         } else {
-            Console::warn("Module reported modinfo '%s' without being requested???", $string);
+            Console::warn("Module reported modinfo '%s' without being requested?", $string);
         }
     }
 

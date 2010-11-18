@@ -113,6 +113,10 @@ abstract class MarkupParser implements IMarkupParser {
         }
     }
 
+    function getTag($type,$level) {
+        return (sprintf('<%s%d>$1</%s%d>', $type,$level,$type,$level));
+    }
+
 }
 
 abstract class Markup {
