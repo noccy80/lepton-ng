@@ -6,7 +6,7 @@
 	 * @since 0.2
 	 * @author Christopher Vagnetoft <noccy@chillat.net>
 	 */
-	class Sitemap extends Library {
+	class Sitemap {
 
 		const FREQ_ALWAYS   = "always";
 		const FREQ_HOURLY   = "hourly";
@@ -69,5 +69,3 @@
 		}
 
 	}
-
-?>
