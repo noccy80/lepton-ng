@@ -13,7 +13,7 @@
  * @author Christopher Vagnetoft <noccy@chillat.net>
  * @since 0.3
  */
-class SafehtmlMarkupParser extends MarkupParserBase {
+class SafehtmlMarkupParser extends MarkupParser {
 
     /// If set to true, links including protocols will have the rel="nofollow" attribute set
     const OPT_EXTERNAL_NOFOLLOW = 'nofollow';

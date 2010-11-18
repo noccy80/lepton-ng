@@ -13,7 +13,7 @@
  * @author Christopher Vagnetoft <noccy@chillat.net>
  * @since 0.3
  */
-class WikiMarkupParser extends MarkupParserBase {
+class WikiMarkupParser extends MarkupParser {
     /// If set to true, links including protocols will have the rel="nofollow" attribute set
     const OPT_EXTERNAL_NOFOLLOW = 'nofollow';
     /// An array containing the protocols that are allowed
