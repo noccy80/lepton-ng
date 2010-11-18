@@ -841,6 +841,14 @@
 			return $out;
 		}
 		
+		static function replace($str,$find,$replace) {
+		    return str_replace($find,$replace,$str);
+		}
+		
+		static function rereplace($str,$find,$replace) {
+		    return preg_replace($find,$replace,$str);
+		}
+		
 		static function toSlug($string) {
 			// TODO: Implement
 		}
