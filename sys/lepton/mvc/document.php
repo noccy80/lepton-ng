@@ -79,5 +79,27 @@
         }
 
     }
-
+    
+    class HtmlDocument {
+    
+        function __get($property) {
+        
+        }
+        
+        function __set($property,$value) {
+            switch($property) {
+                case 'title':
+                case 'styles':
+                case 'meta':
+                case 'links':
+                case 'scripts':
+                case 'body':
+                    break;
+                default:
+                    throw new BadPropertyException("No such property $property in HtmlDocument");
+            }
+        }
+    
+    }
+    
 ?>
