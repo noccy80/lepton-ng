@@ -14,6 +14,7 @@ class CssRule {
         }
         $rulestr = '{'.join(',',$rules).'}';
         $ret = $this->selector.$rulestr;
+        return $ret;
     }
     function __set($key,$value) {
         $this->attributes[$key] = $value;
@@ -26,6 +27,24 @@ class CssRule {
     }
     function setSelector($selector) {
         $this->selector = $selector;
+    }
+}
+
+class CssStylesheet {
+    private $rules = array();
+    function output() {
+        response::contentType('text/css');
+        echo $this->__toString();    
+    }
+    function addRule(CssRule $rule) {
+        $this->rules[$rule->getSelector()] = $rule;
+    }
+    function __toString() {
+        $rules = array();
+        foreach($this->rules as $rule) {
+            $rules[] = (string)$rule;
+        }
+        return (string)join(' ',$rules);
     }
 }
 
