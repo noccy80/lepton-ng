@@ -23,6 +23,12 @@ abstract class Router implements IRouter {
     private $_secure = false;
     static $_staticroutes = array();
 
+    /**
+     * @brief Hooks a specific request URI
+     *
+     * @param $uripat The pattern to hook
+     * @param $hook The hook which is to accept the diverted request
+     */
     static function hookRequestUri($uripat,$hook) {
         Router::$_staticroutes[] = array(
             'match' => $uripat,
@@ -122,43 +128,95 @@ abstract class Router implements IRouter {
         $r->route();
     }
 
+    /**
+     *
+     *
+     *
+     */
     protected function setBase($base=null) {
         config::set(Controller::KEY_CONTROLLER_BASE, $base);
     }
 
+    /**
+     *
+     *
+     *
+     */
     protected function getURI() {
         return $this->_uri;
     }
 
+    /**
+     *
+     *
+     *
+     */
     protected function getSegmentCount() {
         return count($this->_urisegments);
     }
 
+    /**
+     *
+     *
+     *
+     */
     protected function getSegment($index) {
         if ($index < count($this->_urisegments))
             return $this->_urisegments[$index];
         return null;
     }
 
+    /**
+     *
+     *
+     *
+     */
     protected function getSegmentSlice($start,$length = null) {
         return array_slice($this->_urisegments, $start, $length);
     }
 
+    /**
+     *
+     *
+     *
+     */
     protected function getDomain() {
         return $this->_domain;
     }
 
+    /**
+     *
+     *
+     *
+     */
     function getFullDomain() {
 
     }
+
+    /**
+     *
+     *
+     *
+     */
     function getFullUri() {
 
     }
 
+    /**
+     * @brief Check if the connection is performed over HTTPS
+     *
+     * @return Boolean True if the connection is encrypted and secured
+     */
     protected function isSecure() {
         return $this->_secure;
     }
 
+    /**
+     * @brief Check if a segment exists in the request
+     *
+     * @param $index The index of the segment to check for
+     * @return Boolean True if the segment exists
+     */
     protected function hasSegment($index) {
         return ($index < count($this->_urisegments));
     }
