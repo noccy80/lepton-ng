@@ -42,7 +42,12 @@ class Font {
         }
     }
 
-
+    /**
+     * Measure the text as bounding box.
+     *
+     * @param string $text The text
+     * @return array Left, Top, Width, Height of bounding box
+     */
     function measure($text) {
         $dim = imagettfbbox( $this->font['fontsize'], $this->font['angle'], $this->font['fontname'] , $text);
         return(array( $dim[0], $dim[1] - $dim[7], $dim[2]-$dim[0], $dim[3]-$dim[5] ));
