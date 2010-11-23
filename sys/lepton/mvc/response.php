@@ -80,6 +80,10 @@
             echo file_get_contents($file);
         }
 
+        static function setStatus($status = 200) {
+            header('HTTP/1.1 '.strval(intval($status)),true);
+        }
+
         static function streamFile($file, $contenttype) {
 
             $filelen = filesize($file);

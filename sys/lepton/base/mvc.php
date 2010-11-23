@@ -26,6 +26,7 @@
             MvcApplication::$app = $app;
             Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking router...');
             // Create new router and invoke it
+            response::setStatus(200);
             $router = config::get(self::KEY_MVC_ROUTER,'DefaultRouter');
             $r = new $router();
             $r->route();

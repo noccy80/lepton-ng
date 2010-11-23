@@ -28,6 +28,7 @@ class MvcExceptionHandler extends ExceptionHandler {
 
         @ob_end_clean();
 
+        response::setStatus(500);
         logger::emerg("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
 
         header('HTTP/1.1 501 Server Error', true);
