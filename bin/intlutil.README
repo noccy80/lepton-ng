@@ -1,0 +1,77 @@
+intlutil - Lepton internationalization utility
+==============================================
+
+This utilities helps you administrate language databases and translations. It
+does this by scraping the source files for international strings defined with
+the intl::str() api method.
+
+COMMAND LINE
+------------
+
+	Usage:
+
+		intlutil [-action] [-options] [files...]
+
+	Action:
+
+		-d   Update default language in intlutil.db
+		-e   Export translation for language from intlutil.db
+		-i   Import translation into intlutil.db
+		-c   Compile database to language files in applications folder
+		-t   Translate language file
+		-x   Initialize database file intlutil.db
+		-r   Remove language from database file intlutil.db
+		-b   Show database information and exit
+
+	Options:
+
+		-p:  Paths  (default "views,controllers,model,application")
+		-l:  Language code (example "sv-se")
+		-s   Scrape files for strings (use instead of file)
+		-v   Be verbose
+
+DATABASE ADMINISTRATION
+-----------------------
+
+	First, create the database by scraping the source code. This will create
+	the language en-us in the database with the scraped strings.
+
+		$ intlutil -x -l en-us -s
+
+	Then export your first translation and edit it with your prefered editor.
+	This will still be in en-us until you go over it and translate.
+
+		$ intlutil -e -l sv-se sv-se.lang
+
+	You can use google translate to translate it for you before exporting. Note
+	that your default language will be used for this operation? The two initial
+	letters in the language codes are used as from and to.
+
+		$ intlutil -t -l sv-se sv-se.lang
+
+	Once done, reimport the language and move on to the next. Repeat for each
+	language.
+
+		$ intlutil -i -l sv-se sv-se.lang
+		$ intlutil -e -l no-no no-no.lang
+
+	Finally compile your language files from the database. This will create the
+	language files that are used by the intl:: class.
+
+		$ intlutil -c
+
+	If you would like to delete a translation use the -r action.
+
+		$ intlutil -r -l sv-se
+
+Quick Example
+-------------
+
+	$ intlutil -x -d -l en-us -s
+	$ intlutil -l sv-se -s -t
+
+	These two lines create two languages, english first and then translated swedish.
+
+	$ intlutil -c
+
+	The language files are now saved into the application/lang/ folder
