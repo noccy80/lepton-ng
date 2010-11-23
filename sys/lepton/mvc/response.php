@@ -76,7 +76,24 @@
          * @param string $contenttype The contenttype to set
          */
         static function sendFile($file, $contenttype=null) {
-            if ($contenttype) response::contentType($contenttype);
+            if (!file_exists($file)) {
+                throw new BaseException("File not found: ".$file);
+            }
+            if ($contenttype) {
+                response::contentType($contenttype);
+            } else {
+                $mimetype = 'application/octet-stream';
+                if (function_exists('mime_content_type')) {
+                    $mimetype = @mime_content_type($file);
+                } else {
+                    if (function_exists('finfo_open')) {
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+                        $mimetype = finfo_file($finfo, $file);
+                        finfo_close($finfo);
+                    }
+                }
+                response::contentType($mimetype);
+            }
             echo file_get_contents($file);
         }
 
