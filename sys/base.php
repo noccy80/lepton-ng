@@ -917,7 +917,7 @@
             Console::debug("PHP extension not loaded: %s", $extension);
             $filename = (PHP_SHLIB_SUFFIX === 'dll' ? 'php_' : '') . $extension . PHP_SHLIB_SUFFIX;
             Console::debug("Attempting a manual load of %s from %s", $extension, $filename);
-            if ( !@dl($filename) && ($required) ) {
+            if (function_exists('dl') && !@dl($filename) && ($required) ) {
                 Console::warn("Dynamic loading of extensions disabled and extension %s flagged as required. Please load it manually or enable the dl() function.", $extension);
                 exit(1);
             }
