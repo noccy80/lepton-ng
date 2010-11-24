@@ -29,7 +29,7 @@
          */
         static function contentType($type, $filename=null) {
             header('Content-type: '.$type,true);
-            if ($filename) {
+            if (($filename) && (!headers_sent())) {
                 header('Content-disposition: attachment; filename='.$filename);
             }
         }
