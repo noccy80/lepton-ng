@@ -2,19 +2,20 @@
     'version' => '2010.09.06'
 ));
 
+    // Strict mode
+    config::set('lepton.base.strict',false); // Fail on deprecation warning
+
     // Charset to use
     config::set('lepton.charset','utf-8');
-
 
     // The default router instance
     config::set('lepton.mvc.router', 'DefaultRouter');
 
-
     // Syslog configuration
     config::set('lepton.debug.syslog',false);
     config::set('lepton.debug.syslog.facility', LOG_DAEMON); // Will use LOG_USER on Windows platforms
+    config::set('lepton.debug.syslog.level',null); // Highest debug level to save
     config::set('lepton.debug.syslog.tee',null); // Tee to a file
-
 
     // If true, debug information will be shown when an unhandled exception 
     // occurs.
@@ -36,10 +37,8 @@
     // Should view::embed throw exceptions? This will force output buffering.
     config::set('lepton.mvc.embed.exception',false);
 
-
     // Session save handler - default to null
     config::set('lepton.session.savehandler', null);
-
 
     // Authentication backend to use, you probably want to leave this at default.
     config::set('lepton.user.authbackend','DefaultAuthBackend');
@@ -47,7 +46,6 @@
     config::set('lepton.user.hashalgorithm','md5');
     // If users should be disabled by default
     config::set('lepton.user.disabledbydefault', false);
-
 
     // What class should be responsible for showing the available payment options?
     config::set('lepton.ec.paymentselector', 'DefaultPaymentSelector');

@@ -1,6 +1,6 @@
 <?php __fileinfo("Captcha generation");
 
-using('lepton.graphics.*');
+using('lepton.graphics.canvas');
 
 /**
  * Captcha Protection Library for Lepton

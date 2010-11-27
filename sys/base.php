@@ -207,10 +207,18 @@
             }
         }
 
+        // todo: add strict option to make deprecation warnings fatal
+
         if ($newfunc) {
             logger::warning('%s: Function %s is deprecated in favor of %s',$caller, $oldfunc, $newfunc);
+            $msg = sprintf('%s: Function %s is deprecated in favor of %s',$caller, $oldfunc, $newfunc);
         } else {
             logger::warning('%s. Function %s is deprecated', $caller, $oldfunc);
+            $msg = sprintf('%s. Function %s is deprecated', $caller, $oldfunc);
+        }
+
+        if (config::get('lepton.base.strict',false) == true) {
+            throw new BaseException($msg);
         }
 
     }
