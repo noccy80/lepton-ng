@@ -214,6 +214,26 @@ final class DatabaseConnection {
 
     }
 
+    /**
+     * Escapes a string with arguments without performing a query.
+     *
+     * @param string $pattern Sprintf-style pattern to query
+     * @param string $vars Variables to assign to pattern
+     * @return string The quoted and escaped string
+     */
+    function escape($pattern,$vars=null) {
+
+        $args = func_get_args();
+        $sql = $this->db_conn->escapeString($args);
+        return $sql;
+    }
+
+    /**
+     * Escapes a string.
+     *
+     * @param string $quote String to quote
+     * @return string The quoted string
+     */
     function quote($string) {
         return $this->db_conn->escapeString($string);
     }

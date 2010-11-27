@@ -232,6 +232,7 @@
         class SystemException extends BaseException { }
         class ClassNotFoundException extends BaseException { }
         class BadPropertyException extends BaseException { }
+        class BadArgumentException extends BaseException { }
         class CriticalException extends BaseException { }
             class SecurityException extends CriticalException { }
 

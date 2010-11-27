@@ -159,6 +159,28 @@
 
         }
 
+        /**
+		 * Find a user by userid.
+		 *
+		 * @param int $userid The userid to look up
+		 * @return UserRecord The matching user record or null if none
+		 */
+        static function get($id) {
+
+			$db = new DatabaseConnection();
+			$record = $db->getSingleRow(
+				"SELECT a.*,u.*,a.id AS userid FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
+				$userid
+			);
+			if ($record) {
+			    $u = new UserRecord();
+			    $u->assign($record);
+			    return $u;
+			}
+			return null;
+
+        }
+
 		/**
 		 * @brief Checks to see if a username is available.
 		 * Keep in mind that if the username is available, true is returned.

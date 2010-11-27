@@ -104,7 +104,7 @@ class UserRecord {
      * @param int $userid The user ID
      */
     function loadUser($userid) {
-        if (is_int($userid)) {
+        if (is_numeric($userid)) {
             $db = new DatabaseConnection();
             $record = $db->getSingleRow(
                     "SELECT a.*,u.*,a.id AS userid FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
