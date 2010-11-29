@@ -15,9 +15,9 @@ abstract class AclObject {
  */
 class Acl {
 
-    const ACCESS_DENY = -1; ///< Deny access to the object
-    const ACCESS_ALLOW = 1; ///< Allow access to the object
-    const ACCESS_NULL = 0; ///< No Acl entry, or clear existing entry.
+    const ACCESS_DENY = false; ///< Deny access to the object
+    const ACCESS_ALLOW = true; ///< Allow access to the object
+    const ACCESS_NULL = NULL; ///< No Acl entry, or clear existing entry.
 
     /**
      *
