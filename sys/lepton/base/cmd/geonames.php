@@ -47,7 +47,7 @@ class GeonamesUtility extends ConsoleActions {
 			case 'import':
 				$tm = new TextMenu('Select the sets to import');
 				foreach(GeonamesImporter::$importers as $importer) {
-					$tm->addOption($importer->key, $importer->menudescription,true);
+					$tm->addOption($importer->key, $importer->menudescription, true);
 				}
 				if ($tm->runMenu()) {
 					foreach(GeonamesImporter::$importers as $importer) {
@@ -220,14 +220,14 @@ abstract class GeonamesImporter implements IGeonamesImporter {
 		fclose($fd);
 		fclose($fr);
 		console::writeLn("Done");
-	}		
-	
+	}
+
 	protected function insertBatch($batch) {
-	
+
 		$db = new DatabaseConnection();
 		// $prefix = ($this->hasArgument('p')?$this->getArgument('p'):'');
 		$prefix = '';
-		
+
 		$sql = 'REPLACE INTO '.$prefix.'geonames VALUES ';
 
 		$rowdata = array();
@@ -249,7 +249,7 @@ abstract class GeonamesImporter implements IGeonamesImporter {
 			echo $e;
 			die();
 		}
-	
+
 	}
 }
 
@@ -289,7 +289,7 @@ class CountryImporter extends GeonamesImporter {
 		}
 		*/
 		$tabletype = 'innodb';
-		
+
 		$db = new DatabaseConnection();
 		// if ($this->hasArgument('f')) {
 		//	$sql = 'DROP TABLE IF EXISTS '.$prefix.'geonames';

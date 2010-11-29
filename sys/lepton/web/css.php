@@ -5,7 +5,12 @@ class CssRule {
     private $attributes;
     function __construct($selector,$attributes) {
         $this->selector = $selector;
-        $this->attributes = $attributes;
+        $attrarr = array();
+        foreach((array)$attributes as $attr=>$val) {
+            $newattr = string::strip($attr, string::CHS_ALPHA);
+            $attrarr[$attr] = $val;
+        }
+        $this->attributes = $attrarr;
     }
     function __toString() {
         $rules = array();
