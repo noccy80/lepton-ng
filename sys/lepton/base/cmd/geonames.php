@@ -253,6 +253,84 @@ abstract class GeonamesImporter implements IGeonamesImporter {
 	}
 }
 
+class CountryinfoImporter extends GeonamesImporter {
+    var $menudescription = 'Import ISO country codes and info';
+    var $key = 'c';
+    function getAvailableDatasets() {
+        $this->createTable();
+        return(array(
+            'c' => 'ISO Country Codes and info'
+        ));
+    }
+    function createTable() {
+		$prefix = '';
+		/*
+		switch(strtolower($this->getArgument('t'))) {
+			case null:
+			case 'innodb':
+				$tabletype = 'InnoDB';
+				break;
+			case 'myisam':
+				$tabletype = 'MyISAM';
+				break;
+			default:
+				console::writeLn("Table type must be 'innodb' or 'myisam'.");
+				die(RETURN_ERROR);
+				break;
+		}
+		*/
+		$tabletype = 'innodb';
+
+		$db = new DatabaseConnection();
+		// if ($this->hasArgument('f')) {
+		//	$sql = 'DROP TABLE IF EXISTS '.$prefix.'geonames';
+		//	$db->exec($sql);
+		// }
+		$sql = 'CREATE TABLE IF NOT EXISTS '.$prefix.'countryinfo ('.
+				'id INT NOT NULL PRIMARY KEY, '.
+				'name VARCHAR(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci, '.
+				'asciiname VARCHAR(200), '.
+				'alternatenames VARCHAR(200), '.
+				'latitude DECIMAL(9,5), '.
+				'longitude DECIMAL(9,5), '.
+				'featureclass CHAR(1), '.
+				'featurecode VARCHAR(10), '.
+				'countrycode CHAR(2), '.
+				'cc2 VARCHAR(60), '.
+				'admin1code VARCHAR(20), '.
+				'admin2code VARCHAR(80), '.
+				'admin3code VARCHAR(20), '.
+				'admin4code VARCHAR(20), '.
+				'population BIGINT, '.
+				'elevation INT, '.
+				'gtopo30 INT, '.
+				'timezoneid VARCHAR(64), '.
+				'modificationdate DATE, '.
+				'INDEX name(name), '.
+				'INDEX countrycode(countrycode), '.
+				'INDEX latlong(latitude,longitude), '.
+				'INDEX features(featureclass,featurecode), '.
+				'INDEX admincodes(admin1code,admin2code,admin3code,admin4code), '.
+				'INDEX population(population), '.
+				'INDEX timezoneid(timezoneid)'.
+				') TYPE='.$tabletype.' CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+		console::write("Creating tables: ");
+		$db->exec($sql);
+		console::writeLn("Done");
+
+    }
+
+    public function cacheDataSet($void=null) {
+
+    }
+
+    public function importDataSet($void=null) {
+
+    }
+
+}
+GeonamesImporter::$importers[] = new CountryinfoImporter();
+
 class CountryImporter extends GeonamesImporter {
 	var $menudescription = 'Import country information using CountryImporter';
 	var $key = 'g';
@@ -376,6 +454,7 @@ class CountryImporter extends GeonamesImporter {
 	}
 }
 GeonamesImporter::$importers[] = new CountryImporter();
+
 
 class TextMenu {
 	private $title;

@@ -874,6 +874,10 @@
 		static function cast($var) {
 			return intval($var);
 		}
+
+        static function restrict($val,$min,$max) {
+            return ($val>=$max)?$max:($val<=$min)?$min:$val;
+        }
 	
 	}
 	

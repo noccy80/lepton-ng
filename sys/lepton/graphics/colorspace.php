@@ -114,9 +114,9 @@
                 case 'b':
                     return $this->c['b'];
                 case 'hex': 
-                    return sprintf('#%2.x%2.x%2.x', $this->c['r'], $this->c['g'], $this->c['b']);
+                    return sprintf('#%02.x%02.x%02.x', $this->c['r'], $this->c['g'], $this->c['b']);
                 case 'hexstr':
-                    return sprintf('%2.x%2.x%2.x', $this->c['r'], $this->c['g'], $this->c['b']);
+                    return sprintf('%02.x%02.x%02.x', $this->c['r'], $this->c['g'], $this->c['b']);
             }
             return null;
         }
@@ -125,15 +125,15 @@
             switch($key) {
                 case 'red':
                 case 'r':
-                    $this->c['r'] = $value;
+                    $this->c['r'] = $this->bounds($value);
                     break;
                 case 'green':
                 case 'g':
-                    $this->c['g'] = $value;
+                    $this->c['g'] = $this->bounds($value);
                     break;
                 case 'blue':
                 case 'b':
-                    $this->c['b'] = $value;
+                    $this->c['b'] = $this->bounds($value);
                     break;
             }
         }
