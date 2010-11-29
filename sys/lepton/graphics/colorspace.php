@@ -115,6 +115,8 @@
                     return $this->c['b'];
                 case 'hex': 
                     return sprintf('#%2.x%2.x%2.x', $this->c['r'], $this->c['g'], $this->c['b']);
+                case 'hexstr':
+                    return sprintf('%2.x%2.x%2.x', $this->c['r'], $this->c['g'], $this->c['b']);
             }
             return null;
         }
