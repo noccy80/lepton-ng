@@ -165,7 +165,7 @@
 		 * @param int $userid The userid to look up
 		 * @return UserRecord The matching user record or null if none
 		 */
-        static function get($id) {
+        static function getUser($id) {
 
 			$db = new DatabaseConnection();
 			$record = $db->getSingleRow(
