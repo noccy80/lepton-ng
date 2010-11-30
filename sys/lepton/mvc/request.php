@@ -126,6 +126,11 @@ class Request {
     	return $data;
     }
 
+    function getRawQueryString() {
+        $data = $_GET;
+        return $get;
+    }
+
     /**
      * @brief Return the raw data of a post request.
      *
