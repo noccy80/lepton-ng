@@ -450,7 +450,7 @@
         }
 
         function __get($property) {
-            if (isset($this->properties[$property])) {
+            if (isset($this->properties[$property]) || ($this->properties[$property] === null)) {
                 return $this->properties[$property];
             } else {
                 throw new BadPropertyException("No such property: $property");
@@ -458,9 +458,9 @@
         }
 
         function __set($property,$value) {
-            if (isset($this->properties[$property])) {
-                if (isarray($this->properties[$property]) &&
-                    (!isarray($value))) {
+            if (isset($this->properties[$property]) || ($this->properties[$property] === null)) {
+                if (is_array($this->properties[$property]) &&
+                    (!is_array($value))) {
                     throw new RuntimeException("Attempting to assign non-array to array property");
                 }
                 $this->properties[$property] = $value;
