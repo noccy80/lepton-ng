@@ -59,44 +59,8 @@ class UserRecord {
      */
     function __destruct() {
         
-        if (count($this->modified) > 0) {
-            // Determine what needs to be updated.
-            $mtable = array(
-                'user' => false,
-                'userdata' => false,
-                'ambient' => false
-            );
-            foreach($this->modified as $mod) {
-                switch($mod) {
-                    case 'ambient'     : $mtable['ambient'] = true; break;
-                    case 'username'    : $mtable['user'] = true; break;
-                    case 'password'    : $mtable['user'] = true; break;
-                    case 'email'       : $mtable['user'] = true; break;
-                    case 'uuid'        : $mtable['user'] = true; break;
-                    case 'active'      : $mtable['user'] = true; break;
-                    case 'displayname' : $mtable['userdata'] = true; break;
-                    case 'firstname'   : $mtable['userdata'] = true; break;
-                    case 'lastname'    : $mtable['userdata'] = true; break;
-                    case 'sex'         : $mtable['userdata'] = true; break;
-                    case 'country'     : $mtable['userdata'] = true; break;
-                    case 'userid'      : break;
-                    default:
-                        throw new BadArgumentException("Unknown field modified: {$mod}");
-                }
-            }
-            if (($mtable['ambient']) && ($mtable['userdata'])) {
-                // Update complete userdata table
-            } elseif ($mtable['ambient']) {
-                // Update the ambient column
-            } elseif ($mtable['userdata']) {
-                // Update the userdata columns
-            }
-            if ($mtable['user']) {
-                // Update users table
-            }
-            
-        }
-        
+        $this->save();
+
     }
 
     /**
@@ -133,6 +97,81 @@ class UserRecord {
         $this->uuid = $userrecord['uuid'];
         $this->ambient = unserialize($userrecord['ambient']);
         $this->displayname = $userrecord['displayname'];
+    }
+
+    public function save() {
+
+        if (count($this->modified) > 0) {
+            // Get a database reference
+            $db = new DatabaseConnection();
+            // Determine what needs to be updated.
+            $mtable = array(
+                'user' => false,
+                'userdata' => false,
+                'ambient' => false,
+                'credentials' => true
+            );
+            foreach($this->modified as $mod) {
+                switch($mod) {
+                    case 'ambient'     : $mtable['ambient'] = true; break;
+                    case 'username'    : $mtable['user'] = true; break;
+                    case 'password'    : $mtable['credentials'] = true; break;
+                    case 'email'       : $mtable['user'] = true; break;
+                    case 'uuid'        : $mtable['user'] = true; break;
+                    case 'active'      : $mtable['user'] = true; break;
+                    case 'displayname' : $mtable['userdata'] = true; break;
+                    case 'firstname'   : $mtable['userdata'] = true; break;
+                    case 'lastname'    : $mtable['userdata'] = true; break;
+                    case 'sex'         : $mtable['userdata'] = true; break;
+                    case 'country'     : $mtable['userdata'] = true; break;
+                    case 'userid'      : break;
+                    default:
+                        throw new BadArgumentException("Unknown field modified: {$mod}");
+                }
+            }
+            if (($mtable['ambient']) && ($mtable['userdata'])) {
+                // Update complete userdata table
+                $ambient = serialize($this->ambient);
+                $db->updateRow(
+                    "REPLACE INTO users (displayname,firstname,lastname,sex,country,ambient,id) VALUES ".
+                    "(%s,%s,%s,%s,%s,%s,%d)",
+                    $this->displayname, $this->firstname, $this->lastname, $this->sex,
+                    $this->country, $ambient, $this->userid
+                );
+            } elseif ($mtable['ambient']) {
+                // Update the ambient column
+                $ambient = serialize($this->ambient);
+                $db->updateRow(
+                    "REPLACE INTO users (ambient,id) VALUES ".
+                    "(%s,%s,%s,%s,%s,%s,%d)",
+                    $ambient, $this->userid
+                );
+            } elseif ($mtable['userdata']) {
+                // Update the userdata columns
+                $db->updateRow(
+                    "REPLACE INTO users (displayname,firstname,lastname,sex,country,id) VALUES ".
+                    "(%s,%s,%s,%s,%s,%s,%d)",
+                    $this->displayname, $this->firstname, $this->lastname, $this->sex,
+                    $this->country, $this->userid
+                );
+            }
+            if ($mtable['credentials']) {
+                // Update credentials
+                $backend = User::getAuthenticationBackend();
+                $backend->assignCredentials($this);
+            }
+            if ($mtable['user']) {
+                // Update users table
+                $db->updateRow(
+                    "REPLACE INTO user (username,email,uuid,active,id) VALUES ".
+                    "(%s,%s,%s,%d,%d)",
+                    $this->username, $this->email, $this->uuid, $this->active,
+                    $this->userid
+                );
+            }
+
+        }
+
     }
 
     /**

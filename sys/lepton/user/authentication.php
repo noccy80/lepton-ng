@@ -78,8 +78,7 @@
         static function authenticate($authrequest) {
         
             // Resolve the authentication backend
-            $auth_backend = config::get('lepton.user.authbackend','defaultauthbackend');
-            $auth_class = new $auth_backend();
+            $auth_class = $this->getAuthenticationBackend();
             // Assign the authentication backend to the request
             $authrequest->setAuthBackend($auth_class);
 
@@ -88,6 +87,20 @@
                 return true;
             }
             
+        }
+
+        /**
+         * Return the authentication backend
+         *
+         * @return AuthenticationBackend The backend instance
+         */
+        static function getAuthenticationBackend() {
+
+            // Resolve the authentication backend
+            $auth_backend = config::get('lepton.user.authbackend','defaultauthbackend');
+            $auth_class = new $auth_backend();
+            return $auth_class;
+
         }
 
 		/**

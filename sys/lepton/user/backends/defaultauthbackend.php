@@ -31,7 +31,7 @@ class DefaultAuthBackend extends AuthenticationBackend {
      * @param string $password The password to match with
      * @return bool True on success.
      */
-    function validateCredentials($username,$password,$ext=false) {
+    public function validateCredentials($username,$password,$ext=false) {
         $db = new DatabaseConnection();
         try {
             $userrecord = $db->getSingleRow(
@@ -68,7 +68,7 @@ class DefaultAuthBackend extends AuthenticationBackend {
      * @param UserRecord $user The user to update the credentials for
      * @return Boolean True on success
      */
-    function assignCredentials(UserRecord $user) {
+    public function assignCredentials(UserRecord $user) {
 
         $db = new DatabaseConnection();
 
@@ -121,7 +121,7 @@ class DefaultAuthBackend extends AuthenticationBackend {
      * @param string $username The username to fetch the record from
      * @return array The user record, or null on failure.
      */
-    function queryUser($username) {
+    public function queryUser($username) {
 
         $db = new DatabaseConnection();
         try {
