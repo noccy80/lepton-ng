@@ -98,7 +98,7 @@
         }
 
         static function setStatus($status = 200) {
-            header('HTTP/1.1 '.strval(intval($status)),true);
+            if (!headers_sent()) header('HTTP/1.1 '.strval(intval($status)),true);
         }
 
         static function streamFile($file, $contenttype) {

@@ -78,7 +78,7 @@
         static function authenticate($authrequest) {
         
             // Resolve the authentication backend
-            $auth_class = $this->getAuthenticationBackend();
+            $auth_class = User::getAuthenticationBackend();
             // Assign the authentication backend to the request
             $authrequest->setAuthBackend($auth_class);
 
