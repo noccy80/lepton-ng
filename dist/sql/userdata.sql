@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS userdata (
 	id INT PRIMARY KEY,
 
 	displayname VARCHAR(48) NULL,
-	website VARCHAR(64) NULL,
 	
 	firstname VARCHAR(48) NULL,
 	lastname VARCHAR(48) NULL,
