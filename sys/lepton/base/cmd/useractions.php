@@ -27,7 +27,7 @@ class UserActions extends ConsoleActions {
                 console::writeLn("Couldn't create user.");
             }
         } else {
-            console::writeLn("Not enough arguments");
+            console::writeLn("Not enough arguments. Expected username and password.");
         }
     }
 

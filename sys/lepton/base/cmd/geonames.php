@@ -320,11 +320,11 @@ class CountryinfoImporter extends GeonamesImporter {
 
     }
 
-    public function cacheDataSet($void=null) {
+    public function cacheDataSet($void) {
 
     }
 
-    public function importDataSet($void=null) {
+    public function importDataSet($void) {
 
     }
 

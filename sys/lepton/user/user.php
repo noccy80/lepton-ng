@@ -79,6 +79,7 @@ class UserRecord {
                     case 'lastname'    : $mtable['userdata'] = true; break;
                     case 'sex'         : $mtable['userdata'] = true; break;
                     case 'country'     : $mtable['userdata'] = true; break;
+                    case 'userid'      : break;
                     default:
                         throw new BadArgumentException("Unknown field modified: {$mod}");
                 }
