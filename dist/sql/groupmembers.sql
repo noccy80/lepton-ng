@@ -1,4 +1,4 @@
-CREATE TABLE groupmembers (
+CREATE TABLE IF NOT EXISTS groupmembers (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	userid INT NOT NULL,
 	groupid INT NOT NULL,

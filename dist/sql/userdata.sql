@@ -1,4 +1,4 @@
-CREATE TABLE userdata (
+CREATE TABLE IF NOT EXISTS userdata (
 	id INT PRIMARY KEY,
 
 	displayname VARCHAR(48) NULL,

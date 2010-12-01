@@ -1,4 +1,4 @@
-CREATE TABLE wikipages (
+CREATE TABLE IF NOT EXISTS wikipages (
     id INT PRIMARY KEY AUTO_INCREMENT,
     pagens VARCHAR(64) NOT NULL,
     pagename VARCHAR(255) NOT NULL,

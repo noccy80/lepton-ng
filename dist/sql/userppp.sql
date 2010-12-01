@@ -1,4 +1,4 @@
-CREATE TABLE userppp (
+CREATE TABLE IF NOT EXISTS userppp (
 	id INT PRIMARY KEY,
 
 	secretkey CHAR(64) NOT NULL,
