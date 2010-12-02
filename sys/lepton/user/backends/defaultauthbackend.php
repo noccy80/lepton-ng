@@ -48,6 +48,11 @@ class DefaultAuthBackend extends AuthenticationBackend {
                 $ps = $password.$us;
                 $hp = hash($ha,$ps);
 
+                var_dump($us);
+                var_dump($ps);
+                var_dump($hp);
+                var_dump($userrecord);
+
                 // Check the hash against the one on file
                 if ($hp == $userrecord['password']) {
                     $this->userid = $userrecord['id'];

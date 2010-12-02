@@ -113,7 +113,7 @@ class Request {
     
     function post($key, $def = null) {
     	// Check if file
-    	if (isset($_FILES[$key])) return(new RequestFile($key));
+   	if (isset($_FILES[$key])) return(new RequestFile($key));
         if (isset($_POST[$key])) return(new RequestString($_POST[$key]));
         return new RequestString($def);
     }

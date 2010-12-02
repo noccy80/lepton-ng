@@ -133,7 +133,7 @@ class UserRecord {
                 // Update complete userdata table
                 $ambient = serialize($this->ambient);
                 $db->updateRow(
-                    "REPLACE INTO users (displayname,firstname,lastname,sex,country,ambient,id) VALUES ".
+                    "REPLACE INTO ".LEPTON_DB_PREFIX."users (displayname,firstname,lastname,sex,country,ambient,id) VALUES ".
                     "(%s,%s,%s,%s,%s,%s,%d)",
                     $this->displayname, $this->firstname, $this->lastname, $this->sex,
                     $this->country, $ambient, $this->userid
@@ -142,14 +142,14 @@ class UserRecord {
                 // Update the ambient column
                 $ambient = serialize($this->ambient);
                 $db->updateRow(
-                    "REPLACE INTO users (ambient,id) VALUES ".
+                    "REPLACE INTO ".LEPTON_DB_PREFIX."users (ambient,id) VALUES ".
                     "(%s,%s,%s,%s,%s,%s,%d)",
                     $ambient, $this->userid
                 );
             } elseif ($mtable['userdata']) {
                 // Update the userdata columns
                 $db->updateRow(
-                    "REPLACE INTO users (displayname,firstname,lastname,sex,country,id) VALUES ".
+                    "REPLACE INTO ".LEPTON_DB_PREFIX."users (displayname,firstname,lastname,sex,country,id) VALUES ".
                     "(%s,%s,%s,%s,%s,%s,%d)",
                     $this->displayname, $this->firstname, $this->lastname, $this->sex,
                     $this->country, $this->userid
@@ -163,7 +163,7 @@ class UserRecord {
             if ($mtable['user']) {
                 // Update users table
                 $db->updateRow(
-                    "REPLACE INTO user (username,email,uuid,active,id) VALUES ".
+                    "REPLACE INTO ".LEPTON_DB_PREFIX."users (username,email,uuid,active,id) VALUES ".
                     "(%s,%s,%s,%d,%d)",
                     $this->username, $this->email, $this->uuid, $this->active,
                     $this->userid

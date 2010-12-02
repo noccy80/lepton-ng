@@ -33,7 +33,7 @@
             return 0;
         }
     }
-    
+
     declare(encoding = 'UTF-8');
 
 ?>
