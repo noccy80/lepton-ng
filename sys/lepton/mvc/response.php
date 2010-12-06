@@ -49,7 +49,7 @@
                 'css'   => 'text/css',
                 'js'    => 'text/javascript'
             );
-            $fe = String::toLowerCase(pathinfo($file, PATHINFO_EXTENSION));
+            $fe = strtolower(pathinfo($file, PATHINFO_EXTENSION));
             if ($ct[$fe]) {
                 response::contentType($ct[$fe]);
             } else {
@@ -76,6 +76,7 @@
          * @param string $contenttype The contenttype to set
          */
         static function sendFile($file, $contenttype=null) {
+
             if (!file_exists($file)) {
                 throw new BaseException("File not found: ".$file);
             }

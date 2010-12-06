@@ -8,7 +8,7 @@ ModuleManager::load('lepton.mvc.view');
 class PlainViewHandler extends ViewHandler {
     private $path;
     function loadView($view) {
-        $path = APP_PATH.'views/'.$view;
+        $path = base::appPath().'/views/'.$view;
         Console::debugEx(LOG_BASIC,__CLASS__,"Attempting to invoke view from %s", $path);
         if (file_exists($path)) {
             Console::debugEx(LOG_BASIC,__CLASS__,"Invoking as Pure PHP View");
@@ -24,7 +24,7 @@ class PlainViewHandler extends ViewHandler {
         include($this->path);
     }
     function import($view) {
-        $path = APP_PATH.'views/'.$view;
+        $path = base::appPath().'/views/'.$view;
         include($path);
     }
 }

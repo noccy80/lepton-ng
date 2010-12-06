@@ -134,7 +134,8 @@ abstract class Router implements IRouter {
      *
      */
     protected function setBase($base=null) {
-        config::set(Controller::KEY_CONTROLLER_BASE, $base);
+        // config::set(Controller::KEY_CONTROLLER_BASE, $base);
+        base::appPath($base);
     }
 
     /**
@@ -184,6 +185,10 @@ abstract class Router implements IRouter {
         return $this->_domain;
     }
 
+    protected function getDomainComponents() {
+        return array_reverse(explode('.',strtolower($this->_domain)));
+    }
+
     /**
      *
      *
@@ -223,4 +228,3 @@ abstract class Router implements IRouter {
 
 }
 
-?>

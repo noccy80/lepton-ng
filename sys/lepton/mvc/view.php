@@ -86,7 +86,7 @@ abstract class ViewHandler implements IViewHandler {
     }
 
     function includeView($view) {
-        include(APP_PATH.'/views/'.$view);
+        include(base::appPath().'/views/'.$view);
     }
 
 }
@@ -147,7 +147,7 @@ class View {
      * @param array $data Optional data to pass to the view
      */
     static function embed($view,$data=null) {
-        $vp = APP_PATH.'/views/'.$view;
+        $vp = base::appPath().'/views/'.$view;
         if (file_exists($vp)) {
             View::load($view);
         } else {

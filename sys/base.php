@@ -83,7 +83,7 @@
 
     // Resolve base path
     define('BASE_PATH', realpath(APP_PATH.DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR);
-    
+
     // Resolve system path
     if(getenv('SYS_PATH')) {
         define('SYS_PATH', realpath(getenv('SYS_PATH').DIRECTORY_SEPARATOR).'/');
@@ -132,6 +132,38 @@
     define('LOG_WARN', 0);
     define('LOG_LOG', 0);
 
+    abstract class base {
+        private static $_basepath = null;
+        private static $_apppath = null;
+        private static $_syspath = null;
+        static function basePath($newpath=null) {
+            $ret = (self::$_basepath)?self::$_basepath:BASE_PATH;
+            if ($newpath) self::$_basepath = realpath($newpath);
+            return $ret;
+        }
+        static function appPath($newpath=null) {
+            $ret = (self::$_apppath)?self::$_apppath:APP_PATH;
+            if ($newpath) self::$_apppath = realpath($newpath);
+            return $ret;
+        }
+        static function sysPath($newpath=null) {
+            $ret = (self::$_syspath)?self::$_syspath:SYS_PATH;
+            if ($newpath) self::$_syspath = realpath($newpath);
+            return $ret;
+        }
+    }
+    abstract class utils {
+        static function iif($cond,$true,$false) {
+            return ($cond)?$true:$false;
+        }
+        static function ifnull($cond,$value) {
+            return ($cond==null)?$value:$cond;
+        }
+        static function inPath($path,$parent) {
+            $preal = realpath($path);
+            return (substr(strtolower($preal),0,strlen($parent)) == strtolower($parent));
+        }
+    }
 
 ////// Interfaces /////////////////////////////////////////////////////////////
 
@@ -954,9 +986,9 @@
         static function _mangleModulePath($module) {
             // Console::debugEx(LOG_LOG,__CLASS__,"Mangling module %s", $module);
             if (preg_match('/^app\./',$module)) {
-                $path = APP_PATH.'/'.str_replace('.','/',str_replace('app.','',$module)).'.php';
+                $path = base::appPath().'/'.str_replace('.','/',str_replace('app.','',$module)).'.php';
             } else {
-                $path = SYS_PATH.'/'.str_replace('.','/',$module).'.php';
+                $path = base::sysPath().'/'.str_replace('.','/',$module).'.php';
             }
             // Console::debugEx(LOG_LOG,__CLASS__,"  -> %s", $path);
             return $path;
