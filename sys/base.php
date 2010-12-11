@@ -713,6 +713,7 @@
         function stop() {
             $this->_stoptime = microtime(true);
             $this->_running = false;
+            return $this->getElapsed();
         }
 
         /**
@@ -724,7 +725,7 @@
          */
         function getElapsed() {
             if ($this->_running) {
-                return (microtime(true) - $this->_starttime);
+                return (microtime(t1rue) - $this->_starttime);
             } else {
                 return ($this->_stoptime - $this->_starttime);
             }
@@ -1234,6 +1235,54 @@
             return $ret;
         }
 
+    }
+
+////// Runtime Optimization Assistance ///////////////////////////////////////
+
+    abstract class OptimizationReport {
+        private static $_hints = array();
+        private static $_enabled = false;
+        static function enable($state = true) {
+            self::$_enabled = $state;
+            if (!$state) self::$_hints = array();
+        }
+        static function isEnabled() {
+            return self::$_enabled;
+        }
+        static function addOptimizationHint($title,$code,$icon,$description) {
+            self::$_hints[] = array(
+                'title' => $title,
+                'code' => $code,
+                'icon' => $icon,
+                'description' => $description
+            );
+        }
+        static function insert() {
+            if (count(self::$_hints)>0) {
+                echo '<style type="text/css">';
+                echo '#lepton-debug-el { position:fixed; z-index:9999999; left:50px; width:600px; top:50px; -moz-border-radius:10px; -webkit-border-radius:10px; -opera-border-radius:10px; background-color:#E0E0E0; padding:15px; overflow:hidden; border:solid 2px #C0C0C0; -moz-box-shadow:5px 5px 25px #000; }';
+                echo '#lepton-debug-el hr { height:1px; color:#C0C0C0; background-color:#C0C0C0; border:solid 1px transparent; padding:0px; margin:10px 0px 10px 0px; }';
+                echo '#lepton-debug-el h1 { margin:0px 0px 2px 0px; padding:0px; font:bold 14pt sans-serif; color:#404040; }';
+                echo '#lepton-debug-el h2 { margin:2px 0px 2px 0px; padding:0px; font:bold 9pt sans-serif; color:#404040; }';
+                echo '#lepton-debug-el p { margin:2px 0px 2px 0px; padding:0px; font:8pt sans-serif; color:#404040; }';
+                echo '#lepton-debug-el p.id { margin:2px 0px 4px 0px; padding:0px; font:7pt sans-serif; color:#404040; }';
+                echo '#lepton-debug-el pre { overflow-x:scroll; overflow-y:scroll; font-size:8pt; padding:5px; background-color:#F8F8F8; border:inset 1px #F0F0F0; }';
+                echo '#lepton-debug-el a { color:#A06060; text-decoration:underline; font: 8pt sans-serif; text-decoration:none; }';
+                echo '#lepton-debug-el a:hover { text-decoration:underline; }';
+                echo '#lepton-debug-el input[type=button] { font:8pt sans-serif; color:#606060; }';
+                echo '#lepton-debug-el input[type=submit] { font:8pt sans-serif; color:#202020; }';
+                echo '</style>';
+                echo '<div id="lepton-debug-el">';
+                echo '<h1>Optimization report</h1><hr>';
+                foreach(self::$_hints as $hint) {
+                    echo '<h2>'.$hint['title'].'</h2>';
+                    echo '<p class="id">'.$hint['modulecode'].'</p>';
+                    echo $hint['description'];
+                    echo '<hr>';
+                }
+                echo '</div>';
+            }
+        }
     }
 
 
