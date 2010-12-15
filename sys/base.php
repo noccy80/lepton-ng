@@ -741,9 +741,17 @@
     class Lepton {
 
         static $__exceptionhandler = null;
+        static $mimetypes = array(
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'css'  => 'text/css',
+            'js'   => 'text/javascript',
+            'html' => 'text/html',
+            'otf'  => 'application/x-opentype'
+        );
 
         static function applicationExists() {
-            return (file_exists(APP_PATH));            
+            return (file_exists(APP_PATH));
         }
 
         /**

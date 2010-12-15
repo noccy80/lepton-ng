@@ -42,18 +42,23 @@
          */
         static function contentTypeFromFile($file) {
 
-            $ct = array(
-                'png'   => 'image/png',
-                'jpg'   => 'image/jpeg',
-                'jpeg'  => 'image/jpeg',
-                'css'   => 'text/css',
-                'js'    => 'text/javascript'
-            );
             $fe = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-            if ($ct[$fe]) {
-                response::contentType($ct[$fe]);
+            if (array_key_exists($fe,lepton::$mimetypes)) {
+                return(lepton::$mimetypes[$fe]);
             } else {
-                response::contentType('application/octet-stream');
+                if (function_exists('mime_content_type')) {
+                    $mimetype = @mime_content_type($file);
+                    return($mimetype);
+                } else {
+                    if (function_exists('finfo_open')) {
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+                        $mimetype = finfo_file($finfo, $file);
+                        finfo_close($finfo);
+                        return($mimetype);
+                    } else {
+                        return('application/octet-stream');
+                    }
+                }
             }
 
         }
@@ -83,16 +88,7 @@
             if ($contenttype) {
                 response::contentType($contenttype);
             } else {
-                $mimetype = 'application/octet-stream';
-                if (function_exists('mime_content_type')) {
-                    $mimetype = @mime_content_type($file);
-                } else {
-                    if (function_exists('finfo_open')) {
-                        $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
-                        $mimetype = finfo_file($finfo, $file);
-                        finfo_close($finfo);
-                    }
-                }
+                $mimetype = response::contentTypeFromFile($file);
                 response::contentType($mimetype);
             }
             echo file_get_contents($file);
