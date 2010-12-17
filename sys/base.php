@@ -1289,7 +1289,7 @@
                 echo '<h1>Optimization report</h1><hr>';
                 foreach(self::$_hints as $hint) {
                     echo sprintf('<div style="float:left;"><img src="%s"></div>',
-                        (in_array($hint['icon'],self::$_icons)?self::$_icons[$hint['icon']]:$hint['icon']));
+                        (array_key_exists($hint['icon'],self::$_icons)?self::$_icons[$hint['icon']]:$hint['icon']));
                     echo '<h2>'.$hint['title'].'</h2>';
                     echo '<p class="id">'.$hint['modulecode'].'</p>';
                     echo $hint['description'];
