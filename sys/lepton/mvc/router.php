@@ -92,9 +92,12 @@ abstract class Router implements IRouter {
     }
 
     /**
+     * @brief Main router entry point
      *
+     * Override this in your router to get full control over the way the
+     * request is being fed to the router class.
      *
-     *
+     * @return Mixed The result from the routerequest call
      */
     public function route() {
         // Determine if this is a hooked uri
@@ -129,9 +132,11 @@ abstract class Router implements IRouter {
     }
 
     /**
+     * @brief Update the application base path.
      *
+     * Set to null to reset it to the default value.
      *
-     *
+     * @param String $base The new base path (or null)
      */
     protected function setBase($base=null) {
         // config::set(Controller::KEY_CONTROLLER_BASE, $base);
@@ -139,27 +144,30 @@ abstract class Router implements IRouter {
     }
 
     /**
+     * @brief Return the invoked URI in full.
      *
+     * This will not include query string arguments or domain components etc.
      *
-     *
+     * @return String The URI
      */
     protected function getURI() {
         return $this->_uri;
     }
 
     /**
+     * @brief Return the number of segments in the URI
      *
-     *
-     *
+     * @return Integer The segment count
      */
     protected function getSegmentCount() {
         return count($this->_urisegments);
     }
 
     /**
+     * @brief Return a single URI segment by index
      *
-     *
-     *
+     * @param Integer $index The segment to return
+     * @return String The segment, null if not set
      */
     protected function getSegment($index) {
         if ($index < count($this->_urisegments))
@@ -168,8 +176,11 @@ abstract class Router implements IRouter {
     }
 
     /**
+     * @brief Get a slice of the URI
      *
-     *
+     * @param integer $start The start segment
+     * @param integer $length The numer of segments to return or null for all
+     * @return array The requested segments
      *
      */
     protected function getSegmentSlice($start,$length = null) {
@@ -177,20 +188,28 @@ abstract class Router implements IRouter {
     }
 
     /**
+     * @brief Return the domain being requested
      *
-     *
-     *
+     * @return string The domain name of the request
      */
     protected function getDomain() {
         return $this->_domain;
     }
 
+    /**
+     * @brief Return the components of the domain in reverse order
+     *
+     * The domain "foo.test.com" would return an array consisting of "com",
+     * "test" and "foo".
+     *
+     * @return array The domain components in reverse order
+     */
     protected function getDomainComponents() {
         return array_reverse(explode('.',strtolower($this->_domain)));
     }
 
     /**
-     *
+     * @todo Remove
      *
      *
      */
@@ -199,7 +218,7 @@ abstract class Router implements IRouter {
     }
 
     /**
-     *
+     * @todo Remove
      *
      *
      */
