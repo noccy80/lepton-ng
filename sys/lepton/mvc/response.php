@@ -28,9 +28,12 @@
          * @param string $filename The filename to download as (optional)
          */
         static function contentType($type, $filename=null) {
-            header('Content-type: '.$type,true);
-            if (($filename) && (!headers_sent())) {
-                header('Content-disposition: attachment; filename='.$filename);
+            if (!headers_sent()) {
+                if ($filename) {
+                    header('Content-disposition: attachment; filename='.$filename);
+                } else {
+                    header('Content-type: '.$type,true);
+                }
             }
         }
 
