@@ -95,7 +95,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         $qt = new Timer(true);
         $query = $this->conn->query($sql);
         $qtt = $qt->stop();
-        if ($qtt>=1.0) {
+        if ((defined('RTOPT')) && ($qtt>=config::get(RuntimeOptimization::KEY_DBQUERYTIME))) {
             $msg = sprintf('<p>The following query took %5.1fs to complete:</p><pre>%s</pre>',$qtt,wordwrap($sql));
             OptimizationReport::addOptimizationHint('Slow SQL Query', 'DB:00001', 'warning', $msg);
         }
