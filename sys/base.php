@@ -1286,3 +1286,4 @@
     }
 
     using('lepton.utils.rtoptimization');
+    RuntimeOptimization::enable();
