@@ -24,6 +24,7 @@ class CurrencyExchange {
 
         // Create db connection
         $this->db = new DatabaseConnection();
+        $this->createTables();
 
     }
 
@@ -66,8 +67,6 @@ class CurrencyExchange {
         $reur = $this->db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",'EUR');
         $rfrom = $this->db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",$fromcur);
         $rto = $this->db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",$tocur);
-        var_dump($rfrom);
-        var_dump($rto);
 
         return ($fromval / (floatval($rfrom['rate']) * floatval($reur['rate']))) * floatval($rto['rate']);
 
