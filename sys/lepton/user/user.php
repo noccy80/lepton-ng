@@ -1,4 +1,6 @@
-<?php __fileinfo("User Classes");
+<?php
+
+__fileinfo("User Classes");
 
 /**
  * @class UserRecord
@@ -33,7 +35,6 @@ class UserRecord {
     private $registerdate = null;
     private $lastlogindate = null;
     private $lastloginip = null;
-
     private $properties = array();
     private $ambient = array();
     private $modified = array();
@@ -44,13 +45,11 @@ class UserRecord {
      * @param int $userid An optional user id to load
      */
     function __construct($userid=null) {
-
         if ($userid) {
             $this->loadUser($userid);
         }
-
     }
-    
+
     /**
      * @brief Destructor, saves the modified attributes if any.
      *
@@ -58,9 +57,7 @@ class UserRecord {
      * to be saved to what tables.
      */
     function __destruct() {
-        
         $this->save();
-
     }
 
     /**
@@ -72,8 +69,8 @@ class UserRecord {
         if (is_numeric($userid)) {
             $db = new DatabaseConnection();
             $record = $db->getSingleRow(
-                    "SELECT a.*,u.*,a.id AS userid FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
-                    $userid
+                            "SELECT a.*,u.*,a.id AS userid FROM " . LEPTON_DB_PREFIX . "users a LEFT JOIN " . LEPTON_DB_PREFIX . "userdata u ON a.id=u.id WHERE a.id=%d",
+                            $userid
             );
             if ($record) {
                 $this->assign($record);
@@ -84,7 +81,7 @@ class UserRecord {
             throw new BadArgumentException("User ID must be an integer");
         }
     }
-    
+
     /**
      * @brief Assign the user data from a recordset row
      *
@@ -101,7 +98,6 @@ class UserRecord {
     }
 
     public function save() {
-
         if (count($this->modified) > 0) {
             // Get a database reference
             $db = new DatabaseConnection();
@@ -112,21 +108,33 @@ class UserRecord {
                 'ambient' => false,
                 'credentials' => true
             );
-            foreach($this->modified as $mod) {
-                switch($mod) {
-                    case 'ambient'     : $mtable['ambient'] = true; break;
-                    case 'username'    : $mtable['user'] = true; break;
-                    case 'password'    : $mtable['credentials'] = true; break;
-                    case 'email'       : $mtable['user'] = true; break;
-                    case 'uuid'        : $mtable['user'] = true; break;
-                    case 'active'      : $mtable['user'] = true; break;
-                    case 'displayname' : $mtable['userdata'] = true; break;
-                    case 'firstname'   : $mtable['userdata'] = true; break;
-                    case 'lastname'    : $mtable['userdata'] = true; break;
-                    case 'sex'         : $mtable['userdata'] = true; break;
-                    case 'country'     : $mtable['userdata'] = true; break;
-                    case 'flags'       : $mtable['user'] = true; break;
-                    case 'userid'      : break;
+            foreach ($this->modified as $mod) {
+                switch ($mod) {
+                    case 'ambient' : $mtable['ambient'] = true;
+                        break;
+                    case 'username' : $mtable['user'] = true;
+                        break;
+                    case 'password' : $mtable['credentials'] = true;
+                        break;
+                    case 'email' : $mtable['user'] = true;
+                        break;
+                    case 'uuid' : $mtable['user'] = true;
+                        break;
+                    case 'active' : $mtable['user'] = true;
+                        break;
+                    case 'displayname' : $mtable['userdata'] = true;
+                        break;
+                    case 'firstname' : $mtable['userdata'] = true;
+                        break;
+                    case 'lastname' : $mtable['userdata'] = true;
+                        break;
+                    case 'sex' : $mtable['userdata'] = true;
+                        break;
+                    case 'country' : $mtable['userdata'] = true;
+                        break;
+                    case 'flags' : $mtable['user'] = true;
+                        break;
+                    case 'userid' : break;
                     default:
                         throw new BadArgumentException("Unknown field modified: {$mod}");
                 }
@@ -135,35 +143,35 @@ class UserRecord {
                 // Update complete userdata table
                 $ambient = serialize($this->ambient);
                 $db->updateRow(
-                    "REPLACE INTO ".LEPTON_DB_PREFIX."userdata (displayname,firstname,lastname,sex,country,ambient,id) VALUES ".
-                    "(%s,%s,%s,%s,%s,%s,%d)",
-                    $this->displayname, $this->firstname, $this->lastname, $this->sex,
-                    $this->country, $ambient, $this->userid
+                        "REPLACE INTO " . LEPTON_DB_PREFIX . "userdata (displayname,firstname,lastname,sex,country,ambient,id) VALUES " .
+                        "(%s,%s,%s,%s,%s,%s,%d)",
+                        $this->displayname, $this->firstname, $this->lastname, $this->sex,
+                        $this->country, $ambient, $this->userid
                 );
             } elseif ($mtable['ambient']) {
                 // Update the ambient column
                 $ambient = serialize($this->ambient);
                 $db->updateRow(
-                    "REPLACE INTO ".LEPTON_DB_PREFIX."userdata (ambient,id) VALUES ".
-                    "(%s,%s,%s,%s,%s,%s,%d)",
-                    $ambient, $this->userid
+                        "REPLACE INTO " . LEPTON_DB_PREFIX . "userdata (ambient,id) VALUES " .
+                        "(%s,%s,%s,%s,%s,%s,%d)",
+                        $ambient, $this->userid
                 );
             } elseif ($mtable['userdata']) {
                 // Update the userdata columns
                 $db->updateRow(
-                    "REPLACE INTO ".LEPTON_DB_PREFIX."userdata (displayname,firstname,lastname,sex,country,id) VALUES ".
-                    "(%s,%s,%s,%s,%s,%s,%d)",
-                    $this->displayname, $this->firstname, $this->lastname, $this->sex,
-                    $this->country, $this->userid
+                        "REPLACE INTO " . LEPTON_DB_PREFIX . "userdata (displayname,firstname,lastname,sex,country,id) VALUES " .
+                        "(%s,%s,%s,%s,%s,%s,%d)",
+                        $this->displayname, $this->firstname, $this->lastname, $this->sex,
+                        $this->country, $this->userid
                 );
             }
             if ($mtable['user']) {
                 // Update users table
                 $db->updateRow(
-                    "REPLACE INTO ".LEPTON_DB_PREFIX."users (username,email,uuid,flags,active,id) VALUES ".
-                    "(%s,%s,%s,%s,%d,%d)",
-                    $this->username, $this->email, $this->uuid, $this->flags, $this->active,
-                    $this->userid
+                        "REPLACE INTO " . LEPTON_DB_PREFIX . "users (username,email,uuid,flags,active,id) VALUES " .
+                        "(%s,%s,%s,%s,%d,%d)",
+                        $this->username, $this->email, $this->uuid, $this->flags, $this->active,
+                        $this->userid
                 );
             }
             if ($mtable['credentials']) {
@@ -171,9 +179,7 @@ class UserRecord {
                 $backend = User::getAuthenticationBackend();
                 $backend->assignCredentials($this);
             }
-
         }
-
     }
 
     /**
@@ -182,8 +188,8 @@ class UserRecord {
      * @param string $key The key to set
      * @param string $value The value to set
      */
-    public function __set($key,$value) {
-        switch($key) {
+    public function __set($key, $value) {
+        switch ($key) {
             case 'userid':
                 if ($this->userid == null) {
                     $this->userid = $value;
@@ -201,7 +207,7 @@ class UserRecord {
                 $this->password = $value;
                 break;
             case 'flags':
-            // TODO: This needs updating in the user table.
+                // TODO: This needs updating in the user table.
                 $this->flags = $value;
                 break;
             default:
@@ -220,7 +226,7 @@ class UserRecord {
      * @return mixed The property
      */
     public function __get($key) {
-        switch($key) {
+        switch ($key) {
             case 'userid':
                 return $this->userid;
             case 'username':

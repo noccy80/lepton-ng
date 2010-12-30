@@ -1,4 +1,6 @@
-<?php __fileinfo("Default Authentication Backend (DB)");
+<?php
+
+__fileinfo("Default Authentication Backend (DB)");
 
 using('lepton.crypto.uuid');
 
@@ -31,31 +33,31 @@ class DefaultAuthBackend extends AuthenticationBackend {
      * @param string $password The password to match with
      * @return bool True on success.
      */
-    public function validateCredentials($username,$password,$ext=false) {
+    public function validateCredentials($username, $password, $ext=false) {
         $db = new DatabaseConnection();
         try {
             $userrecord = $db->getSingleRow(
-                "SELECT * FROM ".LEPTON_DB_PREFIX."users WHERE username=%s", $username
+                            "SELECT * FROM " . LEPTON_DB_PREFIX . "users WHERE username=%s", $username
             );
             if ($userrecord) {
 
                 // What hashing algorithm to use
-                $ha = config::get('lepton.user.hashalgorithm','md5');
+                $ha = config::get('lepton.user.hashalgorithm', 'md5');
 
                 // Grab the salt, concatenate the password and the salt,
                 // and hash it with the selected hashing algorithm.
                 $us = $userrecord['salt'];
-                $ps = $password.$us;
-                $hp = hash($ha,$ps);
+                $ps = $password . $us;
+                $hp = hash($ha, $ps);
 
-/*
-                echo "<pre>";
-                echo "US="; var_dump($us);
-                echo "PS="; var_dump($ps);
-                echo "HP="; var_dump($hp);
-                echo "UR="; var_dump($userrecord);
-                echo "</pre>";
-*/
+                /*
+                  echo "<pre>";
+                  echo "US="; var_dump($us);
+                  echo "PS="; var_dump($ps);
+                  echo "HP="; var_dump($hp);
+                  echo "UR="; var_dump($userrecord);
+                  echo "</pre>";
+                 */
 
                 // Check the hash against the one on file
                 if ($hp == $userrecord['password']) {
@@ -63,12 +65,10 @@ class DefaultAuthBackend extends AuthenticationBackend {
                     return true;
                 }
                 return false;
-
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e; // TODO: Handle exception
         }
-
     }
 
     /**
@@ -84,28 +84,28 @@ class DefaultAuthBackend extends AuthenticationBackend {
         // Generate a new salt and hash the password
         $salt = $this->generateSalt();
         // What hashing algorithm to use
-        $ha = config::get('lepton.user.hashalgorithm','md5');
-        $ps = $user->password.$salt;
-        $hp = hash($ha,$ps);
+        $ha = config::get('lepton.user.hashalgorithm', 'md5');
+        $ps = $user->password . $salt;
+        $hp = hash($ha, $ps);
 
         if ($user->userid == null) {
             $uuid = UUID::v4();
             try {
                 $id = $db->insertRow(
-                    "REPLACE INTO ".LEPTON_DB_PREFIX."users (username,salt,password,email,flags,registered,uuid) VALUES (%s,%s,%s,%s,%s,NOW(),%s)",
-                    $user->username, $salt, $hp, $user->email, $user->flags,$uuid
+                                "REPLACE INTO " . LEPTON_DB_PREFIX . "users (username,salt,password,email,flags,registered,uuid) VALUES (%s,%s,%s,%s,%s,NOW(),%s)",
+                                $user->username, $salt, $hp, $user->email, $user->flags, $uuid
                 );
                 $user->userid = $id;
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 throw $e; // TODO: Handle exception
             }
         } else {
             try {
                 $db->updateRow(
-                    "UPDATE ".LEPTON_DB_PREFIX."users SET username=%s,salt=%s,password=%s,email=%s,flags=%s WHERE id=%d",
-                    $user->username, $salt, $hp, $user->email, $user->flags, $user->userid
+                        "UPDATE " . LEPTON_DB_PREFIX . "users SET username=%s,salt=%s,password=%s,email=%s,flags=%s WHERE id=%d",
+                        $user->username, $salt, $hp, $user->email, $user->flags, $user->userid
                 );
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 throw $e; // TODO: Handle exception
             }
         }
@@ -135,26 +135,23 @@ class DefaultAuthBackend extends AuthenticationBackend {
         $db = new DatabaseConnection();
         try {
             $userrecord = $db->getSingleRow(
-                "SELECT * FROM users WHERE username=%s", $username
+                            "SELECT * FROM users WHERE username=%s", $username
             );
             if ($userrecord) {
                 return $userrecord;
             }
             return null;
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
-
     }
 
     function generateSalt() {
 
-        $start = md5(microtime(true)*1000);
-        $salt = substr($start,4,16); // Grab 16 bytes from middle
+        $start = md5(microtime(true) * 1000);
+        $salt = substr($start, 4, 16); // Grab 16 bytes from middle
         return $salt;
-
     }
 
 }
-
 
