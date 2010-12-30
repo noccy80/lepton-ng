@@ -98,6 +98,7 @@ class UserRecord {
     }
 
     public function save() {
+        if (!$this->uuid) $this->uuid = uuid::v4();
         if (count($this->modified) > 0) {
             // Get a database reference
             $db = new DatabaseConnection();
