@@ -110,6 +110,10 @@ class Request {
         if (isset($_REQUEST[$key])) return(new RequestString($_REQUEST[$key]));
         return new RequestString($def);
     }
+
+    function has($key) {
+        return (isset($_REQUEST[$key]));
+    }
     
     function post($key, $def = null) {
     	// Check if file
@@ -127,8 +131,8 @@ class Request {
     }
 
     function getRawQueryString() {
-        $data = $_GET;
-        return $get;
+        $data = $_SERVER['QUERY_STRING'];
+        return $data;
     }
 
     /**

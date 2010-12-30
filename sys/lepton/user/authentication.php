@@ -49,12 +49,12 @@
             }
         }
 
-		/**
-		 * @brief Clear the active user.
-		 *
-		 */
+        /**
+         * @brief Clear the active user.
+         *
+         */
         protected function clearUser() {
-			User::clearUser();
+            User::clearUser();
         }
 
     }
@@ -126,13 +126,14 @@
             // Resolve the authentication backend
             $auth_backend = config::get('lepton.user.authbackend','defaultauthbackend');
             $auth_class = new $auth_backend();
+            $user->save();
+/*
             if ($auth_class->assignCredentials($user)) {
-                $user->save();
                 return true;
             } else {
                 return false;
             }
-        
+*/        
         }
         
         /**
@@ -171,6 +172,16 @@
 			}
 			return null;
 
+        }
+
+        static function getActiveUser() {
+            if (ModuleManager::has('lepton.mvc.session')) {
+                $uid = (session::get(User::KEY_USER_AUTH,null));
+                if ($uid) {
+                    return user::getUser($uid);
+                }
+                return null;
+            }
         }
 
         /**

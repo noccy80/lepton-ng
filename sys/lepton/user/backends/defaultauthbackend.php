@@ -48,10 +48,14 @@ class DefaultAuthBackend extends AuthenticationBackend {
                 $ps = $password.$us;
                 $hp = hash($ha,$ps);
 
-                var_dump($us);
-                var_dump($ps);
-                var_dump($hp);
-                var_dump($userrecord);
+/*
+                echo "<pre>";
+                echo "US="; var_dump($us);
+                echo "PS="; var_dump($ps);
+                echo "HP="; var_dump($hp);
+                echo "UR="; var_dump($userrecord);
+                echo "</pre>";
+*/
 
                 // Check the hash against the one on file
                 if ($hp == $userrecord['password']) {
@@ -88,7 +92,7 @@ class DefaultAuthBackend extends AuthenticationBackend {
             $uuid = UUID::v4();
             try {
                 $id = $db->insertRow(
-                    "INSERT INTO ".LEPTON_DB_PREFIX."users (username,salt,password,email,flags,registered,uuid) VALUES (%s,%s,%s,%s,%s,NOW(),%s)",
+                    "REPLACE INTO ".LEPTON_DB_PREFIX."users (username,salt,password,email,flags,registered,uuid) VALUES (%s,%s,%s,%s,%s,NOW(),%s)",
                     $user->username, $salt, $hp, $user->email, $user->flags,$uuid
                 );
                 $user->userid = $id;
