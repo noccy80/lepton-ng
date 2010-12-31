@@ -23,6 +23,7 @@ class RequestString extends RequestObject {
 	function sanitize($options) { }
 	function validate($options) { }
 }
+
 class RequestFile extends RequestObject {
 	private $key = null;
 	private $name = null;
@@ -94,6 +95,38 @@ class RequestFile extends RequestObject {
 	}
 }
 
+class RequestUserAgent {
+
+    private $_tokens = null;
+    private $_useragent = null;
+    private $_mobile = false;
+
+    function __construct() {
+        $this->_useragent = $_SERVER['HTTP_USER_AGENT'];
+        $this->_mobile = (strpos(' mobile ',strToLower($this->_useragent)) > 0);
+        $s = explode('(',$this->_useragent);
+        $s = explode(')',$s[1]);
+        $this->_tokens = explode(';',$s);
+    }
+
+    function __toString() {
+        return $this->_useragent;
+    }
+
+    function isMobileDevice() {
+        return $this->_mobile;
+    }
+
+    function getTokens() {
+        return $this->_tokens;
+    }
+
+    function hasToken($tok) {
+        return in_array($tok,$this->tokens);
+    }
+
+}
+
 /**
  * 
  */
@@ -128,6 +161,10 @@ class Request {
     		$data = array_slice($data,2);
     	}
     	return $data;
+    }
+
+    function getUserAgent() {
+        return new RequestUserAgent();
     }
 
     function getRawQueryString() {
