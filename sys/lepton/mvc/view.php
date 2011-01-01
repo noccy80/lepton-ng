@@ -26,6 +26,11 @@ abstract class ViewHandler implements IViewHandler {
 
     /// The data assigned to the view
     protected $_data = array();
+    protected $useragent = null;
+
+    function __construct() {
+        $this->useragent = new RequestUserAgent();
+    }
 
     /**
      * @brief Set a value in the view data set
@@ -86,7 +91,8 @@ abstract class ViewHandler implements IViewHandler {
     }
 
     function includeView($view) {
-        include(base::appPath().'/views/'.$view);
+        view::embed($view);
+        // include(base::appPath().'/views/'.$view);
     }
 
 }

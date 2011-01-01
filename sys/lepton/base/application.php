@@ -79,7 +79,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
      */
     function usage() {
 
-        Console::writeLn("%s - %s", $this->getName(), isset($this->description)?$this->description:"Untitled Lepton Application");
+        Console::writeLn("%s - %s", $this->getName(), isset($this->description)?$this->description:"Application [\$description undefined]");
         Console::writeLn("");
         Console::writeLn("Usage:");
         Console::writeLn("    %s [-arguments] [parameters]", $this->getName());

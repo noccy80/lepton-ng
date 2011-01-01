@@ -103,7 +103,7 @@ class RequestUserAgent {
 
     function __construct() {
         $this->_useragent = $_SERVER['HTTP_USER_AGENT'];
-        $this->_mobile = (strpos(' mobile ',strToLower($this->_useragent)) > 0);
+        $this->_mobile = (strpos(strToLower($this->_useragent),' mobile ') > 0);
         $s = explode('(',$this->_useragent);
         $s = explode(')',$s[1]);
         $this->_tokens = explode(';',$s);

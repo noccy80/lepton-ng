@@ -564,6 +564,14 @@
         /**
          *
          */
+        static function error() {
+            $args = func_get_args();
+            call_user_func_array('fprintf',array_merge(array(STDERR,$args[0]."\n"),array_slice($args,1)));
+        }
+
+        /**
+         *
+         */
         static function backtrace($trim=1,$stack=null,$return=false) {
             if (!$stack) { $stack = debug_backtrace(false); }
             $trace = array();
