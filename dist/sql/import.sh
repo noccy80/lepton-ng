@@ -1,12 +1,17 @@
 #!/bin/bash
 
-if [ "$3" == "" ]; then
-	echo "Use: `basename $0` user pass db"
+if [ "$2" == "" ]; then
+	echo "Use: `basename $0` user db"
 	exit 1
 fi
 
+echo "" > .sqltmp
 for S in *.sql; do
-	echo -n "$S: "
-	mysql -u $1 -p$2 $3 < $S
-	if [ "$?" == "0" ]; then echo "Ok"; fi
+	# echo -n "$S: "
+	cat $S >> .sqltmp
+	# if [ "$?" == "0" ]; then echo "Ok"; fi
 done
+
+mysql -u $1 -p $2 < .sqltmp
+
+rm .sqltmp
