@@ -102,11 +102,17 @@ class RequestUserAgent {
     private $_mobile = false;
 
     function __construct() {
-        $this->_useragent = $_SERVER['HTTP_USER_AGENT'];
-        $this->_mobile = (strpos(strToLower($this->_useragent),' mobile ') > 0);
-        $s = explode('(',$this->_useragent);
-        $s = explode(')',$s[1]);
-        $this->_tokens = explode(';',$s);
+        if (array_key_exists('HTTP_USER_AGENT',$_SERVER)) {
+            $this->_useragent = $_SERVER['HTTP_USER_AGENT'];
+            $this->_mobile = (strpos(strToLower($this->_useragent),' mobile ') > 0);
+            $s = explode('(',$this->_useragent);
+            $s = explode(')',$s[1]);
+            $this->_tokens = explode(';',$s);
+        } else {
+            $this->_useragent = 'PHP '.phpversion();
+            $this->_tokens = array();
+            $this->_mobile = false;            
+        }
     }
 
     function __toString() {

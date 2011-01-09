@@ -11,38 +11,58 @@
 
 		static function toSeconds($str) {
 			if (is_string($str)) {
-				$str = trim($str);
-				// Spplit and parse all items
-				// Use ! for absolute time
-				$strspan = explode(' ',$str);
-				$secs = time();
-				$neg = false;
-				foreach($strspan as $s) {
-					switch(String::toLowerCase(String::right(1,$s))) {
-						case '!':
-							$secs = 0;
-							break;
-						case '-':
-							$secs = 0;
-							$neg = true;
-						case 'w': // Week
-							$secs+= (60 * 60 * 24 * 7 * (int)$s);
-							break;
-						case 'd': // Days
-							$secs+= (60 * 60 * 24 * (int)$s);
-							break;
-						case 'h': // Hours
-							$secs+= (60 * 60 * (int)$s);
-							break;
-						case 'm': // Minutes
-							$secs+= (60 * (int)$s);
-							break;
-						case 's': // Seconds
-							$secs+= (int)$s;
-							break;
-						default: // [[hh:]mm:]ss
-					}
-				}
+			    if (preg_match('/[0-9]*\:[0-9]*/', $str)) {
+				    $strspan = explode(':',$str);
+				    $secs = time();
+				    $neg = false;
+
+				    if (count($strspan)>0) { // Secs
+				        $_secs = intval($strspan[count($strspan)-1]);
+				        $secs+= $_secs;
+				    }
+				    if (count($strspan)>1) { // Minutes
+				        $_mins = intval($strspan[count($strspan)-2]);
+				        $secs+= ($_mins * 60);
+				    }
+				    if (count($strspan)>2) { // Hours
+				        $_hour = intval($strspan[count($strspan)-3]);
+				        $secs+= ($_hour * 60 * 60);
+				    }
+
+			    } else {
+				    $str = trim($str);
+				    // Split and parse all items
+				    // Use ! for absolute time
+				    $strspan = explode(' ',$str);
+				    $secs = time();
+				    $neg = false;
+				    foreach($strspan as $s) {
+					    switch(strToLower(substr($s,strlen($s) - 1,1))) {
+						    case '!':
+							    $secs = 0;
+							    break;
+						    case '-':
+							    $secs = 0;
+							    $neg = true;
+						    case 'w': // Week
+							    $secs+= (60 * 60 * 24 * 7 * (int)$s);
+							    break;
+						    case 'd': // Days
+							    $secs+= (60 * 60 * 24 * (int)$s);
+							    break;
+						    case 'h': // Hours
+							    $secs+= (60 * 60 * (int)$s);
+							    break;
+						    case 'm': // Minutes
+							    $secs+= (60 * (int)$s);
+							    break;
+						    case 's': // Seconds
+							    $secs+= (int)$s;
+							    break;
+						    default: // [[hh:]mm:]ss
+					    }
+				    }
+                }
 				if ($neg) return (time() - $secs);
 				return $secs;
 			} else {
@@ -127,4 +147,7 @@
 		}
 
 	}
+
+////// Calendar ///////////////////////////////////////////////////////////////
+
 
