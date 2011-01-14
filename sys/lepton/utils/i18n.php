@@ -10,7 +10,11 @@ class intl {
 		if (intl::$language) {
 			if (count($args)>0) {
 				if (isset(intl::$strings[intl::$language])) {
-					$str = intl::$strings[intl::$language][$args[0]];
+					if (array_key_exists($args[0],intl::$strings[intl::$language])) {
+						$str = intl::$strings[intl::$language][$args[0]];
+					} else {
+						$str = $args[0];
+					}
 				} else {
 					$str = $args[0];
 				}
@@ -18,7 +22,7 @@ class intl {
 					$str = sprintf($str,array_slice($args,1));
 				}
 			} else {
-				$str = '';
+				$str = $args[0];
 			}
 		} else {
 			if (count($args) > 0) {
@@ -27,7 +31,7 @@ class intl {
 					$str = sprintf($str,array_slice($args,1));
 				}
 			} else {
-				$str = '';
+				$str = $args[0];
 			}
 		}
 		return $str;
