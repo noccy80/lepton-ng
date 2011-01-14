@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php // __filename("IP2Country Lookup");
 
 /**
@@ -46,8 +47,8 @@ class IP2CountryManager {
         $fs = fopen('ip2country.sql','w');
         fputs($fs,"DROP TABLE IF EXISTS ip2country;\n");
         fputs($fs,"CREATE TABLE ip2country (\n");
-        fputs($fs,"  ipfrom BIGINT,\n");
-        fputs($fs,"  ipto BIGINT,\n");
+        fputs($fs,"  ipfrom FLOAT UNSIGNED NOT NULL,\n");
+        fputs($fs,"  ipto FLOAT UNSIGNED NOT NULL,\n");
         fputs($fs,"  registry VARCHAR(32),\n");
         fputs($fs,"  assigned VARCHAR(32),\n");
         fputs($fs,"  cc VARCHAR(2),\n");
