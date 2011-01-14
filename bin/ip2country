@@ -1,0 +1,79 @@
+<?php // __filename("IP2Country Lookup");
+
+/**
+ * @todo This file need proper integration.
+ *
+ */
+
+require('sys/base.php');
+
+class IP2CountryResolver  {
+
+    function __construct() {
+
+    }
+
+}
+
+class IP2CountryManager {
+
+    const URL_DATASET = 'http://software77.net/geo-ip/?DL=1';
+    const URL_CHECKSUM = 'http://software77.net/geo-ip/?DL=3';
+
+    function update() {
+        // $db = new DatabaseConnection();
+        if (!file_exists('ip2country.csv.gz')) {
+            // Download the dataset
+            $fh = fopen(self::URL_DATASET,'rb');
+            if (!$fh) {
+                console::fatal("Could not open dataset stream");
+                exit(1);
+            }
+            $fo = fopen('ip2country.csv.gz','wb');
+            // Save to cache
+            console::write("Downloading: ");
+            while (!feof($fh)) {
+                $ds = fread($fh, 16000);
+                console::write('.');
+                fwrite($fo, $ds);
+            }
+            console::writeLn("Done");
+            fclose($fh);
+            fclose($fo);
+        }
+        // Import the data
+        $fh = fopen('compress.zlib://ip2country.csv.gz','r');
+        $fs = fopen('ip2country.sql','w');
+        fputs($fs,"DROP TABLE IF EXISTS ip2country;\n");
+        fputs($fs,"CREATE TABLE ip2country (\n");
+        fputs($fs,"  ipfrom BIGINT,\n");
+        fputs($fs,"  ipto BIGINT,\n");
+        fputs($fs,"  registry VARCHAR(32),\n");
+        fputs($fs,"  assigned VARCHAR(32),\n");
+        fputs($fs,"  cc VARCHAR(2),\n");
+        fputs($fs,"  cc3 VARCHAR(3),\n");
+        fputs($fs,"  country VARCHAR(64),\n");
+        fputs($fs,"  INDEX iprange(ipfrom,ipto)\n");
+        fputs($fs,");\n\n");
+        fputs($fs,"INSERT INTO ip2country \n");
+        fputs($fs,"  (ipfrom,ipto,registry,assigned,cc,cc3,country)\n");
+        fputs($fs,"VALUES \n");
+        $first = true;
+        while (!feof($fh)) {
+            $d = fgetcsv($fh,8192);
+            if ((count($d) == 7) && ($d[0][0] != '#')) {
+                $sql = sprintf("  ('%s','%s','%s','%s','%s','%s','%s')", $d[0], $d[1], $d[2], $d[3], $d[4], $d[5], str_replace("'","''",$d[6]));
+                if (!$first) fputs($fs,",\n");
+                fputs($fs,$sql);
+                $first = false;
+            }
+        }
+        fputs($fs,";\n");
+        fclose($fh);
+        fclose($fs);
+        console::writeLn("ip2country.sql have been generated");
+    }
+
+}
+
+IP2CountryManager::update();
