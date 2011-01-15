@@ -124,17 +124,8 @@
          */
         static function create(UserRecord $user) {
 
-            // Resolve the authentication backend
-            $auth_backend = config::get('lepton.user.authbackend','defaultauthbackend');
-            $auth_class = new $auth_backend();
-            $user->save();
-/*
-            if ($auth_class->assignCredentials($user)) {
-                return true;
-            } else {
-                return false;
-            }
-*/        
+            return $user->save();
+
         }
         
         /**

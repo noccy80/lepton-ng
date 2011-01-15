@@ -181,6 +181,7 @@ class UserRecord {
                 $backend->assignCredentials($this);
             }
         }
+        return true;
     }
 
     /**

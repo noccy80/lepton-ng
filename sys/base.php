@@ -629,6 +629,14 @@
             return fgets(STDIN);
         }
 
+        static function readPass() {
+            if (IS_LINUX) { system('stty -echo'); }
+            $rd = trim(fgets(STDIN));
+            if (IS_LINUX) { system('stty echo'); }
+            console::write("\n");
+            return $rd;
+        }
+
         static function writeLn() {
             $args = func_get_args();
             if (count($args)>0) {

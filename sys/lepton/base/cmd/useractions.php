@@ -15,9 +15,17 @@ class UserActions extends ConsoleActions {
     );
     function _info($cmd) { return self::$help[$cmd->name]; }
 
-    function adduser($username=null,$password=null) {
+    function adduser($username=null) {
         using('lepton.user.*');
-        if ($username && $password) {
+        if ($username) {
+            console::write("New password: "); $p = console::readPass();
+            console::write("Confirm: "); $pc = console::readPass();
+            if ($p != $pc) { 
+                console::fatal('Passwords mismatch.');
+                exit(1);
+            }
+            $password = $p;
+            console::write("Flags: "); $flags = console::readLn();
             $u = new UserRecord();
             $u->username = $username;
             $u->password = $password;
@@ -27,7 +35,7 @@ class UserActions extends ConsoleActions {
                 console::writeLn("Couldn't create user.");
             }
         } else {
-            console::writeLn("Not enough arguments. Expected username and password.");
+            console::writeLn("Use: adduser username");
         }
     }
 
