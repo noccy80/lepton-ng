@@ -82,6 +82,8 @@ abstract class Router implements IRouter {
             }
         }
 
+		$secure = isset($_SERVER['HTTPS']);
+
         // Assign the URI and start parsing
         $this->_uri = $uri;
         $this->_domain = $domain;
@@ -100,6 +102,17 @@ abstract class Router implements IRouter {
      * @return Mixed The result from the routerequest call
      */
     public function route() {
+
+		Console::debugEx(LOG_VERBOSE,__CLASS__,'Looking for event handlers before routing');
+		// Invoke events first to see if anything is registered
+		if (event::invoke(MvcEvent::EVENT_BEFORE_ROUTING,array(
+			'uri' => $this->_uri,
+			'segments' => $this->_urisegments,
+			'domain' => $this->_domain,
+			'secure' => $this->_secure
+		)) == true) return 0;
+
+		Console::debugEx(LOG_VERBOSE,__CLASS__,'Examining static routes');
         // Determine if this is a hooked uri
         foreach(Router::$_staticroutes as $sr) {
             if (@preg_match('/'.$sr['match'].'/', $this->_uri, $ret)) {
@@ -107,6 +120,8 @@ abstract class Router implements IRouter {
                 return 0;
             }
         }
+
+		Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking the router');
 
         // Invoke the router
         return $this->routeRequest($this->_uri);
@@ -247,3 +262,7 @@ abstract class Router implements IRouter {
 
 }
 
+abstract class MvcEvent implements IEventList {
+	const EVENT_BEFORE_ROUTING = 'lepton.mvc.routing.pre';
+	const EVENT_AFTER_ROUTING = 'lepton.mvc.routing.post';
+}

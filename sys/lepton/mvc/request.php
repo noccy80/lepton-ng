@@ -275,3 +275,12 @@ class Request {
     }
 
 }
+/*
+$use_sts = TRUE;
+
+if ($use_sts && isset($_SERVER['HTTPS']) {
+  header('Strict-Transport-Security: max-age=500');
+} elseif ($use_sts && !isset($_SERVER['HTTPS'])) {
+  header('Status-Code: 301');
+  header('Location: https://'.$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI']);
+}*/
