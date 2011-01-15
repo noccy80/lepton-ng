@@ -25,10 +25,19 @@ class UserActions extends ConsoleActions {
                 exit(1);
             }
             $password = $p;
+            console::write("DisplayName: "); $displayname = console::readLn();
+            console::write("E-Mail: "); $email = console::readLn();
             console::write("Flags: "); $flags = console::readLn();
+            console::write("Is this correct? [Y/n] "); $ok = console::readLn();
+            if (strtolower($ok) == 'n') {
+                exit(1);
+            }
             $u = new UserRecord();
             $u->username = $username;
             $u->password = $password;
+            $u->email = $email;
+            $u->flags = $flags;
+            $u->displayname = $displayname;
             if (User::create($u)) {
                 console::writeLn("User created.");
             } else {

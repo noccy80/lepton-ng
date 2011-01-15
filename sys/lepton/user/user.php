@@ -161,7 +161,7 @@ class UserRecord {
                 // Update the userdata columns
                 $db->updateRow(
                         "REPLACE INTO " . LEPTON_DB_PREFIX . "userdata (displayname,firstname,lastname,sex,country,id) VALUES " .
-                        "(%s,%s,%s,%s,%s,%s,%d)",
+                        "(%s,%s,%s,%s,%s,%d)",
                         $this->displayname, $this->firstname, $this->lastname, $this->sex,
                         $this->country, $this->userid
                 );
