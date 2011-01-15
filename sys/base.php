@@ -962,7 +962,15 @@
 		    }
 		    return $ret;
 		}
-	
+
+		static function hasKey(Array $arr,$key) {
+			return array_key_exists($key,$arr);
+		}
+
+		static function hasValue(Array $arr,$key) {
+			return in_array($key,$arr);
+		}
+
 	}
 
 
