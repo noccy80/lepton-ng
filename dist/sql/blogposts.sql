@@ -14,6 +14,6 @@ CREATE TABLE blogposts (
     commentstatus ENUM('closed','open') NOT NULL DEFAULT 'open',
     pingbackstatus ENUM('closed','open') NOT NULL DEFAULT 'open',
     poststatus ENUM('draft','published'),
-    postmeta TEXT,
+    sticky TINYINT(1) NOT NULL DEFAULT 0,
     hits INT NOT NULL DEFAULT 0
 );
