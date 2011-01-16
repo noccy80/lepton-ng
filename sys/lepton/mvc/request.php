@@ -160,6 +160,10 @@ class Request {
         if (isset($_POST[$key])) return(new RequestString($_POST[$key]));
         return new RequestString($def);
     }
+
+	function getDomain() {
+		return strtolower($_SERVER['HTTP_HOST']);
+	}
     
     function getQueryString() {
     	$data = $_GET;
