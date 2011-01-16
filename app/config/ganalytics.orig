@@ -1,0 +1,6 @@
+<?php
+
+// Set to your account ID
+config::set('ganalytics.account', NULL);
+
+using('lepton.web.ganalytics');
