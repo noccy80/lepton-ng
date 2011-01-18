@@ -161,6 +161,16 @@ class Request {
         return new RequestString($def);
     }
 
+	function useSts() {
+		$use_sts = config::get('lepton.security.sts');
+		if ($use_sts && isset($_SERVER['HTTPS'])) {
+		  header('Strict-Transport-Security: max-age=500');
+		} elseif ($use_sts && !isset($_SERVER['HTTPS'])) {
+		  header('Status-Code: 301');
+		  header('Location: https://'.$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI']);
+		}
+	}
+
 	function getDomain() {
 		return strtolower($_SERVER['HTTP_HOST']);
 	}

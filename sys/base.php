@@ -861,9 +861,18 @@
          */
         static function handleShutdown() {
             $error = error_get_last(); 
-            if ($error['type'] == 1) { 
-                var_dump($error);
-                die();
+            if (($error['type'] == 1) && (defined('LEPTON_CONSOLE'))) { 
+				$f = file($error['file']);
+				foreach($f as $i=>$line) {
+					$mark = (($i+1) == $error['line'])?'=> ':'   ';
+					$f[$i] = sprintf('  %05d. %s',$i+1,$mark).$f[$i];
+					$f[$i] = str_replace("\n","",$f[$i]);
+				}
+				$first = $error['line'] - 4; if ($first < 0) $first = 0;
+				$last = $error['line'] + 3; if ($last >= count($f)) $last = count($f)-1;
+				$source = join("\n",array_slice($f,$first,$last-$first));
+				echo "\n".$source."\n";
+				die();
             } 
         }
 
