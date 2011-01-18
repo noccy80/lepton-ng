@@ -35,9 +35,8 @@ abstract class Controller implements IController {
         if (!$controller) $controller = 'default'; // config
         if (!$method) $method = 'index'; // config
         $ctlpath = base::apppath().'/controllers/'.$controller.'.php';
-        Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking controller instance %s (method=\'%s\', args=\'%s\')...', $controller, $method, join('\',\'',(array)$arguments));
+        Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking %s:%s (%s)', $controller, $method, $ctlpath);
         $cc = $controller.'Controller';
-
         if(!class_exists($cc)) {
             if (file_exists($ctlpath)) {
                 require($ctlpath);

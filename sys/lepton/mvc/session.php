@@ -7,6 +7,9 @@
 
         const KEY_STRICT_SESSIONS = 'lepton.security.strictsessions';
         const KEY_VALIDATION = 'lepton.security.validationcookie';
+	const KEY_SESSION_DOMAIN = 'lepton.mvc.session.domain';
+	const KEY_SESSION_VALIDITY = 'lepton.mvc.session.validity';
+	const KEY_BACKEND = 'lepton.mvc.session.backend';
 
         const FLASH_INITIAL = 2;
         const FLASH_EXPIRES = 1;
@@ -43,8 +46,17 @@
 
         }
 
+        static function setupSessionCookie() {
+            $domain = (config::get(self::KEY_SESSION_DOMAIN));
+            $validity = (config::get(self::KEY_SESSION_VALIDITY));
+            if (!$domain) $domain = request::getDomain();
+            if (!$validity) $validity = 3600;
+            session_set_cookie_params($validity, '/', $domain);
+        }
+
         static function begin() {
             if (!headers_sent()) {
+                self::setupSessionCookie();
     	        session_start();
     	    }
             session::$id = session_id();
