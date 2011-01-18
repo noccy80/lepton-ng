@@ -56,7 +56,7 @@
 
         static function begin() {
             if (!headers_sent()) {
-                self::setupSessionCookie();
+                // self::setupSessionCookie();
     	        session_start();
     	    }
             session::$id = session_id();
@@ -80,7 +80,7 @@
                     'ip' => request::getRemoteIp()
                 );
                 // 'ua' => request::getUserAgent()
-                session::refresh();
+                // session::refresh();
                 session::set(session::KEY_VALIDATION,$vc);
             } else {
                 if ($vc['ip'] != request::getRemoteIp()) {
