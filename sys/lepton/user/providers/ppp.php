@@ -177,7 +177,7 @@ class PppAuthentication extends AuthenticationProvider {
      */
     function cardIndexToString($index) {
         $cardinfo = self::cardIndexToArray($index);
-        // var_dump($cardinfo);
+        var_dump($cardinfo);
         return sprintf('%s (Card %d)', $cardinfo['code'], $cardinfo['card']);
     }
 

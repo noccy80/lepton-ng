@@ -1,0 +1,45 @@
+<?php
+
+
+	/**
+	 * Authentication using the Lepton OpenID library
+	 */
+	final class OpenidAuthentication extends AuthenticationProvider {
+
+		const KEY_CACHEDIDENTITY = 'lepton.openidauth.identity';
+
+		const MODE_AUTH = 0;
+		const MODE_VERIFY = 1;
+
+		private $identity;
+		private $mode;
+
+		public function __construct($identity=null) {
+			Library::load('openid',$this);
+			if ($identity) {
+				$this->identity = $identity;
+				Session::set(KEY_CACHEDIDENTITY,$identity);
+				$this->mode = MODE_AUTH;
+			} else {
+				$this->identity = Session::get(KEY_CACHEDIDENTITY);
+				Session::clear(KEY_CACHEDIDENTITY);
+				$this->mode = MODE_VERIFY;
+			}
+		}
+
+		public function authenticate() {
+			Lepton::using('lepton.openid');
+			Library::extend($this,'openid','openid');
+			if ($this->mode == MODE_AUTH) {
+				$this->openid->setIdentity($this->identity);
+				$this->openid->login();
+			} else {
+				if ($this->openid->validate()) {
+					echo "Success!";
+				} else {
+					echo "Fail";
+				}
+			}
+		}
+
+	}
