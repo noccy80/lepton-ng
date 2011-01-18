@@ -13,7 +13,6 @@ CREATE TABLE blogposts (
     contenttype VARCHAR(64) NOT NULL DEFAULT 'text/html',
     commentstatus ENUM('closed','open') NOT NULL DEFAULT 'open',
     pingbackstatus ENUM('closed','open') NOT NULL DEFAULT 'open',
-    poststatus ENUM('draft','published'),
-    sticky TINYINT(1) NOT NULL DEFAULT 0,
-    hits INT NOT NULL DEFAULT 0
+    poststatus ENUM('draft','auto-draft','publish','inherit','deleted'),
+    sticky TINYINT(1) NOT NULL DEFAULT 0
 );

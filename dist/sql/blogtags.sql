@@ -2,5 +2,6 @@ DROP TABLE IF EXISTS blogtags;
 CREATE TABLE blogtags (
     id INT PRIMARY KEY AUTO_INCREMENT,
     slug VARCHAR(64) NULL,
-    tag VARCHAR(64) NOT NULL
+    tag VARCHAR(64) NOT NULL,
+    UNIQUE KEY slug(slug)
 );
