@@ -45,7 +45,7 @@
         protected function setUser($id) {
             // TODO: Assign to session
             if (ModuleManager::has('lepton.mvc.session')) {
-                if (session::set(User::KEY_USER_AUTH,$id));
+                session::set(User::KEY_USER_AUTH,$id);
             }           
         }
 

@@ -138,7 +138,10 @@
         private static $_syspath = null;
         static function basePath($newpath=null) {
             $ret = (self::$_basepath)?self::$_basepath:BASE_PATH;
-            if ($newpath) self::$_basepath = realpath($newpath);
+            if ($newpath) {
+                self::$_basepath = realpath($newpath);
+                console::debug("Setting base path: %s", self::$_basepath);
+            }
             return $ret;
         }
         static function appPath($newpath=null) {
@@ -906,6 +909,8 @@
 		
 		const CHS_ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
 		const CHS_NUMERIC='0123456789';
+
+                const KEY_CHARSET='lepton.string.charset';
 		
 		static function strip($string,$charset) {
 			$out = '';
@@ -925,8 +930,13 @@
 		    return preg_replace($find,$replace,$str);
 		}
 		
-		static function toSlug($string) {
-			// TODO: Implement
+		static function slug($string) {
+                        $s = strToLower($string);
+                        $charset = strToUpper(config::get(self::KEY_CHARSET, 'utf-8'));
+                        $s = @iconv($charset, 'ASCII//TRANSLIT', $s);
+                        $s = preg_replace('/[^a-z0-9]/','-',$s);
+                        $s = preg_replace('/-{2,}/','-',$s);
+                        return $s;
 		}
 		
 		static function cast($var) {

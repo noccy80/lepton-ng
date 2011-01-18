@@ -2,7 +2,7 @@
 
 class BlogMedia {
 
-    private const sql_query_base = 'SELECT mi.* FROM mediaitems mi ';
+    const sql_query_base = 'SELECT mi.* FROM mediaitems mi ';
 
     /**
      * Initialize the collection for the specific blog (or the default blog if
