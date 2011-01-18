@@ -51,7 +51,7 @@
             $validity = (config::get(self::KEY_SESSION_VALIDITY));
             if (!$domain) $domain = request::getDomain();
             if (!$validity) $validity = 3600;
-            session_set_cookie_params($validity, '/', $domain);
+            // session_set_cookie_params($validity, '/', $domain);
         }
 
         static function begin() {
