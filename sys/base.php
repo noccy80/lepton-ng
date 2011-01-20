@@ -930,6 +930,13 @@
 		    return preg_replace($find,$replace,$str);
 		}
 		
+                static function truncate($string,$maxlen) {
+                    if (strlen($string)>$maxlen) {
+                        return substr($string,0,$maxlen).'...';
+                    }
+                    return $string;
+                }
+
 		static function slug($string) {
                         $s = strToLower($string);
                         $charset = strToUpper(config::get(self::KEY_CHARSET, 'utf-8'));
