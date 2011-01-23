@@ -34,7 +34,7 @@ class LeptonUtil extends ConsoleApplication {
 		Console::writeLn(__astr("(c) 2010, NoccyLabs.info"));
 
 		while(true) {
-			$cmds = Readline::read(__astr('\c{ltgreen lepton}\c{ltblue >} '));
+			$cmds = Readline::read('lepton> ');
 			Console::write(__astr('\b{}'));
 			$t = new ArgumentTokenizer($cmds);
 			$cmd = $t->getTokens();
@@ -45,7 +45,7 @@ class LeptonUtil extends ConsoleApplication {
 					break;
 				default:
 					if (!$this->doCommand($cmd)) {
-						Console::writeLn("No such command: %s", $cmd[0]);
+						Console::writeLn("No such command: %s", join(' ',$cmd));
 					}
 			}
 			Readline::addHistory($cmds);
