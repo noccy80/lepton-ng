@@ -285,7 +285,8 @@ class Request {
      * @return string The remote hostname
      */
     static function getRemoteHost() {
-        return GetHostByName($ip);
+        $host = GetHostByName(self::getRemoteIp());
+        return($host || $ip);
     }
 
 }
