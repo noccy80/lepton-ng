@@ -3,17 +3,10 @@
 
 require('sys/base.php');
 
-ModuleManager::load('lepton.console.readline');
-ModuleManager::load('lepton.utils.tokenizer');
-
-interface IConsoleActions {
-	function _info($cmd);
-}
-abstract class ConsoleActions implements IConsoleActions {
-		
-}
-
-ModuleManager::load('lepton.base.cmd.*');
+using('lepton.utils.tokenizer');
+using('lepton.cli.readline');
+using('lepton.cli.action');
+using('lepton.cli.actions.*');
 
 class LeptonUtil extends ConsoleApplication {
 	static $verbose;
@@ -59,19 +52,12 @@ class LeptonUtil extends ConsoleApplication {
 		}
 	}
 	function doCommand($cmd) {
-		foreach(config::get('lepton.cmd.actionhandlers') as $handler) {
-			if (method_exists($handler,$cmd[0])) {
-				$oi = new $handler;
-				try {
-					call_user_func_array(array(&$oi,$cmd[0]), array_slice($cmd,1));
-				} catch (Exception $e) {
-					console::writeLn($e);
-				}
-				unset($oi);
-				return true;
-			}
+		if ($cmd[0] == 'help') {
+			actions::listActions();
+			return true;
+		} else {
+			return (actions::invoke($cmd[0],array_slice($cmd,1)));
 		}
-		return false;
 	}
 	function main($argc,$argv) {
 
