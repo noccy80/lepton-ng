@@ -34,68 +34,70 @@
  * @copyright (c) 2001-2010, Noccy Labs
  * @license GPL v3
  */
-class GeonamesUtility extends ConsoleActions {
+class GeonamesAction extends Action {
 
-    static $help = array(
-        'geonames' => 'Manage, download and import geonames data'
+    public static $commands = array(
+        'import' => array(
+            'arguments' => '',
+            'info' => 'Import geonames data set'
+        ),
+        'purge' => array(
+            'arguments' => '',
+            'info' => 'Remove all geonames data from the database'
+        ),
+        'download' => array(
+            'arguments' => '',
+            'info' => 'Download (but don\'t import) the geonames data set'
+        )
     );
-    function _info($cmd) { return self::$help[$cmd->name]; }
 
-	function geonames($cmd=null, $args=null) {
-		using('lepton.db.*');
-		switch($cmd) {
-			case 'import':
-				$tm = new TextMenu('Select the sets to import');
-				foreach(GeonamesImporter::$importers as $importer) {
-					$tm->addOption($importer->key, $importer->menudescription, true);
-				}
-				if ($tm->runMenu()) {
-					foreach(GeonamesImporter::$importers as $importer) {
-						if ($tm->getOption($importer->key)) {
-							$sets = $importer->getAvailableDatasets();
-							$sm = new TextMenu("What countries would you like to import?");
-							$sm->setLayout(8,5);
-							foreach($sets as $lang=>$seturl) {
-								$sm->addOption($lang,$lang,true);
-							}
-							if ($sm->runMenu()) {
-								foreach($sets as $lang=>$seturl) {
-									if ($sm->getOption($lang)) $importer->importDataset($lang);
-								}
-							}
-						}
-					}
-				}
-				break;		
-			case 'download':
-				$tm = new TextMenu('Select the sets to download');
-				foreach(GeonamesImporter::$importers as $importer) {
-					$tm->addOption($importer->key, $importer->menudescription,true);
-				}
-				if ($tm->runMenu()) {
-					foreach(GeonamesImporter::$importers as $importer) {
-						if ($tm->getOption($importer->key)) {
-							$sets = $importer->getAvailableDatasets();
-							$sm = new TextMenu("What countries would you like to download?");
-							$sm->setLayout(8,5);
-							foreach($sets as $lang=>$seturl) {
-								$sm->addOption($lang,$lang,true);
-							}
-							if ($sm->runMenu()) {
-								foreach($sets as $lang=>$seturl) {
-									if ($sm->getOption($lang)) $importer->cacheDataset($lang);
-								}
-							}
-						}
-					}
-				}
-				break;		
-			default:
-				console::writeLn(__astr('geonames \b{import} [\b{all}|\b{countries}|\b{languages}|\u{lc} [\u{lc}] ..]'));
-				console::writeLn(__astr('geonames \b{list} -- List all countries available'));
-				console::writeLn(__astr('geonames \b{reset} -- Resets all data, effectively clearing the database'));
-		}
-	}
+    public function import() {
+        $tm = new TextMenu('Select the sets to import');
+        foreach(GeonamesImporter::$importers as $importer) {
+            $tm->addOption($importer->key, $importer->menudescription, true);
+        }
+        if ($tm->runMenu()) {
+            foreach(GeonamesImporter::$importers as $importer) {
+                if ($tm->getOption($importer->key)) {
+                    $sets = $importer->getAvailableDatasets();
+                    $sm = new TextMenu("What countries would you like to import?");
+                    $sm->setLayout(8,5);
+                    foreach($sets as $lang=>$seturl) {
+                        $sm->addOption($lang,$lang,true);
+                    }
+                    if ($sm->runMenu()) {
+                        foreach($sets as $lang=>$seturl) {
+                            if ($sm->getOption($lang)) $importer->importDataset($lang);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+	public function download() {
+        $tm = new TextMenu('Select the sets to download');
+        foreach(GeonamesImporter::$importers as $importer) {
+            $tm->addOption($importer->key, $importer->menudescription,true);
+        }
+        if ($tm->runMenu()) {
+            foreach(GeonamesImporter::$importers as $importer) {
+                if ($tm->getOption($importer->key)) {
+                    $sets = $importer->getAvailableDatasets();
+                    $sm = new TextMenu("What countries would you like to download?");
+                    $sm->setLayout(8,5);
+                    foreach($sets as $lang=>$seturl) {
+                        $sm->addOption($lang,$lang,true);
+                    }
+                    if ($sm->runMenu()) {
+                        foreach($sets as $lang=>$seturl) {
+                            if ($sm->getOption($lang)) $importer->cacheDataset($lang);
+                        }
+                    }
+                }
+            }
+        }
+    }
 	
 
 	/**
@@ -130,8 +132,6 @@ class GeonamesUtility extends ConsoleActions {
 		console::writeLn("Parsed");
 
 	}
-	
-	
 
 }
 
@@ -332,7 +332,7 @@ class CountryinfoImporter extends GeonamesImporter {
 GeonamesImporter::$importers[] = new CountryinfoImporter();
 
 class CountryImporter extends GeonamesImporter {
-	var $menudescription = 'Import country information using CountryImporter';
+	var $menudescription = 'Import GeoNames data set for one or more countries';
 	var $key = 'g';
 	private $sets = array();
 	function getAvailableDatasets() {
@@ -456,99 +456,11 @@ class CountryImporter extends GeonamesImporter {
 GeonamesImporter::$importers[] = new CountryImporter();
 
 
-class TextMenu {
-	private $title;
-	private $options = array();
-	private $columns = null;
-	private $width = null;
-	function __construct($title,array $options=null) {
-		$this->title = $title;
-		if ($this->options) $this->options = $options;
-	}
-	function addOption($key,$value,$default) {
-		$this->options[$key] = array(
-			'value' => $value,
-			'default' => $default,
-			'state' => $default
-		);
-	}
-	function getOption($key) {
-		return $this->options[$key]['state'];
-	}
-	function setLayout($columns=null,$width=null) {
-		$this->columns = $columns;
-		$this->width = $width;
-	}
-	function runMenu() {
-		while (true) {
-			$col = 0;
-			console::writeLn($this->title);
-			$keys = array();
-			foreach($this->options as $key=>$option) {
-				if ($this->width) {
-					console::write(' [%s] %-'.$this->width.'s', ($option['state'])?__astr('\b{x}'):' ', $key);
-				} else {
-					console::writeLn('   %s. [%s] %s', $key, ($option['state'])?__astr('\b{x}'):' ', $option['value']);
-				}
-				if ($this->columns) {
-					$col++;
-					if ($col > $this->columns) {
-						$col = 0;
-						console::writeLn();
-					}
-				}
-				$keys[] = $key;
-			}
-			if (($this->columns) && ($col > 0)) {
-				console::writeLn();
-			}
-			if (count($keys) > 10) {
-				$keys = array_merge(array_slice($keys,0,9),array('...'));
-			}
-			$keystr = join('/',$keys);
-			$prompt = '[Y/n/help/all/none/invert/reset/'.$keystr.']: ';
-			$rl = readline::read($prompt);
-			foreach(explode(' ',$rl) as $r) {
-				foreach($this->options as $key=>$option) {
-					if ($key == $r) {
-						$this->options[$key]['state'] = !$this->options[$key]['state'];
-					}
-				}
-				if (strtolower($r) == 'help') {
-					console::writeLn("Type any of the alternatives listed above. They will be evaluated in the order they are provided.");
-					console::writeLn("When you are done, hit enter on an empty line or enter 'y'. To cancel, enter 'n'.");
-				}
-				if ((strtolower($r) == 'y') || ($r == '')) {
-					return true;
-				}
-				if (strtolower($r) == 'n') {
-					return false;
-				}
-				if (strtolower($r) == 'all') {
-					foreach($this->options as $key=>$option) {
-						$this->options[$key]['state'] = true;
-					}
-				}
-				if (strtolower($r) == 'none') {
-					foreach($this->options as $key=>$option) {
-						$this->options[$key]['state'] = false;
-					}
-				}
-				if (strtolower($r) == 'reset') {
-					foreach($this->options as $key=>$option) {
-						$this->options[$key]['state'] = $this->options[$key]['default'];
-					}
-				}
-				if (strtolower($r) == 'invert') {
-					foreach($this->options as $key=>$option) {
-						$this->options[$key]['state'] = !$this->options[$key]['state'];
-					}
-				}
-			}
-		}
-	}
-}
-
-using('lepton.console.readline');
-config::push('lepton.cmd.actionhandlers','GeonamesUtility');
-
+using('lepton.cli.textmenu');
+using('lepton.cli.readline');
+actions::register(
+    new GeonamesAction(),
+    'geonames',
+    'Manage the geonames table',
+    GeonamesAction::$commands
+);

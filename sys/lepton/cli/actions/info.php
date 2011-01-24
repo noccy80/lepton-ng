@@ -7,22 +7,22 @@
 class InfoAction extends Action {
     private $extn;
     public static $commands = array(
-            'php' => array(
-                'arguments' => '',
-                'info' => 'Show information about the PHP platform in use'
-            ),
-            'pdo' => array(
-                'arguments' => '',
-                'info' => 'List the available PDO drivers'
-            ),
-            'extensions' => array(
-                'arguments' => '',
-                'info' => 'List loaded extensions'
-            ),
-            'streams' => array(
-                'arguments' => '',
-                'info' => 'Show the available stream protocols'
-            )
+        'php' => array(
+            'arguments' => '',
+            'info' => 'Show information about the PHP platform in use'
+        ),
+        'pdo' => array(
+            'arguments' => '',
+            'info' => 'List the available PDO drivers'
+        ),
+        'extensions' => array(
+            'arguments' => '',
+            'info' => 'List loaded extensions'
+        ),
+        'streams' => array(
+            'arguments' => '',
+            'info' => 'Show the available stream protocols'
+        )
     );
 
     public function pdo() {
