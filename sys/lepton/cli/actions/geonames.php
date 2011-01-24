@@ -1,8 +1,4 @@
-<?php __fileinfo("Geonams Console Actions", array(
-    'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
-    'version' => '1.0',
-    'updater' => null
-));
+<?php
 
 /*
 	This file is part of Lepton Framework.
@@ -23,7 +19,11 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-
+__fileinfo("Geonames Console Actions", array(
+    'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
+    'version' => '1.0',
+    'updater' => null
+));
 
 /**
  * @class GeonamesUtility

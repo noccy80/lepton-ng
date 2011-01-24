@@ -1,14 +1,28 @@
 <?php
 
 class TextMenu {
+    
 	private $title;
 	private $options = array();
 	private $columns = null;
 	private $width = null;
+
+    /**
+     *
+     * @param $title Title of menu
+     * @param array $options
+     */
 	function __construct($title,array $options=null) {
 		$this->title = $title;
 		if ($this->options) $this->options = $options;
 	}
+
+    /**
+     *
+     * @param $key The key of the option
+     * @param $value The value
+     * @param $default Default state
+     */
 	function addOption($key,$value,$default) {
 		$this->options[$key] = array(
 			'value' => $value,
@@ -16,13 +30,30 @@ class TextMenu {
 			'state' => $default
 		);
 	}
+
+    /**
+     *
+     * @param $key
+     * @return
+     */
 	function getOption($key) {
 		return $this->options[$key]['state'];
 	}
+
+    /**
+     *
+     * @param $columns The number of columns
+     * @param $width The width of each column
+     */
 	function setLayout($columns=null,$width=null) {
 		$this->columns = $columns;
 		$this->width = $width;
 	}
+
+    /**
+     *
+     * @return Option key
+     */
 	function runMenu() {
 		while (true) {
 			$col = 0;

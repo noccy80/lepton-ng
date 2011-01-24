@@ -1,0 +1,19 @@
+Using Lepton from the Command Line
+==============================================================================
+
+1. The Lepton utility
+
+The Lepton utility script is just as modular as the rest of Lepton. The
+actions available through the script are loaded as lepton.cli.actions.* and
+new actions can be added by extending the Action class and calling on
+actions::register passing an instance of the action as the first parameter,
+the command of the action as the second parameter, the description of the
+action as the third parameter and as the fourth parameter the available
+commands as an array.
+
+The available commands should be an array with the keys representing the
+commands and the value holding another associative array with the keys
+arguments and info, holding the argument format as a string and the
+command information as the values.
+
+
