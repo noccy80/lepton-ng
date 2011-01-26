@@ -37,7 +37,7 @@ class DefaultAuthBackend extends AuthenticationBackend {
         $db = new DatabaseConnection();
         try {
             $userrecord = $db->getSingleRow(
-                            "SELECT * FROM " . LEPTON_DB_PREFIX . "users WHERE username=%s", $username
+                "SELECT * FROM " . LEPTON_DB_PREFIX . "users WHERE username=%s", $username
             );
             if ($userrecord) {
 
@@ -49,15 +49,6 @@ class DefaultAuthBackend extends AuthenticationBackend {
                 $us = $userrecord['salt'];
                 $ps = $password . $us;
                 $hp = hash($ha, $ps);
-
-                /*
-                  echo "<pre>";
-                  echo "US="; var_dump($us);
-                  echo "PS="; var_dump($ps);
-                  echo "HP="; var_dump($hp);
-                  echo "UR="; var_dump($userrecord);
-                  echo "</pre>";
-                 */
 
                 // Check the hash against the one on file
                 if ($hp == $userrecord['password']) {
@@ -92,8 +83,8 @@ class DefaultAuthBackend extends AuthenticationBackend {
             $uuid = UUID::v4();
             try {
                 $id = $db->insertRow(
-                                "REPLACE INTO " . LEPTON_DB_PREFIX . "users (username,salt,password,email,flags,registered,uuid) VALUES (%s,%s,%s,%s,%s,NOW(),%s)",
-                                $user->username, $salt, $hp, $user->email, $user->flags, $uuid
+                    "REPLACE INTO " . LEPTON_DB_PREFIX . "users (username,salt,password,email,flags,registered,uuid) VALUES (%s,%s,%s,%s,%s,NOW(),%s)",
+                    $user->username, $salt, $hp, $user->email, $user->flags, $uuid
                 );
                 $user->userid = $id;
             } catch (Exception $e) {
@@ -102,8 +93,8 @@ class DefaultAuthBackend extends AuthenticationBackend {
         } else {
             try {
                 $db->updateRow(
-                        "UPDATE " . LEPTON_DB_PREFIX . "users SET username=%s,salt=%s,password=%s,email=%s,flags=%s WHERE id=%d",
-                        $user->username, $salt, $hp, $user->email, $user->flags, $user->userid
+                    "UPDATE " . LEPTON_DB_PREFIX . "users SET username=%s,salt=%s,password=%s,email=%s,flags=%s WHERE id=%d",
+                    $user->username, $salt, $hp, $user->email, $user->flags, $user->userid
                 );
             } catch (Exception $e) {
                 throw $e; // TODO: Handle exception
@@ -135,7 +126,7 @@ class DefaultAuthBackend extends AuthenticationBackend {
         $db = new DatabaseConnection();
         try {
             $userrecord = $db->getSingleRow(
-                            "SELECT * FROM users WHERE username=%s", $username
+                "SELECT * FROM users WHERE username=%s", $username
             );
             if ($userrecord) {
                 return $userrecord;

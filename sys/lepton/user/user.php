@@ -30,6 +30,7 @@ class UserRecord {
     private $email = null;
     private $flags = null;
     private $uuid = null;
+    private $active = false;
     private $displayname = null;
     private $website = null;
     private $registerdate = null;
@@ -47,6 +48,8 @@ class UserRecord {
     function __construct($userid=null) {
         if ($userid) {
             $this->loadUser($userid);
+        } else {
+            $this->active = (!config::get('lepton.user.disabledbydefault', false));
         }
     }
 
@@ -95,6 +98,7 @@ class UserRecord {
         $this->flags = $userrecord['flags'];
         $this->ambient = unserialize($userrecord['ambient']);
         $this->displayname = $userrecord['displayname'];
+        $this->active = ($userrecord['active'] == 1)?true:false;
     }
 
     public function save() {
@@ -107,7 +111,7 @@ class UserRecord {
                 'user' => false,
                 'userdata' => false,
                 'ambient' => false,
-                'credentials' => true
+                'credentials' => false
             );
             foreach ($this->modified as $mod) {
                 switch ($mod) {
@@ -171,7 +175,7 @@ class UserRecord {
                 $db->updateRow(
                         "REPLACE INTO " . LEPTON_DB_PREFIX . "users (username,email,uuid,flags,active,id) VALUES " .
                         "(%s,%s,%s,%s,%d,%d)",
-                        $this->username, $this->email, $this->uuid, $this->flags, $this->active,
+                        $this->username, $this->email, $this->uuid, $this->flags, ($this->active)?1:0,
                         $this->userid
                 );
             }
@@ -207,6 +211,9 @@ class UserRecord {
                 break;
             case 'password':
                 $this->password = $value;
+                break;
+            case 'active':
+                $this->active = $value;
                 break;
             case 'flags':
                 // TODO: This needs updating in the user table.

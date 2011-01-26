@@ -21,8 +21,36 @@ class UserAction extends Action {
         'flags' => array(
             'arguments' => '\u{username} [\u{+}|\u{-}]\u{flags}',
             'info' => 'Set (or modify) user flags'
+        ),
+        'activate' => array(
+            'arguments' => '\u{username}',
+            'info' => 'Activates a user'
+        ),
+        'deactivate' => array(
+            'arguments' => '\u{username} ["\u{reason}"]',
+            'info' => 'Deactivates a user'
         )
 	);
+
+    function password($username=null) {
+        using('lepton.user.*');
+        if ($username) {
+            $u = user::find($username);
+            if ($u) {
+                console::write("New password: "); $p = console::readPass();
+                console::write("Confirm: "); $pc = console::readPass();
+                if ($p != $pc) {
+                    console::fatal('Passwords mismatch.');
+                    exit(1);
+                }
+                $u->password = $p;
+                console::writeLn("Password for user %s updated", $username);
+            } else {
+                console::writeLn("Could not find record for user %s", $username);
+            }
+
+        }
+    }
 
     function add($username=null) {
         using('lepton.user.*');
@@ -75,8 +103,31 @@ class UserAction extends Action {
         $ptn = str_replace('*','%',$pattern);
         $db = new DatabaseConnection();
         $results = $db->getRows("SELECT * FROM users WHERE username LIKE %s", $ptn);
+        console::writeLn(__astr("\b{%-20s %-10s %-37s %-5s %s}"), 'Username', 'Flags', 'UUID', 'Act', 'Last login');
         foreach($results as $user) {
-            console::writeLn("%-30s %-10s %s (%s)", $user['username'], $user['flags'], $user['lastlogin'], $user['lastip']);
+            console::writeLn("%-20s %-10s %-37s %-5s %s (from %s)", $user['username'], $user['flags'], $user['uuid'], ($user['active']==1)?'Yes':'No', ($user['lastlogin'])?$user['lastlogin']:'Never', ($user['lastip'])?$user['lastip']:'Nowhere');
+        }
+    }
+
+    function activate($username=null) {
+        using('lepton.user.*');
+        $u = user::find($username);
+        if ($u) {
+            $u->active = true;
+            console::writeLn("User %s activated", $username);
+        } else {
+            console::writeLn("User %s not activated, does it exist?", $username);
+        }
+    }
+
+    function deactivate($username=null) {
+        using('lepton.user.*');
+        $u = user::find($username);
+        if ($u) {
+            $u->active = false;
+            console::writeLn("User %s deactivated", $username);
+        } else {
+            console::writeLn("User %s not deactivated, does it exist?", $username);
         }
     }
 
