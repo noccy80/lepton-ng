@@ -53,7 +53,20 @@ class UserAction extends Action {
                 console::writeLn("Couldn't create user.");
             }
         } else {
-            console::writeLn("Use: adduser username");
+            console::writeLn("Use: user add username");
+        }
+    }
+
+    function remove($username=null) {
+        using('lepton.user.*');
+        if ($username) {
+            if (user::remove($username)) {
+                console::writeLn("Removed user");
+            } else {
+                console::writeLn("User not removed, does it exist?");
+            }
+        } else {
+            console::writeLn("Use: user remove username");
         }
     }
 

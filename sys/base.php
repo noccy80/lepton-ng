@@ -261,7 +261,13 @@
     function __fileext($filename) {
         return pathinfo($filename, PATHINFO_EXTENSION);
     }
-    
+
+    function __strip_newline($str) {
+        $str = str_replace("\r","",$str);
+        $str = str_replace("\n","",$str);
+        return $str;
+    }
+
 ////// Exceptions /////////////////////////////////////////////////////////////
 
     /*
@@ -629,15 +635,18 @@
          *
          */
         static function readLn() {
-            return fgets(STDIN);
+            $ld = fgets(STDIN);
+            $ld = __strip_newline($ld);
+            return $ld;
         }
 
         static function readPass() {
             if (IS_LINUX) { system('stty -echo'); }
-            $rd = trim(fgets(STDIN));
+            $ld = fgets(STDIN);
+            $ld = __strip_newline($ld);
             if (IS_LINUX) { system('stty echo'); }
             console::write("\n");
-            return $rd;
+            return $ld;
         }
 
         static function writeLn() {

@@ -46,7 +46,9 @@
             // TODO: Assign to session
             if (ModuleManager::has('lepton.mvc.session')) {
                 session::set(User::KEY_USER_AUTH,$id);
-            }           
+            }
+            $db = new DatabaseConnection();
+            $db->updateRow("UPDATE users SET lastlogin=NOW(), lastip=%s", request::getRemoteIp());
         }
 
 
@@ -89,6 +91,19 @@
             }
             return false;
             
+        }
+
+        static function remove($username) {
+            $db = new DatabaseConnection();
+            $user = $db->getSingleRow("SELECT * FROM users WHERE username=%s", $username);
+            if ($user) {
+                $uid = $user['id'];
+                $db->updateRow("DELETE FROM users WHERE id=%d", $uid);
+                $db->updateRow("DELETE FROM userdata WHERE id=%d", $uid);
+                $db->updateRow("DELETE FROM userppp WHERE id=%d", $uid);
+                return true;
+            }
+            return false;
         }
 
         /**
