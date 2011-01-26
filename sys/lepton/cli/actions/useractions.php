@@ -4,8 +4,6 @@
     'updater' => null
 ));
 
-config::push('lepton.cmd.actionhandlers','UserActions');
-
 class UserAction extends Action {
 	public static $commands = array(
 		'add' => array(
@@ -16,8 +14,8 @@ class UserAction extends Action {
             'arguments' => '\u{username}',
             'info' => 'Remove an existing user'
         ),
-        'list' => array(
-            'arguments' => '',
+        'match' => array(
+            'arguments' => '[\u{pattern}]',
             'info' => 'List the existing users'
         ),
         'flags' => array(
@@ -56,6 +54,16 @@ class UserAction extends Action {
             }
         } else {
             console::writeLn("Use: adduser username");
+        }
+    }
+
+    function match($pattern="*") {
+        using('lepton.user.*');
+        $ptn = str_replace('*','%',$pattern);
+        $db = new DatabaseConnection();
+        $results = $db->getRows("SELECT * FROM users WHERE username LIKE %s", $ptn);
+        foreach($results as $user) {
+            console::writeLn("%-30s %-10s %s (%s)", $user['username'], $user['flags'], $user['lastlogin'], $user['lastip']);
         }
     }
 
