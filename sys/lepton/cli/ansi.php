@@ -26,6 +26,7 @@ class Ansi {
         $s = preg_replace_callback('/\\\\u\{(.*?)\}/', array('Ansi','_cb_undl'), $s);
         $s = preg_replace_callback('/\\\\i\{(.*?)\}/', array('Ansi','_cb_invert'), $s);
         $s = preg_replace_callback('/\\\\c\{(.*?)\}/', array('Ansi','_cb_color'), $s);
+        $s = preg_replace_callback('/\\\\g\{(.*?)\}/', array('Ansi','_cb_gray'), $s);
         return $s;
     }
     static function _cb_bold($str) {
@@ -39,6 +40,9 @@ class Ansi {
     static function _cb_invert($str) {
         $str = $str[1];
         return chr(27).'[3m'.$str.chr(27).'[0m';
+    }
+    static function _cb_gray($str) {
+        return self::_cb_color(array(null,'ltgray '.$str[1]));
     }
     static function _cb_color($str) {
         $str = $str[1];

@@ -73,12 +73,13 @@ class InfoAction extends Action {
             'COMPAT_NAMESPACES' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
             'COMPAT_INPUT_BROKEN' => ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1"))?'php://input possibly broken (PHP >= 5, PHP < 5.3.1)':'Functional',
             'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
-            'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)'
+            'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")?'Supported':'Missing (PHP >= 5.3.0)',
+            'COMPAT_PHP_FNMATCH' => ((PHP_OS == "Linux") || ((PHP_OS == "Windows") && (PHP_VERSION >= "5.3")))?'Native':'Emulated (WIN + PHP >= 5.3.0)'
         );
         $opts = array(
-            'BASE_PATH' => BASE_PATH,
-            'APP_PATH' => APP_PATH,
-            'SYS_PATH' => SYS_PATH,
+            'base::basePath()' => base::basePath(),
+            'base::appPath()' => base::appPath(),
+            'base::sysPath()' => base::sysPath(),
 			'TMP_PATH' => TMP_PATH
         );
         Console::writeLn(__astr("\b{Lepton Overview:}"));

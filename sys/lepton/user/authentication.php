@@ -48,7 +48,7 @@
                 session::set(User::KEY_USER_AUTH,$id);
             }
             $db = new DatabaseConnection();
-            $db->updateRow("UPDATE users SET lastlogin=NOW(), lastip=%s", request::getRemoteIp());
+            $db->updateRow("UPDATE users SET lastlogin=NOW(), lastip=%s WHERE id=%d", request::getRemoteIp(), $id);
         }
 
 

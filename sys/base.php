@@ -25,8 +25,20 @@
         'COMPAT_NAMESPACES' => (PHP_VERSION >= "5.3.0"),
         'COMPAT_INPUT_BROKEN' => ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1")),
         'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0"),
-        'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0")
+        'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0"),
+        'COMPAT_PHP_FNMATCH' => (PHP_OS == "Linux") || ((PHP_OS == "Windows") && (PHP_VERSION >= "5.3"))
     ) as $compat=>$val) define($compat,$val);
+
+    if (!COMPAT_PHP_FNMATCH) {
+        if (!function_exists('fnmatch')) {
+            function fnmatch($pattern, $string) {
+                return @preg_match(
+                    '/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
+                    array('*' => '.*', '?' => '.?')) . '$/i', $string
+                );
+            }
+        }
+    }
 
     // Version definitions
     foreach(array(
@@ -939,12 +951,12 @@
 		    return preg_replace($find,$replace,$str);
 		}
 		
-                static function truncate($string,$maxlen) {
-                    if (strlen($string)>$maxlen) {
-                        return substr($string,0,$maxlen).'...';
-                    }
-                    return $string;
-                }
+        static function truncate($string,$maxlen) {
+            if (strlen($string)>$maxlen) {
+                return substr($string,0,$maxlen).'...';
+            }
+            return $string;
+        }
 
 		static function slug($string) {
                         $s = strToLower($string);

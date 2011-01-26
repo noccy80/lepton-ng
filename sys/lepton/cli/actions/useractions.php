@@ -7,27 +7,27 @@
 class UserAction extends Action {
 	public static $commands = array(
 		'add' => array(
-			'arguments' => '\u{username}',
+			'arguments' => '\g{username}',
 			'info' => 'Add a new user to the database'
 		),
         'remove' => array(
-            'arguments' => '\u{username}',
+            'arguments' => '\g{username}',
             'info' => 'Remove an existing user'
         ),
         'match' => array(
-            'arguments' => '[\u{pattern}]',
+            'arguments' => '[\g{pattern}]',
             'info' => 'List the existing users'
         ),
         'flags' => array(
-            'arguments' => '\u{username} [\u{+}|\u{-}]\u{flags}',
+            'arguments' => '\g{username} [\g{+}|\g{-}]\g{flags}',
             'info' => 'Set (or modify) user flags'
         ),
         'activate' => array(
-            'arguments' => '\u{username}',
+            'arguments' => '\g{username}',
             'info' => 'Activates a user'
         ),
         'deactivate' => array(
-            'arguments' => '\u{username} ["\u{reason}"]',
+            'arguments' => '\g{username} ["\g{reason}"]',
             'info' => 'Deactivates a user'
         )
 	);
@@ -104,6 +104,10 @@ class UserAction extends Action {
         $db = new DatabaseConnection();
         $results = $db->getRows("SELECT * FROM users WHERE username LIKE %s", $ptn);
         console::writeLn(__astr("\b{%-20s %-10s %-37s %-5s %s}"), 'Username', 'Flags', 'UUID', 'Act', 'Last login');
+        if (!$results) {
+            console::writeLn("No matching user records found for %s.", $ptn);
+            return;
+        }
         foreach($results as $user) {
             console::writeLn("%-20s %-10s %-37s %-5s %s (from %s)", $user['username'], $user['flags'], $user['uuid'], ($user['active']==1)?'Yes':'No', ($user['lastlogin'])?$user['lastlogin']:'Never', ($user['lastip'])?$user['lastip']:'Nowhere');
         }
@@ -128,6 +132,21 @@ class UserAction extends Action {
             console::writeLn("User %s deactivated", $username);
         } else {
             console::writeLn("User %s not deactivated, does it exist?", $username);
+        }
+    }
+
+    function test($username=null) {
+        using('lepton.user.*');
+        using('lepton.mvc.request');
+        if ($username) {
+            console::write("Password: "); $p = console::readPass();
+            if (!user::authenticate(new PasswordAuthentication($username, $p))) {
+                console::writeLn('Authentication failure');
+            } else {
+                console::writeLn("Success!");
+            }
+        } else {
+            console::writeLn("Use: user test username");
         }
     }
 
