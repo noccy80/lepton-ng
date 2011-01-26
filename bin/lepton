@@ -14,6 +14,7 @@ class LeptonUtil extends ConsoleApplication {
 	protected $arguments = array(
 		array('h','help','Show this help'),
 		array('v','verbose','Verbose mode'),
+		array('V','version','Show version and exit'),
 		array('q','quiet','Show no progress information'),
 		array('i','interactive','Interactive mode'),
 		array('o:','output','Specify output file when exporting'),
@@ -59,12 +60,14 @@ class LeptonUtil extends ConsoleApplication {
 			return (actions::invoke($cmd[0],array_slice($cmd,1)));
 		}
 	}
+	function showVersion() {
+		Console::writeLn("%s v%s", $this->description,$this->version);
+	}
 	function main($argc,$argv) {
 
+		if ($this->hasArgument('V')) return $this->showVersion();
 		if ($this->hasArgument('l')) ModuleManager::load($this->getArgument('l'));
-
 		if ($this->hasArgument('i')) return $this->interactiveMode();
-
 		if ($this->getParameterCount() == 0) {
 			$this->usage();
 			return 1;

@@ -22,7 +22,7 @@ abstract class Actions {
 				console::writeLn("Valid commands for %s:", $command);
 				foreach(self::$_actions[$command]['commands'] as $cmd=>$data) {
 					$argstr = $data['arguments'];
-					console::writeLn("    %s %s  - %s", __astr('\b{'.$cmd.'}'), __astr($argstr),$data['info']);
+					console::writeLn("    %s %s: %s", __astr('\b{'.$cmd.'}'), __astr($argstr),$data['info']);
 				}
 				return true;
 			} else {

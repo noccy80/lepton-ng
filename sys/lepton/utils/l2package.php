@@ -1,4 +1,6 @@
-<?php __fileinfo("L2Package Manager",array(
+<?php
+
+__fileinfo("Lepton Package Manager",array(
 	'version' => '1.0.0'
 ));
 
@@ -6,18 +8,17 @@
 
 	class L2PackageManager {
 
-		const LOCK_FILE = '/tmp/l2lock';
-
-		private $cachefile;
-		private $cachedb;
-		private $cache;
-		private $hlockfile;
+		private $cachefile; // Location of cache file
+        private $lockfile; // Location of lock file
+		private $cache; // Cache database file
+		private $hlockfile; // Handle of lock file
 
 		function __construct() {
 
-			$this->cachefile  = APP_PATH . '/.l2cache';
+			$this->cachefile = base::appPath() . '/.l2cache';
+            $this->lockfile = base::appPath() . '/.l2lock';
 
-			$this->hlockfile = fopen(L2PackageManager::LOCK_FILE,"w");
+            $this->hlockfile = fopen($this->lockfile,"w");
 			flock($this->hlockfile,LOCK_EX);
 
 			if (file_exists($this->cachefile)) {
@@ -33,19 +34,38 @@
 		function __destruct() {
 			$this->saveCache();
 			fclose($this->hlockfile);
-			unlink(L2PackageManager::LOCK_FILE);
+			unlink($this->lockfile);
 		}
 
 		function initCache() {
 			Console::write("Initializing database ... ");
-			$this->cache = array();
+            $files = array();
+            $base = base::basePath();
+            $iter = new RecursiveDirectoryIterator($base);
+            foreach(new RecursiveIteratorIterator($iter) as $p) {
+                $rfp = str_replace($base,'',$p->getRealpath());
+                if (strpos($rfp,'/.')) $rfp = null;
+                if ($rfp) {
+                    $files[] = array(
+                        'file' => $rfp,
+                        'package' => null
+                    );
+                }
+            }
+			$this->cache['special:files'] = $files;
+            $this->cache['special:installed'] = array();
+            $this->cache['special:available'] = array();
+            console::write("(%d files, %d packages) ", count($this->cache['special:files']), count($this->cache['special:installed']));
 			Console::writeLn("Done");
 		}
 
 		function loadCache() {
+            console::write("Reading database ... ");
 			$fc = file_get_contents($this->cachefile);
 			$fco = unserialize($fc);
 			$this->cache = $fco;
+            console::write("(%d files, %d packages) ", count($this->cache['special:files']), count($this->cache['special:installed']));
+			Console::writeLn("Done");
 		}
 
 		function saveCache() {
@@ -168,7 +188,7 @@
 		public function listPackages() {
 
 			Console::writeLn(__astr("\b{Installed packages:}"));
-			foreach($this->cache['logs'] as $pkg=>$x) {
+			foreach($this->cache['special:installed'] as $pkg=>$x) {
 				Console::writeLn(__astr("    \b{%s}: Installed"), $pkg);
 			}
 			Console::writeLn(__astr("\b{Available packages:}"));

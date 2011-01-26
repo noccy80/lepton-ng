@@ -11,7 +11,19 @@ class UserAction extends Action {
 		'add' => array(
 			'arguments' => '\u{username}',
 			'info' => 'Add a new user to the database'
-		)
+		),
+        'remove' => array(
+            'arguments' => '\u{username}',
+            'info' => 'Remove an existing user'
+        ),
+        'list' => array(
+            'arguments' => '',
+            'info' => 'List the existing users'
+        ),
+        'flags' => array(
+            'arguments' => '\u{username} [\u{+}|\u{-}]\u{flags}',
+            'info' => 'Set (or modify) user flags'
+        )
 	);
 
     function add($username=null) {
