@@ -5,11 +5,11 @@
 ));
 
 class UserAction extends Action {
-	public static $commands = array(
-		'add' => array(
-			'arguments' => '\g{username}',
-			'info' => 'Add a new user to the database'
-		),
+    public static $commands = array(
+        'add' => array(
+            'arguments' => '\g{username}',
+            'info' => 'Add a new user to the database'
+        ),
         'remove' => array(
             'arguments' => '\g{username}',
             'info' => 'Remove an existing user'
@@ -132,6 +132,36 @@ class UserAction extends Action {
             console::writeLn("User %s deactivated", $username);
         } else {
             console::writeLn("User %s not deactivated, does it exist?", $username);
+        }
+    }
+
+    function flags($username=null,$flags=null) {
+        using('lepton.user.*');
+        if ($username) {
+            $u = user::find($username);
+            if ($u) {
+                $fl = $u->flags;
+                $fn = $fl;
+                $op = '+';
+                for($n = 0; $n < strlen($flags); $n++) {
+                    switch($flags[$n]) {
+                        case '+': $op = '+'; break;
+                        case '-': $op = '-'; break;
+                        default:
+                            if (($op == '+') && (strpos($fn,$flags[$n]) === false)) {
+                                $fn .= $flags[$n];
+                            } elseif (($op == '-') && (strpos($fn,$flags[$n]) !== false)) {
+                                $fn = str_replace($flags[$n],'',$fn);
+                            }
+                    }
+                }
+                $u->flags = $fn;
+                console::writeLn("Flags for %s changed from '%s' to '%s'", $username, $fl, $fn);
+            } else {
+                console::writeLn("No such user.");
+            }
+        } else {
+            console::writeLn("Use: user flags username flags");
         }
     }
 
