@@ -144,45 +144,66 @@ class UserRecord {
                         throw new BadArgumentException("Unknown field modified: {$mod}");
                 }
             }
-            if (($mtable['ambient']) && ($mtable['userdata'])) {
-                // Update complete userdata table
+            
+            if (!$this->userid) {
+                // Check to see if the username already exists
+                if (user::find($this->username)) {
+                    throw new UserException("User already exists!");
+                }
+                // Insert
                 $ambient = serialize($this->ambient);
+                $this->userid = $db->insertRow(
+                        "INSERT INTO " . LEPTON_DB_PREFIX . "users (username,email,uuid,flags,active) VALUES " .
+                        "(%s,%s,%s,%s,%d)",
+                        $this->username, $this->email, $this->uuid, $this->flags, ($this->active)?1:0
+                );
                 $db->updateRow(
-                        "REPLACE INTO " . LEPTON_DB_PREFIX . "userdata (displayname,firstname,lastname,sex,country,ambient,id) VALUES " .
+                        "INSERT INTO " . LEPTON_DB_PREFIX . "userdata (displayname,firstname,lastname,sex,country,ambient,id) VALUES " .
                         "(%s,%s,%s,%s,%s,%s,%d)",
                         $this->displayname, $this->firstname, $this->lastname, $this->sex,
                         $this->country, $ambient, $this->userid
                 );
-            } elseif ($mtable['ambient']) {
-                // Update the ambient column
-                $ambient = serialize($this->ambient);
-                $db->updateRow(
-                        "REPLACE INTO " . LEPTON_DB_PREFIX . "userdata (ambient,id) VALUES " .
-                        "(%s,%s,%s,%s,%s,%s,%d)",
-                        $ambient, $this->userid
-                );
-            } elseif ($mtable['userdata']) {
-                // Update the userdata columns
-                $db->updateRow(
-                        "REPLACE INTO " . LEPTON_DB_PREFIX . "userdata (displayname,firstname,lastname,sex,country,id) VALUES " .
-                        "(%s,%s,%s,%s,%s,%d)",
-                        $this->displayname, $this->firstname, $this->lastname, $this->sex,
-                        $this->country, $this->userid
-                );
-            }
-            if ($mtable['user']) {
-                // Update users table
-                $db->updateRow(
-                        "REPLACE INTO " . LEPTON_DB_PREFIX . "users (username,email,uuid,flags,active,id) VALUES " .
-                        "(%s,%s,%s,%s,%d,%d)",
-                        $this->username, $this->email, $this->uuid, $this->flags, ($this->active)?1:0,
-                        $this->userid
-                );
-            }
-            if ($mtable['credentials']) {
                 // Update credentials
                 $backend = User::getAuthenticationBackend();
                 $backend->assignCredentials($this);
+            } else {
+                // Update
+                if (($mtable['ambient']) && ($mtable['userdata'])) {
+                    // Update complete userdata table
+                    $ambient = serialize($this->ambient);
+                    $db->updateRow(
+                            "Update " . LEPTON_DB_PREFIX . "userdata SET displayname=%s,firstname=%s,lastname=%s,sex=%s,country=%s,ambient=%s WHERE id=%d)",
+                            $this->displayname, $this->firstname, $this->lastname, $this->sex,
+                            $this->country, $ambient, $this->userid
+                    );
+                } elseif ($mtable['ambient']) {
+                    // Update the ambient column
+                    $ambient = serialize($this->ambient);
+                    $db->updateRow(
+                            "UPDATE " . LEPTON_DB_PREFIX . "userdata SET ambient=%s WHERE id=%d ",
+                            $ambient, $this->userid
+                    );
+                } elseif ($mtable['userdata']) {
+                    // Update the userdata columns
+                    $db->updateRow(
+                            "UPDATE " . LEPTON_DB_PREFIX . "userdata SET displayname=%s,firstname=%s,lastname=%s,sex=%s,country=%s WHERE id=%d",
+                            $this->displayname, $this->firstname, $this->lastname, $this->sex,
+                            $this->country, $this->userid
+                    );
+                }
+                if ($mtable['user']) {
+                    // Update users table
+                    $db->updateRow(
+                            "UPDATE " . LEPTON_DB_PREFIX . "users SET username=%s,email=%s,uuid=%s,flags=%s,active=%s WHERE id=%d",
+                            $this->username, $this->email, $this->uuid, $this->flags, ($this->active)?1:0,
+                            $this->userid
+                    );
+                }
+                if ($mtable['credentials']) {
+                    // Update credentials
+                    $backend = User::getAuthenticationBackend();
+                    $backend->assignCredentials($this);
+                }
             }
         }
         return true;
@@ -217,7 +238,21 @@ class UserRecord {
                 break;
             case 'flags':
                 // TODO: This needs updating in the user table.
-                $this->flags = $value;
+                $fn = str_replace('+','',$this->flags);
+                $op = '+';
+                for($n = 0; $n < strlen($value); $n++) {
+                    switch($value[$n]) {
+                        case '+': $op = '+'; break;
+                        case '-': $op = '-'; break;
+                        default:
+                            if (($op == '+') && (strpos($fn,$value[$n]) === false)) {
+                                $fn .= $value[$n];
+                            } elseif (($op == '-') && (strpos($fn,$value[$n]) !== false)) {
+                                $fn = str_replace($value[$n],'',$fn);
+                            }
+                    }
+                }
+                $this->flags = $fn;
                 break;
             default:
                 $this->ambient[$key] = $value;
