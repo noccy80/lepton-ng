@@ -16,7 +16,7 @@ abstract class Actions {
 		);
 	}
 	public static function invoke($command,$arguments) {
-		if (isset(self::$_actions[$command])) {
+		if (array_key_exists($command,self::$_actions) == true) {
 			// Look up the sub command if any, otherwise show help
 			if (count($arguments) == 0) {
 				console::writeLn("Valid commands for %s:", $command);
@@ -36,6 +36,8 @@ abstract class Actions {
 					return false;
 				}
 			}
+		} else {
+			return false;
 		}
 	}
 	public static function listActions() {
