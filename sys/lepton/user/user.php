@@ -33,7 +33,7 @@ class UserRecord {
     private $active = false;
     private $displayname = null;
     private $website = null;
-    private $registerdate = null;
+    private $registered = null;
     private $lastlogin = null;
     private $lastip = null;
     private $properties = array();
@@ -99,6 +99,7 @@ class UserRecord {
         $this->ambient = unserialize($userrecord['ambient']);
         $this->displayname = $userrecord['displayname'];
         $this->active = ($userrecord['active'] == 1)?true:false;
+        $this->registered = $userrecord['registered'];
         $this->lastlogin = $userrecord['lastlogin'];
         $this->lastip = $userrecord['lastip'];
     }
@@ -155,8 +156,8 @@ class UserRecord {
                 // Insert
                 $ambient = serialize($this->ambient);
                 $this->userid = $db->insertRow(
-                        "INSERT INTO " . LEPTON_DB_PREFIX . "users (username,email,uuid,flags,active) VALUES " .
-                        "(%s,%s,%s,%s,%d)",
+                        "INSERT INTO " . LEPTON_DB_PREFIX . "users (username,email,uuid,flags,active,registered) VALUES " .
+                        "(%s,%s,%s,%s,%d,NOW())",
                         $this->username, $this->email, $this->uuid, $this->flags, ($this->active)?1:0
                 );
                 $db->updateRow(
@@ -222,6 +223,8 @@ class UserRecord {
             case 'lastlogin':
             case 'lastip':
             case 'uuid':
+            case 'registered':
+            case 'registerip':
                 throw new UserException("Can't set protected property $key");
             case 'userid':
                 if ($this->userid == null) {
@@ -289,6 +292,8 @@ class UserRecord {
                 return $this->active;
             case 'uuid':
                 return $this->uuid;
+            case 'registered':
+                return $this->registered;
             case 'lastlogin':
                 return $this->lastlogin;
             case 'lastip':

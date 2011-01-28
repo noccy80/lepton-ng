@@ -50,7 +50,7 @@
         'PHP_RUNTIME_OS' => php_uname('s')
     ) as $def=>$val) define($def,$val);
     define("LEPTON_VERSION", LEPTON_MAJOR_VERSION.".".LEPTON_MINOR_VERSION.".".LEPTON_RELEASE_VERSION." ".LEPTON_RELEASE_TAG);
-    define("LEPTON_PLATFORM_ID", LEPTON_PLATFORM . " " . LEPTON_VERSION);
+    define("LEPTON_PLATFORM_ID", LEPTON_PLATFORM . " v" . LEPTON_VERSION);
 
     // Platform definitions
     define('IS_WINNT', (strtolower(PHP_RUNTIME_OS) == 'windows'));
@@ -1019,7 +1019,6 @@
 		}
 
 	}
-
 
 ////// ModuleManager //////////////////////////////////////////////////////////
 

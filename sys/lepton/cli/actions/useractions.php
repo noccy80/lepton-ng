@@ -199,6 +199,7 @@ class UserAction extends Action {
             console::writeLn(__astr('\b{%-20s}: %s'), 'Lastname', $ur->lastname);
             console::writeLn(__astr('\b{%-20s}: %s'), 'Last login', $ur->lastlogin);
             console::writeLn(__astr('\b{%-20s}: %s'), 'Last IP', $ur->lastip);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Registered', $ur->registered);
         } else {
             console::writeLn("Use: user show username");
         }
