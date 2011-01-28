@@ -34,8 +34,8 @@ class UserRecord {
     private $displayname = null;
     private $website = null;
     private $registerdate = null;
-    private $lastlogindate = null;
-    private $lastloginip = null;
+    private $lastlogin = null;
+    private $lastip = null;
     private $properties = array();
     private $ambient = array();
     private $modified = array();
@@ -99,6 +99,8 @@ class UserRecord {
         $this->ambient = unserialize($userrecord['ambient']);
         $this->displayname = $userrecord['displayname'];
         $this->active = ($userrecord['active'] == 1)?true:false;
+        $this->lastlogin = $userrecord['lastlogin'];
+        $this->lastip = $userrecord['lastip'];
     }
 
     public function save() {
@@ -217,6 +219,10 @@ class UserRecord {
      */
     public function __set($key, $value) {
         switch ($key) {
+            case 'lastlogin':
+            case 'lastip':
+            case 'uuid':
+                throw new UserException("Can't set protected property $key");
             case 'userid':
                 if ($this->userid == null) {
                     $this->userid = $value;
@@ -279,7 +285,14 @@ class UserRecord {
                 return $this->email;
             case 'flags':
                 return $this->flags;
-
+            case 'active':
+                return $this->active;
+            case 'uuid':
+                return $this->uuid;
+            case 'lastlogin':
+                return $this->lastlogin;
+            case 'lastip':
+                return $this->lastip;
             case 'password':
                 if ($this->password == null) {
                     throw new UserException("Can't access protected property {$key}");

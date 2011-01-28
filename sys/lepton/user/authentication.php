@@ -43,6 +43,9 @@
 		 * @param $id The user id to assign
 		 */
         protected function setUser($id) {
+            // Check if the user is active
+            $u = user::getUser($id);
+            if (!$u->active) throw new UserException("User not active", user::ERR_USER_INACTIVE);
             // TODO: Assign to session
             if (ModuleManager::has('lepton.mvc.session')) {
                 session::set(User::KEY_USER_AUTH,$id);
@@ -71,6 +74,7 @@
     abstract class User {
 
 		const KEY_USER_AUTH = 'lepton.user.identity';
+        const ERR_USER_INACTIVE = 1;
 
         /**
          * Attempt to authenticate the user through a provider.
@@ -184,7 +188,6 @@
         static function getActiveUser() {
             if (ModuleManager::has('lepton.mvc.session')) {
                 $uid = (session::get(User::KEY_USER_AUTH,null));
-var_dump($uid);
                 if ($uid) {
                     return user::getUser($uid);
                 }

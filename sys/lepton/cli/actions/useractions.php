@@ -29,8 +29,12 @@ class UserAction extends Action {
         'deactivate' => array(
             'arguments' => '\g{username} ["\g{reason}"]',
             'info' => 'Deactivates a user'
+        ),
+        'show' => array(
+            'arguments' => '\g{username}',
+            'info' => 'Show detailed information on a user'
         )
-	);
+    );
 
     function password($username=null) {
         using('lepton.user.*');
@@ -177,6 +181,26 @@ class UserAction extends Action {
             }
         } else {
             console::writeLn("Use: user test username");
+        }
+    }
+
+    function show($username=null) {
+        using('lepton.user.*');
+        using('lepton.mvc.request');
+        if ($username) {
+            $ur = user::find($username);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Username', $ur->username);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Displayname', $ur->displayname);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'E-Mail', $ur->email);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'UUID', $ur->uuid);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Flags', $ur->flags);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Active', ($ur->active==1)?'Yes':'No');
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Firstname', $ur->firstname);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Lastname', $ur->lastname);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Last login', $ur->lastlogin);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Last IP', $ur->lastip);
+        } else {
+            console::writeLn("Use: user show username");
         }
     }
 
