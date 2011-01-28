@@ -57,7 +57,8 @@ class LeptonUtil extends ConsoleApplication {
 			actions::listActions();
 			return true;
 		} else {
-			return (actions::invoke($cmd[0],array_slice($cmd,1)));
+			$ret = actions::invoke($cmd[0],array_slice($cmd,1));
+			return $ret;
 		}
 	}
 	function showVersion() {
@@ -73,7 +74,9 @@ class LeptonUtil extends ConsoleApplication {
 			return 1;
 		}
 
-		$this->doCommand($this->getParameterSlice(0));
+		if ($this->doCommand($this->getParameterSlice(0)) == false) {
+			Console::writeLn("No such command: %s", join(' ',$this->getParameterSlice(0)));
+		}
 
 		return 0;
 	}
