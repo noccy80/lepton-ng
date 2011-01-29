@@ -1,0 +1,5 @@
+<?php
+
+config::set('lepton.mvc.session.domain', '.noccy.com');
+config::set('lepton.mvc.session.validity', '60m');
+config::set('lepton.mvc.session.backend', 'DefaultSessionBackend');

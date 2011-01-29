@@ -1,0 +1,5 @@
+<?php
+
+	config::set('lepton.charset','utf-8');
+
+?>

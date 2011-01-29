@@ -1,0 +1,4 @@
+<?php
+
+config::set('lepton.base.strict',true); // Fail on deprecation warning 
+
