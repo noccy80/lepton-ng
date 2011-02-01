@@ -4,6 +4,12 @@ config::def('lepton.cms.blog.defaultblog','default');
 
 class Blog {
 
+    const POST_PUBLISHED = 'publish';
+    const POST_DRAFT = 'draft';
+    const POST_AUTODRAFT = 'auto-draft';
+    const POST_INHERIT = 'inherit';
+    const POST_DELETED = 'deleted';
+
     private $_blog = null;
 
     /**
@@ -21,26 +27,14 @@ class Blog {
         $db = new DatabaseConnection();
         // Query the posts and assign the result to a postcollection.
         $rs = $db->getRows("SELECT * FROM blogposts ORDER BY pubdate DESC");
-        $coll = new PostCollection($rs);
+        $coll = array();
+        foreach($rs as $post) {
+            $coll[] = new BlogPost($post);
+        }
         // Finally return it
         return $coll;
     }
 
-
-}
-
-class PostCollection {
-
-    function __construct($rs) {
-        $this->posts = array();
-        // Enumerate to extract the posts
-        if (!$rs) return;
-        foreach($rs as $row) {
-            $p = new BlogPost();
-            $p->assign($row);
-            
-        }
-    }
 
 }
 
