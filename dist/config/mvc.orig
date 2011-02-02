@@ -1,5 +1,11 @@
 <?php
 
-config::set('lepton.mvc.session.domain', '.noccy.com');
+// Session cookie domain
+config::set('lepton.mvc.session.domain', '.mydomain.com');
+// Session validity
 config::set('lepton.mvc.session.validity', '60m');
+// Session backend
 config::set('lepton.mvc.session.backend', 'DefaultSessionBackend');
+
+// Viewhandlers
+using('lepton.mvc.viewhandler.php');

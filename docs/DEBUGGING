@@ -17,6 +17,7 @@ The debug output will now be made available to the file myscript.log
 Please note that the output log is NOT appended to, but overwritten by each
 consequitive run.
 
+You can increase the log level to widen the granularity of what is logged.
 
 Adding debugging code
 ---------------------
@@ -27,3 +28,5 @@ will be output if debugging is enabled.
 
 You can also use the Console::warn() with the same parameter setup to cause a
 warning to be output even if debugging is disabled.
+
+There is also a Console::fatal() method to indicate a fatal error.

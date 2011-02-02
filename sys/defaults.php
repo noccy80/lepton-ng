@@ -1,5 +1,5 @@
 <?php __fileinfo("Default settings for Lepton Application Framework", array(
-    'version' => '2010.09.06'
+    'version' => '2011.02.01'
 ));
 
     // Strict mode
@@ -16,6 +16,12 @@
     config::set('lepton.debug.syslog.facility', LOG_DAEMON); // Will use LOG_USER on Windows platforms
     config::set('lepton.debug.syslog.level',null); // Highest debug level to save
     config::set('lepton.debug.syslog.tee',null); // Tee to a file
+
+    // Loggers. Set first parameter of constructor to true to echo errors to
+    // stderr, parameter two can be used to set the target facility.
+    logger::registerFactory(new SyslogLoggerFactory());
+    // You can also register a DatabaseLoggerFacility:
+    // logger::registerFactory(new DatabaseLoggerFacility("logtable"));
 
     // If true, debug information will be shown when an unhandled exception 
     // occurs.
@@ -44,18 +50,14 @@
     config::set('lepton.user.authbackend','DefaultAuthBackend');
     // Hashing algorithm, can be any supported by hash_algos()
     config::set('lepton.user.hashalgorithm','md5');
-    // If users should be disabled by default
+    // If users should be disabled by default, if this is true users need to be
+    // activated before being allowed to log in.
     config::set('lepton.user.disabledbydefault', false);
 
     // What class should be responsible for showing the available payment options?
     config::set('lepton.ec.paymentselector', 'DefaultPaymentSelector');
 
-    // Loggers. Set first parameter of constructor to true to echo errors to
-    // stderr, parameter two can be used to set the target facility.
-    logger::registerFactory(new SyslogLoggerFactory());
-    // You can also register a DatabaseLoggerFacility:
-    // logger::registerFactory(new DatabaseLoggerFacility("logtable"));
-
+    // Mail backends
     config::set('lepton.mail.backends', array(
        'lepton.net.mail.filesystem'
     ));
@@ -66,3 +68,6 @@
     // you specifically handle the exceptions, you should leave this as
     // false, causing the execution to end.
     config::set('lepton.security.useexceptions', false);
+
+    // Transitional include of viewhandlers
+    using('lepton.mvc.viewhandler.php');
