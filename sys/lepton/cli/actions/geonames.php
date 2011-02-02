@@ -48,8 +48,53 @@ class GeonamesAction extends Action {
         'download' => array(
             'arguments' => '',
             'info' => 'Download (but don\'t import) the geonames data set'
+        ),
+        'lookup' => array(
+            'arguments' => '\g{location}',
+            'info' => 'Look up a specific location'
         )
     );
+
+    public function lookup($location=null) {
+        $db = new DatabaseConnection();
+        if ($location) {
+            $rs = $db->getRows("SELECT * FROM geonames WHERE name=%s", $location);
+            console::writeLn(__astr("\b{%8s %-30s %2s %-1s %-10s %-10s %-10s}"), 'Id', 'Name', 'CC', 'F', 'Code', 'Latitude', 'Longitude');
+            foreach((array)$rs as $row) {
+                console::writeLn("%8d %-30s %2s %1s %-10s %3.7f %3.7f", $row['id'], $row['name'], $row['countrycode'], $row['featureclass'], $row['featurecode'], $row['latitude'], $row['longitude']);
+            }
+        }
+    }
+
+    public function alias() {
+        console::writeLn("Generating geoalias table");
+        $db = new DatabaseConnection();
+			$db->exec('DROP TABLE IF EXISTS geoalias');
+			$db->exec('CREATE TABLE geoalias (id INT PRIMARY KEY AUTO_INCREMENT, geoid BIGINT, locname VARCHAR(64) CHARSET utf8, INDEX locname(locname(5))) CHARSET utf8');
+			$rows = $db->getRows("SELECT id,alternatenames FROM geonames WHERE alternatenames!=''");
+			console::write('%8d / %8d ', 0, count($rows));
+			foreach($rows as $row) {
+				$alt = explode(',',$row['alternatenames']);
+				foreach($alt as $altstr) {
+					$db->insertRow("INSERT INTO geoalias (geoid,locname) VALUES (%d,%s)", $row['id'], $altstr);
+					$locs[] = $altstr;
+				}
+				$rc++; $rt++;
+				if ($rt>=100) {
+					$rh++;
+					if ($rh >= 50) {
+						console::write("\n%8d / %8d ", $rc, count($rows));
+						$rh = 0;
+					} else {
+						console::write('.');
+					}
+					$rt = 0;
+				}
+
+			}
+			file_put_contents('geoalias.db', serialize($locs));
+			console::writeLn(' Done!');
+    }
 
     public function import() {
         $tm = new TextMenu('Select the sets to import');
