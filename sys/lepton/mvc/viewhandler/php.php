@@ -18,7 +18,8 @@ class PlainViewHandler extends ViewHandler {
         }
     }
     function display() {
-        if (!headers_sent()) header('200 Content Follows', true);
+		// TODO: Investigate the consequences of forcing HTTP/1.1 here as just "200" triggers a fatal error on some systems
+		if (!headers_sent()) header('HTTP/1.1 200 Content Follows', true);
         $data = $this->getViewData();
         extract($this->_data, EXTR_SKIP);
         include($this->path);

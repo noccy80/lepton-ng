@@ -3,6 +3,8 @@
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>'
 ));
 
+die("ZOMG");
+
 ModuleManager::load('lepton.mvc.view');
 
 class SmartyViewHandler extends ViewHandler {

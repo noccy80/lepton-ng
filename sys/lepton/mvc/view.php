@@ -97,9 +97,6 @@ abstract class ViewHandler implements IViewHandler {
 
 }
 
-// TODO: This should only load the plain view. Document how to make use of the rest
-ModuleManager::load('lepton.mvc.viewhandler.*');
-
 /**
  *
  *
@@ -123,14 +120,14 @@ class View {
 
         if (!self::$_primaryview) {
             if (config::get(self::KEY_EMBED_EXCEPTION,false) == true) ob_start();
-            self::$_primaryview == $view;
+            self::$_primaryview = $view;
         }
-
         // Go over the registered handlers and see which one match the file name
         foreach((array)View::$_handlers as $handler=>$match) {
 
             if (preg_match('%'.$match.'%',$view)) {
-                $vc = new $handler();
+
+				$vc = new $handler();
                 // If controller is specified, get its state
                 if (($ctl) && count($ctl->getState()) > 0) {
                     $vc->setViewData($ctl->getState());
