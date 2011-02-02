@@ -8,7 +8,8 @@ class UserAction extends Action {
     public static $commands = array(
         'add' => array(
             'arguments' => '\g{username}',
-            'info' => 'Add a new user to the database'
+            'info' => 'Add a new user to the database',
+            'alias' => 'add-user'
         ),
         'remove' => array(
             'arguments' => '\g{username}',

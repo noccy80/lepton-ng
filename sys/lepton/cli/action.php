@@ -8,14 +8,25 @@ abstract class Action {
 
 abstract class Actions {
 	private static $_actions = array();
+	private static $_alias = array();
 	public static function register(Action $action, $command, $description, $subcommands) {
 		self::$_actions[$command] = array(
 			'commands' => $subcommands,
 			'info' => $description,
 			'handler' => $action
 		);
+		foreach($subcommands as $cmd=>$cdata) {
+			if (array_key_exists('alias',$cdata)) {
+				self::$_alias[$cdata['alias']] = array($command,$cmd);
+			}
+		}
 	}
 	public static function invoke($command,$arguments) {
+                if (array_key_exists($command,self::$_alias) == true) {
+			$ca = self::$_alias[$command];
+			$command = $ca[0];
+			$arguments = array_merge(array($ca[1]),$arguments);
+		}
 		if (array_key_exists($command,self::$_actions) == true) {
 			// Look up the sub command if any, otherwise show help
 			if (count($arguments) == 0) {
