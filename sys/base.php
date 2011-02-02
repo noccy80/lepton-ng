@@ -1044,10 +1044,17 @@ abstract class arr {
         }
         return $dest;
     }
+	
+    static function defaults(array $array,$defaults) {
+        foreach($defaults as $key=>$val) {
+            if (!arr::hasKey($array,$key)) $array[$key] = $val;
+        }
+        return $array;
+    }
 
-    static function bucketize(array $array, $index) {
+    static function bucketize(array $array,$index) {
         $ret = array();
-        foreach ($array as $item) {
+        foreach($array as $item) {
             $ret[$item[$index]][] = $item;
         }
         return $ret;

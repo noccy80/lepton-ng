@@ -1,6 +1,6 @@
 <?php
 
-    class LdwpAction {
+    class LdwpActionConst {
         const ACTION_START = 1;
     }
 
