@@ -40,7 +40,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         try {
             $this->conn = new PDO($this->dsn,$this->user,$this->pass);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            if (isset($this->db)) $this->exec("USE ".$this->db);
+            if (isset($this->db) && ($this->db['database'] != '')) $this->exec("USE ".$this->db);
             $cs = config::get('lepton.charset');
             $cs = str_replace('utf-','utf',$cs); // 'utf8';
             // $this->exec("CHARSET ".$cs);

@@ -1,0 +1,37 @@
+#!/usr/bin/php
+<?php
+
+function compile($pattern,$ctype) {
+	$f = glob('./'.$pattern);
+	$data = array();
+	foreach($f as $file) {
+		echo "$file\n";
+		$fc = base64_encode(file_get_contents($file));
+		$fh = md5(basename($file));
+		$data[$fh]=array(
+			'data' => $fc,
+			'ct' => $ctype
+		);
+	}
+	return $data;
+}
+
+$data = array_merge(
+	compile('*.png', 'image/png'),
+	compile('*.jpg', 'image/jpeg'),
+	compile('*.css', 'text/css')
+);
+
+$out = "<?php\n";
+$out.= 'abstract class resource { ';
+$out.= 'function get($file) { $h = md5($file); if (isset(self::$rc[$h])) return self::$rc[$h]; return null; }';
+$out.= 'static $rc = array(';
+$outarr = array();
+foreach($data as $fh=>$fc) {
+$outarr[]= sprintf('    "%s"=>"data:%s;base64,%s"', $fh, $fc['ct'], $fc['data']);
+}
+$out.= join(",",$outarr);
+$out.= ");";
+$out.= "}";
+
+file_put_contents('resource.php',$out);

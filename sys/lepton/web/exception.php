@@ -1,5 +1,7 @@
 <?php __fileinfo("MVC Exception Handler");
 
+using('resource.resource');
+
 class MvcExceptionHandler extends ExceptionHandler {
 
     static $ico_error;
@@ -8,12 +10,13 @@ class MvcExceptionHandler extends ExceptionHandler {
 
     static function saveFeedback($id) {
 
+	$ico_error = resource::get('warning.png');
         header('content-type: text/html; charset=utf-8');
         echo '<html><head><title>Thank you for your feedback</title>'.
             self::$css.
             self::$js.
             '</head><body>' .
-            '<div id="box"><div id="left"><img src="'.self::$ico_error.'" width="24" height="24"></div><div id="main">' .
+            '<div id="box"><div id="left"><img src="'.$ico_error.'" width="24" height="24"></div><div id="main">' .
             '<h1>Thank you for your feedback</h1>' .
             '<hr noshade>'.
             '<p>Your message have been saved and will hopefully lead to the problem being found and dealt with.</p>'.
@@ -70,12 +73,13 @@ class MvcExceptionHandler extends ExceptionHandler {
             }
         }
 
+	$ico_error = resource::get('warning.png');
         header('content-type: text/html; charset=utf-8');
         echo '<html><head><title>Unhandled Exception</title>'.
             self::$css.
             self::$js.
             '</head><body>' .
-            '<div id="box"><div id="left"><img src="'.self::$ico_error.'" width="24" height="24"></div><div id="main">' .
+            '<div id="box"><div id="left"><img src="'.$ico_error.'" width="32" height="32"></div><div id="main">' .
             '<h1>An Unhandled Exception Occured</h1>' .
             '<hr noshade>'.
             '<p>This means that something didn\'t go quite go as planned. This could be '.
@@ -101,34 +105,6 @@ class MvcExceptionHandler extends ExceptionHandler {
 }
 
 if (config::get('lepton.mvc.exception.feedback',false)==true) Router::hookRequestUri('^\/errorevent\.feedback\/(.*)$', array('MvcExceptionHandler','saveFeedback'));
-
-MvcExceptionHandler::$ico_error = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAAXNSR0IArs4c6QAAAv1QTFRFwAAs
-AAEAQAwKbQEFVwoNnwAQhwoRrAAXqwAcXBgZtAAUrgIYtAAhtgActwAirwQTrwQZghIVvQAruAIp
-vQAwvwArpAklvwAxtwMuwQAyuQQkwgEurwglyAAwyAA1wgIzyQA2ywAyygA3ygA8ywA9uggqwwU0
-zAI+0wBMzAND0wBRuwsrnxQpqRIo1AFSzQY/xAo61gNOzQdE1QVTzgpFvREyvRI3zQxKxhA8xhBB
-1gpZrRo2tRg5zw9LzhBQ0BJMzxJR1g9f0RRN2BFb0BVS0BZXuR9C0hdT2BVh0RhYyxxK0hpZ2hdi
-0xxaviVGxiNJ1R5a1B9gyCVK2x1p2CFX1SFh0SVUyShR1iNh1SNn2SVe1iVo3iNx2Cdp2Shq2Clv
-4Cdz2Spw2ytr1S5j4il02ixx2y1y3S9z2TJm1DVa0zVf3jB03TF53zJ12TZy3zR74DV83Dhv4jd9
-2z1k3zx34zqE0kdp4kCA4UNp4EGF1Ehq3kR54UKG40KB5EOC4Ud85Uhy5UaJ5klz5keK50p04kqE
-4kyK4E5+0lVv5E2L5U6M2FV351CO41OH21d52Fx65leQ6VqT5F2S4F+L516N5l+U6GCV6WGW42SV
-6mOX62SY52eY6Wma62qb7Gyc6myi7W2d53Ci6HGj6nGe63Kf7HOg7XSh7HWn73Wi8Haj2oGU7Xqk
-7Hyr732m8H6n7ICn7oOp6oWp74Sq8Yez7Yms7Imy74qt6oyt8Iuu8Yyv5JKo8Y639I+z8ZO08JS6
-8pS185W29Za39Je+7pm88Ju/06a28pzA56K07p/B66G795+98KHD+KC+9aO//KK696XB8afA8KjH
-86nC+ajD+qnE86vK9azL86/G967N7LXB9bLJ+LTL9rnO+LvQ873Q/rrR9L7R+73S+MLU+sTX+8XY
-/8TZ8srZ/sfa+crb+8vc/8rd9s/d7tLX/c7e8t3g+d3i+OTm8Obs9+Xt8eft+fTy+vXz//T7+/j9
-//r59P75//z6/vz/+f///P/7/v/8JYXqvwAAAAF0Uk5TAEDm2GYAAAABYktHRACIBR1IAAAACXBI
-WXMAAAsSAAALEgHS3X78AAAAB3RJTUUH2ggLARcwupiHJAAAAiVJREFUKM9jYLhw4fTZi5euXb9+
-+87dh48ePXn+8u3rZwwMDIenOHrEB+fklzZOnDh70fLNW/cePn354VEGhq12ARFJ6fm1lW0TJ81Z
-uXrT1oMHj1278YqBYbFdRHB8enppZduEifPnL1m/Y/exM+evPGVgmG3n6RMdn5dfVFnZNmnh/DVb
-d+47dPrGfQaGKeYBQLOScnMO//uxeOaSles27zl15vwZBoZec9fAwODUnEnfi6b/mT5/yeotW/cd
-WtnCwNBu4uIaGJkU+312Zefdx5MWrlm/43C9PVCi2sje1TMw4uydnIWL2n6smb1ozcooY/cmBoZC
-dQcXT8/0P/Gz//yZtObHrAXVRub29g0MDBnqJi6eru8Xxy/+/WtO1+vj6uYa9ubmFQwMURbm9u7b
-nzlGT/j3uzRQ6XeUORCYFDMwhCiZmJv/iYiOTf3zxVJTs++DtJG+pVEmA0O4hb6lSZalsrL0548W
-BgYG93ZZWKpbhDEw+KmpGRgAkbJSf5+yAZDzByit5sXA4KYG4kmqqYl0l0mC2B3v1dTU/BkYbKQl
-xYXExU3F/f/8ERKSlJT0+yMqLmTKwGAtLCEhLiEhIizx8Y328T9//nxdJSwhIsHAoKsqJSwlDAQ8
-3Dw8vFxAAOLKMDCIcfBx8PBwACGQlOGAsDk4GBh0gDS3AIjDzcMLFAUr4WBlYGDmZ+cGAhDBzg5m
-Atm8LMDUwCnIhgGYGBlwAgDeuckvbbM0gwAAAABJRU5ErkJggg==";
-
 
 MvcExceptionHandler::$css = '<style type="text/css">'.
     'body { background-color:#202020; }'.

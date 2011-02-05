@@ -28,10 +28,10 @@ __fileinfo("CLI Database Management", array(
 class DatabaseAction extends Action {
     private $extn;
     public static $commands = array(
-        'deploy' => array(
+        'initialize' => array(
             'arguments' => '[\g{rootuser}]',
-            'info' => 'Deploy the database tables',
-            'alias' => 'deploy-db'
+            'info' => 'Initialize the database tables',
+            'alias' => 'initialize-db'
         ),
         'upgrade' => array(
             'arguments' => '',
@@ -39,8 +39,9 @@ class DatabaseAction extends Action {
             'alias' => 'db-upgrade'
         )
     );
-    public function deploy($rootuser=null) {
+    public function initialize($rootuser=null) {
         $db = config::get('lepton.db.default');
+        $dbc = config::get('lepton.db.default');
         switch($db['driver']) {
         case 'pdo/mysql':
         case 'mysql':
@@ -50,6 +51,22 @@ class DatabaseAction extends Action {
             console::fatal('This version of the script does not support anything else than MySQL');
             exit(1);
         }
+        console::write("Password for root user: ");
+        $pass = console::readPass();
+        $db['database'] = null;
+        $db['username'] = 'root';
+        $db['password'] = $pass;
+        config::set('lepton.db.default', $db);
+        $conn = new DatabaseConnection();
+        console::writeLn("Creating database...");
+        try {
+            $conn->exec(sprintf("CREATE DATABASE %s;", $dbc['database']));
+        } catch(Exception $e) {
+            console::writeLn("Not successful, does the database already exist?"); 
+        }
+        console::writeLn("Creating user...");
+        $conn->exec(sprintf("GRANT ALL ON %s.* TO %s@localhost IDENTIFIED BY '%s';", $dbc['database'], $dbc['username'], $dbc['password']));
+        console::writeLn("All done.");
     }
 }
 
