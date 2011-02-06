@@ -98,7 +98,9 @@
         }
 
         static function setStatus($status = 200) {
-            if (!headers_sent()) header('HTTP/1.1 '.strval(intval($status)),true);
+            if (!headers_sent()) {
+                header('HTTP/1.1 '.strval(intval($status)),true);
+            }
         }
 
         static function streamFile($file, $contenttype) {
@@ -186,33 +188,40 @@
             }
 
             $hs = headers_sent();
+
             if ($hs==false) {
+                if (php_sapi_name() == 'php-fcgi') {
+                    $header = 'Status:';
+                } else {
+                    $header = 'HTTP/1.1';
+                }
                 switch($code) {
                     case 301:
-                        header("301 Moved Permanently HTTP/1.1"); // Convert to GET
+                        $headerstr = "301 Moved Permanently"; // Convert to GET
                         break;
                     case 302:
-                        header("302 Found HTTP/1.1"); // Conform re-POST
+                        $headerstr = "302 Found"; // Conform re-POST
                         break;
                     case 303:
-                        header("303 See Other HTTP/1.1"); // dont cache, always use GET
+                        $headerstr = "303 See Other"; // dont cache, always use GET
                         break;
                     case 304:
-                        header("304 Not Modified HTTP/1.1"); // use cache
+                        $headerstr = "304 Not Modified"; // use cache
                         break;
                     case 305:
-                        header("305 Use Proxy HTTP/1.1");
+                        $headerstr = "305 Use Proxy";
                         break;
                     case 306:
-                        header("306 Not Used HTTP/1.1");
+                        $headerstr = "306 Not Used";
                         break;
                     case 307:
-                        header("307 Temporary Redirect HTTP/1.1");
+                        $headerstr = "307 Temporary Redirect";
                         break;
                     default:
                         trigger_error("Unhandled redirect() HTTP Code: $code",E_USER_ERROR);
                         break;
                 }
+                header($header.' '.$headerstr);
                 header("Location: $location");
                 header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
             } elseif (($hs==true) || ($code==302) || ($code==303)) {

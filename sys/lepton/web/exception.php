@@ -55,7 +55,7 @@ class MvcExceptionHandler extends ExceptionHandler {
             . "Hostname: ".$_SERVER['HTTP_HOST']."\n"
             . "Referrer: ".(isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'null')."\n"
             . sprintf("Running as: %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid())."\n"
-            . sprintf("Server: %s", $_SERVER['SERVER_SOFTWARE'])."\n"
+            . sprintf("Server: %s", $_SERVER['SERVER_SOFTWARE'])." (".php_sapi_name().")\n"
             . sprintf("Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024))."\n"
             . "Platform: ".LEPTON_PLATFORM_ID."\n"
             . sprintf("Runtime: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS)."\n"
