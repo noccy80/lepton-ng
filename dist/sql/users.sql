@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 	uuid VARCHAR(37) NOT NULL,
 	active TINYINT(1) NOT NULL,
-	
+	inactivereason VARCHAR(255) NULL,
+
 	UNIQUE KEY username(username)
 );
