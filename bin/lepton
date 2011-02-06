@@ -6,7 +6,7 @@ require('sys/base.php');
 using('lepton.utils.tokenizer');
 using('lepton.cli.readline');
 using('lepton.cli.action');
-using('lepton.cli.actions.*');
+using('cli.*');
 
 class LeptonUtil extends ConsoleApplication {
 	static $verbose;
