@@ -38,6 +38,16 @@ if (!COMPAT_PHP_FNMATCH) {
         }
     }
 }
+if (!function_exists('sys_getloadavg')) {
+    function sys_getloadavg()
+    {
+        $loadavg_file = '/proc/loadavg';
+        if (file_exists($loadavg_file)) {
+            return explode(chr(32),file_get_contents($loadavg_file));
+        }
+        return array(0,0,0);
+    }
+}
 
 // Version definitions
 foreach (array(

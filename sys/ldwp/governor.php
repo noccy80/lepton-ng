@@ -1,5 +1,32 @@
 <?php
 
+class LdwpException extends Exception { }
+
+    class Governor {
+
+        /**
+         *
+         * @param $uuid The UUID of the worker or null for first available
+         */
+        static function getWorker($uuid) {
+            // Look up the uuid and if it exists create an instance of it
+            $worker = new LdwpWorker($uuid);
+            return $worker;
+        }
+
+        static function registerWorker($uuid,$description) {
+            // Initialize a clean worker state
+            $db = new DatabaseConnection();
+            $ws = new WorkerState();
+            // We need to create an empty slot in the workers table
+            $db->insertRow("INSERT INTO ldwpworkers (uuid,description,state) VALUES (%s,%s,%s)", $uuid, $description, serialize($ws));
+            
+        }
+
+    }
+
+///////////////////////////////////////////////////////////////////////////////
+
     class LdwpActionConst {
         const ACTION_START = 1;
     }

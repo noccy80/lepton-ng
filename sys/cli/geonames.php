@@ -38,7 +38,7 @@ class GeonamesAction extends Action {
 
     public static $commands = array(
         'import' => array(
-            'arguments' => '',
+            'arguments' => '[\u{geo} [\g{cc},[\g{cc}]..]|\u{isocc}|\u{alias}]',
             'info' => 'Import geonames data set'
         ),
         'purge' => array(
@@ -187,7 +187,7 @@ interface IGeonamesImporter {
 }
 abstract class GeonamesImporter implements IGeonamesImporter {
 	static $importers = array();
-	protected $geonames = 'http://download.geonames.org/export/dump/';
+	protected $url_base = 'http://download.geonames.org/export/dump/';
 	protected function getCacheFile() {
 		return APP_PATH.'/geonames.db';
 	}
@@ -207,7 +207,7 @@ abstract class GeonamesImporter implements IGeonamesImporter {
 	protected function updateIndex() {
 		console::write("Updating index: ");
 
-		$f = @file_get_contents($this->geonames);
+		$f = @file_get_contents($this->url_base);
 		if (!$f) {
 			console::writeLn("Failed.");
 			console::writeLn(get_last_error());
@@ -223,7 +223,7 @@ abstract class GeonamesImporter implements IGeonamesImporter {
 			$url = $a->item($n)->getAttribute('href');
 			if ((strToUpper($url[0])>='A') && (strToUpper($url[0])<='Z') && (strpos($url,'/') === false)) {
 				if (!in_array($url,$blocked)) {
-					$ret['data'][] = $this->geonames.$url;
+					$ret['data'][] = $this->url_base.$url;
 				}
 			}
 		}

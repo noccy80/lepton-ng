@@ -123,8 +123,6 @@
 
             Uuid::initialize();
 
-            Uuid::initialize();
-
             if (isset(Uuid::$uobject)) {
                 uuid_make ( Uuid::$uobject, UUID_MAKE_V4 );
                 uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
