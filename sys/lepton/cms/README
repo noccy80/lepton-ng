@@ -1,0 +1,29 @@
+Lepton CMS Readme
+=================
+
+This is the readme for the Lepton Content Management code. It is maintained as
+separate part of Lepton and is not enabled by default.
+
+Features
+--------
+ * Manage blog posts with categories, tags, pingbacks, and comments.
+ * Comment class can be applied to any part of your website and provide an
+   unthreaded (flat) comment feed.
+ * Forum class provides threaded and indexed comments in a classic forum style
+   consisting of threads, posts, and forums.
+ * Namespace support allows for a virtuall unlimited number of bogs, forums,
+   comment feeds, wiki pages etc. 
+ * Markup parsers: Wiki, bbCode, HTML, Human
+
+Installing / Enabling
+---------------------
+To use Lepton CMS, include it from your core.php file:
+
+  ModuleManager::load('lepton.cms.*');
+
+Reporting bugs
+--------------
+Bugs in Lepton CMS can be reported on the Lepton Trac site. Make sure to set
+the component to "Lepton CMS". The trac site can be found at 
+
+  trac.noccy.com/lepton-php
