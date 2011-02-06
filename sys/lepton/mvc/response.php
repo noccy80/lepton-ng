@@ -292,7 +292,12 @@
         }
 
         static function end() {
-            header('HTTP/1.0 204 No Content');
+            if (php_sapi_name() == 'php-fcgi') {
+                $header = 'Status:';
+            } else {
+                $header = 'HTTP/1.1';
+            }
+            header($header.' 204 No Content');
             header('Content-Length: 0',true);
             header('Content-Type: text/html',true);
             flush();
