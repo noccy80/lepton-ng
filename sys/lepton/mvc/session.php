@@ -7,9 +7,9 @@
 
         const KEY_STRICT_SESSIONS = 'lepton.security.strictsessions';
         const KEY_VALIDATION = 'lepton.security.validationcookie';
-	const KEY_SESSION_DOMAIN = 'lepton.mvc.session.domain';
-	const KEY_SESSION_VALIDITY = 'lepton.mvc.session.validity';
-	const KEY_BACKEND = 'lepton.mvc.session.backend';
+        const KEY_SESSION_DOMAIN = 'lepton.mvc.session.domain';
+        const KEY_SESSION_VALIDITY = 'lepton.mvc.session.validity';
+        const KEY_BACKEND = 'lepton.mvc.session.backend';
 
         const FLASH_INITIAL = 2;
         const FLASH_EXPIRES = 1;
@@ -33,6 +33,12 @@
             } else {
                 return $default;
             }
+
+        }
+
+        static function has($key) {
+
+            return isset($_SESSION[$key]);
 
         }
 
