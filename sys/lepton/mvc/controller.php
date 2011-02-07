@@ -21,6 +21,8 @@ interface IController {
  */
 abstract class Controller implements IController {
 
+    const KEY_TRANSLATE = 'lepton.mvc.controller.translatenames';
+
     private $_state;
 
     /**
@@ -34,6 +36,7 @@ abstract class Controller implements IController {
     static function invoke($controller=null,$method=null,Array $arguments=null) {
         if (!$controller) $controller = 'default'; // config
         if (!$method) $method = 'index'; // config
+        if (config::get(controller::KEY_TRANSLATE,false)==true) $method = str_replace('-','_',$method);
         $ctlpath = base::apppath().'/controllers/'.$controller.'.php';
         Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking %s:%s (%s)', $controller, $method, $ctlpath);
         $cc = $controller.'Controller';

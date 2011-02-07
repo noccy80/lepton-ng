@@ -143,7 +143,8 @@
          */
         static function create(UserRecord $user) {
 
-            return $user->save();
+            $user->save();
+			return $user->userid;
 
         }
         

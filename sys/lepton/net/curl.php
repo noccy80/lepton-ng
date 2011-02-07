@@ -1,0 +1,159 @@
+<?php
+
+	class CurlInstance {
+
+		const METHOD_GET = 0;
+		const METHOD_POST = 1;
+		const METHOD_PUT = 2;
+		const METHOD_HEAD = 3;
+		const METHOD_PROPGET = 4;
+		const METHOD_PROPSET = 5;
+
+		private $ch;
+		private $url;
+		private $params;
+		private $headers;
+		private $_responseHeaders = array();
+
+		function __construct($url=null) {
+			if (!function_exists('curl_init'))
+				// Removed by miniman (ticket #55)
+				// Lepton::raiseError('Curl Library missing', 'You need to install the php5-curl package or similar');
+				throw new ConfigurationException('You need to install the php5-curl package or similar', ConfigurationException::ERR_MISSING_DEPENDENCY);
+			$this->url = $url;
+			$this->ch = curl_init();
+			if (!$this->ch) {
+				unset($this->ch);
+				throw new CurlException('Failed to retrieve Curl handle',CurlException::ERR_GENERIC);
+			}
+		}
+
+		function __destruct() {
+			$this->close();
+		}
+
+		function close() {
+			if ($this->ch) {
+				curl_close($this->ch);
+				unset($this->ch);
+			}
+		}
+
+		function setOption($option,$value) {
+			curl_setopt($this->ch,$option,$value);
+		}
+
+		function setParams($params) {
+			$this->params = $params;
+		}
+
+		function setHeader($header,$value) {
+			$this->headers[$header] = $value;
+			$th = array();
+			foreach($this->headers as $key=>$value) {
+				$th[] = sprintf('%s: %s', $key, $value);
+			}
+			$this->setOption(CURLOPT_HTTPHEADER, $th);
+		}
+
+		function setReferer($referer) {
+			$this->setOption(CURLOPT_REFERER, $referer);
+		}
+
+		function setUserAgent($ua) {
+			$this->setOption(CURLOPT_USERAGENT,$ua);
+		}
+
+		private function readHeader($ch, $header) {
+			if (preg_match('/^(.*)\: (.*)\r$/',$header,&$vals)) {
+				$this->_responseHeaders[$vals[1]] = $vals[2];
+			}
+			# $this->_responseHeaders[] = $header;
+			return strlen($header);
+		}
+
+		function exec($method=CurlInstance::METHOD_GET) {
+
+			$this->setOption(CURLOPT_HEADER, false);
+			switch($method) {
+			case CurlInstance::METHOD_HEAD:
+				$this->setOption(CURLOPT_URL,$this->url);
+				$this->setOption(CURLOPT_CUSTOMREQUEST,'HEAD');
+				break;
+			case CurlInstance::METHOD_GET:
+				if (is_array($this->params)) {
+					$argl = array();
+					// Parse the existing query string
+					if(strpos($this->url,'?')!==false) {
+						$qs = substr($this->url,strpos($this->url,'?')+1);
+						$qse = explode('&',$qs);
+						foreach($qse as $qsi) {
+							$si = strpos($qsi,'=');
+							if ($si!==null) {
+								$key = urldecode(substr($qsi,0,$si));
+								$value = urldecode(substr($qsi,$si+1));
+								$argl[$key]=$value;
+							} else {
+								$argl[] = $value;
+							}
+						}
+						$url = substr($this->url,0,strpos($this->url,'?'));
+					} else {
+						$url = $this->url;
+					}
+					// Merge in the params
+					foreach($this->params as $key => $param) {
+						$argl[$key] = $param;
+					}
+					// And create the resulting args
+					$args = array();
+					foreach($argl as $key=>$param) {
+						$args[] = urlencode($key).'='.urlencode($param);
+					}
+					$url = $url.'?'.join('&',$args);
+					$this->setOption(CURLOPT_URL,$url);
+				} else {
+					$this->setOption(CURLOPT_URL,$this->url);
+				}
+				$this->setOption(CURLOPT_HTTPGET, true);
+				$this->setOption(CURLOPT_RETURNTRANSFER, true);
+				$this->setOption(CURLOPT_FOLLOWLOCATION, true);
+				break;
+			case CurlInstance::METHOD_POST:
+				$this->setOption(CURLOPT_URL,$this->url);
+				if (is_array($this->params)) {
+					$out = array();
+					foreach($this->params as $key=>$val) {
+						$out[] = $key.'='.urlencode($val);
+					}
+					$params = join('&',$out);
+					$this->setHeader('content-length', strlen($params));
+					$this->setOption(CURLOPT_POSTFIELDS, $params);
+				} else {
+					$this->setOption(CURLOPT_POSTFIELDS, $this->params);
+				}
+				$this->setOption(CURLOPT_POSTFIELDS, $this->params);
+				$this->setOption(CURLOPT_POST, true);
+				$this->setOption(CURLOPT_RETURNTRANSFER, true);
+				$this->setOption(CURLOPT_FOLLOWLOCATION, true);
+				break;
+			}
+			$this->setOption(CURLOPT_HEADERFUNCTION, array(&$this,'readHeader'));
+
+			$r['content'] = curl_exec($this->ch);
+			$r['headers'] = $this->_responseHeaders;
+			$r['code'] = curl_getinfo($this->ch,CURLINFO_HTTP_CODE);
+			$r['ce'] = curl_errno($this->ch);
+			$this->close();
+			return $r;
+
+		}
+
+	}
+
+	class CurlException extends Exception {
+
+		const ERR_GENERIC = 1; // Generic error
+
+	}
+
