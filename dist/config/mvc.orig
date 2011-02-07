@@ -7,5 +7,10 @@ config::set('lepton.mvc.session.validity', '60m');
 // Session backend
 config::set('lepton.mvc.session.backend', 'DefaultSessionBackend');
 
+// Set to true to translate - to _ in method names etc.
+config::set('lepton.mvc.controller.translatenames', true);
+
 // Viewhandlers
 using('lepton.mvc.viewhandler.php');
+
+

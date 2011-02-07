@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS userengage (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	userid INT NOT NULL,
+	identifier VARCHAR(512) NOT NULL,
+	lastseen DATETIME NOT NULL,
+	lastip VARCHAR(64) NOT NULL,
+	UNIQUE INDEX identifier(identifier)
+);
