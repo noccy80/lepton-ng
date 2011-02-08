@@ -104,6 +104,10 @@ class UserRecord {
         $this->lastip = $userrecord['lastip'];
     }
 
+    public function hasFlag($flag) {
+        return (strpos($this->flags,$flag)!==false);
+    }
+
     public function save() {
         if (!$this->uuid) $this->uuid = uuid::v4();
         if (count($this->modified) > 0) {

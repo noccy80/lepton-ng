@@ -147,6 +147,11 @@
 			return $user->userid;
 
         }
+
+        static function hasFlag($flag) {
+            $u = user::getActiveUser();
+            return $u->hasFlag($flag);
+        }
         
         /**
          * Check if a user is authenticated.
