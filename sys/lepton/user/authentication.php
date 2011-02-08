@@ -239,7 +239,7 @@
 				"SELECT * FROM ".LEPTON_DB_PREFIX."users WHERE username=%s",
 				$username
 			);
-			return ($record != null);
+			return (($record) == null);
 
 		}
 
