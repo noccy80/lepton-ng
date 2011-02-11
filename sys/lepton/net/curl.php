@@ -33,7 +33,7 @@
 		}
 
 		function close() {
-			if ($this->ch) {
+			if (isset($this->ch)) {
 				curl_close($this->ch);
 				unset($this->ch);
 			}

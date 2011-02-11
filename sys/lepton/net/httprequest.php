@@ -46,6 +46,11 @@ class HttpRequest {
 			$ci->setOption(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 			$ci->setOption(CURLOPT_USERPWD, $options['username'] . ':' . $options['password']);
 		}
+		if (isset($options['verifyssl'])) {
+			$state = ($options['verifyssl'] == true);
+			$ci->setOption(CURLOPT_SSL_VERIFYPEER, $state); 
+			$ci->setOption(CURLOPT_SSL_VERIFYHOST, $state); 
+		}
 		if (isset($options['referer'])) {
 			$ci->setReferer($co->get('referer'));
 		}
@@ -65,11 +70,17 @@ class HttpRequest {
 		} else {
 			$ret = $ci->exec(CurlInstance::METHOD_GET);
 		}
-
 		if ($ret['code'] == 200) {
 			$this->ret = $ret;
 		} else {
-			throw new HttpException("Error ".$ret['code']);
+			switch($ret['ce']) {
+				case 60:
+					throw new HttpException("SSL Certificate Problem, set verifyssl=>false in options");
+					break;	
+				default:
+					throw new HttpException("Error ".$ret['code'].': '.$ret['ce']);
+					break;
+			}
 		}
 	}
 
