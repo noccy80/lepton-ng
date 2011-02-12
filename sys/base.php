@@ -451,6 +451,12 @@ abstract class Config {
 
 }
 
+function config($key,$value=null) {
+    $ret = config::get($key);
+    if ($value) config::set($key,$value);
+    return $ret;
+}
+
 function __fromprintable($str) {
     if (in_array($str[0], array('"', "'"))) {
         $qc = $str[0];

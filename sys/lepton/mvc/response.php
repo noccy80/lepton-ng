@@ -16,7 +16,7 @@
         static function expires($minutes) {
             $offset = 60 * $minutes * -1;
             header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
-            header('Cache-Control: must-revalidate');
+            // header('Cache-Control: must-revalidate');
             header('Expires: '.gmdate("D, d M Y H:i:s",time() + $offset) . ' GMT');
         }
 
@@ -88,6 +88,8 @@
             if (!file_exists($file)) {
                 throw new BaseException("File not found: ".$file);
             }
+			// Streamed content expires in 1 hour
+			response::expires(60);
             if ($contenttype) {
                 response::contentType($contenttype);
             } else {
