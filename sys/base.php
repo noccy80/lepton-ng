@@ -1534,6 +1534,17 @@ abstract class CoreEvents implements IEventList {
     const EVENT_AFTER_APPLICATION = 'lepton.application.after';
 }
 
+class Callback {
+    private $cbarray = null;
+    function __construct($object,$method) {
+        $this->cbarray = array($object,$method);
+    }
+    function call() {
+        $args = func_get_args();
+        return call_user_func_array($this->cbarray,$args);
+    }
+}
+
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
 
 if (PHP_VERSION < "5") {

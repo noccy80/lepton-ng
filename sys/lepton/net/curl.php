@@ -13,7 +13,12 @@
 		private $url;
 		private $params;
 		private $headers;
+		private $_contentLength = 0;
+		private $_responseData = '';
 		private $_responseHeaders = array();
+		private $_progress_cb = null;
+		private $_target = null;
+		private $_htarget = null;
 
 		function __construct($url=null) {
 			if (!function_exists('curl_init'))
@@ -29,6 +34,7 @@
 		}
 
 		function __destruct() {
+		    if ($this->_htarget) fclose($this->_htarget);
 			$this->close();
 		}
 
@@ -37,6 +43,13 @@
 				curl_close($this->ch);
 				unset($this->ch);
 			}
+		}
+		
+		function setTarget($target=null) {
+		    $this->_target = $target;
+		    if ($this->_target) {
+		        $this->_htarget = fopen($this->_target,'wb');
+		    }
 		}
 
 		function setOption($option,$value) {
@@ -64,12 +77,30 @@
 			$this->setOption(CURLOPT_USERAGENT,$ua);
 		}
 
-		private function readHeader($ch, $header) {
+		private function _headercb($ch, $header) {
 			if (preg_match('/^(.*)\: (.*)\r$/',$header,&$vals)) {
 				$this->_responseHeaders[$vals[1]] = $vals[2];
+				if (strtolower($vals[1]) == 'content-length') {
+				    $this->_contentLength = $vals[2];
+				}
 			}
 			# $this->_responseHeaders[] = $header;
 			return strlen($header);
+		}
+		
+		public function setProgressCallback(Callback $cb) {
+		    $this->_progress_cb = $cb;
+		}
+		
+		private function _writecb($ch, $content) {
+            $this->_bytesRead += strlen($content);
+            if ($this->_htarget) {
+                fwrite($this->_htarget, $content, strlen($content));
+            } else {
+                $this->_responseData.=$content;
+            }
+            if ($this->_progress_cb) $this->_progress_cb->call($this->_contentLength, $this->_bytesRead);
+		    return strlen($content);
 		}
 
 		function exec($method=CurlInstance::METHOD_GET) {
@@ -116,7 +147,6 @@
 					$this->setOption(CURLOPT_URL,$this->url);
 				}
 				$this->setOption(CURLOPT_HTTPGET, true);
-				$this->setOption(CURLOPT_RETURNTRANSFER, true);
 				$this->setOption(CURLOPT_FOLLOWLOCATION, true);
 				break;
 			case CurlInstance::METHOD_POST:
@@ -134,13 +164,14 @@
 				}
 				$this->setOption(CURLOPT_POSTFIELDS, $this->params);
 				$this->setOption(CURLOPT_POST, true);
-				$this->setOption(CURLOPT_RETURNTRANSFER, true);
 				$this->setOption(CURLOPT_FOLLOWLOCATION, true);
 				break;
 			}
-			$this->setOption(CURLOPT_HEADERFUNCTION, array(&$this,'readHeader'));
+			$this->setOption(CURLOPT_HEADERFUNCTION, array(&$this,'_headercb'));
+			$this->setOption(CURLOPT_WRITEFUNCTION, array(&$this,'_writecb'));
 
-			$r['content'] = curl_exec($this->ch);
+            curl_exec($this->ch);
+			$r['content'] = $this->_responseData;
 			$r['headers'] = $this->_responseHeaders;
 			$r['code'] = curl_getinfo($this->ch,CURLINFO_HTTP_CODE);
 			$r['ce'] = curl_errno($this->ch);
