@@ -70,7 +70,7 @@ class CurrencyExchange {
         $rto = $this->db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",$tocur);
 
         if (!$rfrom) throw new ForexException("Invalid source currency ".$fromcur);
-        if (!$rto) throw new ForexException("Invalid destination currency" ".$tocur);
+        if (!$rto) throw new ForexException("Invalid destination currency".$tocur);
         return ($fromval / (floatval($rfrom['rate']) * floatval($reur['rate']))) * floatval($rto['rate']);
 
     }
