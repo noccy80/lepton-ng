@@ -87,7 +87,11 @@ abstract class Controller implements IController {
         if (method_exists($this,$method)) {
             call_user_func_array(array($this,$method),$arguments);
         } else {
-            throw new BaseException("Could not find controller method ".$method);
+			if (method_exists($this,'__unknown')) {
+				call_user_func_array(array($this,'__unknown'),array_merge(array($method),$arguments));
+			} else {
+				throw new BaseException("Could not find controller method ".$method);
+			}
         }
     }
 

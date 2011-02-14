@@ -44,6 +44,7 @@ class CurrencyExchange {
 
         $this->createTables();
         $upd = fopen($this->url,'r');
+        if (!$upd) throw new BaseException("Opening of stream failed.");
         while (!feof($upd)) {
             $d = fgetcsv($upd,1024,'|');
             $this->db->updateRow("REPLACE INTO currencyexchange (symbol,name,rate) VALUES (%s,%s,%20.10f)", $d[0], $d[1], floatval($d[2]));
@@ -68,6 +69,8 @@ class CurrencyExchange {
         $rfrom = $this->db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",$fromcur);
         $rto = $this->db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",$tocur);
 
+        if (!$rfrom) throw new ForexException("Invalid source currency ".$fromcur);
+        if (!$rto) throw new ForexException("Invalid destination currency" ".$tocur);
         return ($fromval / (floatval($rfrom['rate']) * floatval($reur['rate']))) * floatval($rto['rate']);
 
     }
