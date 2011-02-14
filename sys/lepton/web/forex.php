@@ -15,6 +15,8 @@
  * @license CC-BY (Dataset)
  */
 
+class CurrencyException extends Exception { }
+
 class CurrencyExchange {
 
     private $db = null;
@@ -69,8 +71,8 @@ class CurrencyExchange {
         $rfrom = $this->db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",$fromcur);
         $rto = $this->db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",$tocur);
 
-        if (!$rfrom) throw new ForexException("Invalid source currency ".$fromcur);
-        if (!$rto) throw new ForexException("Invalid destination currency".$tocur);
+        if (!$rfrom) throw new CurrencyException("Invalid source currency ".$fromcur);
+        if (!$rto) throw new CurrencyException("Invalid destination currency".$tocur);
         return ($fromval / (floatval($rfrom['rate']) * floatval($reur['rate']))) * floatval($rto['rate']);
 
     }
