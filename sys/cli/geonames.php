@@ -36,7 +36,11 @@ __fileinfo("Geonames Console Actions", array(
  */
 class GeonamesAction extends Action {
 
-    public static $commands = array(
+	private $baseurl = 'http://download.geonames.org/export/dump/';
+	private $ignore = array(
+		'allCountries.zip'
+	);
+	public static $commands = array(
         'import' => array(
             'arguments' => '[\u{geo} [\g{cc},[\g{cc}]..]|\u{isocc}|\u{alias}]',
             'info' => 'Import geonames data set'
@@ -49,6 +53,10 @@ class GeonamesAction extends Action {
             'arguments' => '',
             'info' => 'Download (but don\'t import) the geonames data set'
         ),
+		'update' => array(
+			'arguments' => '',
+			'info' => 'Update the geonames tables'
+		),
         'lookup' => array(
             'arguments' => '\g{location}',
             'info' => 'Look up a specific location'
@@ -77,7 +85,6 @@ class GeonamesAction extends Action {
 				$alt = explode(',',$row['alternatenames']);
 				foreach($alt as $altstr) {
 					$db->insertRow("INSERT INTO geoalias (geoid,locname) VALUES (%d,%s)", $row['id'], $altstr);
-					$locs[] = $altstr;
 				}
 				$rc++; $rt++;
 				if ($rt>=100) {
@@ -92,33 +99,42 @@ class GeonamesAction extends Action {
 				}
 
 			}
-			file_put_contents('geoalias.db', serialize($locs));
 			console::writeLn(' Done!');
     }
 
-    public function import() {
-        $tm = new TextMenu('Select the sets to import');
-        foreach(GeonamesImporter::$importers as $importer) {
-            $tm->addOption($importer->key, $importer->menudescription, true);
-        }
-        if ($tm->runMenu()) {
-            foreach(GeonamesImporter::$importers as $importer) {
-                if ($tm->getOption($importer->key)) {
-                    $sets = $importer->getAvailableDatasets();
-                    $sm = new TextMenu("What countries would you like to import?");
-                    $sm->setLayout(8,5);
-                    foreach($sets as $lang=>$seturl) {
-                        $sm->addOption($lang,$lang,true);
-                    }
-                    if ($sm->runMenu()) {
-                        foreach($sets as $lang=>$seturl) {
-                            if ($sm->getOption($lang)) $importer->importDataset($lang);
-                        }
-                    }
-                }
-            }
-        }
-    }
+	private function getCacheFile() {
+		return base::appPath().'/.gncachce';
+	}
+
+	public function updateCache() {
+		console::write("Updating cache: ");
+
+		$f = @file_get_contents($this->baseurl);
+		if (!$f) {
+			console::writeLn("Failed.");
+			console::writeLn(get_last_error());
+		}
+		$h = new DomDocument();
+		$h->loadHtml($f);
+		$a = $h->getElementsByTagName('a');
+		$ret = array();
+		for($n = 0; $n < $a->length; $n++) {
+			$url = $a->item($n)->getAttribute('href');
+			if ((strToUpper($url[0])>='A') && (strToUpper($url[0])<='Z') && (strpos($url,'/') === false)) {
+				if (!in_array($url,$blocked)) {
+					$ret['data'][] = $this->url_base.$url;
+				}
+			}
+		}
+		$fh = fopen($this->getCacheFile(),'wb');
+		$ret['created'] = time();
+		fwrite($fh,serialize($ret));
+		fclose($fh);
+
+		console::writeLn("Done");
+
+		return $ret['data'];
+	}
 
 	public function download() {
         $tm = new TextMenu('Select the sets to download');
@@ -205,36 +221,7 @@ abstract class GeonamesImporter implements IGeonamesImporter {
 		
 	}
 	protected function updateIndex() {
-		console::write("Updating index: ");
 
-		$f = @file_get_contents($this->url_base);
-		if (!$f) {
-			console::writeLn("Failed.");
-			console::writeLn(get_last_error());
-		}
-		$h = new DomDocument();
-		$h->loadHtml($f);
-		$a = $h->getElementsByTagName('a');
-		$ret = array();
-		$blocked = array(
-			'allCountries.zip'
-		);
-		for($n = 0; $n < $a->length; $n++) {
-			$url = $a->item($n)->getAttribute('href');
-			if ((strToUpper($url[0])>='A') && (strToUpper($url[0])<='Z') && (strpos($url,'/') === false)) {
-				if (!in_array($url,$blocked)) {
-					$ret['data'][] = $this->url_base.$url;
-				}
-			}
-		}
-		$fh = fopen($this->getCacheFile(),'wb'); 
-		$ret['created'] = time();
-		fwrite($fh,serialize($ret));
-		fclose($fh);
-
-		console::writeLn("Done");
-
-		return $ret['data']; 
 	
 	}
 	/**
