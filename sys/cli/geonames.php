@@ -25,6 +25,8 @@ __fileinfo("Geonames Console Actions", array(
     'updater' => null
 ));
 
+using('lepton.net.httprequest');
+
 /**
  * @class GeonamesUtility
  * @brief Handles import and updates of a GeoNames table containing country
@@ -37,9 +39,11 @@ __fileinfo("Geonames Console Actions", array(
 class GeonamesAction extends Action {
 
     private $data = array();
-	private $baseurl = 'http://download.geonames.org/export/dump/';
+	// private $baseurl = 'http://download.geonames.org/export/dump/';
+	private $baseurl = 'http://public.hubea.se/geocache/';
 	private $ignore = array(
-		'allCountries.zip'
+		'allcountries.zip',
+		'name'
 	);
 
     function __construct() {
@@ -123,9 +127,6 @@ class GeonamesAction extends Action {
     function update() {
         console::write("Updating set list: ");
 		$f = file_get_contents($this->baseurl);
-		$blocked = array(
-			'allCountries.zip'
-		);
         $start = strpos('<img ',$f);
 		$fd = substr($f, $start);
         $fd = str_replace("\t", " ", $fd);
@@ -142,13 +143,24 @@ class GeonamesAction extends Action {
 					$fns = explode('>',$fn);
 					$fns = explode('<',$fns[1]);
 					$fns = $fns[0];
+					if (strtolower($fns) != 'name')
+    					$this->data['fscurrent'][$fns] = $fs;
+				} elseif ($ents[3] == '<a') {
+					$fn = $ents[4];
+					$fs = $ents[7];
+					$fns = explode('>',$fn);
+					$fns = explode('<',$fns[1]);
+					$fns = $fns[0];
+					if (strtolower($fns) != 'name')
 					$this->data['fscurrent'][$fns] = $fs;
+				} else {
+//				    console::writeLn($ent);
 				}
 			}
-            
         }
 		console::writeLn("Parsed");
-		console::write("Finding updated sets: ");
+		$this->data['update'] = array();
+		console::write("Finding updated files: ");
 		foreach($this->data['fscurrent'] as $fn=>$fs) {
 			if (isset($this->data['fsprevious'][$fn])) {
 				$prev = $this->data['fsprevious'][$fn];
@@ -156,14 +168,54 @@ class GeonamesAction extends Action {
 				$prev = null;
 			}
 			if ($prev != $fs) {
-				$this->data['update'][$fn] = true;
+			    if (!in_array(strtolower($fn), $this->ignore)) {
+    				$this->data['update'][$fn] = true;
+    			}
 			}
 		}
 		console::writeLn("%d sets", count($this->data['update']));
         
     }
 
+    function createTables() {
+        $db = new DatabaseConnection();
+		$sql = 'CREATE TABLE IF NOT EXISTS geonames ('.
+				'id INT NOT NULL PRIMARY KEY, '.
+				'name VARCHAR(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci, '.
+				'asciiname VARCHAR(200), '.
+				'alternatenames VARCHAR(200), '.
+				'latitude DECIMAL(9,5), '.
+				'longitude DECIMAL(9,5), '.
+				'featureclass CHAR(1), '.
+				'featurecode VARCHAR(10), '.
+				'countrycode CHAR(2), '.
+				'cc2 VARCHAR(60), '.
+				'admin1code VARCHAR(20), '.
+				'admin2code VARCHAR(80), '.
+				'admin3code VARCHAR(20), '.
+				'admin4code VARCHAR(20), '.
+				'population BIGINT, '.
+				'elevation INT, '.
+				'gtopo30 INT, '.
+				'timezoneid VARCHAR(64), '.
+				'modificationdate DATE, '.
+				'INDEX name(name), '.
+				'INDEX countrycode(countrycode), '.
+				'INDEX latlong(latitude,longitude), '.
+				'INDEX features(featureclass,featurecode), '.
+				'INDEX admincodes(admin1code,admin2code,admin3code,admin4code), '.
+				'INDEX population(population), '.
+				'INDEX timezoneid(timezoneid)'.
+				') TYPE=InnoDB CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+		console::write("Creating tables: ");
+		$db->exec($sql);
+		console::writeLn("Done");
+    }
+
 	function doupdate() {
+
+        $this->createTables();
+
 		console::writeLn("Downloading updated sets...");
 
 		$e = str_repeat("\x08", 70);
@@ -172,17 +224,106 @@ class GeonamesAction extends Action {
 
 		$c = 0;
 		foreach($this->data['update'] as $fn=>$void) {
-			$pctot = (100/$tot) * $c++;
-			$pccur = 0;
-			console::write("[%3d%%] %-20s %-15s %3d%% ", $pctot, 'Downloading', $fn, $pccur );
-			console::write($e);
-			sleep(1);
-			console::write("[%3d%%] %-20s %-15s %3d%% ", $pctot, 'Importing', $fn, $pccur );
-			sleep(1);
-			console::write($ef);
-			console::writeLn("%s imported (%d rows)", $fn, 0);
+			$this->total = array(
+			    'max' => $tot,
+			    'current' => $c++,
+			    'percent' => (100/$tot) * $c
+			);
+			$this->activity = "Downloading";
+			$this->activityobject = $fn;
+			$dl = new HttpDownload($this->baseurl.$fn, base::appPath().'/geocache/'.$fn, array(
+			    'onprogress' => new Callback(&$this,'onprogress')
+			));
+			$this->handleUpdateFile($fn);
+			$this->clearTask();
 		}
 
+	}
+	
+	function handleUpdateFile($fn) {
+	    if (fnmatch('??.zip',$fn)) {
+	        $this->geoLocationInsert($fn);
+	    } else {
+	        $this->clearTask();
+	        console::writeLn("Dont know what to do with %s...", $fn);
+	    }
+	}
+
+//////// GEONAMES TABLE DATA //////////////////////////////////////////////////
+
+	function geoLocationInsert($fn) {
+
+		$this->progress = null;
+    	$this->activity = "Importing";
+		$this->doTaskUpdate();
+		$dest = base::appPath().'/geocache/'.$fn;
+        $fz = fopen('zip://'.$dest.'#'.basename($dest,'.zip').'.txt','rb');	
+        if (!$fz) {
+            console::fatal("Could not open file %s (%s)", $dest, $fn);
+        }
+        $this->doTaskUpdate();
+        $batch = array();
+        $rowstot = 0;
+        while(!feof($fz)) {
+            $row = fgetcsv($fz,16000,"\t",'*');
+            $batch[] = $row;
+            $rowstot++;
+            if (count($batch) >= 50) {
+                $this->progress['read'] += count($batch);
+                $this->doTaskUpdate();
+                $this->geoLocationInsertBatch($batch);
+		        $batch = array();
+		    }
+        }
+        $this->clearTask();
+        console::writeLn("%s imported, %d rows.", $fn, $rowstot);
+	}
+	
+	function geoLocationInsertBatch($batch) {
+        $db = new DatabaseConnection();
+        $sql = 'REPLACE INTO geonames VALUES ';
+        $rowdata = array();
+        foreach($batch as $row) {
+	        foreach($row as $id=>$data) {
+		        $row[$id] = $db->quote($data);
+	        }
+	        $rowdata[] = "(".join(",", $row).")";
+        }
+        $this->records+=count($rowdata);
+        $sql.= join(',',$rowdata);
+        try {
+	        $db->exec($sql);
+        } catch (Exception $e) {
+	        echo $e;
+	        die();
+        }
+    }	
+
+//////// STATUS UPDATES ///////////////////////////////////////////////////////
+	
+	function clearTask() {
+		$ef = str_repeat("\x08", 70).str_repeat(" ",70).str_repeat("\x08",70);
+        console::write($ef);
+        $this->progress = null;
+	}
+	function doTaskUpdate() {
+		$e = str_repeat("\x08", 70);
+        if ($this->progress == null) { $this->progress = array('percent' => 0, 'length' => 0, 'read' => 0); }
+        if (!isset($this->progress['length']) || ($this->progress['length'] == 0)) {
+    		console::write("[%3d%%] %-20s %-15s %8d    ", $this->total['percent'], $this->activity, $this->activityobject, $this->progress['read'] );
+        } else {
+    		console::write("[%3d%%] %-20s %-15s %3d%%    ", $this->total['percent'], $this->activity, $this->activityobject, $this->progress['percent'] );
+		}
+        console::write($e);
+    }	
+	
+	function onprogress($max,$cur) {
+	    $this->progress = array(
+	        'length' => $max,
+	        'read' => $cur,
+	        'percent' => ($max>0)?round((100/$max)*$cur,2):0
+	    );
+	    $this->doTaskUpdate();
 	}
 
     /**
