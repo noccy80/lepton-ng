@@ -126,19 +126,64 @@ class GeonamesAction extends Action {
 		$blocked = array(
 			'allCountries.zip'
 		);
-        $start = strpos('<img ',$f); $fd = substr($f, $start);
-        while(strpos('  ',$fd)) $fd = str_replace('  ',' ',$fd);
+        $start = strpos('<img ',$f);
+		$fd = substr($f, $start);
+        $fd = str_replace("\t", " ", $fd);
+		while(strpos($fd,'  ') !== false) $fd = str_replace('  ',' ',$fd);
         $entries = explode("\n", $fd);
-        foreach ($entries as $ent) {
+		$this->data['fsprevious'] = (isset($this->data['fscurrent']))?$this->data['fscurrent']:array();
+		$this->data['fscurrent'] = array();
+		foreach ($entries as $ent) {
             $ents = explode(' ',trim($ent));
-            if ((count($ents) >= 3) && (substr(0,3,$ents))) {
-                console::writeLn(" -> %s", $ents[3]);
-            }
+			if (count($ents) >= 8) {
+				if ($ents[4] == '<a') {
+					$fn = $ents[5];
+					$fs = $ents[8];
+					$fns = explode('>',$fn);
+					$fns = explode('<',$fns[1]);
+					$fns = $fns[0];
+					$this->data['fscurrent'][$fns] = $fs;
+				}
+			}
             
         }
 		console::writeLn("Parsed");
+		console::write("Finding updated sets: ");
+		foreach($this->data['fscurrent'] as $fn=>$fs) {
+			if (isset($this->data['fsprevious'][$fn])) {
+				$prev = $this->data['fsprevious'][$fn];
+			} else {
+				$prev = null;
+			}
+			if ($prev != $fs) {
+				$this->data['update'][$fn] = true;
+			}
+		}
+		console::writeLn("%d sets", count($this->data['update']));
         
     }
+
+	function doupdate() {
+		console::writeLn("Downloading updated sets...");
+
+		$e = str_repeat("\x08", 70);
+		$ef = str_repeat("\x08", 70).str_repeat(" ",70).str_repeat("\x08",70);
+		$tot = count($this->data['update']);
+
+		$c = 0;
+		foreach($this->data['update'] as $fn=>$void) {
+			$pctot = (100/$tot) * $c++;
+			$pccur = 0;
+			console::write("[%3d%%] %-20s %-15s %3d%% ", $pctot, 'Downloading', $fn, $pccur );
+			console::write($e);
+			sleep(1);
+			console::write("[%3d%%] %-20s %-15s %3d%% ", $pctot, 'Importing', $fn, $pccur );
+			sleep(1);
+			console::write($ef);
+			console::writeLn("%s imported (%d rows)", $fn, 0);
+		}
+
+	}
 
     /**
      *
