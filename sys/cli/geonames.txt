@@ -1,0 +1,8 @@
+GeoDB Structure:
+
+Key               Contains
+---               --------
+sets[$fn]         All available sets
+filesize[$fn]     Filesizes of 'last' and 'current'
+installed[$fn]    Boolean specifying if the set is installed or not
+updated[$fn]      Boolean specifying if the set has an update available

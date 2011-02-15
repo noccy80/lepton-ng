@@ -814,7 +814,7 @@ class Timer {
      */
     function getElapsed() {
         if ($this->_running) {
-            return (microtime(t1rue) - $this->_starttime);
+            return (microtime(true) - $this->_starttime);
         } else {
             return ($this->_stoptime - $this->_starttime);
         }
