@@ -29,6 +29,10 @@ class HttpRequest {
 		}
 	}
 
+	private function _streamDoRequest() {
+		throw new Eception("Stream support not yet implemented.");
+	}
+
 	private function _curlDoRequest() {
 
 		$options = $this->args;

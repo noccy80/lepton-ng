@@ -15,6 +15,9 @@ abstract class RequestObject implements IRequestObject {
     function toInt() {
         return intval($this->__toString());
     }
+    function toFloat() {
+        return floatval($this->__toString());
+    }
 }
 class RequestString extends RequestObject {
 	private $data = null;
