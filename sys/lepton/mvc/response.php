@@ -14,7 +14,7 @@
          * @param int $minutes The number of minutes the content is valid
          */
         static function expires($minutes) {
-            $offset = 60 * $minutes * -1;
+            $offset = 60 * $minutes;
             header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
             // header('Cache-Control: must-revalidate');
             header('Expires: '.gmdate("D, d M Y H:i:s",time() + $offset) . ' GMT');
