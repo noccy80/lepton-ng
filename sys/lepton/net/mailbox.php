@@ -136,18 +136,6 @@ class Mailbox {
 }
 
 
-class MailMessage extends AbstractModel {
-    var $model = 'MailMessage';
-    var $fields = array(
-        'msgid' => 'string',
-        'from' => 'int',
-        'to' => 'int',
-        'read' => 'int between 0 and 1 default 0',
-        'subject' => 'string',
-        'body' => 'string'
-    );
-}
-
 interface IMailStorage {
     function open($identity);
     function close();
