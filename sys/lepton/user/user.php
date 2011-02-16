@@ -249,6 +249,9 @@ class UserRecord {
             case 'active':
                 $this->active = $value;
                 break;
+			case 'displayname':
+				$this->displayname = $value;
+				break;
             case 'flags':
                 // TODO: This needs updating in the user table.
                 $fn = str_replace('+','',$this->flags);
@@ -302,6 +305,8 @@ class UserRecord {
                 return $this->lastlogin;
             case 'lastip':
                 return $this->lastip;
+			case 'displayname':
+				return $this->displayname;
             case 'password':
                 if ($this->password == null) {
                     throw new UserException("Can't access protected property {$key}");
