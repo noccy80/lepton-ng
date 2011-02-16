@@ -315,16 +315,18 @@ function __strip_newline($str) {
   Exception classes. Should all be derived from BaseException
  */
 class BaseException extends Exception { }
-    class FilesystemException extends BaseException { }
-        class FileNotFoundException extends FilesystemException { }
-        class FileAccessException extends FilesystemException { }
-    class UnsupportedPlatformException extends BaseException { }
-    class SystemException extends BaseException { }
-    class ClassNotFoundException extends BaseException { }
-    class BadPropertyException extends BaseException { }
-    class BadArgumentException extends BaseException { }
-    class CriticalException extends BaseException { }
-        class SecurityException extends CriticalException { }
+class FilesystemException extends BaseException { }
+class FileNotFoundException extends FilesystemException { }
+class FileAccessException extends FilesystemException { }
+class UnsupportedPlatformException extends BaseException { }
+class SystemException extends BaseException { }
+class ClassNotFoundException extends BaseException { }
+class BadPropertyException extends BaseException { }
+class BadArgumentException extends BaseException { }
+class CriticalException extends BaseException { }
+class SecurityException extends CriticalException { 
+	const ERR_ACCESS_DENIED = 1;
+}
 
 /*
   function __autoload($class) {
