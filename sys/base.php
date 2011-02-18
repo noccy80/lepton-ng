@@ -1417,28 +1417,28 @@ class Debug {
         error_reporting(0);
     }
 
-    static function inspect(array $array) {
+    static function inspect(array $array, $halt=true) {
         echo '<style type="text/css">';
-        echo 'table { font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
-        echo 'th { text-align:left; padding:3px; border:solid 1px #BBB; background-color:#EEE; width:10%; }';
-        echo 'td { padding:3px; border:solid 1px #BBB}';
+        echo 'table.inspect-table { margin:1px; font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
+        echo 'table.inspect-table th { text-align:left; padding:2px; border:solid 1px #BBB; background-color:#EEE; width:10%; }';
+        echo 'table.inspect-table td { padding:2px; border:solid 1px #BBB}';
         echo '</style>';
         echo debug::inspectArray($array);
-        die();
+        if ($halt) die();
     }
 
-    static function inspectTable(array $table) {
+    static function inspectTable(array $table, $halt=true) {
         echo '<style type="text/css">';
-        echo 'table { font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
-        echo 'th { text-align:left; padding:3px; border:solid 1px #BBB; background-color:#EEE; width:10%; }';
-        echo 'td { padding:3px; border:solid 1px #BBB}';
+        echo 'table.inspect-table { margin:1px; font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
+        echo 'table.inspect-table th { text-align:left; padding:2px; border:solid 1px #BBB; background-color:#EEE; width:10%; }';
+        echo 'table.inspect-table td { padding:2px; border:solid 1px #BBB}';
         echo '</style>';
         echo debug::inspectTableArray($table);
-        die();
+        if ($halt) die();
     }
 
     static function inspectArray($data) {
-        $ret = '<table>';
+        $ret = '<table class="inspect-table">';
         foreach ($data as $key => $value) {
             $ret.='<tr><th>' . htmlentities($key) . '</th><td>';
             if (is_array($value)) {
@@ -1454,7 +1454,7 @@ class Debug {
 
     static function inspectTableArray($data) {
         $skipnum = true;
-        $ret = '<table>';
+        $ret = '<table class="inspect-table">';
         $head = $data[0];
         $ret.= '<tr>';
         $ret.= '<th>&nbsp;</th>';
