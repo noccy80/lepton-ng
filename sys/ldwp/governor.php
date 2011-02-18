@@ -2,63 +2,63 @@
 
 class LdwpException extends Exception { }
 
-    class Governor {
+class Governor {
 
-        /**
-         *
-         * @param $uuid The UUID of the worker or null for first available
-         */
-        static function getWorker($uuid) {
-            // Look up the uuid and if it exists create an instance of it
-            $worker = new LdwpWorker($uuid);
-            return $worker;
-        }
-
-        static function registerWorker($uuid,$description) {
-            // Initialize a clean worker state
-            $db = new DatabaseConnection();
-            $ws = new WorkerState();
-            // We need to create an empty slot in the workers table
-            $db->insertRow("INSERT INTO ldwpworkers (uuid,description,state) VALUES (%s,%s,%s)", $uuid, $description, serialize($ws));
-            
-        }
-
+    /**
+     *
+     * @param $uuid The UUID of the worker or null for first available
+     */
+    static function getWorker($uuid) {
+        // Look up the uuid and if it exists create an instance of it
+        $worker = new LdwpWorker($uuid);
+        return $worker;
     }
+
+    static function registerWorker($uuid,$description) {
+        // Initialize a clean worker state
+        $db = new DatabaseConnection();
+        $ws = new WorkerState();
+        // We need to create an empty slot in the workers table
+        $db->insertRow("INSERT INTO ldwpworkers (uuid,description,state) VALUES (%s,%s,%s)", $uuid, $description, serialize($ws));
+    }
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-    class LdwpActionConst {
-        const ACTION_START = 1;
+class LdwpActionConst {
+    const ACTION_START = 1;
+    const ACTION_STOP = 2;
+    const ACTION_CANCEL = 3;
+}
+
+/**
+ * Job queue implementation for workers
+ */
+class LdwpJobQueue {
+
+    private $_queue = null;
+
+    function length() {
+        return count((array)$this->_queue);
     }
 
-    /**
-     * Job queue implementation for workers
-     */
-    class LdwpJobQueue {
+    function push(LdwpJob $job, $priority=false) {
+        // Add the job to the end
+    }
 
-        private $_queue = null;
+    function pop() {
+        // Return the queue from the top
+    }
 
-        function length() {
-            return count((array)$this->_queue);
-        }
+    function remove(LdwpJob $job) {
 
-        function push(LdwpJob $job, $priority=false) {
-            // Add the job to the end
-        }
+    }
 
-        function pop() {
-            // Return the queue from the top
-        }
-
-        function remove(LdwpJob $job) {
-
-        }
-
-        function postpone(LdwpJob $job) {
+    function postpone(LdwpJob $job) {
             // Push job to end of queue
-        }
-
     }
+}
 
     class LdwpGovernor {
 

@@ -1427,8 +1427,10 @@ class Debug {
         error_reporting(0);
     }
 
-    static function inspect(array $array, $halt=true, $table=false) {
-        if (self::$provider) self::$provider($array,$table);
+    static function inspect($array, $halt=true, $table=false) {
+        if ($array) {
+            if (self::$provider) call_user_func_array(array(self::$provider,'inspect'),array($array,$table));
+        }
         if ($halt) die();
     }
 
