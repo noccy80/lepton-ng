@@ -3,6 +3,8 @@
 // Console applications or services shouldn't time out
 set_time_limit(0);
 
+using('lepton.cli.debug');
+
 interface IConsoleApplication {
     function main($argc,$argv);
 }
