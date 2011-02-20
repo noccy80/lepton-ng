@@ -270,6 +270,12 @@ function __fmt($args=null) {
     }
 }
 
+function __experimental() {
+    if (config::get('lepton.core.experimental',false) == false) {
+        logger::warning("The module %s is marked as experimental.", ModuleManager::getLastModuleName());
+    }
+}
+
 function __deprecated($oldfunc, $newfunc = null) {
 
     $stack = debug_backtrace(false);
@@ -1098,6 +1104,7 @@ class ModuleManager {
 
     static $_modules;
     static $_order;
+    static $_lastmodule = null;
 
     /**
      *
@@ -1114,6 +1121,10 @@ class ModuleManager {
             exit(1);
         }
         return (extension_loaded($extension));
+    }
+
+    static function getLastModuleName() {
+        return self::$_lastmodule;
     }
 
     /**
@@ -1172,6 +1183,7 @@ class ModuleManager {
           }
          */
         if (($path) && (file_exists($path))) {
+            self::$_lastmodule = $module;
             Console::debugEx(LOG_BASIC, __CLASS__, "Loading %s (%s).", $module, str_replace(BASE_PATH, '', $path));
             try {
                 ModuleManager::$_modules[strtolower($module)] = array();

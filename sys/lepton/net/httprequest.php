@@ -18,6 +18,7 @@ class HttpRequest {
 	function __construct($url, $args=null) {
 		$this->args = arr::apply(array(
 			'returndom' => false,
+            'method' => 'get',
 			'useragent' => 'LeptonPHP/1.0 (+http://labs.noccy.com)'
 		),(array)$args);
 		$this->url = $url;
@@ -30,8 +31,29 @@ class HttpRequest {
 	}
 
 	private function _streamDoRequest() {
-		throw new Eception("Stream support not yet implemented.");
-	}
+
+		$options = $this->args;
+
+        $ctxparam = array('http' => array(
+            'method' => (strtolower($options['method']) == 'post')?'POST':'GET',
+        ));
+        if (isset($options['parameters'])) {
+            $ctxparam['http']['content'] = http_build_query($options['parameters']);
+        }
+
+        $ctx = stream_context_create($ctxparam);
+        $cfh = fopen($url, 'r', false, $ctx);
+        $buf = '';
+        while (!feof($cfh)) {
+            $buf.= fread($cfh,8192);
+        }
+        fclose($cfh);
+
+        $this->ret = array(
+            'content' => $buf
+        );
+
+    }
 
 	private function _curlDoRequest() {
 

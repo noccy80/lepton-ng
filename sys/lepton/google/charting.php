@@ -4,20 +4,31 @@
 config::def('google.charts.api.passthrough', true);
 
 // Load the data storage that we need
-modulemanager::load('lepton.data.*');
+using('lepton.data.*');
 
+interface IChart {
+	function buildPostData();
+}
 /**
  * @class GChart
  * @brief Google Charting Class.
  * Draws charts via Google's Chart API either by redirecting or proxying the request.
+ *
+ * @property width The width of the graph
+ * @property height The height of the graph
  */
-class GChart {
+abstract class GChart {
 
 	const CONF_PASSTHROUGH = 'google.charts.api.passthrough';
 	static $spool = 0; // Server pool
 	private $charttype = 'p3';
 	private $width;
 	private $height;
+
+	function __construct(DataSet $data, $width, $height) {
+		$this->width = $width;
+		$this->height = $height;
+	}
 	
 	function getPooledUrl($args) {
 		$spool = ($spool++ % 10);
@@ -29,11 +40,6 @@ class GChart {
 		$url = $url . '?'. join('&', $urlqs);
 		return $url;
 	}	
-
-	function __construct(DataSet $data, $width, $height) {
-		$this->width = $width;
-		$this->height = $height;
-	}
 
 	function __set($key,$value) {
 		switch($key) {
@@ -59,34 +65,12 @@ class GChart {
 		}
 	}
 	
-	function buildPostData() {
-		$pd = array(
-			'chs' => $this->width.'x'.$this->height,
-			'cht' => $this->charttype
-		);
-		return $pd;
-	}
-
 	function doRenderPost($chart) {
 		// Create some random text-encoded data for a line chart.
 		header('content-type: image/png');
 		$url = 'http://chart.apis.google.com/chart?chid=' . md5(uniqid(rand(), true));
-		/*
-		$chd = 't:';
-		for ($i = 0; $i < 150; ++$i) {
-			$data = rand(0, 100000);
-			$chd .= $data . ',';
-		}
-		$chd = substr($chd, 0, -1);
 
-		// Add data, chart type, chart size, and scale to params.
-		$chart = $this->buildPostData();
-		$chart['cht'] = 'lc';
-		$chart['chds'] = '0,100000';
-		$chart['chd'] = $chd;
-		*/
-		// var_dump($chart);
-		// Send the request, and print out the returned bytes.
+        // Send the request, and print out the returned bytes.
 		$context = stream_context_create(
 			array('http' => array(
 				'method' => 'POST',
@@ -97,10 +81,28 @@ class GChart {
 	}
 	
 	function doRenderGet($chart) {
-
 		$url = $this->getPooledUrl($chart);
-
 		response::redirect($url);
 	}
 
+}
+
+class BarChart extends GChart {
+	function buildPostData() {
+		$pd = array(
+			'chs' => $this->width.'x'.$this->height,
+			'cht' => $this->charttype
+		);
+		return $pd;
+	}
+}
+
+class PieChart extends GChart {
+	function buildPostData() {
+		$pd = array(
+			'chs' => $this->width.'x'.$this->height,
+			'cht' => $this->charttype
+		);
+		return $pd;
+    }
 }
