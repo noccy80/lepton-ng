@@ -6,7 +6,7 @@ class WebDebugProvider implements IDebugProvider {
 
         if (is_array($data)) {
             echo '<style type="text/css">';
-            echo 'table { font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; }';
+            echo 'table { font:12px sans-serif; border-collapse:collapse; border:solid 1px #BBB; width:100%; margin:1px; }';
             echo 'th { text-align:left; padding:3px; border:solid 1px #BBB; background-color:#EEE; width:10%; }';
             echo 'td { padding:3px; border:solid 1px #BBB}';
             echo '</style>';
