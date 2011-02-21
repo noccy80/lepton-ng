@@ -118,6 +118,10 @@ class View {
      */
     static function load($view,$ctl=null) {
 
+		if (!headers_sent()) {
+			response::contentType("text/html; charset=utf-8");
+		}
+
         if (!self::$_primaryview) {
             if (config::get(self::KEY_EMBED_EXCEPTION,false) == true) ob_start();
             self::$_primaryview = $view;

@@ -1038,6 +1038,10 @@ abstract class string {
         return strval($var);
     }
 
+	static function htmlencode($str) {
+		return htmlentities($str,ENT_COMPAT,config::get(self::KEY_CHARSET, 'utf-8'));
+	}
+
 }
 
 abstract class integer {
