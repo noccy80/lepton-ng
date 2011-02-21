@@ -38,7 +38,12 @@ final class HttpAuthentication extends AuthenticationProvider {
             }
         }
         header('WWW-Authenticate: Basic realm="'.$this->realm.'"');
-        header('HTTP/1.0 401 Unauthorized');
+        if (php_sapi_name() == 'php-fcgi') {
+             $header = 'Status:';
+        } else {
+             $header = 'HTTP/1.0';
+        }
+        header($header.' 401 Unauthorized', true);
         // Removed by miniman (ticket #55)
         // Lepton::raiseError('HTTP 401: Unauthorized', 'You are not authorized to view this page. Please log in and try again.');
         // throw new SecurityException('You are not authorized to view this page. Please log in and try again.'); // , SecurityException::ERR_NOT_AUTHORIZED);

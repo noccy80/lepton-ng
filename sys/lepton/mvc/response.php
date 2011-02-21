@@ -101,7 +101,13 @@
 
         static function setStatus($status = 200) {
             if (!headers_sent()) {
-                header('HTTP/1.1 '.strval(intval($status)),true);
+                if (php_sapi_name() == 'php-fcgi') {
+                    $header = 'Status:';
+                } else {
+                    $header = 'HTTP/1.1';
+                }
+                $header = $header.' '.strval(intval($status));
+                header($header,true);
             }
         }
 
