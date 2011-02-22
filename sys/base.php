@@ -982,6 +982,25 @@ abstract class ExceptionHandler implements IExceptionHandler {
 
 }
 
+////// System /////////////////////////////////////////////////////////////////
+
+class System {
+
+	function getLoadAverage() {
+		if (IS_LINUX) {
+			$la = sys_getloadavg();
+			return $la[0];
+		} else {
+			return 0.0;
+		}
+	}
+
+	function getTempDir() {
+		return sys_get_temp_dir();
+	}
+
+}
+
 ////// Application Base ///////////////////////////////////////////////////////
 
 interface IApplication {
