@@ -50,11 +50,15 @@ abstract class Router implements IRouter {
         } else {
             $uri = $buri;
         }
-        if (isset($_SERVER['SERVER_NAME'])) {
-            $domain = strtolower($_SERVER['SERVER_NAME']);
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $domain = strtolower($_SERVER['HTTP_HOST']);
         } else {
-            $domain = 'localhost';
-        }
+            if (isset($_SERVER['SERVER_NAME'])) {
+                $domain = strtolower($_SERVER['SERVER_NAME']);
+            } else {
+                $domain = 'localhost';
+            }
+         }
         $secure = true;
         // Parse query string
         if (strpos($uri,'?')) {
