@@ -163,7 +163,7 @@ abstract class base {
     static function basePath($newpath=null) {
         $ret = (self::$_basepath) ? self::$_basepath : BASE_PATH;
         if ($newpath) {
-            self::$_basepath = realpath($newpath);
+            self::$_basepath = str_replace('//','/',realpath($newpath).'/');
             console::debug("Setting base path: %s", self::$_basepath);
         }
         return $ret;
@@ -172,14 +172,14 @@ abstract class base {
     static function appPath($newpath=null) {
         $ret = (self::$_apppath) ? self::$_apppath : APP_PATH;
         if ($newpath)
-            self::$_apppath = realpath($newpath);
+            self::$_apppath =  str_replace('//','/',realpath($newpath).'/');
         return $ret;
     }
 
     static function sysPath($newpath=null) {
         $ret = (self::$_syspath) ? self::$_syspath : SYS_PATH;
         if ($newpath)
-            self::$_syspath = realpath($newpath);
+            self::$_syspath =  str_replace('//','/',realpath($newpath).'/');
         return $ret;
     }
 
