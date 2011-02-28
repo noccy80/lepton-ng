@@ -1205,19 +1205,24 @@ class ModuleManager {
           $path = null;
           }
          */
-        if (($path) && (file_exists($path))) {
-            self::$_lastmodule = $module;
-            Console::debugEx(LOG_BASIC, __CLASS__, "Loading %s (%s).", $module, str_replace(BASE_PATH, '', $path));
-            try {
-                ModuleManager::$_modules[strtolower($module)] = array();
-                ModuleManager::$_order[] = strtolower($module);
-                // Console::debugEx(LOG_DEBUG2,__CLASS__,"  path = %s", $path);
-                require($path);
-                array_pop(ModuleManager::$_order);
-            } catch (ModuleException $e) {
-                return false;
+	if ($path) {
+            if (file_exists(basename($path,'.php').'.class.php')) {
+                $path = basename($path,'.php').'.class.php';
             }
-            return true;
+            if (file_exists($path)) {
+                self::$_lastmodule = $module;
+                Console::debugEx(LOG_BASIC, __CLASS__, "Loading %s (%s).", $module, str_replace(BASE_PATH, '', $path));
+                try {
+                    ModuleManager::$_modules[strtolower($module)] = array();
+                    ModuleManager::$_order[] = strtolower($module);
+                    // Console::debugEx(LOG_DEBUG2,__CLASS__,"  path = %s", $path);
+                    require($path);
+                    array_pop(ModuleManager::$_order);
+                } catch (ModuleException $e) {
+                    return false;
+                }
+                return true;
+            }
         } else {
             Console::debugEx(LOG_BASIC, __CLASS__, "Failed to load %s.", $module);
             return false;
