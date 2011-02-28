@@ -6,33 +6,72 @@ interface ILdwpJob {
 	function start();
 }
 
+/**
+ * Job Implementation
+ *
+ *
+ */
 abstract class LdwpJob {
 
-	const STATE_QUEUED = 0;
-	const STATE_ERROR = 1;
-	const STATE_RUNNING = 2;
-	const STATE_SUSPENDED = 3;
+	const STATE_NULL = null; ///< @var Newly created job, not queued yet
+	const STATE_QUEUED = 0; ///< @var Job queued in DB
+	const STATE_ERROR = 1; ///< @var Job has encountered an error condition
+	const STATE_RUNNING = 2; ///< @var Job is running
+	const STATE_SUSPENDED = 3; ///< @var Job has been suspended
 
 	protected $_state = 0;
 	protected $_message = null;
 	protected $_progress = null;
 	protected $_id = null;
 
+	/**
+	 * Constructor, must be chained from the worker class using parent::__construct() or
+	 * things will fail.
+	 *
+	 */
 	public function __construct() {
-		$this->setState(LdwpJob::STATE_QUEUED);
-		$this->setProgress("Job Queued",0,1);
+		$this->setState(null);
+		$this->setProgress("Job not yet queued");
 		$this->_id = uuid::v4();
 	}
 
+	/**
+	 * Retrieve the Job ID
+	 *
+	 * @return String The Job ID (UUID)
+	 */
 	public function getId() {
 		return $this->_id;
 	}
 
+	/**
+	 * Set the state of the job to one of the LdwpJob::STATE_* constants.
+	 *
+	 * @param Int $state The new state of the job
+	 */
 	protected function setState($state) {
 		$this->_state = $state;
 	}
 
-	protected function setProgress($message,$current,$max) {
+	/**
+	 * Retrieve the state of the job. The state can only be changed from within the class.
+	 *
+	 * @return Int The state of the job
+	 */
+	public function getState() {
+		return $this->_state;
+	}
+
+	/**
+	 * Update the progress information of the job. This allows for a plaintext string to
+	 * be displayed when the status is requested as well as the current and maximum
+	 * progress, f.ex. step 1 or 4 or 1 of 100%.
+	 *
+	 * @param String $message The message to set for the current progress
+	 * @param Int $current The current progress
+	 * @param Int $max The maximum progress
+	 */
+	protected function setProgress($message,$current=null,$max=null) {
 		$this->_message = $message;
 		$this->_progress = array($current, $max);
 
