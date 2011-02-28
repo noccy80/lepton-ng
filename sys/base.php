@@ -15,6 +15,7 @@ declare(ticks = 1);
 define('RETURN_SUCCESS', 0);
 define('RETURN_ERROR', 1);
 define('PI', 3.1415926535897931);
+define('NS_SEPARATOR','::');
 
 // Compatibility definitions
 foreach (array(
@@ -185,6 +186,8 @@ abstract class base {
 
 }
 
+///// Utility Classes ////////////////////////////////////////////////////////
+
 abstract class utils {
 
     static function iif($cond, $true, $false) {
@@ -224,16 +227,6 @@ abstract class DataProvider implements IDataProvider {
 }
 
 ////// Utility Functions and Aliases //////////////////////////////////////////
-
-function dequote($str) {
-    $str = trim($str);
-    $qt = $str[0];
-    if (($qt == '"') || ($qt == "'" )) {
-        if ($str[strlen($str) - 1] == $qt) {
-            return substr($str, 1, strlen($str) - 2);
-        }
-    }
-}
 
 function __fileinfo($strinfo, $vars=null) {
     if (count(ModuleManager::$_order) > 0) {
@@ -1029,6 +1022,16 @@ abstract class string {
         return $out;
     }
 
+	function dequote($str) {
+		$str = trim($str);
+		$qt = $str[0];
+		if (($qt == '"') || ($qt == "'" )) {
+			if ($str[strlen($str) - 1] == $qt) {
+				return substr($str, 1, strlen($str) - 2);
+			}
+		}
+	}
+
     static function replace($str, $find, $replace) {
         return str_replace($find, $replace, $str);
     }
@@ -1059,6 +1062,15 @@ abstract class string {
 
 	static function htmlencode($str) {
 		return htmlentities($str,ENT_COMPAT,config::get(self::KEY_CHARSET, 'utf-8'));
+	}
+
+	static function parseUri($str,$defaultns=null) {
+		if (strpos(NS_SEPARATOR, $str) > 0) {
+			$segments = explode(NS_SEPARATOR, $str);
+			return array($segments[0], $segments[1]);
+		} else {
+			return array($defaultns,$str);
+		}
 	}
 
 }

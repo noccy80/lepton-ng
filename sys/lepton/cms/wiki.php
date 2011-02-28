@@ -19,7 +19,8 @@
             $this->loadLibrary('database');
             $this->database->checkSchema('wiki');
             */
-            DBX::getInstance(DBX)->getSchemaManager()->checkSchema('wiki');
+            //DBX::getInstance(DBX)->getSchemaManager()->checkSchema('wiki');
+			// DatabaseConnection::getSchemaManager()
         }
 
         /**
@@ -29,8 +30,8 @@
          * @return WikiPage The page
          */
         function getPage($pagename,$revision = Wiki::REVISION_LATEST) {
-            list($ns,$uri) = StringUtil::getNamespaceURI('default',$pagename);
-            $db = DBX::getInstance(DBX);
+            list($ns,$uri) = string::parseUri($pagename,'default');
+            $db = new DatabaseConnection();
             try {
                 if ($revision == Wiki::REVISION_LATEST) {
                     $rs = $db->getSingleRow("SELECT * FROM wiki WHERE ns='%s' AND uri='%s' AND reverted=0 ORDER BY revision DESC LIMIT 1",$ns,$uri);
@@ -60,24 +61,24 @@
                     $locked = true;
             }
             $page = new WikiPage(array(
-                'ns'        => $ns,        // The namespace of the page
-                'uri'        => $uri,    // The URI of the page
-                'revision'    => $rev,    // 1 is default revision
-                'lastedit'  => $edited, // Date and time last edit
-                'author'    => $author, // Author
-                'authorname'=> $author->displayname,
+                'ns'           => $ns,        // The namespace of the page
+                'uri'          => $uri,    // The URI of the page
+                'revision'     => $rev,    // 1 is default revision
+                'lastedit'     => $edited, // Date and time last edit
+                'author'       => $author, // Author
+                'authorname'   => $author->displayname,
                 'title'        => $title,    // TODO: Set title here
-                'content'    => $content,// TODO: Set content here
-                'reverted'    => false,    // True if the requested revision has been reverted
-                'locked'    => $locked,    // True if the page should not be editable
-                'hidden'    => false    // True if the page is unlisted
+                'content'      => $content,// TODO: Set content here
+                'reverted'     => false,    // True if the requested revision has been reverted
+                'locked'       => $locked,    // True if the page should not be editable
+                'hidden'       => false    // True if the page is unlisted
             ));
 
             return $page;
         }
 
         function savePage(WikiPage $p) {
-            $db = DBX::getInstance(DBX);
+            $db = new DatabaseConnection();
 
             // Read values
             $ns =       $p->getNs();
@@ -109,7 +110,7 @@
         function updatePage($pagename,$title,$content) {
             $ns = String::getNamespace('default',$pagename);
             $uri = String::getLocation($pagename);
-            $db = DBX::getInstance(DBX);
+            $db = new DatabaseConnection();
             $author = User::getActiveUserId();
             try {
                 // pull the latest revision of the page
@@ -166,9 +167,3 @@
         }
     }
 
-    Library::register('wiki',array(
-        'baseclass' => 'Wiki',
-        'alias' => 'wiki'
-    ));
-
-?>

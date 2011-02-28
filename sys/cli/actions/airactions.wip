@@ -24,7 +24,7 @@ class AirActions extends ConsoleActions {
                 if ($line[strlen($line)-1] == "\n") { $line = substr($line,0,strlen($line)-1); }
                 if (strpos($line,'=') !== false) {
                     $ld = explode('=',$line);
-                    $this->airopts[$ld[0]] = dequote($ld[1]);
+                    $this->airopts[$ld[0]] = string::dequote($ld[1]);
                 }
             }
         } else {
