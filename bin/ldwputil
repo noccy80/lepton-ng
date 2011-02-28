@@ -1,0 +1,40 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+using('ldwp.jobqueue');
+
+using('app.ldwp.*');
+using('ldwp.job.*');
+
+class CronQueueRunner extends ConsoleApplication {
+
+	protected $queue;
+
+	protected $description = "LDWP Queue Runner for Cron";
+	protected $arguments = array(
+		array('v','verbose','Be verbose'),
+		array('h','help','Show this help'),
+		array('d','db','Use alternate DB connection'),
+		array('l','list','List the pending jobs'),
+		array('r','run','Run the queue')
+	);
+
+	function __construct() {
+		$this->queue = new JobQueue();
+	}
+
+	function main($argc,$argv) {
+		console::writeLn("CronQueueRunner invoked");
+		while (!$this->queue->isEmpty()) {
+			$jobid = $this->queue->getNextJobId();
+			$job = $this->queue->getJob($jobid);
+			console::writeLn("Starting job %s", $job->getId());
+			$job->start();
+			console::writeLn("Job %s finished", $job->getId());
+		}
+	}
+
+}
+
+lepton::run('CronQueueRunner');
