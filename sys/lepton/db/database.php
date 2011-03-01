@@ -279,3 +279,10 @@ class Database {
         'EXECUTING' => 0
     );
 }
+
+class sqlstr {
+    private $str;
+    function __construct($str) { $this->str = $str; }
+    function __toString() { return $this->str; }
+}
+function sqlstr($str) { return new sqlstr($str); }

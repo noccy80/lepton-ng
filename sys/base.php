@@ -296,17 +296,23 @@ function __deprecated($oldfunc, $newfunc = null) {
     if (config::get('lepton.base.strict', false) == true) {
         throw new BaseException($msg);
     }
+
 }
 
 function __fileext($filename) {
     return pathinfo($filename, PATHINFO_EXTENSION);
 }
 
+function __filepath($filename) {
+    return pathinfo($filename, PATHINFO_DIRNAME);
+}
+    
 function __strip_newline($str) {
     $str = str_replace("\r", "", $str);
     $str = str_replace("\n", "", $str);
     return $str;
 }
+
 
 ////// Exceptions /////////////////////////////////////////////////////////////
 

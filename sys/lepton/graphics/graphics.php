@@ -4,6 +4,8 @@
 
 if (!defined('PI')) define('PI',3.1415926535897931);
 
+using('lepton.graphics.exception');
+
 /**
  * @class Graphics
  * @brief Lepton Graphics library
@@ -47,16 +49,6 @@ class Graphics {
         return $c;
     }
 
-}
-
-class GraphicsException extends Exception {
-    const ERR_GENERIC = 0;
-    const ERR_FILE_NOT_FOUND = 1;
-    const ERR_META = 2;
-    const ERR_BAD_COLOR = 3; /// Bad color value
-    const ERR_BAD_FONT = 4; /// Bad font
-    const ERR_LOAD_FAILURE = 5;
-    const ERR_SAVE_FAILURE = 6;
 }
 
 ////////// Tag management /////////////////////////////////////////////////////

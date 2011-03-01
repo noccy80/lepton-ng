@@ -1,6 +1,7 @@
 <?php
 
 using('lepton.graphics.font');
+using('lepton.graphics.exception');
 
 /**
  * @class  Canvas
@@ -101,8 +102,10 @@ class Canvas {
     }
 
     function __construct($width=null,$height=null,Color $color = null) {
-        if ($width && $height) {
-            $this->createImage($width,$height,$color);
+        if ($widthorfn && $height) {
+            $this->createImage($widthorfn,$height,$color);
+        } else {
+            $this->loadImage($width);
         }
     }
 
@@ -134,7 +137,9 @@ class Canvas {
      */
     function saveImage($filename=null) {
         $this->checkImage();
-        $fn = ($filename)?$filename:$this->filename;
+        //$fn = ($filename)?$filename:$this->filename;
+        if ($filename == null) throw new GraphicsException("No filename specified for save operation");
+        $fn = $filename;
         if (preg_match('/\.([a-z0-9]+?)$/', strtolower($fn), $ret)) {
             switch($ret[1]) {
                 case 'jpg':
@@ -603,3 +608,4 @@ class Canvas {
     }
 
 }
+

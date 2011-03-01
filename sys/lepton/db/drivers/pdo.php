@@ -69,9 +69,12 @@ class PdoDatabaseDriver extends DatabaseDriver {
     function escapeString($args) {
         if (is_array($args)) {
             for($n = 1; $n < count($args); $n++) {
-                if (!is_numeric($args[$n])) {
-                    $args[$n] = $this->conn->quote($args[$n]);
+                if ((!is_numeric($args[$n])) || (is_a($args[$n],'sqlstr'))) {
+                    console::debugEx(LOG_DEBUG2,__CLASS__,"Escaping value: %s", $args[$n]);
+                    $args[$n] = $this->conn->quote((string)$args[$n]);
+                    console::debugEx(LOG_DEBUG2,__CLASS__,"             -> %s", $args[$n]);
                 }
+
             }
             if (count($args) > 1) {
                 $str = call_user_func_array("sprintf",$args);
