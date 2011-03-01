@@ -1,7 +1,15 @@
 <?php
 
 using('lepton.graphics.font');
+using('lepton.graphics.drawable');
+using('lepton.graphics.tags');
+using('lepton.graphics.colorspaces.rgb');
 using('lepton.graphics.exception');
+
+interface ICanvas {
+    function getImage();
+    function getDimensions();
+}
 
 /**
  * @class  Canvas
@@ -17,7 +25,7 @@ using('lepton.graphics.exception');
  *         drawing related functions will load the image. Polling the width
  *         or image format will read the metadata.
  */
-class Canvas {
+class Canvas implements IDrawable,ICanvas {
 
     private $himage = null;
     private $width = 0;
@@ -34,6 +42,21 @@ class Canvas {
     const KEEP_CROP = 1;  // Maintain aspect, crop and fill
     const KEEP_FILL = 2;  // Maintain aspect, simply pad
 
+	function getImage() {
+
+		$this->checkImage();
+		if ($this->himage) return $this->himage;
+		throw new ImageException("getImage called without image available");
+
+	}
+
+	function getDimensions() {
+
+		$this->checkMeta();
+		return array($this->width,$this->height);
+		
+	}
+
     /**
      * Property overloading to get tag information and image properties.
      *
@@ -41,6 +64,7 @@ class Canvas {
      * @return any
      */
     function __get($key) {
+
         switch($key) {
             case 'exif':
                 if (!$this->_exif)
@@ -55,6 +79,7 @@ class Canvas {
             case 'width':
                 return $this->width;
         }
+
     }
 
     /**
@@ -64,7 +89,9 @@ class Canvas {
      * @return ImageExif The exif information object
      */
     function getExif() {
+
         return new ImageExif($this->filename);
+
     }
 
     /**
@@ -74,8 +101,10 @@ class Canvas {
      * @return ImageIptc The itpc information object
      */
     function getIptc() {
+
         $iptc = new ImageIptc($this);
         return $iptc;
+
     }
 
     /**
@@ -84,6 +113,7 @@ class Canvas {
      * @param string $filename The filename
      */
     function loadImage($filename) {
+
         // Check if the file exist
         if (file_exists($filename)) {
             // On success, cache the filename for use with the save() function
@@ -93,21 +123,28 @@ class Canvas {
         } else {
             throw new GraphicsException("File not found", GraphicsException::ERR_FILE_NOT_FOUND);
         }
+
     }
     
     static function load($filename) {
+
         $i = new Canvas();
         $i->loadImage($filename);
         return $i;
+
     }
 
     function __construct($width=null,$height=null,Color $color = null) {
-        if ($widthorfn && $height) {
-            $this->createImage($widthorfn,$height,$color);
-        } else {
-            $this->loadImage($width);
+
+        if ($width && $height) {
+            $this->createImage($width,$height,$color);
         }
+
     }
+
+	function getPainter() {
+		return new CanvasPainter($this);
+	}
 
     /**
      * Create a new image, normally called from the Graphics::create() method
@@ -117,7 +154,7 @@ class Canvas {
      * @param Color $color The color to fill width
      */
     function createImage($width,$height,Color $color = null) {
-        // TODO: Create a new file
+
         $this->himage = imagecreatetruecolor($width,$height);
         $this->gotmeta = true; // We set this to true to avoid trying to read metadata
         $this->gotimage = true; // We created the image so we got it
@@ -126,6 +163,7 @@ class Canvas {
         if ($color != null) {
             imagefilledrectangle($this->himage,0,0,$this->width,$this->height,$color->getColor($this->himage));
         }
+
     }
 
     /**
@@ -136,6 +174,7 @@ class Canvas {
      * @param string $filename The filename to write to (optional)
      */
     function saveImage($filename=null) {
+
         $this->checkImage();
         //$fn = ($filename)?$filename:$this->filename;
         if ($filename == null) throw new GraphicsException("No filename specified for save operation");
@@ -158,6 +197,7 @@ class Canvas {
         } else {
             throw new GraphicsException("Invalid filename", GraphicsException::ERR_SAVE_FAILURE);
         }
+
     }
 
     /**
@@ -169,6 +209,7 @@ class Canvas {
      * @param boolean $return If true return data rather than output
      */
     function output($contenttype='image/png', $qualitycompression=75, $return=false) {
+
         $this->checkImage();
         if (!$return) {
             response::contentType($contenttype);
@@ -191,14 +232,18 @@ class Canvas {
             $img = response::getBuffer();
             return $img;
         }
+
     }
 
     /**
      * Private function to make sure that the metadata is loaded. Any
      * method that works on image metadata should call on this function
      * prior.
+	 *
+	 * @return bool True if the image metadata is loaded
      */
     private function checkMeta() {
+
         if ($this->gotmeta) return true;
         $meta = getimagesize($this->filename);
         if ($meta !== false) {
@@ -212,6 +257,7 @@ class Canvas {
         }
         $this->gotmeta = true;
         return true;
+
     }
 
     /**
@@ -223,6 +269,7 @@ class Canvas {
      * @return bool True if the image is loaded
      */
     private function checkImage() {
+
         if ($this->gotimage) return true;
         $img = @imagecreatefromstring(file_get_contents($this->filename));
         if ($img) {
@@ -232,28 +279,7 @@ class Canvas {
             throw new GraphicsException("Failed to load the image.", GraphicsException::ERR_LOAD_FAILURE);
         }
         return true;
-    }
 
-    /**
-     * Fill the canvas with the specified colosaver.
-     *
-     * @param Color $fillcolor The Color() to fill with.
-     */
-    function fillCanvas(Color $fillcolor) {
-        $this->checkImage();
-        $w = imageSX($this->himage);
-        $h = imageSY($this->himage);
-        imagefilledrectangle($this->himage, 0, 0, $w, $h, $fillcolor->getColor($this->himage));
-    }
-
-    /**
-     *
-     *
-     *
-     *
-     */
-    function fillArea($x, $y, Color $border, Color $fillcolor) {
-        imagefilltoborder($this->himage, $x, $y, $border->getColor($this->himage), $fillcolor->getColor($this->himage));
     }
 
     /**
@@ -262,10 +288,12 @@ class Canvas {
      * @return int The width of the image
      */
     function getWidth() {
+
         if ($this->checkMeta()) {
             return $this->width;
         }
         throw new GraphicsException("Couldn't read metadata", GraphicsException::ERR_GENERIC);
+
     }
 
     /**
@@ -274,10 +302,12 @@ class Canvas {
      * @return int The height of the image
      */
     function getHeight() {
+
         if ($this->checkMeta()) {
             return $this->height;
         }
         throw new GraphicsException("Couldn't read metadata", GraphicsException::ERR_GENERIC);
+
     }
 
     /**
@@ -285,8 +315,10 @@ class Canvas {
      *
      */
     function getColors() {
+
         $this->checkImage();
         $total = imagecolorstotal( $this->himage );
+
     }
 
     /**
@@ -294,8 +326,10 @@ class Canvas {
      *
      */
     function getImageInfo() {
+
         getimagesize($this->filename, $info);
         return $info;
+
     }
 
     /**
@@ -354,6 +388,7 @@ class Canvas {
 
         imagedestroy($this->himage);
         $this->himage = $n;
+
     }
 
     /**
@@ -396,147 +431,6 @@ class Canvas {
 
     }
 
-    /**
-     * Set a pixel in the image
-     *
-     * @param int $x The X offset of the pixel to set
-     * @param int $y The Y offset of the pixel to set
-     * @param Color $color The color to set to
-     */
-    function setPixel($x, $y, Color $color) {
-        $this->checkImage();
-        imagesetpixel($this->himage,$x,$y,$color->getColor($this->himage));
-    }
-
-    /**
-     * Get the color of a pixel in the image
-     *
-     * @param int $x The X offset of the pixel to get
-     * @param int $y The Y offset of the pixel to get
-     * @return Color The color of the pixel
-     */
-    function getPixel($x, $y) {
-        $this->checkImage();
-        return new Color(imagecolorat($this->himage,$x,$y));
-    }
-
-    /**
-     * Draw a line between the coordinates specified by {x1,y1} and {x2,y2}
-     *
-     *
-     *
-     */
-    function drawLine($x1, $y1, $x2, $y2, Color $color) {
-        $this->checkImage();
-        imageline($this->himage, $x1, $y1, $x2, $y2, $color->getColor($this->himage));
-    }
-
-    /**
-     * Draw a rectangle between the coordinates specified by {x1,y1} and
-     * {x2,y2}
-     *
-     *
-     *
-     */
-    function drawRect($x1, $y1, $x2, $y2, Color $color) {
-        $this->checkImage();
-        imagerectangle($this->himage,$x1,$y1,$x2,$y2,$color->getColor($this->himage));
-    }
-
-    /**
-     * Draw a filled rectangle between the coordinates specified by {x1,y1}
-     * and {x2,y2}
-     *
-     *
-     *
-     */
-    function drawFilledRect($x1, $y1, $x2, $y2, Color $color, Color $fill) {
-        $this->checkImage();
-        imagefilledrectangle($this->himage,$x1,$y1,$x2,$y2,$fill->getColor($this->himage));
-        imagerectangle($this->himage,$x1,$y1,$x2,$y2,$color->getColor($this->himage));
-    }
-
-    /**
-     * Draw an arc.
-     *
-     * @see ImageCanvas::drawFilledArc
-     * @param int $x X coordinate
-     * @param int $y Y coordinate
-     * @param int $width The width of the circle
-     * @param int $height The height of the circle
-     * @param int $start Starting angle, 0 being north
-     * @param int $end Ending angle
-     * @param Color $color The color
-     */
-    function drawArc($x, $y, $width,$height,$start, $end, Color $color) {
-        $this->checkImage();
-        $sa = ($start - 90) % 360;
-        $ea = ($end - 90) % 360;
-        imagearc($this->himage,$x,$y,$width,$height,$sa,$ea,$color->getColor($this->himage));
-    }
-
-    /**
-     * Draw a filled arc. Will use the imagefilledarc() function if available,
-     * and otherwise fall back on a custom method of achieving the same
-     * result.
-     *
-     * @see ImageCanvas::drawArc
-     * @param int $x X coordinate
-     * @param int $y Y coordinate
-     * @param int $width The width of the circle
-     * @param int $height The height of the circle
-     * @param int $start Starting angle, 0 being north
-     * @param int $end Ending angle
-     * @param Color $color The color
-     */
-    function drawFilledArc($x, $y, $width, $height, $start, $end, Color $color) {
-        $this->checkImage();
-        $sa = ($start - 90) % 360;
-        $ea = ($end - 90) % 360;
-        if (function_exists('imagefilledarc')) {
-            imagefilledarc($this->himage,$x,$y,$width,$height,$sa,$ea,$color->getColor($this->himage),IMG_ARC_PIE);
-        } else {
-            $ch = $color->getColor($this->himage);
-            imagearc($this->himage,$x,$y,$width,$height,$sa,$ea,$ch);
-            $p1x = cos(($sa * PI) / 180);
-            $p1y = sin(($sa * PI) / 180);
-            $p2x = cos(($ea * PI) / 180);
-            $p2y = sin(($ea * PI) / 180);
-            imageline($this->himage,$x,$y,$x+$p1x*($width/2),$y+$p1y*($height/2),$ch);
-            imageline($this->himage,$x,$y,$x+$p2x*($width/2),$y+$p2y*($height/2),$ch);
-            $xmin = min($x,$p1x,$p2x);
-            $xmax = max($x,$p1x,$p2x);
-            $ymin = min($y,$p1y,$p2y);
-            $ymax = max($y,$p1y,$p2y);
-            $xc = ($xmax+$xmin)/2;
-            $yc = ($ymax+$ymin)/2;
-            // TODO: This fill doesn't work
-            imagefilltoborder($this->himage,$xc,$yc,$ch,$ch);
-        }
-    }
-
-    /**
-     * Draws a polygon with the specified color. The first parameter
-     * should be an array of X/Y values.
-     *
-     * @note The spline/bezier implementation should be based on this
-     *
-     * @param array $points The points
-     * @param Color $color The color to use
-     */
-    function drawPoly($points, Color $color) {
-
-        $this->checkImage();
-
-        $c = $color->getColor($this->himage);
-        for($n = 0; $n < count($points) - 1; $n++) {
-            imageline($this->himage,
-                $points[$n][0], $points[$n][1],
-                $points[$n+1][0], $points[$n+1][1],
-                $c);
-        }
-
-    }
 
 
     /**
@@ -546,12 +440,14 @@ class Canvas {
      * @todo Reread metadata after processing
      */
     function apply(ImageFilter $filter) {
+
         $this->checkImage();
         $htemp = $filter->applyFilter($this->himage);
         if ($htemp) {
             imagedestroy($this->himage);
             $this->himage = $htemp;
         }
+
     }
 
     /**
@@ -562,7 +458,9 @@ class Canvas {
      * @return Font The font
      */
     function createFont($fontname, $fontsize) {
+
         return new Font($fontname,$fontsize);
+
     }
 
     /**
@@ -576,6 +474,7 @@ class Canvas {
      * @param string $text The text to output
      */
     function drawText(Font $font, Color $color, $x, $y, $text) {
+
         $this->checkImage();
         $fd = $font->__getFont();
         imagettftext(
@@ -584,6 +483,7 @@ class Canvas {
             $color->getColor($this->himage),
             $fd['fontname'], $text
         );
+
     }
 
     /**
@@ -603,9 +503,18 @@ class Canvas {
      * @param string $text The text to output
      */
     function drawTextRect(Font $font, Color $color, $x1, $y1, $x2, $y2, $text) {
+
         $this->checkImage();
 
     }
+
+    function draw(Canvas $dest,$x,$y,$width=0,$height=0) {
+
+        $idstmage = $dest->getImage();
+        imagecopy($dstimage, $this->himage, $x, $y, 0, 0, $width, $height);
+
+    }
+
 
 }
 

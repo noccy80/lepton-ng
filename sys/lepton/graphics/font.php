@@ -1,12 +1,17 @@
-<?php __fileinfo("Font Wrapper", array(
-	'depends' => array('lepton.graphics.canvas')
-));
+<?php __fileinfo("Font Wrapper");
+
+using('lepton.graphics.canvas');
+using('lepton.graphics.drawable');
+
+interface IFont {
+	function drawText(Drawable $drawable,$x,$y,$color,$text);
+}
 
 /**
  * Class to wrap a font instance. Allows manipulation of the font once
  * assigned.
  */
-class Font {
+class TruetypeFont implements IFont {
 
     private $font = array();
     
@@ -62,9 +67,19 @@ class Font {
      */
     function __getFont() {
         return $this->font;
-        //imagettftext($this->hImage, $fontsize, $angle, $x, $y, $color, $fontname, $text);
 
     }
+
+	
+	function drawText(Drawable $drawable,$x,$y,$color,$text) {
+
+		$himage = $drawable->getImage();
+        imagettftext(
+			$himage, $this->font['fontsize'], $this->font['$angle'],
+			$x, $y, $color, $this->font['fontname'], $text
+		);
+
+	}
 
     /**
      * Rotate the font relative to its current rotation.
@@ -85,5 +100,11 @@ class Font {
     public function setAngle($degrees) {
         $this->font['angle'] = ($degrees % 360);
     }
+
+}
+
+class BitmapFont implements IFont {
+
+	function drawText(Drawable $drawable,$x,$y,$color,$text) { }
 
 }
