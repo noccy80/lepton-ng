@@ -320,6 +320,7 @@ function __strip_newline($str) {
   Exception classes. Should all be derived from BaseException
  */
 class BaseException extends Exception { }
+class ModuleException extends BaseException { }
 class FilesystemException extends BaseException { }
 class FileNotFoundException extends FilesystemException { }
 class FileAccessException extends FilesystemException { }
@@ -1197,6 +1198,8 @@ class ModuleManager {
      *
      */
     static function load($module, $optional=false) {
+
+        // Check if the path is globbed
         if (strpos($module, '*') == (strlen($module) - 1)) {
             $path = self::_mangleModulePath($module);
             Console::debugEx(LOG_EXTENDED, __CLASS__, "Looking for modules matching %s from %s", $module, $path);
@@ -1209,10 +1212,14 @@ class ModuleManager {
             }
             return (!$failed);
         }
+
+        // Check if the module is already loaded
         if (ModuleManager::has($module)) {
             Console::debugEx(LOG_EXTENDED, __CLASS__, "Already loaded %s.", $module);
             return true;
         }
+
+        // Otherwise mangle the path
         $path = self::_mangleModulePath($module);
         /*
           if (file_exists(APP_PATH.$modpath)) {
@@ -1223,6 +1230,7 @@ class ModuleManager {
           $path = null;
           }
          */
+
 	if ($path) {
             if (file_exists(basename($path,'.php').'.class.php')) {
                 $path = basename($path,'.php').'.class.php';
@@ -1237,9 +1245,14 @@ class ModuleManager {
                     require($path);
                     array_pop(ModuleManager::$_order);
                 } catch (ModuleException $e) {
+                    Console::debugEx(LOG_BASIC, __CLASS__, "Exception loading %s!", $module);
+                    throw $e;
                     return false;
                 }
                 return true;
+            } else {
+                throw new ModuleException("Could not load module ".$module.": Path not found");
+                return false;
             }
         } else {
             Console::debugEx(LOG_BASIC, __CLASS__, "Failed to load %s.", $module);
