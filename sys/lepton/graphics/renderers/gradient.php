@@ -22,6 +22,7 @@
         function draw(Canvas $dest,$x,$y,$width=0,$height=0) {
 
 			$image = new Canvas($width,$height);
+			$p = $image->getPainter();
 
             $grad = $height; // Top down
             $this->colors['step'] = array(
@@ -38,7 +39,7 @@
                     floor($this->colors['first'][2] + ($this->colors['step'][2] * $n))
                 );
                 // Console::debug("Row %d: rgb(%d,%d,%d)", $n, $c->r, $c->g, $c->b);
-                $image->drawLine(0,$n,$w,$n,$c);
+                $p->drawLine(0,$n,$w,$n,$c);
             }
 
 			imagecopy($dest->getImage(), $image->getImage(), $x, $y, 0, 0, $width, $height);

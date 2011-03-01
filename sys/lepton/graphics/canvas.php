@@ -2,6 +2,7 @@
 
 using('lepton.graphics.font');
 using('lepton.graphics.drawable');
+using('lepton.graphics.canvaspainter');
 using('lepton.graphics.tags');
 using('lepton.graphics.colorspaces.rgb');
 using('lepton.graphics.exception');
