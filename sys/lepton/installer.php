@@ -12,4 +12,3 @@
 
     Router::hookRequestUri("^\/install\/(.*)$", array('LeptonInstaller', 'request'));
 
-?>
