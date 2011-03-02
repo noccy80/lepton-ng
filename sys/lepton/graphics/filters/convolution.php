@@ -23,8 +23,13 @@ class ConvolutionImageFilter extends ImageFilter {
 		$this->div = $div;
 		$this->offset = $offset;
 	}
-	function applyFilter($himage) {
-		imageconvolution($himage, $this->matrix, $this->div, $this->offset);
+
+	function applyFilter(Canvas $canvas) {
+
+		$himage = $canvas->getImage();
+
+		ImageUtils::imageconvolution($himage, $this->matrix, $this->div, $this->offset);
+
 	}
 }
 

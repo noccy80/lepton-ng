@@ -9,7 +9,10 @@ using('lepton.graphics.filter');
 
 class BlurImageFilter extends ImageFilter {
 
-	function applyFilter($himage) {
+	function applyFilter(Canvas $canvas) {
+
+		$himage = $canvas->getImage();
+
 		$m = array(
 			array(1.0, 2.0, 1.0),
 			array(2.0, 4.0, 2.0),

@@ -43,7 +43,10 @@ class WatermarkImageFilter extends ImageFilter {
 		imagedestroy($this->hwatermark);
 	}
 
-	function applyFilter($himage) {
+	function applyFilter(Canvas $canvas) {
+
+		$himage = $canvas->getImage();
+
 		$iw = imagesx($himage);
 		$ih = imagesy($himage);
 		switch($this->placement) {

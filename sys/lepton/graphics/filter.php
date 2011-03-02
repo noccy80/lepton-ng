@@ -4,9 +4,10 @@
      * ImageFilter Interface
      */
     interface IImageFilter {
-        function applyFilter($himage);
+		function applyFilter(Canvas $canvas);
     }
-    /**
+
+	/**
      * Abstract class for ImageFilter implementations. Enforces the IImageFilter
      * interface.
      */

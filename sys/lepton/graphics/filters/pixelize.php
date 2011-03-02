@@ -14,7 +14,9 @@ class PixelizeImageFilter extends ImageFilter {
 
 	}
 
-	function applyFilter($himage) {
+	function applyFilter(Canvas $canvas) {
+
+		$himage = $canvas->getImage();
 
 	}
 

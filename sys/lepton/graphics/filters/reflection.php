@@ -24,7 +24,9 @@ class ReflectionImageFilter extends ImageFilter {
 		$this->_os = new Optionset($options);
 	}
 
-	function applyFilter($himage) {
+	function applyFilter(Canvas $canvas) {
+
+		$himage = $canvas->getImage();
 
 		$rheight = $this->_os->get('reflectionheight', 25);
 		$iheight = imagesy($himage);
