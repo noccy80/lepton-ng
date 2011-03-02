@@ -443,7 +443,7 @@ class Canvas implements IDrawable,ICanvas {
     function apply(ImageFilter $filter) {
 
         $this->checkImage();
-        $htemp = $filter->applyFilter($this->himage);
+        $htemp = $filter->applyFilter($this);
         if ($htemp) {
             imagedestroy($this->himage);
             $this->himage = $htemp;

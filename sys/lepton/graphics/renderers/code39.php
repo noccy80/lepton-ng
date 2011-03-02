@@ -26,9 +26,6 @@
 
         function draw(Canvas $dest,$x,$y,$width=0,$height=0) {
 
-			$image = new Canvas($width,$height);
-			$p = $image->getPainter();
-
 			$hi = $dest->getImage();
 			$str = '*'.$this->_text.'*';
 

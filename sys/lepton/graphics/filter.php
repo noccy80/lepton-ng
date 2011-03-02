@@ -12,9 +12,8 @@
      * interface.
      */
     abstract class ImageFilter implements IImageFilter {
-        public function apply($himage) {
-            $htemp = $this->applyFilter($himage);
-            return $htemp;
+        public static function apply(Canvas $canvas, ImageFilter $filter) {
+            $filter->applyFilter($canvas);
         }
         protected function transform($himage) {
             $tmp = imagecreatetruecolor(imagesx($himage),imagesy($himage));
@@ -63,7 +62,7 @@ class ImageUtils {
 	static function imageconvolution($src, $filter, $div, $offset) {
 
 		if (function_exists('imageconvolution')) {
-			return imageconvolution($himage, $m, $div, $offs);
+			return imageconvolution($src, $filter, $div, $offset);
 		}
 
 		if ($src==NULL) {
