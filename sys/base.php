@@ -837,6 +837,8 @@ class Timer {
  */
 class Lepton {
 
+	const EVT_SHUTDOWN = 'lepton.core.shutdown';
+
     static $__exceptionhandler = null;
     static $mimetypes = array(
         'png' => 'image/png',
@@ -1456,6 +1458,7 @@ abstract class Logger {
     }
 
     private static function __log($prio, $msg) {
+		event::invoke(debug::EVT_DEBUG, array($prio,$msg));
         foreach (self::$_loggers as $logger) {
             $logger->__logMessage($prio, $msg);
         }
@@ -1474,6 +1477,9 @@ interface IDebugProvider {
  *
  */
 class Debug {
+
+	const EVT_DEBUG = 'lepton.debug.message';
+	const EVT_OPTIMIZATION = 'lepton.debug.optimizationhint';
 
     private static $provider = null;
 
