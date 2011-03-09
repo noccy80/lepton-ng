@@ -194,6 +194,22 @@ abstract class Router implements IRouter {
         return null;
     }
 
+	/**
+	 * Return the topmost sgment from the query and remove it from the segment
+	 * stack.
+	 *
+	 * @return Mixed The segment, null if not set
+	 */
+	protected function popSegment() {
+		if (count($this->_urisegments) > 0) {
+			$seg = $this->_urisegments[0];
+			$this->_urisegments = array_slice($this->_urisegments,1);
+			return $seg;
+		} else {
+			return null;
+		}
+	}
+
     /**
      * @brief Get a slice of the URI
      *

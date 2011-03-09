@@ -206,5 +206,14 @@ class WebForm {
         return (isset($this->collected[$field]));
     }
 
+	/**
+	 * Return the form data in an array
+	 *
+	 * @return Array The form data
+	 */
+	public function getData() {
+		return $this->parsed;
+	}
+
 }
 

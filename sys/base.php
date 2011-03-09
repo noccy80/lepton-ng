@@ -26,6 +26,7 @@ define('RETURN_SUCCESS', 0);
 define('RETURN_ERROR', 1);
 define('PI', 3.1415926535897931);
 define('NS_SEPARATOR','::');
+define('DATE_SQL','Y-m-d H:i:s');
 declare(ticks = 1);
 
 // Compatibility definitions

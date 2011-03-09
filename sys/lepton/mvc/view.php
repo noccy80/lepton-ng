@@ -156,6 +156,7 @@ class View {
     static function embed($view,$data=null) {
         $vp = base::appPath().'/views/'.$view;
         if (file_exists($vp)) {
+			if (is_array($data)) View::set($data);
             View::load($view);
         } else {
             if (config::get(self::KEY_EMBED_EXCEPTION,false) == true) {
