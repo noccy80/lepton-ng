@@ -62,15 +62,13 @@ if (PHP_VERSION_ID < 50207) {
 
 ///// Compensate for missing/unavailable functions ///////////////////////////
 
-if (!COMPAT_PHP_FNMATCH) {
-    if (!function_exists('fnmatch')) {
-        function fnmatch($pattern, $string) {
-            return @preg_match(
-                '/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
-                    array('*' => '.*', '?' => '.?')) . '$/i', $string
-            );
-        }
-    }
+if (!function_exists('fnmatch')) {
+	function fnmatch($pattern, $string) {
+		return @preg_match(
+			'/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
+				array('*' => '.*', '?' => '.?')) . '$/i', $string
+		);
+	}
 }
 
 if (!function_exists('sys_getloadavg')) {
