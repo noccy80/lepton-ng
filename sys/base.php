@@ -1057,9 +1057,9 @@ abstract class string {
         return preg_replace($find, $replace, $str);
     }
 
-    static function truncate($string, $maxlen) {
+    static function truncate($string, $maxlen, $append='...') {
         if (strlen($string) > $maxlen) {
-            return substr($string, 0, $maxlen) . '...';
+            return substr($string, 0, $maxlen) . $append;
         }
         return $string;
     }

@@ -66,6 +66,8 @@ class Canvas implements IDrawable,ICanvas {
      */
     function __get($key) {
 
+		$this->checkMeta();
+
         switch($key) {
             case 'exif':
                 if (!$this->_exif)
@@ -246,16 +248,24 @@ class Canvas implements IDrawable,ICanvas {
     private function checkMeta() {
 
         if ($this->gotmeta) return true;
-        $meta = getimagesize($this->filename);
-        if ($meta !== false) {
-            $this->width = $meta[0];
-            $this->height = $meta[1];
-            $this->imgtype = $meta[2];
-            $this->imgsize = $meta[3];
-            $this->imgmime = $meta['mime'];
-        } else {
-            throw new GraphicsException("Couldn't read metadata from file", GraphicsException::ERR_META);
-        }
+		if ($this->filename) {
+			$meta = getimagesize($this->filename);
+			if ($meta !== false) {
+				$this->width = $meta[0];
+				$this->height = $meta[1];
+				$this->imgtype = $meta[2];
+				$this->imgsize = $meta[3];
+				$this->imgmime = $meta['mime'];
+			} else {
+				throw new GraphicsException("Couldn't read metadata from file", GraphicsException::ERR_META);
+			}
+		} else {
+			$this->width = imageSX($this->himage);
+			$this->height = imageSY($this->himage);
+			$this->imgtype = null;
+			$this->imgsize = null;
+			$this->imgmime = null;
+		}
         $this->gotmeta = true;
         return true;
 
@@ -346,6 +356,7 @@ class Canvas implements IDrawable,ICanvas {
     function resize($width,$height,$keepaspect=Canvas::KEEP_NONE,Color $fillcolor=null) {
 
         $this->checkImage();
+		$this->checkMeta();
         $cw = imageSX($this->himage);
         $ch = imageSY($this->himage);
         $nr = (float)($width/$height); // Get new aspect ratio
@@ -387,8 +398,10 @@ class Canvas implements IDrawable,ICanvas {
                 break;
         }
 
-        imagedestroy($this->himage);
+		imagedestroy($this->himage);
         $this->himage = $n;
+		$this->width = imageSX($this->himage);
+		$this->height = imageSY($this->himage);
 
     }
 
@@ -509,9 +522,12 @@ class Canvas implements IDrawable,ICanvas {
 
     }
 
-    function draw(Canvas $dest,$x,$y,$width=0,$height=0) {
+    function draw(Canvas $dest,$x,$y,$width=null,$height=null) {
 
-        $idstmage = $dest->getImage();
+        $dstimage = $dest->getImage();
+		if (!$width) $width = $this->width;
+		if (!$height) $height = $this->height;
+
         imagecopy($dstimage, $this->himage, $x, $y, 0, 0, $width, $height);
 
     }
