@@ -1,0 +1,7 @@
+Use the script like:
+
+  $ ./do-integrity-check &> logfile.txt
+
+The integrity information will be listed in logfile.txt
+
+To test a unique file pass it as the one and only parameter.

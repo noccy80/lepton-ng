@@ -10,56 +10,37 @@
  * @author Christopher Vagnetoft <noccy@chillat.net>
  * @license GNU GPL Version 3
  */
-declare(ticks = 1);
 
+// Version definitions
+foreach (array(
+    'LEPTON_MAJOR_VERSION'		=> 1,
+    'LEPTON_MINOR_VERSION'		=> 0,
+    'LEPTON_RELEASE_VERSION'	=> 0,
+    'LEPTON_RELEASE_TAG'		=> "alpha",
+    'LEPTON_PLATFORM'			=> "Lepton Application Framework",
+    'PHP_RUNTIME_OS'			 => php_uname('s')
+) as $def => $val) define($def, $val);
+
+// Various constants
 define('RETURN_SUCCESS', 0);
 define('RETURN_ERROR', 1);
 define('PI', 3.1415926535897931);
 define('NS_SEPARATOR','::');
+declare(ticks = 1);
 
 // Compatibility definitions
 foreach (array(
-    'COMPAT_GETOPT_LONGOPTS' => (PHP_VERSION >= "5.3"),
-    'COMPAT_SOCKET_BACKLOG' => (PHP_VERSION >= "5.3.3"),
-    'COMPAT_HOST_VALIDATION' => (PHP_VERSION >= "5.2.13"),
-    'COMPAT_NAMESPACES' => (PHP_VERSION >= "5.3.0"),
-    'COMPAT_INPUT_BROKEN' => ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1")),
-    'COMPAT_CALLSTATIC' => (PHP_VERSION >= "5.3.0"),
-    'COMPAT_CRYPT_BLOWFISH' => (PHP_VERSION >= "5.3.0"),
-    'COMPAT_PHP_FNMATCH' => (PHP_OS == "Linux") || ((PHP_OS == "Windows") && (PHP_VERSION >= "5.3"))
+    'COMPAT_GETOPT_LONGOPTS'	=> (PHP_VERSION >= "5.3"),
+    'COMPAT_SOCKET_BACKLOG'		=> (PHP_VERSION >= "5.3.3"),
+    'COMPAT_HOST_VALIDATION'	=> (PHP_VERSION >= "5.2.13"),
+    'COMPAT_NAMESPACES'			=> (PHP_VERSION >= "5.3.0"),
+    'COMPAT_INPUT_BROKEN'		=> ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1")),
+    'COMPAT_CALLSTATIC'			=> (PHP_VERSION >= "5.3.0"),
+    'COMPAT_CRYPT_BLOWFISH'		=> (PHP_VERSION >= "5.3.0"),
+    'COMPAT_PHP_FNMATCH'		=> (PHP_OS == "Linux") || ((PHP_OS == "Windows") && (PHP_VERSION >= "5.3"))
 ) as $compat => $val) define($compat, $val);
 
-if (!COMPAT_PHP_FNMATCH) {
-    if (!function_exists('fnmatch')) {
-        function fnmatch($pattern, $string) {
-            return @preg_match(
-                '/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
-                    array('*' => '.*', '?' => '.?')) . '$/i', $string
-            );
-        }
-    }
-}
-if (!function_exists('sys_getloadavg')) {
-    function sys_getloadavg()
-    {
-        $loadavg_file = '/proc/loadavg';
-        if (file_exists($loadavg_file)) {
-            return explode(chr(32),file_get_contents($loadavg_file));
-        }
-        return array(0,0,0);
-    }
-}
-
-// Version definitions
-foreach (array(
-    'LEPTON_MAJOR_VERSION' => 1,
-    'LEPTON_MINOR_VERSION' => 0,
-    'LEPTON_RELEASE_VERSION' => 0,
-    'LEPTON_RELEASE_TAG' => "alpha",
-    'LEPTON_PLATFORM' => "Lepton Application Framework",
-    'PHP_RUNTIME_OS' => php_uname('s')
-) as $def => $val) define($def, $val);
-
+// Additional verison definitions
 define("LEPTON_VERSION", LEPTON_MAJOR_VERSION . "." . LEPTON_MINOR_VERSION . "." . LEPTON_RELEASE_VERSION . " " . LEPTON_RELEASE_TAG);
 define("LEPTON_PLATFORM_ID", LEPTON_PLATFORM . " v" . LEPTON_VERSION);
 
@@ -77,6 +58,31 @@ if (PHP_VERSION_ID < 50207) {
     define('PHP_MINOR_VERSION', $version[1]);
     define('PHP_RELEASE_VERSION', $version[2]);
 }
+
+///// Compensate for missing/unavailable functions ///////////////////////////
+
+if (!COMPAT_PHP_FNMATCH) {
+    if (!function_exists('fnmatch')) {
+        function fnmatch($pattern, $string) {
+            return @preg_match(
+                '/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
+                    array('*' => '.*', '?' => '.?')) . '$/i', $string
+            );
+        }
+    }
+}
+
+if (!function_exists('sys_getloadavg')) {
+    function sys_getloadavg() {
+        $loadavg_file = '/proc/loadavg';
+        if (file_exists($loadavg_file)) {
+            return explode(chr(32),file_get_contents($loadavg_file));
+        }
+        return array(0,0,0);
+    }
+}
+
+///// Path Resolution ////////////////////////////////////////////////////////
 
 // Resolve application and system paths
 if (!defined('APP_PATH')) {
@@ -133,12 +139,18 @@ if (getenv("DEBUG") >= 1) {
     define('DEBUGMODE', true);
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
+	$dlevel = intval(getenv("DEBUG"));
+	if ($dlevel > 7) { $dlevel = 7; }
+	define('DEBUGLEVEL', $dlevel);
 } else {
     define('DEBUGMODE', false);
+	define('DEBUGLEVEL', 0);
 }
 
 if (php_sapi_name() == 'cli') {
     define('LEPTON_CONSOLE', true);
+} else {
+	define('LEPTON_CONSOLE', false);
 }
 if (getenv("LOGFILE")) {
     define("LOGFILE", fopen(getenv("LOGFILE"), 'a+'));
@@ -147,13 +159,13 @@ if (getenv("LOGFILE")) {
     define("LOGFILE", null);
 }
 
-define('LOG_DEBUG2', 5);
-define('LOG_DEBUG1', 4);
-define('LOG_EXTENDED', 3);
-define('LOG_VERBOSE', 2);
-define('LOG_BASIC', 1);
-define('LOG_WARN', 0);
-define('LOG_LOG', 0);
+define('LOG_DEBUG2', 7);
+define('LOG_DEBUG1', 6);
+define('LOG_EXTENDED', 5);
+define('LOG_VERBOSE', 4);
+define('LOG_BASIC', 3);
+define('LOG_WARN', 2);
+define('LOG_LOG', 1);
 
 abstract class base {
 
@@ -313,6 +325,37 @@ function __strip_newline($str) {
     return $str;
 }
 
+function __fromprintable($str) {
+    if (in_array($str[0], array('"', "'"))) {
+        $qc = $str[0];
+        if ($str[strlen($str) - 1] == $qc) {
+            return substr($str, 1, strlen($str) - 2);
+        }
+    }
+    switch ($str) {
+        case 'NULL':
+            return NULL;
+        case 'false':
+            return false;
+        case 'true':
+            return true;
+        default:
+            return $str;
+    }
+}
+
+function __printable($var) {
+    if (is_null($var)) {
+        return "NULL";
+    } elseif (is_bool($var)) {
+        return ($var) ? 'true' : 'false';
+    } elseif (is_string($var)) {
+        return '"' . $var . '"';
+    } else {
+        return $var;
+    }
+}
+
 
 ////// Exceptions /////////////////////////////////////////////////////////////
 
@@ -333,19 +376,6 @@ class CriticalException extends BaseException { }
 class SecurityException extends CriticalException { 
 	const ERR_ACCESS_DENIED = 1;
 }
-
-/*
-  function __autoload($class) {
-  if (class_exists($class)) return;
-  if (PHP_VERSION_ID < 50300) {
-  console::backtrace();
-  console::fatal('Could not load class %s!', $class);
-  die(1);
-  } else {
-  throw new ClassNotFoundException('Could not load class '.$class);
-  }
-  }
- */
 
 ////// Configuration //////////////////////////////////////////////////////////
 
@@ -459,42 +489,19 @@ abstract class Config {
 
 }
 
+/**
+ * Configuration helper function
+ *
+ * @param String $key The key to query/set
+ * @param Mixed $value The new value (optional)
+ * @return Mixed The configuration value
+ */
 function config($key,$value=null) {
     $ret = config::get($key);
     if ($value) config::set($key,$value);
     return $ret;
 }
 
-function __fromprintable($str) {
-    if (in_array($str[0], array('"', "'"))) {
-        $qc = $str[0];
-        if ($str[strlen($str) - 1] == $qc) {
-            return substr($str, 1, strlen($str) - 2);
-        }
-    }
-    switch ($str) {
-        case 'NULL':
-            return NULL;
-        case 'false':
-            return false;
-        case 'true':
-            return true;
-        default:
-            return $str;
-    }
-}
-
-function __printable($var) {
-    if (is_null($var)) {
-        return "NULL";
-    } elseif (is_bool($var)) {
-        return ($var) ? 'true' : 'false';
-    } elseif (is_string($var)) {
-        return '"' . $var . '"';
-    } else {
-        return $var;
-    }
-}
 
 ////// Structures /////////////////////////////////////////////////////////////
 
@@ -582,7 +589,7 @@ class Console {
      *
      */
     static function debugEx($level, $module) {
-        $args = func_get_args();
+		$args = func_get_args();
         $strn = @call_user_func_array('sprintf', array_slice($args, 2));
         $ts = Console::ts();
         $lines = explode("\n", $strn);
@@ -1403,6 +1410,31 @@ class DatabaseLoggerFactory extends LoggerFactory {
 
 }
 
+class EventLoggerFactory extends LoggerFactory {
+
+	function __logMessage($prio, $msg) {
+		event::invoke(debug::EVT_DEBUG, array($prio,$msg));
+	}
+
+}
+
+class ConsoleLoggerFactory extends LoggerFactory {
+
+	private static $level = array(
+		'BASE','EMERG','ALERT','CRIT','WARN','NOTICE','INFO','DEBUG'
+	);
+
+	function __logMessage($prio,$msg) {
+        $ts = @date("M-d H:i:s", time());
+        $lines = explode("\n", $msg);
+        foreach ($lines as $line) {
+			fprintf(STDERR, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
+			//fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
+        }
+	}
+
+}
+
 abstract class Logger {
 
     static $_loggers = array();
@@ -1454,15 +1486,20 @@ abstract class Logger {
     }
 
     public static function registerFactory(LoggerFactory $factory) {
-        self::$_loggers[] = $factory;
+		self::$_loggers[] = $factory;
     }
 
     private static function __log($prio, $msg) {
-		event::invoke(debug::EVT_DEBUG, array($prio,$msg));
-        foreach (self::$_loggers as $logger) {
-            $logger->__logMessage($prio, $msg);
-        }
-    }
+		if ($prio <= DEBUGLEVEL) {
+			foreach (self::$_loggers as $logger) {
+				$logger->__logMessage($prio, $msg);
+			}
+		}
+	}
+
+	public static function logEx($prio,$msg) {
+		self::__log($prio,$msg);
+	}
 
 }
 

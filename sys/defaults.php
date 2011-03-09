@@ -20,6 +20,8 @@
     // Loggers. Set first parameter of constructor to true to echo errors to
     // stderr, parameter two can be used to set the target facility.
     logger::registerFactory(new SyslogLoggerFactory());
+    logger::registerFactory(new EventLoggerFactory());
+    logger::registerFactory(new ConsoleLoggerFactory());
     // You can also register a DatabaseLoggerFacility:
     // logger::registerFactory(new DatabaseLoggerFacility("logtable"));
 

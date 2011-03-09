@@ -52,7 +52,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         Console::writeLn("    SYS_PATH             The system path");
         Console::writeLn("    DEBUG                Show extended debug info (1-5)");
         Console::writeLn("    LOGFILE              Log file to output debug info to");
-
+        Console::writeLn("");
     }
     
     /**

@@ -1,0 +1,27 @@
+#!/usr/bin/php
+<?php
+
+function getFiles($dir,$pattern) {
+    echo "Find: [".$pattern."] ... ";
+    $files = array();
+    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+    foreach ($iterator as $path) {
+        if (fnmatch($pattern,$path)) $files[] = $path;
+    }
+    echo "OK\n";
+    return $files;
+}
+
+if (count($argv) < 2) {
+    $fl = getFiles('sys','*.php');
+    foreach($fl as $file) {
+        fputs(STDERR,shell_exec('./do-integrity-check '.$file));
+    }
+} else {
+    require('sys/base.php');
+    $fns = str_replace('sys/','',$argv[1]);
+    $fns = str_replace('.php','',$fns);
+    $fns = str_replace('/','.',$fns);
+    fputs(STDERR,"Testing: ".$fns."\n");
+    using($fns);  
+}

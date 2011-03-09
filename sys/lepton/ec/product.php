@@ -59,11 +59,15 @@ class ProductCategory {
 
 	}
 
-	function getProducts() {
+	public function getProductsByCategory(ProductCategory $category) {
+		
+	}
+
+	public function getProducts() {
 
 	}
 
-	function addProduct(Product $product) {
+	public function addProduct(Product $product) {
 
 	}
 
