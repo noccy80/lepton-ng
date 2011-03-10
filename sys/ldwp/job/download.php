@@ -29,6 +29,14 @@ class DownloadJob extends LdwpJob {
 		parent::__construct();
 	}
 
+	function onDownloadProgress($current,$max) {
+		if ($max) {
+			if (duration::since($lastupdate) > 5) { // only update every 5 secs
+				$this->setState(LdwpJob::STATE_RUNNING,$current,$max);
+			}
+		}
+	}
+
 	/**
 	 * Magic Start method. When this method is invoked the job is to pick up
 	 * where it left off and resume or start the processing of the job.
@@ -37,7 +45,8 @@ class DownloadJob extends LdwpJob {
 		$this->setState(LdwpJob::STATE_RUNNING,0,1,"Downloading ".$this->url);
 		using('lepton.net.httprequest');
 		$dl = new HttpRequest($this->url,array(
-			'saveto' => $this->destination
+			'saveto' => $this->destination,
+			'onprogress' => new Callback($this,'onDownloadProgress')
 		));
 		$this->setState(LdwpJob::STATE_COMPLETED,1,1,"Saved ".$this->url);
 	}

@@ -20,7 +20,7 @@
      * @todo Implement a proper forum class
      */
 
-    class Forums extends Library {
+    class Forums {
 
         function __construct() {
             parent::__construct();
@@ -417,11 +417,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-    Library::register('forums',array(
+/*    Library::register('forums',array(
         'baseclass'    => 'Forums',
         'alias'     => 'forums',
         'provides'    => 'lepton:forums'
-    ));
-
-
-?>
+    )); */

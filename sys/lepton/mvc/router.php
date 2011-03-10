@@ -282,7 +282,7 @@ abstract class Router implements IRouter {
 
 }
 
-abstract class MvcEvent implements IEventList {
+abstract class MvcEvent {
 	const EVENT_BEFORE_ROUTING = 'lepton.mvc.routing.pre';
 	const EVENT_AFTER_ROUTING = 'lepton.mvc.routing.post';
 }

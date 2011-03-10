@@ -12,7 +12,13 @@ function getFiles($dir,$pattern) {
     return $files;
 }
 
+$preload = array(
+    'lepton.mvc.*' => array('lepton.mvc.*'),
+    'cli.actions.*' => array('lepton.cli.action')
+);
+
 if (count($argv) < 2) {
+    fputs(STDERR,"This utility will test the integrity of all the lepton scripts\n");
     $fl = getFiles('sys','*.php');
     foreach($fl as $file) {
         fputs(STDERR,shell_exec('./do-integrity-check '.$file));
@@ -23,5 +29,8 @@ if (count($argv) < 2) {
     $fns = str_replace('.php','',$fns);
     $fns = str_replace('/','.',$fns);
     fputs(STDERR,"Testing: ".$fns."\n");
+    foreach($preload as $mask=>$libs) {
+        if (fnmatch($mask,$fns)) foreach($libs as $lib) using($lib);
+    }
     using($fns);  
 }

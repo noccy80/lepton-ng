@@ -7,7 +7,7 @@
      * @todo Implement a proper wiki with namespaces and revisions
      */
 
-    class Wiki extends Library {
+    class Wiki {
 
         const KEY_DEFAULTNS = 'lepton.wiki.defaultns';
 

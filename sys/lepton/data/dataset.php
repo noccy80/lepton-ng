@@ -20,6 +20,9 @@ class DataSet implements IDataSet {
         return $this->_label;
     }
 
+    function getSetName() {
+    }
+
     function getSetData() {
         return $this->_data;
     }

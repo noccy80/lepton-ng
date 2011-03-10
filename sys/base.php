@@ -218,24 +218,22 @@ abstract class utils {
 
 ////// Interfaces /////////////////////////////////////////////////////////////
 
+/*
 interface IDataConsumer {
     function setData($data);
-
     function checkData($data);
 }
 
 interface IDataProvider {
-
     function getData();
 }
 
 abstract class DataConsumer implements IDataConsumer {
-
 }
 
 abstract class DataProvider implements IDataProvider {
-
 }
+*/
 
 ////// Utility Functions and Aliases //////////////////////////////////////////
 
@@ -1596,12 +1594,16 @@ class EventHandler {
 
 }
 
+interface IEventListener {
+    function handleEvent($event,$data);
+}
+
 /**
  * Manages various events
  */
 abstract class Event {
 
-    static $_handlers = array();
+    private static $handlers = array();
 
     /**
      * Register an event handler
@@ -1610,10 +1612,29 @@ abstract class Event {
      * @param EventHandler $handler The EventHandler in charge of the event.
      */
     function register($event, EventHandler $handler) {
-        if (!arr::hasKey(self::$_handlers, strtolower($event))) {
-            self::$_handlers[$event] = array();
+        if (!arr::hasKey(self::$handlers, strtolower($event))) {
+            self::$handlers[$event] = array();
         }
-        self::$_handlers[$event][$handler->getUniqueId()] = $handler;
+        self::$handlers[$event][$handler->getUniqueId()] = $handler;
+    }
+
+    static function registerHandler(IEventListener $object, $event) {
+        if (is_array($events)) { 
+        	foreach($events as $e) self::registerHandler($object,$e); 
+        	return; 
+        }
+        if (!isset(self::$handlers[$event])) {
+        	self::$handlers[$event] = array();
+        }
+        self::$handlers[$event][] = new EventHander($object,'handleEvent');
+    }
+
+    static function invoke($event, $data) {
+        if (isset(self::$handlers[$event])) {
+            foreach(self::$handlers[$event] as $handler) {
+                if ($handler->handleEvent($event,$data) == true) return;
+            }
+        }
     }
 
     /**
@@ -1622,6 +1643,7 @@ abstract class Event {
      * @param Mixed $event The event to invoke
      * @param Array $data The data to pass to the handler
      */
+/*
     function invoke($event, Array $data) {
         if (arr::hasKey(self::$_handlers, strtolower($event))) {
             foreach (self::$_handlers[$event] as $evt) {
@@ -1631,12 +1653,10 @@ abstract class Event {
         }
         return false;
     }
-
+*/
 }
 
-interface IEventList { }
-
-abstract class CoreEvents implements IEventList {
+abstract class CoreEvents {
     const EVENT_BEFORE_APPLICATION = 'lepton.application.before';
     const EVENT_AFTER_APPLICATION = 'lepton.application.after';
 }

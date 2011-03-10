@@ -8,7 +8,7 @@
      * @since 0.2
      * @author Christopher Vagnetoft <noccy@chillat.net>
      */
-    class Comments extends Library {
+    class Comments {
 
         function initialize() {
             $sm = DBX::getInstance(DBX)->getSchemaManager();
@@ -130,10 +130,8 @@
 
     }
 
-    Library::register('comments',array(
+/*    Library::register('comments',array(
         'baseclass' =>   'Comments',
         'alias' =>       'comments',
         'onload' =>      new Callback(Comments, 'initialize')
-    ));
-
-?>
+    )); */
