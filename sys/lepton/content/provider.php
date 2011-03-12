@@ -13,5 +13,10 @@ interface IContentObject {
 	function getHtml();
 	function getUri();
 	function getObjectId();
-	function hasChildren();
+}
+
+abstract class ContentObject implements IContentObject {
+	public function __construct() {
+		content::initExtensions($this);
+	}
 }
