@@ -89,5 +89,34 @@ class DbPrefs extends Prefs {
 			$this->db->updateRow("REPLACE INTO ".$this->table." (prefskey,data) VALUES (%s,%s)", $key, serialize($value));
 		}
 	}
-	
+}
+
+class IniPrefs extends Prefs {
+
+	public function __construct($filename) {
+		$this->data = parse_ini_file($filename,true);
+	}
+
+	public function flush() {
+		return; // This is read only
+	}
+}
+
+class JsonPrefs extends Prefs {
+
+	private $filename;
+
+	public function __construct($filename) {
+		$this->filename = $filename;
+		if (file_exists($filename)) {
+			$this->data = (array)json_decode(file_get_contents($filename),true);
+		} else {
+			$this->data = array();
+		}
+	}
+
+	public function flush() {
+		file_put_contents($this->filename, json_encode($this->data));
+	}
+
 }

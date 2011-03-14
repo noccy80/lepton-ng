@@ -18,6 +18,13 @@ abstract class LunitCase {
 			);
 		}
 	}
+	protected function assertNotNull($test) {
+		if ($test == null) {
+			throw new LunitAssertionFailure(
+				sprintf("assertNotNull(): %s",  __printable ($test))
+			);
+		}
+	}
 	protected function assertTrue($test) {
 		if ($test != true) {
 			throw new LunitAssertionFailure(

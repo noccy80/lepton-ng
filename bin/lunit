@@ -13,7 +13,8 @@ class LunitApplication extends ConsoleApplication {
 	var $description = 'Lunit Console Tester';
 
 	function main($argc,$argv) {
-		using('app.tests.*');
+		// using('app.tests.*');
+		using('tests.*');
 		$lur = new LunitRunner();
 		$lur->run();
 	}

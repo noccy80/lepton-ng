@@ -25,7 +25,7 @@ class LunitRunner {
 			$meta = LunitUtil::parseDoc($r->getDocComment());
 			console::writeLn(__astr('\b{%s}'),$meta['description']);
 			foreach($ml as $method) {
-				if ($method->isPublic()) {
+				if ($method->isPublic() && (substr($method->getName(),0,1) != '_')) {
 					console::write('%s: ', $method->getName());
 					try {
 						$tc->{$method->getName()}();
