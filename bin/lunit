@@ -1,0 +1,23 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+using('lunit.lunit');
+
+class LunitApplication extends ConsoleApplication {
+
+	var $arguments = array(
+		array('h','help','Show this help'),
+		array('t','tests','Load tests from (default: app.tests.*)')
+	);
+	var $description = 'Lunit Console Tester';
+
+	function main($argc,$argv) {
+		using('app.tests.*');
+		$lur = new LunitRunner();
+		$lur->run();
+	}
+
+}
+
+Lepton::run('LunitApplication');
