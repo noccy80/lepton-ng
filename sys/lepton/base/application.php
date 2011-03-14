@@ -11,6 +11,8 @@ interface IConsoleApplication {
 
 using('lepton.cli.ansi');
 
+logger::registerFactory(new ConsoleLoggerFactory());
+
 /**
  * @class ConsoleApplication
  * @brief Abstract base class for console applications

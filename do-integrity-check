@@ -28,9 +28,11 @@ if (count($argv) < 2) {
     $fns = str_replace('sys/','',$argv[1]);
     $fns = str_replace('.php','',$fns);
     $fns = str_replace('/','.',$fns);
-    fputs(STDERR,"Testing: ".$fns."\n");
-    foreach($preload as $mask=>$libs) {
-        if (fnmatch($mask,$fns)) foreach($libs as $lib) using($lib);
+    if ($fns != 'base') {
+        fputs(STDERR,"Testing: ".$fns."\n");
+        foreach($preload as $mask=>$libs) {
+            if (fnmatch($mask,$fns)) foreach($libs as $lib) using($lib);
+        }
+        using($fns);
     }
-    using($fns);  
 }

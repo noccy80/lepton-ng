@@ -1422,12 +1422,12 @@ class ConsoleLoggerFactory extends LoggerFactory {
 	);
 
 	function __logMessage($prio,$msg) {
-        $ts = @date("M-d H:i:s", time());
-        $lines = explode("\n", $msg);
-        foreach ($lines as $line) {
+		$ts = @date("M-d H:i:s", time());
+		$lines = explode("\n", $msg);
+		foreach ($lines as $line) {
 			fprintf(STDERR, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
 			//fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
-        }
+		}
 	}
 
 }
