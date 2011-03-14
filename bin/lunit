@@ -3,20 +3,34 @@
 
 require('sys/base.php');
 using('lunit.lunit');
+using('lunit.reporters.*');
 
 class LunitApplication extends ConsoleApplication {
 
 	var $arguments = array(
 		array('h','help','Show this help'),
-		array('t','tests','Load tests from (default: app.tests.*)')
+		array('t:','tests','Load tests from, comma separated (default: app.tests.*)'),
+		array('r:','reporter','Specify the reporter to use (default:ConsoleLunitReporter)')
 	);
 	var $description = 'Lunit Console Tester';
 
 	function main($argc,$argv) {
-		// using('app.tests.*');
-		using('tests.*');
+	
+		$tests = 'app.tests.*';
+		if ($this->hasArgument('t')) $tests = $this->getArgument('t');
+		console::writeLn("Using tests from: %s", $tests);
+		$tests = explode(',',$tests);
+		foreach($tests as $test) using($test);
+		
+		$reporter = 'ConsoleLunitReporter';
+		if ($this->hasArgument('r')) $reporter = $this->getArgument('r');
+				
+		$rep = new $reporter();
+
 		$lur = new LunitRunner();
 		$lur->run();
+		
+		$rep->report($lur);
 	}
 
 }

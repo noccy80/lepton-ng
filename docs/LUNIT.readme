@@ -1,0 +1,33 @@
+= Lunit Unit Testing Framework =
+
+== Creating a test ==
+
+To create a test case, create a new class that extends the `LunitCase` base class.
+Make use of Doxygen/PHPDoc style comments to describe your case.
+Finally call on `Lunit::register()` to register your test class.
+
+{{{ #!php
+<?php
+
+/**
+ * @description This is my test case
+ */
+class MyTestCase extends LunitCase {
+
+}
+
+Lunit::register('MyTestCase');
+}}}
+
+== Test methods ==
+
+All public methods whose name doesn't start with an underscore will be evaluated.
+Use the same style of Doxygen/PHPDoc comments to describe the various tests.
+
+== Directives ==
+
+||= Validity =||= Directive =||= Required =||= Description =||
+||Class||@description||Yes||Describes the test case||
+||Method||@description||Yes||Describes the test method||
+||Class||@using||No||Define any additional dependencies needed||
+||Class||@exclusive||No||Tests marked as exclusive will be invoked in a separate (clean) thread - Not supported yet||
