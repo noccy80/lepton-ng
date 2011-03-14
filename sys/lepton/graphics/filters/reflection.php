@@ -1,6 +1,7 @@
 <?php
 
-ModuleManager::load('lepton.graphics.filter');
+using('lepton.graphics.filter');
+using('lepton.utils.optionset');
 
 class ReflectionImageFilter extends ImageFilter {
 
