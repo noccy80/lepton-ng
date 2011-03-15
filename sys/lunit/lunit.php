@@ -22,47 +22,82 @@ abstract class Lunit {
 class LunitRunner {
 
 	private $statuscb = null;
+	private $results = null;
 
 	function setStatusCallback(ILunitStatusCallback $object) {
 		
 		$this->statuscb = $object;	
 		
 	}
+	
+	function getResults() {
+	
+		return $this->results;
+		
+	}
 
 	function run() {
 
 		$cases = Lunit::getCases();
+		$casedata = array();
 		// Enumerate the cases
 		foreach($cases as $case) {
+			// Setup report structure
+			$casereport = array();
 			// Reflect the class to find methods and metadata
 			$r = new ReflectionClass($case);
 			$tc = new $case($this);
 			$ml = $r->getMethods();
 			$meta = LunitUtil::parseDoc($r->getDocComment());
 			
+			$casereport['meta'] = $meta;
 			// Callback if set
 			if ($this->statuscb) $this->statuscb->onCaseBegin($case,$meta);
 
 			foreach($ml as $method) {
-				if ($method->isPublic() && (substr($method->getName(),0,1) != '_')) {
+				$methodname = $method->getName();
+				if ($method->isPublic() && (substr($methodname,0,1) != '_')) {
+					$methodreport = array();
 					$tmeta = LunitUtil::parseDoc($method->getDocComment());
-					if (!isset($tmeta['description'])) $tmeta['description'] = $method->getName();
-					// Callback if set
-					if ($this->statuscb) $this->statuscb->onTestBegin($method->getName(),$tmeta);
+					if (!isset($tmeta['description'])) $tmeta['description'] = $methodname;
+
+					// Save meta to method report
+					$methodreport['meta'] = $tmeta;
+					// Callback if set, then create timer
+					if ($this->statuscb) $this->statuscb->onTestBegin($methodname,$tmeta);
+					$tm = new Timer();
 					try {
-						$tc->{$method->getName()}();
+						$tm->start();
+						$tc->{$methodname}();
+						$tm->stop();
+						$methodreport['passed'] = true;
+						$methodreport['message'] = null;
 						if ($this->statuscb) $this->statuscb->onTestEnd(true,null);
 					} catch (LunitAssertionFailure $f) {
+						$tm->stop();
+						$methodreport['passed'] = false;
+						$methodreport['message'] = $f->getMessage();
 						if ($this->statuscb) $this->statuscb->onTestEnd(false,$f->getMessage());
+					} catch (Exception $e) {
+						$tm->stop();
+						$methodreport['passed'] = false;
+						$methodreport['message'] = $e->getMessage();
+						if ($this->statuscb) $this->statuscb->onTestEnd(false,$e->getMessage());
 					}
-
+					$methodreport['elapsed'][] = $tm->getElapsed();
+					// Save report
+					$casereport['tests'][$methodname] = $methodreport;
 				}
 			}
+			
+			$casedata[$case] = $casereport;
 
 			// Callback if set
 			if ($this->statuscb) $this->statuscb->onCaseEnd();
 
 		}
+		
+		$this->results = $casedata;
 		
 	}
 	

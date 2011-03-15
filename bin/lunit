@@ -12,7 +12,8 @@ class LunitApplication extends ConsoleApplication implements ILunitStatusCallbac
 	var $arguments = array(
 		array('h','help','Show this help'),
 		array('t:','tests','Load tests from, comma separated (default: app.tests.*)'),
-		array('r:','reporter','Specify the reporter to use (default:ConsoleLunitReporter)')
+		array('r:','reporter','Specify the reporter to use (default:none)'),
+		array('f:','file','File to write the report to (default:report.txt)')
 	);
 	var $description = 'Lunit Console Tester';
 
@@ -30,17 +31,25 @@ class LunitApplication extends ConsoleApplication implements ILunitStatusCallbac
 			using($test);
 		}
 		
-		$reporter = 'ConsoleLunitReporter';
+		$reporter = null;
 		if ($this->hasArgument('r')) $reporter = $this->getArgument('r');
-		console::writeLn(__astr("\b{::} Loading reporter: \g{%s}"), $reporter);
-		$rep = new $reporter();
+		if ($reporter) {
+			$reportfile = 'report.txt';
+			if ($this->hasArgument('f')) $reportfile = $this->getArgument('f');
+			console::writeLn(__astr("\b{::} Loading reporter: \g{%s}"), $reporter);
+			$rep = new $reporter();
+		}
 		console::writeLn();
 
 		$lur = new LunitRunner();
 		$lur->setStatusCallback($this);
 		$lur->run();
 		
-		$rep->report($lur);
+		if ($reporter && $rep) {
+			console::writeLn(__astr("\b{::} Creating report: \g{%s}"), $reportfile);
+			$rep->report($lur, $reportfile);
+		
+		}
 	}
 
 	function onCaseBegin($name,$meta) {

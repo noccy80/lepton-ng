@@ -42,7 +42,7 @@ class LeptonMutexTest extends LunitCase {
 	}
 	
 	/**
-	 * @description Releasing a lock through mutex->release
+	 * @description Releasing lock through mutex->release()
 	 */
 	function mutexreleasemtd() {
 		$m = new Mutex('lunitlock',100);
