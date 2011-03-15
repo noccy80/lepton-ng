@@ -43,7 +43,7 @@ class LeptonBaseTests extends LunitCase {
 	 * @description file_find() to locate file with globbing
 	 */
 	function filefind() {
-		$this->assertEquals(file_find(base::basePath(),'base.php'), base::basePath().'sys/base.php');
+		$this->assertEquals(file_find(base::basePath(),'defaults.php'), base::basePath().'sys/defaults.php');
 	}
 
 	/**
