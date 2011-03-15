@@ -27,8 +27,8 @@ class LeptonBaseTests extends LunitCase {
 	 * @description Test of __fmt() shorthand
 	 */
 	function testfmt() {
-		$this->assertEquals(__fmt('foo%s'),'foo%s');
-		$this->assertEquals(__fmt('foo%s','bar'),'foobar');
+		$this->assertEquals(__fmt(array('foo%s')),'foo%s');
+		$this->assertEquals(__fmt(array('foo%s','bar')),'foobar');
 	}
 	
 	/**
