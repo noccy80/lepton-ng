@@ -43,6 +43,18 @@ class Canvas implements IDrawable,ICanvas {
     const KEEP_CROP = 1;  // Maintain aspect, crop and fill
     const KEEP_FILL = 2;  // Maintain aspect, simply pad
 
+///// Static Methods /////////////////////////////////////////////////////////
+
+    static function load($filename) {
+
+        $i = new Canvas();
+        $i->loadImage($filename);
+        return $i;
+
+    }
+
+///// Class Methods /////////////////////////////////////////////////////////
+
 	function getImage() {
 
 		$this->checkImage();
@@ -51,6 +63,11 @@ class Canvas implements IDrawable,ICanvas {
 
 	}
 
+	/**
+	 * Get the dimensions of the canvas.
+	 *
+	 * @return array Array holding the width and height of the canvas
+	 */
 	function getDimensions() {
 
 		$this->checkMeta();
@@ -128,15 +145,17 @@ class Canvas implements IDrawable,ICanvas {
         }
 
     }
-    
-    static function load($filename) {
 
-        $i = new Canvas();
-        $i->loadImage($filename);
-        return $i;
-
-    }
-
+	/**
+	 * Constructor, creates a canvas based on the parameters.
+	 *
+	 * @note  Currently works even when called without any parameters, this
+	 *        should throw an exception of operated upon! It is supported here
+	 *        for the purpose of loading an image that already exists.
+	 * @param integer $width The width of the canvas to create
+	 * @param integer $height The height of the canvas to create
+	 * @param Color $color The background color of the new canvas
+	 */    
     function __construct($width=null,$height=null,Color $color = null) {
 
         if ($width && $height) {
@@ -145,6 +164,26 @@ class Canvas implements IDrawable,ICanvas {
 
     }
 
+	/**
+	 * Duplicate a canvas, returning a new canvas object with the same content
+	 * as the duplicated one.
+	 *
+	 * @return Canvas The new canvas
+	 */
+	function duplicate() {
+		
+		$copy = new Canvas($this->width,$this->height);
+		$this->draw($copy);
+		return $copy;
+		
+	}
+
+	/**
+	 * Retrieves a CanvasPainter for the canvas. This is a shorthand for using
+	 * new CanvasPainter($image).
+	 *
+	 * @return CanvasPainter The painter for the canvas
+	 */
 	function getPainter() {
 		return new CanvasPainter($this);
 	}
@@ -190,6 +229,9 @@ class Canvas implements IDrawable,ICanvas {
                     break;
                 case 'png':
                     $ret = imagepng($this->himage, $fn);
+                    break;
+                case 'gif':
+                    $ret = imagegif($this->himage, $fn);
                     break;
                 default:
                     throw new GraphicsException("Unknown format", GraphicsException::ERR_SAVE_FAILURE);
@@ -322,8 +364,9 @@ class Canvas implements IDrawable,ICanvas {
     }
 
     /**
+     * Retrieve the number of colors used in the canvas
      *
-     *
+     * @return integer The total number of colors used
      */
     function getColors() {
 
@@ -333,8 +376,9 @@ class Canvas implements IDrawable,ICanvas {
     }
 
     /**
+     * Retrieve information on the image
      *
-     *
+     * @return array image information
      */
     function getImageInfo() {
 
@@ -430,6 +474,14 @@ class Canvas implements IDrawable,ICanvas {
 
     }
 
+    /**
+     * Crop the image to the specified rectangle.
+     *
+     * @param int $x The left coordinate of the cropping rectangle
+     * @param int $y The top coordinate of the cropping rectangle
+     * @param int $width The new width
+     * @param int $height The new height
+     */
     function cropToXy($x, $y, $width, $height) {
 
         $this->checkImage();
@@ -473,21 +525,22 @@ class Canvas implements IDrawable,ICanvas {
      */
     function createFont($fontname, $fontsize) {
 
-        return new Font($fontname,$fontsize);
+        return new TruetypeFont($fontname,$fontsize);
 
     }
 
     /**
+     * Draw text onto the canvas
      *
-     *
-     *
+     * @todo  This function need to be reworked since the actual drawing 
+     *        stuff is offloaded onto the Font class.
      * @param Font $font The font to use
      * @param Color $color The color to use
      * @param int $x Bottomleft X coordinate
      * @param int $y Bottomleft Y coordinate
      * @param string $text The text to output
      */
-    function drawText(Font $font, Color $color, $x, $y, $text) {
+    function drawText(IFont $font, Color $color, $x, $y, $text) {
 
         $this->checkImage();
         $fd = $font->__getFont();
@@ -508,6 +561,8 @@ class Canvas implements IDrawable,ICanvas {
      * If x2 or y2 is null, the width and height of the image will be
      * used.
      *
+     * @todo  This function need to be reworked since the actual drawing 
+     *        stuff is offloaded onto the Font class.
      * @param Font $font The font to use
      * @param Color $color The color to use
      * @param int $x1 Topleft X coordinate
@@ -516,13 +571,22 @@ class Canvas implements IDrawable,ICanvas {
      * @param int $y2 Bottomright Y coordinate (or null)
      * @param string $text The text to output
      */
-    function drawTextRect(Font $font, Color $color, $x1, $y1, $x2, $y2, $text) {
+    function drawTextRect(IFont $font, Color $color, $x1, $y1, $x2, $y2, $text) {
 
         $this->checkImage();
 
     }
 
-    function draw(Canvas $dest,$x,$y,$width=null,$height=null) {
+	/**
+	 * Draw the canvas onto another canvas.
+	 *
+	 * @param Canvas $dest The destination canvas
+	 * @param integer $x The left coordinate of the destination canvas
+	 * @param integer $y The top coordinate of the destination canvas
+	 * @param integer $width The width of the drawing
+	 * @param integer $height The height of the drawing
+	 */
+    function draw(Canvas $dest,$x=0,$y=0,$width=null,$height=null) {
 
         $dstimage = $dest->getImage();
 		if (!$width) $width = $this->width;

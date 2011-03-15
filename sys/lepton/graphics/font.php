@@ -24,15 +24,16 @@ class TruetypeFont implements IFont {
      */
     function __construct($fontname, $fontsize) {
         $p = config::get('lepton.graphics.fontpaths', array(
+        	'/usr/share/fonts/truetype/',
         	APP_PATH,
         	'./',
         	APP_PATH.'/fonts/',
-        	'../',
-        	'/usr/share/fonts/truetype/'
+        	'../'
         ));
         foreach($p as $fp) {
-            if (@file_exists($fp.$fontname) === true) {
-                $fullname = $fp.$fontname;
+        	$ff = file_find($fp,$fontname);
+            if ($ff != null) {
+                $fullname = $ff;
                 break;
             }
         }

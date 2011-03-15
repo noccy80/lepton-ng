@@ -38,6 +38,20 @@ class LeptonBaseTests extends LunitCase {
 		$this->assertEquals(__fileext('/foo/bar.baz'),'baz');
 		$this->assertEquals(__filepath('/foo/bar.baz'),'/foo');
 	}
+	
+	/**
+	 * @description file_find() to locate file with globbing
+	 */
+	function filefind() {
+		$this->assertEquals(file_find(base::basePath(),'base.php'), base::basePath().'sys/base.php');
+	}
+
+	/**
+	 * @description file_find() on a bad path returning null
+	 */
+	function filefindbaddir() {
+		$this->assertNull(file_find('/foo/bar','baz'));
+	}
 
 }
 

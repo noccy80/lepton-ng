@@ -354,6 +354,20 @@ function __printable($var) {
     }
 }
 
+function file_find($dir,$match) {
+
+	$pattern = str_replace('//','/',$dir.'/*/'.$match);
+	try {
+		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+		foreach ($iterator as $path) {
+		    if (fnmatch($pattern,$path)) return $path;
+		}
+		return null;
+	} catch(Exception $e) {
+		return null;
+	}
+}
+
 
 ////// Exceptions /////////////////////////////////////////////////////////////
 
