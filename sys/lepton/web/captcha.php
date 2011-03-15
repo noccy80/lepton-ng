@@ -61,7 +61,7 @@ class Captcha {
      *
      * @param String $id The previously generated() ID (optional)
      */
-    function display($id = null) {
+    function display($id = null, $saveto = null) {
 
         // Grab and test the font
         $font = config::get('lepton.captcha.font',null);
@@ -79,31 +79,36 @@ class Captcha {
 
         // And render the captcha
         $c = new Canvas(160,40);
+        $p = $c->getPainter();
 
         // Fill with color
-        $c->drawFilledRect(-1,-1,161,41,
-            new Color(80,80,80),
-            new Color(rand(0,64),rand(0,64),rand(0,64)));
+        $p->drawFilledRect(-1,-1,161,41,
+            new RgbColor(80,80,80),
+            new RgbColor(rand(0,64),rand(0,64),rand(0,64)));
 
         // Draw some arcs and lines
         for ($n = 0; $n < 20; $n++) {
-            $c->drawArc(rand(0,160),rand(0,40),rand(0,60),rand(0,60),
+            $p->drawArc(rand(0,160),rand(0,40),rand(0,60),rand(0,60),
                 rand(0,360),rand(0,360),
-                new Color(rand(100,200),rand(100,200),rand(100,200)));
-            $c->drawLine(rand(-40,200),rand(-40,120),rand(-40,200),rand(-40,120),
-                new Color(rand(100,200),rand(100,200),rand(100,200)));
+                new RgbColor(rand(100,200),rand(100,200),rand(100,200)));
+            $p->drawLine(rand(-40,200),rand(-40,120),rand(-40,200),rand(-40,120),
+                new RgbColor(rand(100,200),rand(100,200),rand(100,200)));
         }
 
         // Draw the letters of the captcha
-        $f = new Font($font,20);
+        $f = new TruetypeFont($font,20);
         $wid = 160 / (strlen($str)+1);
         for ($n = 0; $n < strlen($str); $n++) {
             $f->setAngle(rand(-45,45));
-            $c->drawText($f, new Color(rand(230,255),rand(230,255),rand(230,255)),
+            $c->drawText($f, new RgbColor(rand(230,255),rand(230,255),rand(230,255)),
                 ($wid*($n+1)), 30, substr($str,$n,1));
         }
 
-        $c->output();
+		if ($saveto) {
+			$c->saveImage($saveto);
+		} else {
+	        $c->output();
+	    }
     }
 
     /**
@@ -145,6 +150,15 @@ class Captcha {
 
     }
 
+    function getstring($id) {
+
+        // Get the keys from the session store
+        $keys = Session::get('lepton.captcha.keys', array());
+
+        // Match a specific ID
+        $expected = String::toLowerCase($keys[$id]);
+        return $expected;
+
+    }
 }
 
-?>
