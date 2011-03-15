@@ -60,7 +60,7 @@
 
     // Mail backends
     config::set('lepton.mail.backends', array(
-       'lepton.net.mail.filesystem'
+       'lepton.net.mailbox.filesystem'
     ));
 
     // Strict sessions protect against session hijacking attacks

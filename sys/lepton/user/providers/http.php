@@ -1,5 +1,7 @@
 <?php
 
+using('lepton.user.authentication');
+
 /**
  * Authentication using HTTP auth
  */

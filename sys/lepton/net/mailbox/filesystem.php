@@ -1,6 +1,7 @@
 <?php __fileinfo("Mail store: Filesystem");
 
 using('lepton.crypto.uuid');
+using('lepton.net.mailbox');
 
 /**
  * @brief Filesystem-based XML backend for the Mailbox class.

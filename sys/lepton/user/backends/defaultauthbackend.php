@@ -3,6 +3,7 @@
 __fileinfo("Default Authentication Backend (DB)");
 
 using('lepton.crypto.uuid');
+using('lepton.user.authentication');
 
 /**
  * @file defaultauthbackend.php

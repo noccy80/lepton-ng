@@ -1,5 +1,7 @@
 <?php
 
+using('lunit.*');
+
 /**
  * @description Base tests for Lepton 1.0 (ng)
  */

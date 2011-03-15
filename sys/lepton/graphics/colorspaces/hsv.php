@@ -1,6 +1,6 @@
 <?php
 
-    ModuleManager::load('lepton.graphics.colorspaces');
+	using('lepton.graphics.colorspace');
     using('lepton.graphics.graphics');
 
     class HsvColor extends Color {
@@ -66,10 +66,8 @@
             $this->value = $v;
 
         }
-
-        public function toRGB() {
-
-            var_dump($this);
+        
+        public function getRGBA() {
             if( $this->sat == 0 ) {
                 $this->c['r'] = $this->value;
                 $this->c['g'] = $this->value;
@@ -117,10 +115,9 @@
                     $c['b'] = $q;
                     break;
             }
-			$rgb = new RgbColor($c['r'], $c['g'], $c['b']);
-            var_dump($c); die();
+  			return array($c['r'], $c['g'], $c['b'], 255);
+        	
         }
 
     }
 
-?>

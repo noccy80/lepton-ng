@@ -5,6 +5,8 @@
     )
 ));
 
+using('lepton.user.authentication');
+
 /**
  * @brief Perfect Paper Password Authentication provider
  *

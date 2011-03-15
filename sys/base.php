@@ -263,7 +263,7 @@ function using($mod) {
 }
 
 function __fmt($args=null) {
-	$args = func_get_args();
+	$args = (array)$args;
     if (count($args) == 0) {
         return "";
     } else if (count($args) == 1) {
@@ -1087,6 +1087,17 @@ abstract class string {
 		}
 	}
 
+    public static function toLowerCase($string) {
+        return strToLower($string);
+    }
+
+    public static function toUpperCase($string) {
+        return strToLower($string);
+    }
+    
+    public static function length($string) {
+        return strlen($string);
+    }
 }
 
 abstract class integer {
@@ -1391,7 +1402,7 @@ class SyslogLoggerFactory extends LoggerFactory {
     }
 
     function __logMessage($prio, $msg) {
-        syslog($prio, $msg);
+        syslog($prio, __fmt($msg));
     }
 
     function __destruct() {

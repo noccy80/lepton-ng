@@ -1,5 +1,7 @@
 <?php
 
+using('lepton.user.authentication');
+
 /**
  * @brief JanRain Engage Authentication Provider
  *

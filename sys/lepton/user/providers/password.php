@@ -4,6 +4,8 @@ __fileinfo("Password Authentication Provider", array(
     'version' => '1.0'
 ));
 
+using('lepton.user.authentication');
+
 /**
  * @brief Password Authentication provider
  *

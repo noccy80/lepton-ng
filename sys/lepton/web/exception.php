@@ -1,6 +1,7 @@
 <?php __fileinfo("MVC Exception Handler");
 
 using('resource.resource');
+using('lepton.mvc.router');
 
 class MvcExceptionHandler extends ExceptionHandler {
 

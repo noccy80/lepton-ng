@@ -8,4 +8,4 @@ class LdwpManager {
 
 }
 
-event::register(MvcEvent::EVENT_BEFORE_ROUTING, new EventHandler('LdwpManager','request'));
+event::register('lepton.mvc.routing.pre', new EventHandler('LdwpManager','request'));

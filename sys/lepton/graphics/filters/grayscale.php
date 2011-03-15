@@ -9,7 +9,8 @@ ModuleManager::load('lepton.graphics.filter');
  * @author Christopher Vagnetoft <noccy@chillat.net>
  */
 class GrayscaleImageFilter extends ImageFilter {
-	function applyFilter($himage) {
+	function applyFilter(Canvas $canvas) {
+		$himage = $canvas->getImage();
 		if (function_exists('imagefilter')) {
 			// If gd is bundled this will work
 			imagefilter($himage, IMG_FILTER_GRAYSCALE);
