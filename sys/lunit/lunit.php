@@ -2,6 +2,13 @@
 
 using('lunit.lunitcase');
 
+interface ILunitStatusCallback {
+	function onCaseBegin($name,$meta);
+	function onCaseEnd();
+	function onTestBegin($name,$meta);
+	function onTestEnd($status,$message);
+}
+
 abstract class Lunit {
 	private static $cases = array();
 	public static function register($case) {
@@ -14,28 +21,47 @@ abstract class Lunit {
 
 class LunitRunner {
 
+	private $statuscb = null;
+
+	function setStatusCallback(ILunitStatusCallback $object) {
+		
+		$this->statuscb = $object;	
+		
+	}
+
 	function run() {
 
 		$cases = Lunit::getCases();
 		// Enumerate the cases
 		foreach($cases as $case) {
+			// Reflect the class to find methods and metadata
 			$r = new ReflectionClass($case);
 			$tc = new $case($this);
 			$ml = $r->getMethods();
 			$meta = LunitUtil::parseDoc($r->getDocComment());
-			console::writeLn(__astr('\b{%s}'),$meta['description']);
+			
+			// Callback if set
+			if ($this->statuscb) $this->statuscb->onCaseBegin($case,$meta);
+
 			foreach($ml as $method) {
 				if ($method->isPublic() && (substr($method->getName(),0,1) != '_')) {
-					console::write('%s: ', $method->getName());
+					$tmeta = LunitUtil::parseDoc($method->getDocComment());
+					if (!isset($tmeta['description'])) $tmeta['description'] = $method->getName();
+					// Callback if set
+					if ($this->statuscb) $this->statuscb->onTestBegin($method->getName(),$tmeta);
 					try {
 						$tc->{$method->getName()}();
-						console::writeLn('PASS');
-						// Call test
+						if ($this->statuscb) $this->statuscb->onTestEnd(true,null);
 					} catch (LunitAssertionFailure $f) {
-						console::writeLn($f->getMessage());
+						if ($this->statuscb) $this->statuscb->onTestEnd(false,$f->getMessage());
 					}
+
 				}
 			}
+
+			// Callback if set
+			if ($this->statuscb) $this->statuscb->onCaseEnd();
+
 		}
 		
 	}

@@ -4,10 +4,10 @@ class LunitAssertionFailure extends Exception { }
 
 abstract class LunitCase {
 	
-	protected function assertEqual($val,$test) { 
+	protected function assertEquals($val,$test) { 
 		if ($val != $test) {
 			throw new LunitAssertionFailure(
-				sprintf("assertEqual(): %s != %s",  __printable ($val),__printable($test))
+				sprintf("assertEquals(): %s != %s",  __printable ($val),__printable($test))
 			);
 		}
 	}

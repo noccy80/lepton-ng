@@ -263,6 +263,7 @@ function using($mod) {
 }
 
 function __fmt($args=null) {
+	$args = func_get_args();
     if (count($args) == 0) {
         return "";
     } else if (count($args) == 1) {

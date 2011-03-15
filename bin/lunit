@@ -5,8 +5,10 @@ require('sys/base.php');
 using('lunit.lunit');
 using('lunit.reporters.*');
 
-class LunitApplication extends ConsoleApplication {
+class LunitApplication extends ConsoleApplication implements ILunitStatusCallback {
 
+	var $major = 1;
+	var $minor = 0;
 	var $arguments = array(
 		array('h','help','Show this help'),
 		array('t:','tests','Load tests from, comma separated (default: app.tests.*)'),
@@ -15,22 +17,51 @@ class LunitApplication extends ConsoleApplication {
 	var $description = 'Lunit Console Tester';
 
 	function main($argc,$argv) {
+
+		console::writeLn("Lunit Runner v%d.%d", $this->major, $this->minor);
+		console::writeLn("(c) 2001-2011, NoccyLabs. Distributed under GPL v2 or later");
+		console::writeLn();
 	
 		$tests = 'app.tests.*';
 		if ($this->hasArgument('t')) $tests = $this->getArgument('t');
-		console::writeLn("Using tests from: %s", $tests);
 		$tests = explode(',',$tests);
-		foreach($tests as $test) using($test);
+		foreach($tests as $test) {
+			console::writeLn(__astr("\b{::} Loading tests: \g{%s}"), $test);
+			using($test);
+		}
 		
 		$reporter = 'ConsoleLunitReporter';
 		if ($this->hasArgument('r')) $reporter = $this->getArgument('r');
-				
+		console::writeLn(__astr("\b{::} Loading reporter: \g{%s}"), $reporter);
 		$rep = new $reporter();
+		console::writeLn();
 
 		$lur = new LunitRunner();
+		$lur->setStatusCallback($this);
 		$lur->run();
 		
 		$rep->report($lur);
+	}
+
+	function onCaseBegin($name,$meta) {
+		console::writeLn(__astr('\b{::} \b{Running case} \g{%s}: %s'), $name, $meta['description']);
+	}
+
+	function onCaseEnd() {
+		console::writeLn();
+	}
+
+	function onTestBegin($name,$meta) {
+		console::write(__astr('   \g{%-20s} %-50s '), $name, $meta['description']);
+	}
+
+	function onTestEnd($status,$message) {
+		if ($status == true) {
+			console::writeLn(__astr('[\c{green PASS}]'));
+		} else {
+			console::writeLn(__astr('[\c{red FAIL}]'));
+			console::writeLn(__astr('     (\g{%s})'), $message);
+		}
 	}
 
 }
