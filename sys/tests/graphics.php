@@ -70,6 +70,9 @@ class LeptonCanvasTests extends LunitCase {
 		$this->assertNotNull($this->font);
 	}
 	
+	/**
+	 * @description Drawing text on the canvas
+	 */
 	function canvastext() {
 		$this->canvas->drawText($this->font, new RgbColor(0,0,255), 10, 30, 'Hello World');
 	}

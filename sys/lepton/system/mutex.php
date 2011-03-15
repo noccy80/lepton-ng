@@ -31,10 +31,10 @@
          */
         static function void() {
             $res = shm_attach(Mutex::SHM_KEY);
+            assert($res != null);
             shm_put_var($res, Mutex::SHM_CRITICAL, false);
             shm_put_var($res,Mutex::SHM_LOCKS,array());
             shm_detach($res);
-
         }
 
         /**
@@ -81,15 +81,20 @@
             }
             $this->enterCriticalSection();
             Console::debug("Waiting for lock %s", $this->_lockname);
+            $t = new timer(true);
             while (true) {
-                $ls = shm_get_var(Mutex::$resource,0);
+                $ls = shm_get_var(Mutex::$resource,Mutex::SHM_LOCKS);
                 if (!isset($ls[$name])) break;
                 usleep(100000);
+                if ($t->getElapsed() > ($timeoutms / 1000)) {
+                	$this->exitCriticalSection();
+	                throw new MutexException("Timed out waiting for lock");
+                }
             }
             Console::debug("Acquiring lock %s", $this->_lockname);
-            $ls = shm_get_var(Mutex::$resource,0);
+            $ls = shm_get_var(Mutex::$resource,Mutex::SHM_LOCKS);
             $ls[$name] = true;
-            shm_put_var(Mutex::$resource,0,$ls);
+            shm_put_var(Mutex::$resource,Mutex::SHM_LOCKS,$ls);
             Mutex::$instance++;
             $this->_lockstate = true;
             $this->exitCriticalSection();
@@ -111,13 +116,13 @@
         public function release() {
             $this->enterCriticalSection();
             Console::debug("Destroying mutex %s", $this->_lockname);
-            $ls = shm_get_var(Mutex::$resource,0);
+            $ls = shm_get_var(Mutex::$resource,Mutex::SHM_LOCKS);
             unset($ls[$this->_lockname]);
-            shm_put_var(Mutex::$resource,0,$ls);
+            shm_put_var(Mutex::$resource,Mutex::SHM_LOCKS,$ls);
             $this->_lockstate = false;
             $this->exitCriticalSection();
         }
 
     }
 
-?>
+	class MutexException extends Exception { }
