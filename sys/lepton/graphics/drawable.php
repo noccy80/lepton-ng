@@ -4,7 +4,7 @@
 
 interface IDrawable {
 
-	function draw(Canvas $dest,$x,$y,$width=0,$height=0);
+	function draw(Canvas $dest,$x=0,$y=0,$width=null,$height=null);
 
 }
 
