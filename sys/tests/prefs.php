@@ -15,30 +15,32 @@ class LeptonPrefsTests extends LunitCase {
 	 * @description Saving/loading of filesystem-backed storage
 	 */
 	function fsprefs() {
-		$s = new FsPrefs('/tmp/fsprefs.tmp');
+		$tf = $this->getTempFile();
+		$s = new FsPrefs($tf);
 		$this->assertNotNull($s);
 		$s->foo = 'bar';
 		unset($s);
-		$s = new FsPrefs('/tmp/fsprefs.tmp');
+		$s = new FsPrefs($tf);
 		$this->assertNotNull($s);
 		$this->assertEquals($s->foo, 'bar');
 		unset($s);
-		unlink('/tmp/fsprefs.tmp');
+		// unlink('/tmp/fsprefs.tmp');
 	}
 
 	/**
 	 * @description Saving/loading of json-backed storage
 	 */
 	function jsonprefs() {
-		$s = new JsonPrefs('/tmp/jsonprefs.tmp');
+		$tf = $this->getTempFile();
+		$s = new JsonPrefs($tf);
 		$this->assertNotNull($s);
 		$s->foo = 'bar';
 		unset($s);
-		$s = new JsonPrefs('/tmp/jsonprefs.tmp');
+		$s = new JsonPrefs($tf);
 		$this->assertNotNull($s);
 		$this->assertEquals($s->foo, 'bar');
 		unset($s);
-		unlink('/tmp/jsonprefs.tmp');
+		// unlink('/tmp/jsonprefs.tmp');
 	}
 
 }

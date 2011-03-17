@@ -81,9 +81,9 @@ class LeptonCanvasTests extends LunitCase {
 	 * @description Saving as common formats
 	 */
 	function canvassave() {
-		$this->canvas->saveImage('/tmp/canvas.png');
-		$this->canvas->saveImage('/tmp/canvas.gif');
-		$this->canvas->saveImage('/tmp/canvas.jpg');
+		$this->canvas->saveImage($this->getTempFile('png'));
+		$this->canvas->saveImage($this->getTempFile('gif'));
+		$this->canvas->saveImage($this->getTempFile('jpg'));
 	}
 	
 	function __destruct() {

@@ -3,7 +3,30 @@
 class LunitAssertionFailure extends Exception { }
 
 abstract class LunitCase {
-	
+
+	private $tempfiles = array();
+
+	protected function getTempFile($extension = null) {
+		if ($extension) {
+			$strext = '.'.$extension;
+		} else {
+			$strext = '.tmp';
+		}
+		$tmpdir = sys_get_temp_dir();
+		$tmpfil = tempnam($tmpdir,'lunit').$strext;
+		$this->tempfiles[] = $tmpfil;
+		return $tmpfil;
+	}
+
+	public function __destruct() {
+		foreach($this->tempfiles as $tempfile) {
+			if (file_exists($tempfile)) {
+				// console::writeLn("Unlinking: %s", $tempfile);
+				unlink($tempfile);
+			}
+		}
+	}
+
 	protected function assertEquals($val,$test) { 
 		if ($val != $test) {
 			throw new LunitAssertionFailure(

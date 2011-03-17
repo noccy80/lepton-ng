@@ -471,10 +471,13 @@ class GeonamesAction extends Action {
 }
 
 
-
+if (base::appPath() != '/') {
 Actions::register(
 	new GeonamesAction(),
 	'geonames',
 	'Manage the geonames table',
 	GeonamesAction::$commands
 );
+} else {
+	console::writeLn("Warning: Application path can not be resolved for Geonames action. Define APP_PATH or execute from application root.");
+}

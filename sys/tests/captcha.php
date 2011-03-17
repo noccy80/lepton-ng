@@ -32,7 +32,7 @@ class LeptonCaptchaTests extends LunitCase {
 	 * @description Displaying/saving captcha
 	 */
 	function display() {
-		captcha::display($this->captchaid,'/tmp/captchaimage.png');
+		captcha::display($this->captchaid,$this->getTempFile('png'));
 	}
 	
 	/**
