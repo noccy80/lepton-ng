@@ -124,6 +124,7 @@
                 // parent
                 $this->pid = $pid;
                 Console::debug("Thread forked with pid %d", $pid);
+		return $pid;
             }
             else {
                 // child

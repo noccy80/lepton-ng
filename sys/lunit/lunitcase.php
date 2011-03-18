@@ -13,7 +13,9 @@ abstract class LunitCase {
 			$strext = '.tmp';
 		}
 		$tmpdir = sys_get_temp_dir();
-		$tmpfil = tempnam($tmpdir,'lunit').$strext;
+		$tmpfil = tempnam($tmpdir,'lunit');
+		unlink($tmpfil);
+		$tmpfil .= $strext;
 		$this->tempfiles[] = $tmpfil;
 		return $tmpfil;
 	}
