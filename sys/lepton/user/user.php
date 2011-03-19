@@ -216,6 +216,25 @@ class UserRecord {
         return true;
     }
 
+    function applyFlags($value) {
+        // TODO: This needs updating in the user table.
+        $fn = str_replace('+','',$this->flags);
+        $op = '+';
+        for($n = 0; $n < strlen($value); $n++) {
+            switch($value[$n]) {
+                case '+': $op = '+'; break;
+                case '-': $op = '-'; break;
+                default:
+                    if (($op == '+') && (strpos($fn,$value[$n]) === false)) {
+                        $fn .= $value[$n];
+                    } elseif (($op == '-') && (strpos($fn,$value[$n]) !== false)) {
+                        $fn = str_replace($value[$n],'',$fn);
+                    }
+            }
+        }
+        $this->flags = $fn;
+    }
+
     /**
      * @brief Set a user property.
      *
@@ -249,26 +268,11 @@ class UserRecord {
             case 'active':
                 $this->active = $value;
                 break;
-			case 'displayname':
-				$this->displayname = $value;
-				break;
+            case 'displayname':
+                $this->displayname = $value;
+                break;
             case 'flags':
-                // TODO: This needs updating in the user table.
-                $fn = str_replace('+','',$this->flags);
-                $op = '+';
-                for($n = 0; $n < strlen($value); $n++) {
-                    switch($value[$n]) {
-                        case '+': $op = '+'; break;
-                        case '-': $op = '-'; break;
-                        default:
-                            if (($op == '+') && (strpos($fn,$value[$n]) === false)) {
-                                $fn .= $value[$n];
-                            } elseif (($op == '-') && (strpos($fn,$value[$n]) !== false)) {
-                                $fn = str_replace($value[$n],'',$fn);
-                            }
-                    }
-                }
-                $this->flags = $fn;
+                $this->flags = $value;
                 break;
             default:
                 $this->ambient[$key] = $value;
