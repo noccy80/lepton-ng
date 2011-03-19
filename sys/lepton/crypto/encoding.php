@@ -23,7 +23,3 @@
         function _decode($str) { return (base64_decode($str)); }
     }
 
-
-
-
-?>
