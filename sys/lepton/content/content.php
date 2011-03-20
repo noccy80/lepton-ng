@@ -19,17 +19,17 @@ class Content {
 		}
 		self::$providers[$ns] = $provider;
 	}
-	
+
 	static public function registerExtension(ContentExtension $extension) {
 		self::$extensions[] = $extension;
 	}
-	
+
 	static public function initExtensions($object) {
 		foreach(self::$extensions as $extension) {
 			$object->{$extension->getHandle()} = new $extension($object);
 		}
 	}
-	
+
 	static public function getExtensions() {
 		return self::$extensions;
 	}
@@ -39,8 +39,10 @@ class Content {
 		if (isset(self::$providers[$ns])) {
 			return self::$providers[$ns]->getContentFromObjectId($objid);
 		} else {
-			throw new ContentException("No handler found for %s", $uri);
+			throw new ContentException(sprintf("No handler found for %s", $uri));
 		}
 	}
 
 }
+
+class ContentException extends Exception { }
