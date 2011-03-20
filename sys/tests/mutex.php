@@ -9,13 +9,13 @@ class LeptonMutexTest extends LunitCase {
 	
 	function __construct() {
 		using('lepton.system.mutex');
-		mutex::void();
 	}
 	
 	/**
 	 * @description Acquiring a mutex lock
 	 */
 	function mutexcreate() {
+		mutex::void();
 		$this->mutex = new Mutex("lunitlock");
 	}
 	
@@ -49,7 +49,10 @@ class LeptonMutexTest extends LunitCase {
 		$m->release();
 	}
 
-	function __destruct() {
+	/**
+	 * @description Cleaning up locks
+	 */
+	function cleanup() {
 		mutex::void();
 	}
 

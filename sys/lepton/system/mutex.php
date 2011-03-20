@@ -30,6 +30,7 @@
          * Voids all the locks. Use to free a deadlock.
          */
         static function void() {
+            if (!function_exists('shm_has_var')) throw new BaseException("No mutex support on this platform");
             $res = shm_attach(Mutex::SHM_KEY);
             assert($res != null);
             shm_put_var($res, Mutex::SHM_CRITICAL, false);
@@ -70,6 +71,7 @@
          * Constructor
          */
         function __construct($name,$timeoutms = 5000) {
+            if (!function_exists('shm_has_var')) throw new BaseException("No mutex support on this platform");
             $this->_lockname = $name;
             // Block until lock can be acquired
             if (Mutex::$instance == 0) {
@@ -104,6 +106,7 @@
          * Destructor
          */
         function __destruct() {
+            if (!function_exists('shm_has_var')) throw new BaseException("No mutex support on this platform");
             // Release
             if ($this->_lockstate) $this->release();
             Mutex::$instance--;
@@ -114,6 +117,7 @@
         }
 
         public function release() {
+            if (!function_exists('shm_has_var')) throw new BaseException("No mutex support on this platform");
             $this->enterCriticalSection();
             Console::debug("Destroying mutex %s", $this->_lockname);
             $ls = shm_get_var(Mutex::$resource,Mutex::SHM_LOCKS);
