@@ -46,14 +46,22 @@ class LunitRunner {
 			$casereport = array();
 			// Reflect the class to find methods and metadata
 			$r = new ReflectionClass($case);
-			$tc = new $case($this);
 			$ml = $r->getMethods();
+			$skip = false;
 			$meta = LunitUtil::parseDoc($r->getDocComment());
-			
+			if (!isset($meta['description'])) $meta['description'] = $case;
+			if (isset($meta['extensions'])) {
+				$extn = explode(' ',$meta['extensions']);
+				foreach($extn as $ext) {
+					if (!extension_loaded($ext)) $skip = true;
+				}
+			}
+
 			$casereport['meta'] = $meta;
 			// Callback if set
 			if ($this->statuscb) $this->statuscb->onCaseBegin($case,$meta);
 
+			if (!$skip) $tc = new $case($this);
 			foreach($ml as $method) {
 				$methodname = $method->getName();
 				if ($method->isPublic() && (substr($methodname,0,1) != '_')) {
@@ -65,6 +73,7 @@ class LunitRunner {
 					$methodreport['meta'] = $tmeta;
 					// Callback if set, then create timer
 					if ($this->statuscb) $this->statuscb->onTestBegin($methodname,$tmeta);
+					if (!$skip) {
 					$tm = new Timer();
 					try {
 						$tm->start();
@@ -83,6 +92,11 @@ class LunitRunner {
 						$methodreport['passed'] = false;
 						$methodreport['message'] = $e->getMessage();
 						if ($this->statuscb) $this->statuscb->onTestEnd(false,$e->getMessage());
+					}
+					} else {
+						$methodreport['passed'] = false;
+						$methodreport['message'] = 'Skipped';
+						$this->statuscb->onTestEnd(false,'Skipped');
 					}
 					$methodreport['elapsed'][] = $tm->getElapsed();
 					// Save report

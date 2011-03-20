@@ -4,6 +4,7 @@ using('lunit.*');
 
 /**
  * @description Cryptography Tests
+ * @extensions mcrypt
  */
 class LeptonCryptoTests extends LunitCase {
 
