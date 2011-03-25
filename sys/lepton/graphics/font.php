@@ -14,7 +14,7 @@ interface IFont {
 class TruetypeFont implements IFont {
 
     private $font = array();
-    
+
     /**
      * Constructor, attempts to load the font from the paths defined in the
      * lepton.graphics.fontpaths key or the default locations.
@@ -68,19 +68,16 @@ class TruetypeFont implements IFont {
      */
     function __getFont() {
         return $this->font;
-
     }
 
-	
-	function drawText(Drawable $drawable,$x,$y,$color,$text) {
 
-		$himage = $drawable->getImage();
+    function drawText(Drawable $drawable,$x,$y,$color,$text) {
+        $himage = $drawable->getImage();
         imagettftext(
-			$himage, $this->font['fontsize'], $this->font['$angle'],
-			$x, $y, $color, $this->font['fontname'], $text
-		);
-
-	}
+            $himage, $this->font['fontsize'], $this->font['$angle'],
+            $x, $y, $color, $this->font['fontname'], $text
+        );
+    }
 
     /**
      * Rotate the font relative to its current rotation.
