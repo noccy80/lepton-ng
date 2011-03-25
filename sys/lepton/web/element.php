@@ -6,10 +6,10 @@ class Element {
     private $_args = array();
     private $_content = null;
     // TODO: Extend
-    const contentelem = array('p','div','a','em','i','u','script');
+    const contentelem = '|p|div|a|em|i|u|script|';
 
-    function __callstatic($elem,array $args=null,$content=null) {
-        $el = new Element($elem,$args);
+    public static function __callstatic($name,$args) {
+        $el = new Element($elem,$args[0],$args[1]);
         $el->setContent($content);
         return $el;
     }
@@ -49,7 +49,7 @@ class Element {
         } else {
             $conts = '';
         }
-        if (arr::hasValue(self::contentelem, $this->_elem)) {
+        if (strpos('|'.$this->_elem.'|',self::contentelem) > 0) {
             $node = sprintf('<%s %s>%s</%s>', $this->_elem, $attrl, $conts);
         } else {
             $node = sprintf('<%s %s>', $this->_elem, $attrl);
