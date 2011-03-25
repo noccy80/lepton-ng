@@ -63,6 +63,14 @@ class Canvas implements IDrawable,ICanvas {
 
 	}
 
+	function setImage($himage) {
+
+		$this->himage = $himage;
+		$this->gotmeta = false;
+		$this->gotimage = true;
+
+	}
+
 	/**
 	 * Get the dimensions of the canvas.
 	 *

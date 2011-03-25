@@ -48,6 +48,7 @@ define("LEPTON_PLATFORM_ID", LEPTON_PLATFORM . " v" . LEPTON_VERSION);
 // Platform definitions
 define('IS_WINNT', (strtolower(PHP_RUNTIME_OS) == 'windows'));
 define('IS_LINUX', (strtolower(PHP_RUNTIME_OS) == 'linux'));
+define('WINDOWS',  (strtolower(PHP_RUNTIME_OS) == 'windows'));
 
 // PHP Version Definitions / Fixes
 if (!defined('PHP_VERSION_ID')) {

@@ -13,8 +13,9 @@ class LeptonCanvasTests extends LunitCase {
 
 	function __construct() {
 		using('lepton.graphics.canvas');
+		using('lepton.graphics.capture');
 	}
-	
+
 	/**
 	 * @description Creating canvas
 	 */
@@ -87,12 +88,21 @@ class LeptonCanvasTests extends LunitCase {
 		$this->canvas->saveImage($this->getTempFile('jpg'));
 	}
 	
-	function __destruct() {
-	/*
-		unlink('/tmp/canvas.png');
-		unlink('/tmp/canvas.gif');
-		unlink('/tmp/canvas.jpg');
-	*/
+	/**
+	 * @description Screen capture with Screenshot() class.
+	 */
+	function screenshot() {
+		unset($this->canvas);
+		$this->canvas = new Screenshot();
+		$this->assertNotNull($this->canvas);
+	}
+
+	/**
+	 * @description Verifying properties of canvas
+	 */
+	function screenshotprops() {
+		$this->assertTrue($this->canvas->width>0);
+		$this->assertTrue($this->canvas->height>0);
 	}
 
 }
