@@ -1,0 +1,63 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+using('lepton.graphics.capture');
+using('lepton.system.threading');
+
+class ScrintApplication extends ConsoleApplication {
+
+	var $arguments = array(
+		array('h','help','Show this help'),
+		array('v','verbose','Be verbose'),
+		array('o:','output','Output file'),
+		array('d:','delay','Delay in seconds before capturing'),
+		array('a:','after','Run application after capture, use %f for the filename'),
+	);
+	var $description = "Scrint! ScreenPrint Utility";
+
+	function main($argc,$argv) {
+		if ($this->hasArgument('o')) {
+			$file = $this->getArgument('o');
+			if ($this->hasArgument('d')) {
+				$delay = $this->getArgument('d');
+				console::write("Waiting %d seconds", $delay);
+				for($n = 0; $n < $delay; $n++) {
+					sleep(1);
+					console::write('.');
+				}
+				console::writeLn();
+			}
+			$sc = new Screenshot();
+			console::write("Saving to %s: ", $file);
+			$sc->saveImage($file);
+			console::writeLn("Done");
+			if ($this->hasArgument('a')) {
+				$cmd = $this->getArgument('a');
+				$cmd = str_replace('%f','"'.$file.'"',$cmd);
+				console::writeLn("Invoking %s...", $cmd);
+				$exec = new Thread(new AsyncProcess($cmd));
+				$exec->start();
+			}
+		} else {
+			$this->usage();
+		}
+	}
+
+}
+
+class AsyncProcess extends Runnable {
+	private $cmd = null;
+	function __construct($cmd) {
+		$this->cmd = $cmd;
+	}
+	function threadmain() {
+		if ($this->cmd) {
+			shell_exec($this->cmd);
+		} else {
+			console::writeLn("Nothing to do for AsyncProcess...");
+		}
+	}
+}
+
+lepton::run('ScrintApplication');
