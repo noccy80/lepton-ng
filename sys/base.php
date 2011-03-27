@@ -565,7 +565,7 @@ class BasicContainer {
     }
 
     function __get($property) {
-        if (isset($this->properties[$property]) || ($this->properties[$property] === null)) {
+        if (isset($this->properties[$property])) {
             return $this->properties[$property];
         } else {
             throw new BadPropertyException("No such property: $property");
@@ -573,7 +573,7 @@ class BasicContainer {
     }
 
     function __set($property, $value) {
-        if (isset($this->properties[$property]) || ($this->properties[$property] === null)) {
+        if (isset($this->properties[$property])) {
             if (is_array($this->properties[$property]) &&
                 (!is_array($value))) {
                 throw new RuntimeException("Attempting to assign non-array to array property");
@@ -586,6 +586,14 @@ class BasicContainer {
 
     function __isset($property) {
         return (isset($this->properties[$property]));
+    }
+    
+    function getData() {
+    	return $this->propertyvalues;
+    }
+    
+    function setData($data) {
+    	arr::apply($this->propertyvalues, $data);
     }
 
 }
@@ -1167,6 +1175,52 @@ abstract class arr {
         return in_array($key, $arr);
     }
 
+}
+
+class vartype {
+	private $vartype = null;
+	private $optional = true;
+	private $length = null;
+	private $precision = null;
+	private $defaultvalue = null;
+	static function string($length=null) {
+		$vt = new vartype('string');
+		$vt->length($length);
+		return $vt;
+	}
+	static function float($length=null,$precision=null) {
+		$vt = new vartype('float');
+		$vt->length($length);
+		$vt->precision($precision);
+		return $vt;
+	}
+	function __construct($vartype) {
+		$this->vartype = $vartype;
+	}
+	function length($length=null) {
+		$this->length = $length;
+		return $this;
+	}
+	function precision($precision = null) {
+		$this->precision = $precision;
+		return $this;
+	}
+	function nullable() {
+		$this->optional = true;
+		return $this;
+	}
+	function required() {
+		$this->optional = false;
+		return $this;
+	}
+	function defaultvalue($default) {
+		$this->defaultvalue = $default;	
+		return $this;
+	}
+	function getVartype() { return $this->vartype; }
+	function getRequired() { return !$this->optional; }
+	function getLength() { return $this->length; }
+	function getDefault() { return $this->defaultvalue; }
 }
 
 ////// ModuleManager //////////////////////////////////////////////////////////
