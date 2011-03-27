@@ -1,6 +1,9 @@
 <?php
 
-class LunitAssertionFailure extends Exception { }
+class LunitAssertion extends Exception { }
+class LunitAssertionFailure extends LunitAssertion { }
+class LunitAssertionPass extends LunitAssertion { }
+class LunitAssertionSkip extends LunitAssertion { }
 
 abstract class LunitCase {
 
@@ -64,5 +67,17 @@ abstract class LunitCase {
 			);
 		}
 	}
-	
+
+	protected function explicitPass() {
+		throw new LunitAssertionPass();
+	}
+
+	protected function explicitFail($message) {
+		throw new LunitAssertionFailure($message);
+	}
+
+	protected function skip() {
+		throw new LunitAssertionSkip();
+	}
+
 }

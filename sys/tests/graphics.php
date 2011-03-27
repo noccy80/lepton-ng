@@ -53,7 +53,9 @@ class LeptonCanvasTests extends LunitCase {
 	 * @description Resizing the canvas
 	 */
 	function canvasresize() {
-		$this->clone->resize(400,300);	
+		$this->clone->resize(400,300);
+		$this->assertEquals($this->clone->width,400);
+		$this->assertEquals($this->clone->height,300);
 	}
 	
 	/**

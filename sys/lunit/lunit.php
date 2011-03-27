@@ -53,7 +53,7 @@ class LunitRunner {
 			if (isset($meta['extensions'])) {
 				$extn = explode(' ',$meta['extensions']);
 				foreach($extn as $ext) {
-					if (!extension_loaded($ext)) $skip = true;
+					if (!extension_loaded($ext)) { $skip = true; $skipmsg = "Need extension: ".$ext; }
 				}
 			}
 
@@ -73,30 +73,37 @@ class LunitRunner {
 					$methodreport['meta'] = $tmeta;
 					// Callback if set, then create timer
 					if ($this->statuscb) $this->statuscb->onTestBegin($methodname,$tmeta);
+					$methodreport['skipped'] = false;
 					if (!$skip) {
-					$tm = new Timer();
-					try {
-						$tm->start();
-						$tc->{$methodname}();
-						$tm->stop();
-						$methodreport['passed'] = true;
-						$methodreport['message'] = null;
-						if ($this->statuscb) $this->statuscb->onTestEnd(true,null);
-					} catch (LunitAssertionFailure $f) {
-						$tm->stop();
-						$methodreport['passed'] = false;
-						$methodreport['message'] = $f->getMessage();
-						if ($this->statuscb) $this->statuscb->onTestEnd(false,$f->getMessage());
-					} catch (Exception $e) {
-						$tm->stop();
-						$methodreport['passed'] = false;
-						$methodreport['message'] = $e->getMessage();
-						if ($this->statuscb) $this->statuscb->onTestEnd(false,$e->getMessage());
-					}
+						$tm = new Timer();
+						try {
+							$tm->start();
+							$tc->{$methodname}();
+							$tm->stop();
+							$methodreport['passed'] = true;
+							$methodreport['message'] = null;
+							if ($this->statuscb) $this->statuscb->onTestEnd(true,null);
+						} catch (LunitAssertionFailure $f) {
+							$tm->stop();
+							$methodreport['passed'] = false;
+							$methodreport['message'] = $f->getMessage();
+							if ($this->statuscb) $this->statuscb->onTestEnd(false,$f->getMessage());
+						} catch (LunitAssertionSkip $f) {
+							$tm->stop();
+							$methodreport['passed'] = false;
+							$methodreport['skipped'] = true;
+							if ($this->statuscb) $this->statuscb->onTestEnd(null,$f->getMessage());
+						} catch (Exception $e) {
+							$tm->stop();
+							$methodreport['passed'] = false;
+							$methodreport['message'] = $e->getMessage();
+							if ($this->statuscb) $this->statuscb->onTestEnd(false,$e->getMessage());
+						}
 					} else {
 						$methodreport['passed'] = false;
-						$methodreport['message'] = 'Skipped';
-						$this->statuscb->onTestEnd(false,'Skipped');
+						$methodreport['skipped'] = true;
+						$methodreport['message'] = $skipmsg;
+						$this->statuscb->onTestEnd(null,$skipmsg);
 					}
 					$methodreport['elapsed'][] = $tm->getElapsed();
 					// Save report
