@@ -34,7 +34,7 @@ class Canvas implements IDrawable,ICanvas {
     private $imgtype = null;
     private $imgsize = null;
     private $imgmime = "";
-    private $filename = "";
+    protected $filename = "";
 
     private $gotmeta = false;
     private $gotimage = false;
@@ -135,24 +135,6 @@ class Canvas implements IDrawable,ICanvas {
 
     }
 
-    /**
-     * Load image from file
-     *
-     * @param string $filename The filename
-     */
-    function loadImage($filename) {
-
-        // Check if the file exist
-        if (file_exists($filename)) {
-            // On success, cache the filename for use with the save() function
-            $this->readcanvas = false;
-            $this->readmeta = false;
-            $this->filename = $filename;
-        } else {
-            throw new GraphicsException("File not found", GraphicsException::ERR_FILE_NOT_FOUND);
-        }
-
-    }
 
 	/**
 	 * Constructor, creates a canvas based on the parameters.
@@ -168,6 +150,26 @@ class Canvas implements IDrawable,ICanvas {
 
         if ($width && $height) {
             $this->createImage($width,$height,$color);
+        }
+
+    }
+
+    /**
+     * Load image from file
+     *
+     * @param string $filename The filename
+     */
+    function loadImage($filename) {
+
+	__deprecated('canvas::load() / canvas::loadImage()','new Image()');
+        // Check if the file exist
+        if (file_exists($filename)) {
+            // On success, cache the filename for use with the save() function
+            $this->readcanvas = false;
+            $this->readmeta = false;
+            $this->filename = $filename;
+        } else {
+            throw new GraphicsException("File not found", GraphicsException::ERR_FILE_NOT_FOUND);
         }
 
     }
@@ -607,3 +609,28 @@ class Canvas implements IDrawable,ICanvas {
 
 }
 
+class Image extends Canvas {
+
+	/**
+	 * @overload Canvas::__construct()
+	 * @param string $filename The file to load
+	 */
+	function __construct($filename) {
+		// Check if the file exist
+		if (file_exists($filename)) {
+			// On success, cache the filename for use with the save() function
+			$this->filename = $filename;
+			$img = @imagecreatefromstring(file_get_contents($this->filename));
+			if ($img) {
+				$this->setImage($img);
+				$this->gotimage = true;
+			} else {
+				throw new GraphicsException("Failed to load the image.", GraphicsException::ERR_LOAD_FAILURE);
+			}
+		} else {
+			throw new GraphicsException("File not found", GraphicsException::ERR_FILE_NOT_FOUND);
+		}
+
+	}
+
+}

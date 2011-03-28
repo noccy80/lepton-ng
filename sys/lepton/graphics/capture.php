@@ -3,6 +3,11 @@
 using('lepton.graphics.canvas');
 
 class ScreenShot extends Canvas {
+	/**
+	 * @overload Canvas::construct();
+	 *
+	 * Take a screenshot and return the image
+	 */
 	function __construct() {
 		if (WINDOWS) {
 			$sc = imagegrabscreen();
