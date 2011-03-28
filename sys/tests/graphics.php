@@ -78,7 +78,7 @@ class LeptonCanvasTests extends LunitCase {
 	 */
 	function canvastext() {
 		$this->assertNotNull($this->font);
-		$this->canvas->drawText($this->font, new RgbColor(0,0,255), 10, 30, 'Hello World');
+		$this->font->drawText($this->canvas, 0, 0, new RgbColor(255,0,0), 'Hello World!');
 	}
 	
 	/**
@@ -88,8 +88,20 @@ class LeptonCanvasTests extends LunitCase {
 		$this->canvas->saveImage($this->getTempFile('png'));
 		$this->canvas->saveImage($this->getTempFile('gif'));
 		$this->canvas->saveImage($this->getTempFile('jpg'));
+		$this->canvas->saveImage('test.png');
 	}
 	
+	/**
+	 * @description Load canvas from file
+	 */
+	function canvasload() {
+		$tf = $this->getTempFile('png');
+		$this->canvas->saveImage($tf);
+		$c = new Image($tf);
+		$this->assertEquals($this->canvas->width, $c->width);
+		$this->assertEquals($this->canvas->height, $c->height);
+	}
+
 	/**
 	 * @description Screen capture with Screenshot() class.
 	 */
