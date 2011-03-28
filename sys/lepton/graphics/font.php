@@ -4,7 +4,7 @@ using('lepton.graphics.canvas');
 using('lepton.graphics.drawable');
 
 interface IFont {
-	function drawText(Drawable $drawable,$x,$y,$color,$text);
+	function drawText(Canvas $canvas,$x,$y,$color,$text);
 }
 
 /**
@@ -51,12 +51,52 @@ class TruetypeFont implements IFont {
     /**
      * Measure the text as bounding box.
      *
+     * @author blackbart at simail dot it
      * @param string $text The text
      * @return array Left, Top, Width, Height of bounding box
      */
     function measure($text) {
-        $dim = imagettfbbox( $this->font['fontsize'], $this->font['angle'], $this->font['fontname'] , $text);
-        return(array( $dim[0], $dim[1] - $dim[7], $dim[2]-$dim[0], $dim[3]-$dim[5] ));
+
+        $box = imagettfbbox( $this->font['fontsize'], $this->font['angle'], $this->font['fontname'] , $text);
+		if( !$box ) return false; 
+		$min_x = min( array($box[0], $box[2], $box[4], $box[6]) ); 
+		$max_x = max( array($box[0], $box[2], $box[4], $box[6]) ); 
+		$min_y = min( array($box[1], $box[3], $box[5], $box[7]) ); 
+		$max_y = max( array($box[1], $box[3], $box[5], $box[7]) ); 
+		$width  = ( $max_x - $min_x ); 
+		$height = ( $max_y - $min_y ); 
+		$left   = abs( $min_x ) + $width; 
+		$top    = abs( $min_y ) + $height; 
+		// to calculate the exact bounding box i write the text in a large image 
+		$img     = @imagecreatetruecolor( $width << 2, $height << 2 ); 
+		$white   =  imagecolorallocate( $img, 255, 255, 255 ); 
+		$black   =  imagecolorallocate( $img, 0, 0, 0 ); 
+		imagefilledrectangle($img, 0, 0, imagesx($img), imagesy($img), $black); 
+		// for sure the text is completely in the image! 
+		imagettftext( $img, $this->font['fontsize'], 
+			$this->font['angle'], $left, $top, 
+			$white, $this->font['fontname'], $text); 
+		// start scanning (0=> black => empty) 
+		$rleft  = $w4 = $width<<2; 
+		$rright = 0; 
+		$rbottom   = 0; 
+		$rtop = $h4 = $height<<2; 
+		for( $x = 0; $x < $w4; $x++ ) 
+			for( $y = 0; $y < $h4; $y++ ) 
+				if( imagecolorat( $img, $x, $y ) ){ 
+					$rleft   = min( $rleft, $x ); 
+					$rright  = max( $rright, $x ); 
+					$rtop    = min( $rtop, $y ); 
+					$rbottom = max( $rbottom, $y ); 
+				} 
+		// destroy img and serve the result 
+		imagedestroy( $img ); 
+		return array( 
+			"left"   => $left - $rleft, 
+			"top"    => $top  - $rtop, 
+			"width"  => $rright - $rleft + 1, 
+			"height" => $rbottom - $rtop + 1 
+		); 
     }
 
 
@@ -71,11 +111,12 @@ class TruetypeFont implements IFont {
     }
 
 
-    function drawText(Drawable $drawable,$x,$y,$color,$text) {
-        $himage = $drawable->getImage();
+    function drawText(Canvas $canvas,$x,$y,$color,$text) {
+        $himage = $canvas->getImage();
+        $dim = $this->measure($text);
         imagettftext(
-            $himage, $this->font['fontsize'], $this->font['$angle'],
-            $x, $y, $color, $this->font['fontname'], $text
+            $himage, $this->font['fontsize'], $this->font['angle'],
+            $x, $y + $dim['height'], $color->getColor($himage), $this->font['fontname'], $text
         );
     }
 
@@ -103,6 +144,6 @@ class TruetypeFont implements IFont {
 
 class BitmapFont implements IFont {
 
-	function drawText(Drawable $drawable,$x,$y,$color,$text) { }
+	function drawText(Canvas $canvas,$x,$y,$color,$text) { }
 
 }
