@@ -67,17 +67,17 @@ abstract class DatabaseManager {
  */
 final class DatabaseConnection {
 
-    private $db_conn;
+    private $conn = null;
     private $debug = array();
 
     /**
      *
      * @param string $group The database group to connect to
      */
-    function __construct($group='default') {
+    function __construct($connection='default') {
 
-        Console::debugEx(LOG_DEBUG1,__CLASS__,"Initializing connection for %s.", $group);
-        $this->db_conn = DatabaseManager::getConnection($group);
+        Console::debugEx(LOG_DEBUG1,__CLASS__,"Initializing connection for %s.", $connection);
+        $this->conn = DatabaseManager::getConnection($connection);
 
     }
 
@@ -90,12 +90,12 @@ final class DatabaseConnection {
     function getRows($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->db_conn->escapeString($args);
+        $sql = $this->conn->escapeString($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetRows: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
-        $queryresult = $this->db_conn->query($sql);
+        $queryresult = $this->conn->query($sql);
 
         return $queryresult['data'];
 
@@ -110,12 +110,12 @@ final class DatabaseConnection {
     function getSingleRow($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->db_conn->escapeString($args);
+        $sql = $this->conn->escapeString($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleRow: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
-        $queryresult = $this->db_conn->query($sql);
+        $queryresult = $this->conn->query($sql);
 
         // Only return first item
         if ($queryresult != null) {
@@ -138,12 +138,12 @@ final class DatabaseConnection {
     function getSingleValue($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->db_conn->escapeString($args);
+        $sql = $this->conn->escapeString($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleValue: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
-        $queryresult = $this->db_conn->query($sql);
+        $queryresult = $this->conn->query($sql);
 
         // Only return first column of first item
         if ($queryresult->count > 0) {
@@ -163,14 +163,14 @@ final class DatabaseConnection {
     function insertRow($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->db_conn->escapeString($args);
+        $sql = $this->conn->escapeString($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"InsertRow: %s", $sql);
         Database::$counter++;
         Database::$queries['UPDATING']++;
-        $queryresult = $this->db_conn->query($sql);
+        $queryresult = $this->conn->query($sql);
 
-        return $this->db_conn->autonumber;
+        return $this->conn->autonumber;
 
     }
 
@@ -183,12 +183,12 @@ final class DatabaseConnection {
     function updateRow($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->db_conn->escapeString($args);
+        $sql = $this->conn->escapeString($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"UpdateRow: %s", $sql);
         Database::$counter++;
         Database::$queries['UPDATING']++;
-        $queryresult = $this->db_conn->query($sql);
+        $queryresult = $this->conn->query($sql);
         $affected = $queryresult['count'];
 
         return $affected;
@@ -204,11 +204,11 @@ final class DatabaseConnection {
     function exec($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->db_conn->escapeString($args);
+        $sql = $this->conn->escapeString($args);
         $this->debug[] = $sql;
         Database::$counter++;
         Database::$queries['EXECUTING']++;
-        $queryresult = $this->db_conn->exec($sql);
+        $queryresult = $this->conn->exec($sql);
 
         return null;
 
@@ -224,7 +224,7 @@ final class DatabaseConnection {
     function escape($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->db_conn->escapeString($args);
+        $sql = $this->conn->escapeString($args);
         return $sql;
     }
 
@@ -235,7 +235,7 @@ final class DatabaseConnection {
      * @return string The quoted string
      */
     function quote($string) {
-        return $this->db_conn->escapeString($string);
+        return $this->conn->escapeString($string);
     }
 
     /**
