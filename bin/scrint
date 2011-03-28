@@ -13,24 +13,50 @@ class ScrintApplication extends ConsoleApplication {
 		array('o:','output','Output file'),
 		array('d:','delay','Delay in seconds before capturing'),
 		array('a:','after','Run application after capture, use %f for the filename'),
+		array('m:','multi','Multi capture, specify two values for row and column separated by commas'),
+		array('s:','size','Resize to, specify width and height separated by x'),
 	);
 	var $description = "Scrint! ScreenPrint Utility";
 
 	function main($argc,$argv) {
 		if ($this->hasArgument('o')) {
-			$file = $this->getArgument('o');
-			if ($this->hasArgument('d')) {
-				$delay = $this->getArgument('d');
-				console::write("Waiting %d seconds", $delay);
-				for($n = 0; $n < $delay; $n++) {
-					sleep(1);
-					console::write('.');
+			if ($this->hasArgument('m')) {
+				// Multi-capture
+				list($row,$col) = explode(',',$this->getArgument('m'));
+				if (!$this->hasArgument('s')) {
+					console::writeLn("You need to specify the size of the screenshots with -s");
+					return(1);
 				}
-				console::writeLn();
+				list($width,$height) = explode('x',$this->getArgument('s'));
+				$count = $row * $col;
+				$multi = true;
+				$dest = new Canvas($width * $col, $height * $row);
+			} else {
+				$count = 1;
+				$multi = false;
 			}
-			$sc = new Screenshot();
+			for($img = 0; $img < $count; $img++) {
+				$file = $this->getArgument('o');
+				if ($this->hasArgument('d')) {
+					$delay = $this->getArgument('d');
+					console::write("Waiting %d seconds", $delay);
+					for($n = 0; $n < $delay; $n++) {
+						sleep(1);
+						console::write('.');
+					}
+					console::writeLn();
+				}
+				$sc = new Screenshot();
+				if ($multi) {
+					$tr = floor($img / $col); $tc = $img - ($tr * $col);
+					$sc->resize($width,$height);
+					$sc->draw($dest,$tc*$width,$tr*$height,$width,$height);
+				} else {
+					$dest = $sc;
+				}
+			}
 			console::write("Saving to %s: ", $file);
-			$sc->saveImage($file);
+			$dest->saveImage($file);
 			console::writeLn("Done");
 			if ($this->hasArgument('a')) {
 				$cmd = $this->getArgument('a');
