@@ -19,31 +19,34 @@
             );
         }
 
-        function draw(Canvas $dest,$x,$y,$width=0,$height=0) {
+        function draw(Canvas $dest,$x=null,$y=null,$width=null,$height=null) {
 
 			$image = new Canvas($width,$height);
 			$p = $image->getPainter();
 
-            $grad = $height; // Top down
-            $this->colors['step'] = array(
-                (float)($this->colors['delta'][0] / $grad),
-                (float)($this->colors['delta'][1] / $grad),
-                (float)($this->colors['delta'][2] / $grad)
-            );
+			if ($x && $y && $width && $height) {
+				$grad = $height; // Top down
+				$this->colors['step'] = array(
+					(float)($this->colors['delta'][0] / $grad),
+					(float)($this->colors['delta'][1] / $grad),
+					(float)($this->colors['delta'][2] / $grad)
+				);
 
-			$w = $width;
-            for($n = 0; $n < $grad; $n++) {
-                $c = new RgbColor(
-                    floor($this->colors['first'][0] + ($this->colors['step'][0] * $n)),
-                    floor($this->colors['first'][1] + ($this->colors['step'][1] * $n)),
-                    floor($this->colors['first'][2] + ($this->colors['step'][2] * $n))
-                );
-                // Console::debug("Row %d: rgb(%d,%d,%d)", $n, $c->r, $c->g, $c->b);
-                $p->drawLine(0,$n,$w,$n,$c);
-            }
+				$w = $width;
+				for($n = 0; $n < $grad; $n++) {
+					$c = new RgbColor(
+						floor($this->colors['first'][0] + ($this->colors['step'][0] * $n)),
+						floor($this->colors['first'][1] + ($this->colors['step'][1] * $n)),
+						floor($this->colors['first'][2] + ($this->colors['step'][2] * $n))
+					);
+					// Console::debug("Row %d: rgb(%d,%d,%d)", $n, $c->r, $c->g, $c->b);
+					$p->drawLine(0,$n,$w,$n,$c);
+				}
 
-			imagecopy($dest->getImage(), $image->getImage(), $x, $y, 0, 0, $width, $height);
-
+				imagecopy($dest->getImage(), $image->getImage(), $x, $y, 0, 0, $width, $height);
+			} else {
+				throw new BadArgumentException();
+			}
         }
 
     }

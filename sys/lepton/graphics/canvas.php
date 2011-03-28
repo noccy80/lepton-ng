@@ -596,9 +596,11 @@ class Canvas implements IDrawable,ICanvas {
 	 * @param integer $width The width of the drawing
 	 * @param integer $height The height of the drawing
 	 */
-    function draw(Canvas $dest,$x=0,$y=0,$width=null,$height=null) {
+    function draw(Canvas $dest,$x=null,$y=null,$width=null,$height=null) {
 
         $dstimage = $dest->getImage();
+		if (!$x) $x = 0;
+		if (!$y) $y = 0;
 		if (!$width) $width = $this->width;
 		if (!$height) $height = $this->height;
 

@@ -24,29 +24,33 @@
 
 		}
 
-        function draw(Canvas $dest,$x,$y,$width=0,$height=0) {
+        function draw(Canvas $dest,$x=null,$y=null,$width=null,$height=null) {
 
 			$hi = $dest->getImage();
 			$str = '*'.$this->_text.'*';
 
-			// Each character is 12 units wide, so let's figure out how wide
-			// we should make the output. We add 2 for the padding.
-			$outwidth = strlen($str) * 14;
-			$unitwidth = (int)($width / $outwidth);
-			$rx = 0;
-			for($i = 0; $i < strlen($str); $i++) {
-				$charbin = $this->getCharacter($str[$i]);
-				for($j = 0; $j < 9; $j++) {
-					$bw = (($charbin[$j]) == '1')?1:0;
-					imagefilledrectangle($hi,
-										 $x + (($rx) * $unitwidth), $y,
-										 $x + (($rx + $bw + 1) * $unitwidth), $y+$height,
-										 (($j % 2))?0xFFFFFF:0x000000);
-					$rx = $rx + 2 + $bw;
+			if ($x && $y && $width && $height) {
+				// Each character is 12 units wide, so let's figure out how wide
+				// we should make the output. We add 2 for the padding.
+				$outwidth = strlen($str) * 14;
+				$unitwidth = (int)($width / $outwidth);
+				$rx = 0;
+				for($i = 0; $i < strlen($str); $i++) {
+					$charbin = $this->getCharacter($str[$i]);
+					for($j = 0; $j < 9; $j++) {
+						$bw = (($charbin[$j]) == '1')?1:0;
+						imagefilledrectangle($hi,
+											 $x + (($rx) * $unitwidth), $y,
+											 $x + (($rx + $bw + 1) * $unitwidth), $y+$height,
+											 (($j % 2))?0xFFFFFF:0x000000);
+						$rx = $rx + 2 + $bw;
+					}
+					$rx = $rx + 2;
 				}
-				$rx = $rx + 2;
+			} else {
+				new BadArgumentException();
 			}
-
+			
 		}
 
 		/**
