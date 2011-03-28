@@ -2,16 +2,17 @@
 
 class intl {
 
-	static $strings = array();
-	static $language = null;
+	private static $strings = array();
+	private static $lang = null;
+	private static $region = null;
 
 	function str() {
 		$args = func_get_args();
-		if (intl::$language) {
+		if (self::getFullLanguage()) {
 			if (count($args)>0) {
-				if (isset(intl::$strings[intl::$language])) {
-					if (array_key_exists($args[0],intl::$strings[intl::$language])) {
-						$str = intl::$strings[intl::$language][$args[0]];
+				if (isset(intl::$strings[self::getFullLanguage()])) {
+					if (array_key_exists($args[0],intl::$strings[self::getFullLanguage()])) {
+						$str = intl::$strings[self::getFullLanguage()][$args[0]];
 					} else {
 						$str = $args[0];
 					}
@@ -36,21 +37,37 @@ class intl {
 		}
 		return $str;
 	}
-	
-	function setLanguage($lang) {
-	    switch($lang) {
-	        case 'com':
-	        case 'net':
-	        case 'info':
-	            intl::$language = 'en-us';
-	            break;
-	        case 'se':
-	            intl::$language = 'sv-se';
-	            break;
-	        default:
-        	    intl::$language = $lang;
-        	    break;
-        	}
+
+	static function registerLanguage($lang,$strings) {
+		self::$strings[$lang] = (array)$strings;
+	}
+
+	static function setLanguage($lang) {
+		if (preg_match('/^[a-z]{2}$/',$lang)) {
+			// Two letter iso code found
+			self::$lang = $lang;
+			self::$region = null;
+		} elseif (preg_match('/^[a-z]{2}-[a-z]{2}$/',$lang)) {
+			// Two letter iso country and two letter iso code
+			list(self::$lang,self::$region) = explode('-',$lang);
+		} elseif ($lang == null) {
+			self::$lang = null;
+			self::$region = null;
+		} else {
+			throw new BaseException("Invalid language");
+		}
+	}
+
+	static function getLanguage() {
+		return self::$lang;
+	}
+
+	static function getRegion() {
+		return self::$region;
+	}
+
+	static function getFullLanguage() {
+		return self::$lang.((self::$region!=null)?'-'.self::$region:'');
 	}
 
 }

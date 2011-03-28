@@ -65,9 +65,9 @@ class LunitApplication extends ConsoleApplication implements ILunitStatusCallbac
 	}
 
 	function onTestEnd($status,$message) {
-		if ($status == true) {
+		if ($status === true) {
 			console::writeLn(__astr('[\c{green PASS}]'));
-		} elseif ($status == null) {
+		} elseif ($status === null) {
 			console::writeLn(__astr('[\c{yellow SKIP}]'));
 		} else {
 			console::writeLn(__astr('[\c{red FAIL}]'));
