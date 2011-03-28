@@ -897,7 +897,11 @@ class Lepton {
                 $instance = new $class();
                 Console::debugEx(LOG_BASIC, __CLASS__, "Invoking application instance from %s.", $class);
                 $apptimer->start();
-                $rv = call_user_func_array(array($instance, 'run'), $args);
+		if (is_callable(array($instance, 'run'))) {
+	                $rv = call_user_func_array(array($instance, 'run'), $args);
+		} else {
+			console::writeLn("Requested application class %s is not runnable.", $class);
+		}
                 $apptimer->stop();
                 unset($instance);
                 Console::debugEx(LOG_BASIC, __CLASS__, "Main method exited with code %d after %.2f seconds.", $rv, $apptimer->getElapsed());
