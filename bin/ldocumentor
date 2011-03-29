@@ -1,0 +1,30 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+using('lepton.utils.introspect');
+using('ldocumentor.documentor');
+
+class LdocumentorApplication extends ConsoleApplication {
+
+	private function getFiles($dir,$pattern) {
+		echo "Find: [".$pattern."] ... ";
+		$files = array();
+		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+		foreach ($iterator as $path) {
+			if (fnmatch($pattern,$path)) $files[] = $path;
+		}
+		echo "OK\n";
+		return $files;
+	}
+
+	public function main($argc,$argv) {
+		$fl = $this->getFiles(base::sysPath().'lepton/graphics/','*.php');
+		foreach($fl as $file) {
+			$n = new Documentor($file);
+		}
+	}
+
+}
+
+lepton::run('LdocumentorApplication');
