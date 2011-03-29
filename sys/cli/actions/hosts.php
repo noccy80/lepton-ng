@@ -6,7 +6,15 @@ class HostsAction extends Action {
         'match' => array(
             'arguments' => '[\g{pattern}]',
             'info' => 'List available host groups'
-        )
+        ),
+        'enable' => array(
+            'arguments' => '[\g{groupname}]',
+            'info' => 'Enable a group'
+	),
+        'disable' => array(
+            'arguments' => '[\g{groupname}]',
+            'info' => 'Disable a group'
+	)
     );
 
     function match($pattern='*') {
