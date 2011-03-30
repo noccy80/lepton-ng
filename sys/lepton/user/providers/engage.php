@@ -95,7 +95,7 @@ class EngageAuthentication extends AuthenticationProvider {
 					$u = new UserRecord();
 					$u->username = $username;
 					$u->password = $password;
-					$u->flags = config::get(EngageAuthentication::KEY_DEFAULT_FLAGS),EngageAuthentication::DEFAULT_FLAGS);
+					$u->flags = config::get(EngageAuthentication::KEY_DEFAULT_FLAGS,EngageAuthentication::DEFAULT_FLAGS);
 					$u->displayname = $displayname;
 					$u->firstname = $firstname;
 					$u->lastname = $lastname;
