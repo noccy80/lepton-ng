@@ -4,6 +4,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
 
     private $conn;
 
+	private $driver;
     private $host;
     private $db;
     private $user;
@@ -31,7 +32,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
 				}
 				break;
 			case 'sqlite':
-				$c['filename'] =  $tokens[2];
+				$c['filename'] =  $tokens[3];
 				break;
 		}
 		return $c;
@@ -48,10 +49,10 @@ class PdoDatabaseDriver extends DatabaseDriver {
 
         switch($drv) {
             case 'sqlite':
-                printf($cfg['filename']);
                 $this->dsn = 'sqlite:'.$cfg['filename'];
                 $this->user = null;
                 $this->pass = null;
+				$this->driver = 'sqlite';
                 break;
             case 'mysql':
                 $this->dsn = 'mysql:';
@@ -65,6 +66,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
                     // $port = $cfg['port'];
                     $this->dsn.='host='.$this->host.';dbname='.$this->db;
                 }
+				$this->driver = 'mysql';
                 break;
                 
         }
@@ -76,14 +78,15 @@ class PdoDatabaseDriver extends DatabaseDriver {
             $cs = config::get('lepton.charset');
             $cs = str_replace('utf-','utf',$cs); // 'utf8';
             // $this->exec("CHARSET ".$cs);
-            $this->exec("SET NAMES '".$cs."'");
-            $this->exec("SET character_set_results='".$cs."'");
-
+            if ($this->driver == 'mysql') {
+		        $this->exec("SET NAMES '".$cs."'");
+		        $this->exec("SET character_set_results='".$cs."'");
+			}
         } catch (PDOException $e) {
             throw new BaseException("Could not connect to database type '".$cfg['driver']."'. ".$e->getMessage());
         }
     }
-
+    
     function __destruct() {
 
         Console::debugEx(LOG_DEBUG1,__CLASS__,"Closing handle after %d queries (%d querying, %d updating, %d executing)", Database::$counter, Database::$queries['QUERYING'], Database::$queries['UPDATING'], Database::$queries['EXECUTING']);
