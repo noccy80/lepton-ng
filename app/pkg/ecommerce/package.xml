@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest uuid="697b3e0b-a429-446a-bd15-15d15e0450f4">
-	<title>E-Commerce Backend</title>
-	<version>1.0.0</version>
-	<description>Enables the use of eCommerce transactions, provides a shopping cart and much more.</description>
-	<author>Christopher Vagnetoft &lt;noccy@chillat.net&gt;</author>
-	<updateurl>http://lepton.noccylabs.info/updates.xml</updateurl>
-	<filedb src="package.db" />
-</manifest>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest uuid="5095636e-af00-428c-8234-3533f2d073ae">
-	<title>Examples from the Documentation</title>
-	<version>1.0.0</version>
-	<description>Demonstration code showing off Lepton and Lepgon/JS.</description>
-	<author>Christopher Vagnetoft &lt;noccy@chillat.net&gt;</author>
-	<updateurl>http://lepton.noccylabs.info/updates.xml</updateurl>
-	<filedb src="package.db" />
-</manifest>
