@@ -43,6 +43,22 @@ class LeptonPrefsTests extends LunitCase {
 		// unlink('/tmp/jsonprefs.tmp');
 	}
 
+	/**
+	 * @description Saving/loading of database backed settings
+	 */
+	function _dbprefs() {
+		$tf = $this->getTempFile();
+		$s = new JsonPrefs($tf);
+		$this->assertNotNull($s);
+		$s->foo = 'bar';
+		unset($s);
+		$s = new JsonPrefs($tf);
+		$this->assertNotNull($s);
+		$this->assertEquals($s->foo, 'bar');
+		unset($s);
+		// unlink('/tmp/jsonprefs.tmp');
+	}
+
 }
 
 Lunit::register('LeptonPrefsTests');

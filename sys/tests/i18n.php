@@ -3,8 +3,14 @@
 using('lunit.lunit');
 using('lepton.utils.i18n');
 
+/**
+ * @description Internationalization and Localization
+ */
 class LeptonInternationalizationTests extends LunitCase {
 
+	/**
+	 * @description Setting languages
+	 */
 	function setlanguage() {
 		intl::setLanguage('sv');
 		$this->assertEquals(intl::getLanguage(),'sv');
@@ -15,6 +21,9 @@ class LeptonInternationalizationTests extends LunitCase {
 		$this->assertEquals(intl::getFullLanguage(),'en-gb');
 	}
 
+	/**
+	 * @description Setting bad language throws exception
+	 */
 	function setbadlanguage() {
 		intl::setLanguage('sv');
 		try {
