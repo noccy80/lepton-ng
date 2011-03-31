@@ -45,4 +45,4 @@ class Content {
 
 }
 
-class ContentException extends Exception { }
+class ContentException extends BaseException { }

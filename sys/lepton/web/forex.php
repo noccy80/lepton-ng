@@ -15,7 +15,7 @@
  * @license CC-BY (Dataset)
  */
 
-class CurrencyException extends Exception { }
+class CurrencyException extends BaseException { }
 
 class CurrencyExchange {
 
