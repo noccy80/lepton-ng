@@ -11,9 +11,40 @@ class PdoDatabaseDriver extends DatabaseDriver {
     private $dsn;
     public $autonumber;
 
+	static function parseConnectionString($connstr) {
+		// Example connection strings:
+		// mysql: user:pass@host/database
+		// sqlite: filemname.db
+		$c = array();
+		$tokens = explode(':', $connstr);
+		$connectioninfo = $tokens[3];
+		$c['driver'] = $tokens[2];
+		switch($tokens[2]) {
+			case 'mysql':
+				$c['database'] = $tokens[6];
+				$c['username'] = $tokens[4];
+				$c['password'] = $tokens[5];
+				if (substr(0,1,$tokens[7]) == '$') {
+					$c['socket'] = substr($tokens[7],1);
+				} else {
+					$c['hostname'] = $tokens[7];
+				}
+				break;
+			case 'sqlite':
+				$c['filename'] =  $tokens[2];
+				break;
+		}
+		return $c;
+	}
+
     function __construct($cfg) {
-        $driver = explode('/',$cfg['driver']);
-        $drv = $driver[1];
+		if (is_array($cfg)) {
+	        $driver = explode('/',$cfg['driver']);
+	        $drv = $driver[1];
+	    } else {
+	    	$cfg =  self::parseConnectionString($cfg);
+	    	$drv = $cfg['driver'];
+	    }
 
         switch($drv) {
             case 'sqlite':
@@ -35,6 +66,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
                     $this->dsn.='host='.$this->host.';dbname='.$this->db;
                 }
                 break;
+                
         }
         Console::debugEx(LOG_DEBUG1,__CLASS__,"Connection DSN: %s.", $this->dsn);
         try {

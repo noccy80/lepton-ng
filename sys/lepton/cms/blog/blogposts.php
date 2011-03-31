@@ -1,6 +1,7 @@
 <?php __fileinfo("Lepton CMS Blog Posts library");
 
 config::def('lepton.cms.blog.defaultblog','default');
+using('lepton.content.content');
 
 class Blog {
 
@@ -53,3 +54,4 @@ class BlogPost extends BasicContainer {
     );
 
 }
+
