@@ -3,7 +3,7 @@
 using('lepton.content.provider');
 using('lepton.content.extension');
 
-class Content {
+class ContentManager {
 
 	private static $providers = array();
 	private static $extensions = array();
