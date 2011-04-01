@@ -42,7 +42,7 @@ class EngageAuthentication extends AuthenticationProvider {
 	 */
 	public function __construct() {
 		$token = request::get('token')->toString();
-		$apikey = config::get('lepton.user.engage.apikey')->toString();
+		$apikey = config::get('lepton.user.engage.apikey');
 
 		$ret = new HttpRequest('https://rpxnow.com/api/v2/auth_info', array(
 					'method' => 'post',
@@ -106,8 +106,6 @@ class EngageAuthentication extends AuthenticationProvider {
 				$cu = user::getActiveUser();
 				// Add identifier to user
 				$db->updateRow("INSERT INTO userengage (userid,identifier,provider,lastseen,lastip) VALUES (%d,%s,%s,NOW(),%s)", $cu->userid, $identifier, $provider, request::getRemoteHost());
-				
-				noccycom::sendWelcomeEmail($cu->userid);
 			}
 			response::redirect('/control/panel');
 		} else {
