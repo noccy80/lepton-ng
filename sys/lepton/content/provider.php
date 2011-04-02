@@ -17,6 +17,6 @@ interface IContentObject {
 
 abstract class ContentObject implements IContentObject {
 	public function __construct() {
-		content::initExtensions($this);
+		ContentManager::initExtensions($this);
 	}
 }

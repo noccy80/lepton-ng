@@ -1,6 +1,7 @@
 <?php
 
 using('lunit.*');
+using('lepton.db.*');
 
 /**
  * @description Database Tests

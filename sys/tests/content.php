@@ -39,8 +39,8 @@ class DummyContentProvider extends ContentProvider {
 	function getContentFromObjectId($id) { return new DummyContentObject($id); }
 }
 
-content::registerProvider(new DummyContentProvider());
-content::registerExtension(new DummyContentExtension());
+ContentManager::registerProvider(new DummyContentProvider());
+ContentManager::registerExtension(new DummyContentExtension());
 
 /**
  * @description Content Wrappers
@@ -56,7 +56,7 @@ class LeptonContentTests extends LunitCase {
 	 * @description Testing provider for namespace dummy
 	 */
 	function providertest() {
-		$this->co = content::get('dummy:hello-world');
+		$this->co = ContentManager::get('dummy:hello-world');
 		$this->assertNotNull($this->co);
 		$this->assertEquals($this->co->getHtml(),'hello-world');
 	}

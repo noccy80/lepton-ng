@@ -67,6 +67,9 @@
                 $prefix = '/';
             }
             foreach ($paths as &$path) {
+                if (is_array($path)) {
+			$path = self::joinPaths($path);
+		}
                 $path = trim($path, DIRECTORY_SEPARATOR);
             }
             return $prefix . join(DIRECTORY_SEPARATOR, $paths);
