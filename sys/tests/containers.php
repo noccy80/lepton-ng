@@ -1,5 +1,7 @@
 <?php
 
+using('lunit.*');
+
 class TestContainer extends BasicContainer {
 	protected $properties = array(
 		'foo' => true

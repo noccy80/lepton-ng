@@ -1,5 +1,7 @@
 <?php
 
+using('lunit.*');
+
 class LeptonVartypeTest extends LunitCase {
 
 	function stringtest() {

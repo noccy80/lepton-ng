@@ -1,5 +1,7 @@
 <?php
 
+using('lunit.*');
+
 /**
  * @description Mutex testing
  */
