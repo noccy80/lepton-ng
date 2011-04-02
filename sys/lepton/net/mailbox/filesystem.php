@@ -96,7 +96,7 @@ class FilesystemMailStorage extends MailStorage {
      *
      * @param MailMessage $message The message
      */
-    function addMessage($message) {
+    function addMessage(MailMessage $message) {
 
         $msgel = $this->mbox->createElement('message');
 

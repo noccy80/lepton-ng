@@ -1,6 +1,5 @@
 <?php
 
-require('sys/base.php');
 using('lepton.system.threading');
 
 interface ILdwpTransport {

@@ -1,6 +1,7 @@
 <?php __fileinfo("Disqus Widget");
 
 using('lepton.web.element');
+using('lepton.web.widgets');
 
 class DiscusWidget extends HtmlWidget {
     function __construct(array $params) {

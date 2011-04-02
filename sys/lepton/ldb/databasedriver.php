@@ -25,6 +25,7 @@ abstract class DatabaseDriver implements IDatabaseDriver {
 		} else {
 			$driver = $driverinfo;
 		}
+		if (!$driver) throw new DatabaseException("No driver specified");
 		$driverclass = $driver.'DatabaseDriver';
 		return $driverclass;
 	}
