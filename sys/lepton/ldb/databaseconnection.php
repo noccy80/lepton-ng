@@ -39,7 +39,7 @@ class DatabaseConnection {
     function getRows($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->conn->escapeString($args);
+        $sql = $this->conn->quote($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetRows: %s", $sql);
         Database::$counter++;
@@ -59,7 +59,7 @@ class DatabaseConnection {
     function getSingleRow($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->conn->escapeString($args);
+        $sql = $this->conn->quote($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleRow: %s", $sql);
         Database::$counter++;
@@ -87,7 +87,7 @@ class DatabaseConnection {
     function getSingleValue($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->conn->escapeString($args);
+        $sql = $this->conn->quote($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleValue: %s", $sql);
         Database::$counter++;
@@ -112,7 +112,7 @@ class DatabaseConnection {
     function insertRow($pattern,$vars=null) {
 
         $args = func_get_args();
-        $sql = $this->conn->escapeString($args);
+        $sql = $this->conn->quote($args);
         $this->debug[] = $sql;
         Console::debugEx(LOG_DEBUG1,__CLASS__,"InsertRow: %s", $sql);
         Database::$counter++;

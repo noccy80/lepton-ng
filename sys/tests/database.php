@@ -1,7 +1,7 @@
 <?php
 
 using('lunit.*');
-using('lepton.db.*');
+using('lepton.ldb.*');
 
 /**
  * @description Database Tests
@@ -13,7 +13,10 @@ class LeptonDbTests extends LunitCase {
 
 	function __construct() {
 		$this->dbfn = $this->getTempFile();
-		$this->dbh = new DatabaseConnection('pdo::sqlite:'.$this->dbfn);
+		$this->dbh = new DatabaseConnection(array(
+			'driver' => 'pdo::sqlite',
+			'filename' => $this->dbfn
+		));
 	}
 
 	/**
