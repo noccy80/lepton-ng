@@ -22,7 +22,7 @@ class Document {
 		event::invoke(document::EVENT_HEADER, array());
 	}
 
-	static function begin($doctype = 'html/4.01') {
+	static function begin($doctype = 'html/4.01',$htmltag=false) {
 		$ct = explode('/', $doctype);
 		switch ($ct[0]) {
 			case 'html':
@@ -42,6 +42,26 @@ class Document {
 			header('Content-type: ' . Document::$_contenttype);
 		}
 		printf(Document::$_doctype . "\n");
+	}
+
+	static function begindocument($doctype='html/4.01') {
+		document::begin($doctype);
+		printf("<html lang=\"%s\">\n", 'en-us');
+	}
+
+	static function enddocument() {
+		printf('</html>');
+	}
+
+	static function head(array $data) {
+		printf("<head>\n");
+		foreach($data as $key=>$value) {
+			switch($key) {
+			case 'title': printf("<title>%s</title>\n",htmlentities($value)); break;
+			case 'stylesheet': printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", $value); break;
+			}
+		}
+		printf("</head>\n");
 	}
 
 	static function buffer() {
