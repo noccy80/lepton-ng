@@ -1,5 +1,11 @@
 <?php
 
+using('lepton.user.extensions');
+config::def('lepton.avatar.providers', array(
+	'LocalAvatarProvider',
+	'GravatarAvatarProvider'
+));
+
 ////////// AvatarProviders ////////////////////////////////////////////////
 
 /**
@@ -13,9 +19,28 @@ interface IAvatarProvider {
 	function setAvatar(UserRecord $user, $avatar);
 }
 
-abstract class AvatarProvider implements IAvatarProvider { }
+class AvatarProvider extends UserExtension { 
+	function getMethods() {
+		return array('getAvatar','setAvatar');
+	}
+	function getAvatar($size=null) {
+		$prov = config('lepton.avatar.providers');
+		foreach($prov as $provider) {
+			$avatar = $provider::getAvatar($this->user,$size);
+			if ($avatar) break;
+		}
+		return $avatar;
+	}
+	function setAvatar($avatar) {
+		return true;
+	}
+}
 
-class LocalAvatarProvider extends AvatarProvider {
+abstract class AvatarProviderBase implements IAvatarProvider {
+
+}
+
+class LocalAvatarProvider extends AvatarProviderBase{
 	function getAvatar(UserRecord $user, $size=null) {
 		return false;
 	}
@@ -24,7 +49,7 @@ class LocalAvatarProvider extends AvatarProvider {
 	}
 }
 
-class GravatarAvatarProvider extends AvatarProvider {
+class GravatarAvatarProvider extends AvatarProviderBase{
 	function getAvatar(UserRecord $user,$size=null) {
 		$default = config::get('lepton.avatars.gravatars.default','identicon');
 		if (!$size) $size = config::get('lepton.avatars.defaultsize', 64);

@@ -259,6 +259,24 @@ function __fileinfo($strinfo, $vars=null) {
     }
 }
 
+function get_descendants($baseclass) {
+
+	$descendants = array();
+	$cl = get_declared_classes();
+	foreach($cl as $class) {
+		$rc = new ReflectionClass($class);
+		$pc = $rc->getParentClass();
+		if ($pc) {
+			$pcn = $pc->getName();
+			if ($pcn == $baseclass) {
+				$descendants[] = $rc->getName();
+			}
+		}
+	}
+	return $descendants;
+
+}
+
 function typeof($obj) {
     if (is_object($obj)) {
         return get_class($obj);

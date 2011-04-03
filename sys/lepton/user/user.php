@@ -2,6 +2,8 @@
 
 __fileinfo("User Classes");
 
+using('lepton.crypto.uuid');
+
 /**
  * @class UserRecord
  * @brief Contains a user record and passes on authentication credentials.
@@ -39,6 +41,7 @@ class UserRecord {
     private $properties = array();
     private $ambient = array();
     private $modified = array();
+    private $extensions = array();
 
     /**
      * @brief Constructor, sets things up.
@@ -51,7 +54,24 @@ class UserRecord {
         } else {
             $this->active = (!config::get('lepton.user.disabledbydefault', false));
         }
+        $extn = get_descendants('UserExtension');
+        foreach($extn as $extnclass) { 
+        	$xc = new $extnclass($this);
+        	$xm = $xc->getMethods();
+        	$this->extensions[] = array(
+        		'instance' => $xc,
+        		'methods' => $xm
+        	);
+        }
     }
+
+	function __call($method,$args) {
+		foreach($this->extensions as $extension) {
+			if (arr::hasValue($extension['methods'], $method)) {
+				return call_user_func_array(array($extension['instance'],$method), $args);
+			}
+		}
+	}
 
     /**
      * @brief Destructor, saves the modified attributes if any.
