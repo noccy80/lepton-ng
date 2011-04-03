@@ -13,18 +13,27 @@ interface ICanvas {
 }
 
 /**
- * @class  Canvas
+ * @class Canvas
  * @author Christopher Vagnetoft <noccy@chillat.net>
  *
  * The ImageCanvas class contains all the methods needed to work with an
  * image file, including drawing, resizing and applying filters.
  *
- * @todo   Private properties should be prefixed with an underscore.
- * @note   This class uses late loading, meaning that it will load the
+ * 
+ *
+ * Properties:
+ *   exif Access to the EXIF tag data
+ *   iptc Access to the IPTC tag data
+ *   width The width of the canvas
+ *   height The height of the canvas
+ *
+ * @todo Private properties should be prefixed with an underscore.
+ * @note This class uses late loading, meaning that it will load the
  *		 image as required. F.ex. simply calling write() after loading
  *		 will send the file through as it is. Calling on resize() or any
  *		 drawing related functions will load the image. Polling the width
  *		 or image format will read the metadata.
+ * 
  */
 class Canvas implements IDrawable,ICanvas {
 
@@ -55,14 +64,27 @@ class Canvas implements IDrawable,ICanvas {
 
 ///// Class Methods /////////////////////////////////////////////////////////
 
+	/**
+	 * @brief Retrieve the GD image handle
+	 *
+	 * @throws GraphicsException
+	 * @return Resource The image handle
+	 */
 	function getImage() {
 
 		$this->checkImage();
 		if ($this->himage) return $this->himage;
-		throw new ImageException("getImage called without image available");
+		throw new GraphicsException("getImage called without image available");
 
 	}
 
+	/**
+	 * @brief Assign a GD image handle to the image
+	 *
+	 * Used by derived classes that load or create images.
+	 *
+	 * @param Resource $himage The image to assign.
+	 */
 	function setImage($himage) {
 
 		$this->himage = $himage;
@@ -72,7 +94,9 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Get the dimensions of the canvas.
+	 * @brief Get the dimensions of the canvas.
+	 *
+	 * Also accessible with the width and height properties.
 	 *
 	 * @return array Array holding the width and height of the canvas
 	 */
@@ -84,7 +108,7 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Property overloading to get tag information and image properties.
+	 * @brief Property overloading to get tag information and image properties.
 	 *
 	 * @param string $key The key to query
 	 * @return any
@@ -118,6 +142,7 @@ class Canvas implements IDrawable,ICanvas {
 	 */
 	function getExif() {
 
+		__deprecated('getExif()', '$i->exif');
 		return new ImageExif($this->filename);
 
 	}
@@ -130,6 +155,7 @@ class Canvas implements IDrawable,ICanvas {
 	 */
 	function getIptc() {
 
+		__deprecated('getIptc()', '$i->iptc');
 		$iptc = new ImageIptc($this);
 		return $iptc;
 
@@ -137,7 +163,7 @@ class Canvas implements IDrawable,ICanvas {
 
 
 	/**
-	 * Constructor, creates a canvas based on the parameters.
+	 * @brief Constructor, creates a canvas based on the parameters.
 	 *
 	 * @note  Currently works even when called without any parameters, this
 	 *		should throw an exception of operated upon! It is supported here
@@ -157,11 +183,13 @@ class Canvas implements IDrawable,ICanvas {
 	/**
 	 * Load image from file
 	 *
+	 * @deprecated Since 1.0
+	 * @throws GraphicsException
 	 * @param string $filename The filename
 	 */
 	function loadImage($filename) {
 
-	__deprecated('canvas::load() / canvas::loadImage()','new Image()');
+		__deprecated('canvas::load() / canvas::loadImage()','new Image()');
 		// Check if the file exist
 		if (file_exists($filename)) {
 			// On success, cache the filename for use with the save() function
@@ -175,7 +203,9 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Duplicate a canvas, returning a new canvas object with the same content
+ 	 * @brief Duplicate the canvas.
+ 	 *
+	 * This function will returning a new canvas object with the same content
 	 * as the duplicated one.
 	 *
 	 * @return Canvas The new canvas
@@ -189,8 +219,9 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Retrieves a CanvasPainter for the canvas. This is a shorthand for using
-	 * new CanvasPainter($image).
+	 * @brief Retrieves a CanvasPainter for the canvas. 
+	 *
+	 * This is a shorthand for using new CanvasPainter($image).
 	 *
 	 * @return CanvasPainter The painter for the canvas
 	 */
@@ -201,8 +232,8 @@ class Canvas implements IDrawable,ICanvas {
 	/**
 	 * Create a new image, normally called from the Graphics::create() method
 	 *
-	 * @param int $width The width of the canvas to create
-	 * @param int $height The height of the canvas to create
+	 * @param integer $width The width of the canvas to create
+	 * @param integer $height The height of the canvas to create
 	 * @param Color $color The color to fill width
 	 */
 	function createImage($width,$height,Color $color = null) {
@@ -256,11 +287,11 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Outputs the content to the client. Sets the appropriate content-
-	 * type first.
+	 * @brief Outputs the content to the client after setting the appropriate 
+	 * content-type.
 	 *
 	 * @param string $contenttype The content type of the output
-	 * @param int $qualitycompression Quality/Compression (in percent)
+	 * @param integer $qualitycompression Quality/Compression (in percent)
 	 * @param boolean $return If true return data rather than output
 	 */
 	function output($contenttype='image/png', $qualitycompression=75, $return=false) {
@@ -328,7 +359,7 @@ class Canvas implements IDrawable,ICanvas {
 	 * that tworks on the actual image handle should call on this function
 	 * first as the himage handle may not be instantiated already.
 	 *
-	 * @exception GraphicsException
+	 * @throws GraphicsException
 	 * @return bool True if the image is loaded
 	 */
 	private function checkImage() {
@@ -346,9 +377,10 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Get the width of the image
+	 * @brief Get the width of the image
+	 * @throws GraphicsException
 	 *
-	 * @return int The width of the image
+	 * @return integer The width of the image
 	 */
 	function getWidth() {
 
@@ -360,9 +392,10 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Get the height of the image
+	 * @brief Get the height of the image
+	 * @throws GraphicsException
 	 *
-	 * @return int The height of the image
+	 * @return integer The height of the image
 	 */
 	function getHeight() {
 
@@ -374,7 +407,7 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Retrieve the number of colors used in the canvas
+	 * @brief Retrieve the number of colors used in the canvas
 	 *
 	 * @return integer The total number of colors used
 	 */
@@ -386,7 +419,7 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Retrieve information on the image
+	 * @brief Retrieve information on the image
 	 *
 	 * @return array image information
 	 */
@@ -398,9 +431,10 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Resize the image to the specified width and height, optionally
-	 * keeping the aspect ratio and pads or crops the resulting image to
-	 * the desired dimensions.
+	 * @brief Resize the image to the specified width and height
+	 *
+	 * optionally keeping the aspect ratio and pads or crops the resulting 
+	 * image to the desired dimensions.
 	 *
 	 * @param Integer $width The desired width
 	 * @param Integer $height The desired height
@@ -460,11 +494,12 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Crop the image to the specified dimensions. The image will be
-	 * cropped from the center.
+	 * @brief Crop the image to the specified dimensions. 
 	 *
-	 * @param int $width The new width
-	 * @param int $height The new height
+	 * The image will be cropped from the center.
+	 *
+	 * @param integer $width The new width
+	 * @param integer $height The new height
 	 */
 	function cropTo($width,$height) {
 
@@ -485,12 +520,12 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Crop the image to the specified rectangle.
+	 * @brief Crop the image to the specified rectangle.
 	 *
-	 * @param int $x The left coordinate of the cropping rectangle
-	 * @param int $y The top coordinate of the cropping rectangle
-	 * @param int $width The new width
-	 * @param int $height The new height
+	 * @param integer $x The left coordinate of the cropping rectangle
+	 * @param integer $y The top coordinate of the cropping rectangle
+	 * @param integer $width The new width
+	 * @param integer $height The new height
 	 */
 	function cropToXy($x, $y, $width, $height) {
 
@@ -510,7 +545,7 @@ class Canvas implements IDrawable,ICanvas {
 
 
 	/**
-	 * Apply a filter or transformation to the image.
+	 * @brief Apply a filter or transformation to the image.
 	 *
 	 * @param ImageFilter $filter The filter to apply
 	 * @todo Reread metadata after processing
@@ -527,10 +562,10 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Shorthand for new ImageFont(name,size)
+	 * @brief Shorthand for new ImageFont(name,size)
 	 *
 	 * @param string $fontname The name of the font to load
-	 * @param int $fontsize The size of the font to load
+	 * @param integer $fontsize The size of the font to load
 	 * @return Font The font
 	 */
 	function createFont($fontname, $fontsize) {
@@ -547,8 +582,8 @@ class Canvas implements IDrawable,ICanvas {
 	 *		stuff is offloaded onto the Font class.
 	 * @param Font $font The font to use
 	 * @param Color $color The color to use
-	 * @param int $x Bottomleft X coordinate
-	 * @param int $y Bottomleft Y coordinate
+	 * @param integer $x Bottomleft X coordinate
+	 * @param integer $y Bottomleft Y coordinate
 	 * @param string $text The text to output
 	 */
 	function drawText(IFont $font, Color $color, $x, $y, $text) {
@@ -576,10 +611,10 @@ class Canvas implements IDrawable,ICanvas {
 	 *		stuff is offloaded onto the Font class.
 	 * @param Font $font The font to use
 	 * @param Color $color The color to use
-	 * @param int $x1 Topleft X coordinate
-	 * @param int $y1 Topleft Y coordinate
-	 * @param int $x2 Bottomright X coordinate (or null)
-	 * @param int $y2 Bottomright Y coordinate (or null)
+	 * @param integer $x1 Topleft X coordinate
+	 * @param integer $y1 Topleft Y coordinate
+	 * @param integer $x2 Bottomright X coordinate (or null)
+	 * @param integer $y2 Bottomright Y coordinate (or null)
 	 * @param string $text The text to output
 	 */
 	function drawTextRect(IFont $font, Color $color, $x1, $y1, $x2, $y2, $text) {
@@ -589,7 +624,7 @@ class Canvas implements IDrawable,ICanvas {
 	}
 
 	/**
-	 * Draw the canvas onto another canvas.
+	 * @brief Draw the canvas onto another canvas.
 	 *
 	 * @param Canvas $dest The destination canvas
 	 * @param integer $x The left coordinate of the destination canvas

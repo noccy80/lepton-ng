@@ -2,7 +2,7 @@
     'version' => '1.0'
 ));
 
-class ViewException extends Exception {
+class ViewException extends BaseException {
 
 }
 class ViewNotFoundException extends ViewException {
