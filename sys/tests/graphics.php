@@ -80,6 +80,18 @@ class LeptonCanvasTests extends LunitCase {
 		$this->assertNotNull($this->font);
 		$this->font->drawText($this->canvas, 0, 0, new RgbColor(255,0,0), 'Hello World!');
 	}
+
+	/**
+	 * @description Drawing with bitmap fonts and effects
+	 */
+	function canvasbitmapfonts() {
+		$this->font = new BitmapFont(3);
+		$this->font->setTextEffect(BitmapFont::EFFECT_OUTLINE,new RgbColor(0,0,200));
+		$this->font->drawText($this->canvas, 50, 50, new RgbColor(0,255,0), 'Hello Bitmapworld!');
+		$this->font->setTextEffect(BitmapFont::EFFECT_SHADOW,new RgbColor(0,0,200));
+		$this->font->drawText($this->canvas, 50, 90, new RgbColor(0,255,0), 'Hello Bitmapworld!');
+		$this->assertNotNull($this->font);
+	}
 	
 	/**
 	 * @description Saving as common formats

@@ -2,6 +2,7 @@
 
 interface IPrefs {
 	function flush();
+	function destroy();
 }
 
 abstract class Prefs {
@@ -17,7 +18,8 @@ abstract class Prefs {
 	}
 
 	public function  __get($name) {
-		return $this->data[$name];
+		if (isset($this->data[$name])) return $this->data[$name];
+		return null;
 	}
 
 	public function  __unset($name) {
@@ -63,10 +65,10 @@ class FsPrefs extends Prefs {
 class DbPrefs extends Prefs {
 
 	private $table;
-	private $db;
+	private $db = null;
 
-	public function __construct($table) {
-		$this->db = new DatabaseConnection();
+	public function __construct($table,$connection=null) {
+		$this->db = new DatabaseConnection($connection);
 		$this->table = $table;
 		try {
 			$tcheck = $this->db->getSingleRow("SHOW CREATE TABLE ".$this->table);
@@ -75,20 +77,31 @@ class DbPrefs extends Prefs {
 		}
 		$this->data = array();
 		if (!$tcheck) {
-			$this->db->exec("CREATE TABLE ".$this->table." (prefskey VARCHAR(64) NOT NULL PRIMARY KEY, data BLOB)");
-		} else {
-			$keys = $this->db->getRows("SELECT * FROM ".$this->table);
-			foreach((array)$keys as $row) {
-				$this->data[$row['prefskey']] = unserialize($row['data']);
-			}
+			try {
+				$this->db->exec("CREATE TABLE ".$this->table." (prefskey VARCHAR(64) NOT NULL PRIMARY KEY, data BLOB)");
+			} catch(Exception $e) { }
+		} 
+		$keys = $this->db->getRows("SELECT * FROM ".$this->table);
+		foreach((array)$keys as $row) {
+			$this->data[$row['prefskey']] = unserialize($row['data']);
 		}
 	}
 
 	public function flush() {
-		foreach($this->data as $key=>$value) {
-			$this->db->updateRow("REPLACE INTO ".$this->table." (prefskey,data) VALUES (%s,%s)", $key, serialize($value));
+		if ($this->db) {
+			foreach($this->data as $key=>$value) {
+				$this->db->updateRow("REPLACE INTO ".$this->table." (prefskey,data) VALUES (%s,%s)", $key, serialize($value));
+			}
 		}
 	}
+	
+	public function destroy() {
+		if ($this->db) {
+			$this->db->exec("DROP TABLE ".$this->table);
+			unset($this->db);
+		}
+	}
+	
 }
 
 class IniPrefs extends Prefs {
@@ -100,6 +113,11 @@ class IniPrefs extends Prefs {
 	public function flush() {
 		return; // This is read only
 	}
+	
+	public function destroy() {
+		return;
+	}
+		
 }
 
 class JsonPrefs extends Prefs {
@@ -119,4 +137,8 @@ class JsonPrefs extends Prefs {
 		file_put_contents($this->filename, json_encode($this->data));
 	}
 
+	public function destroy() {
+		return;
+	}
+	
 }

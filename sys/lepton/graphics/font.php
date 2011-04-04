@@ -144,6 +144,45 @@ class TruetypeFont implements IFont {
 
 class BitmapFont implements IFont {
 
-	function drawText(Canvas $canvas,$x,$y,$color,$text) { }
+	const EFFECT_NONE = null;
+	const EFFECT_OUTLINE = 'outline';
+	const EFFECT_SHADOW = 'shadow';
+
+	private $font = null;
+	private $fontfile = null;
+	private $effect = null;
+	private $options = null;
+
+	function __construct($font) {
+		if ((typeof($font) == "string") && (intval($font) == 0)) {
+			$this->font = imageloadfont($font);
+			$this->fontfile = $font;
+		} else {
+			$this->font = $font;
+		}
+	}
+
+	function setTextEffect($effect,$color) {
+		$this->effect = $effect;
+		$this->options = $color;
+	}
+
+	function drawText(Canvas $canvas,$x,$y,$color,$text) {
+        $himage = $canvas->getImage();
+		if ($this->effect == BitmapFont::EFFECT_OUTLINE) {
+			$ow = 1;
+			for ($xx = $x-$ow; $xx<=$x+$ow; $xx++) {
+				for ($yy = $y-$ow; $yy<=$y+$ow; $yy++) {
+					imagestring($himage,$this->font,$xx,$yy,$text,$this->options->getColor($himage));
+				}
+			}
+		} elseif ($this->effect == BitmapFont::EFFECT_SHADOW) {
+			$ow = 1;
+			for ($z = 0; $z <= $ow; $z++) {
+				imagestring($himage,$this->font,$x+$z,$y+$z,$text,$this->options->getColor($himage));
+			}
+		}
+		imagestring($himage,$this->font,$x,$y,$text,$color->getColor($himage));
+	}
 
 }

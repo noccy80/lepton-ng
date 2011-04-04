@@ -155,6 +155,7 @@ class DatabaseConnection {
         $args = func_get_args();
         $sql = $this->conn->quote($args);
         $this->debug[] = $sql;
+        Console::debugEx(LOG_DEBUG1,__CLASS__,"Execute: %s", $sql);
         Database::$counter++;
         Database::$queries['EXECUTING']++;
         $queryresult = $this->conn->execute($sql);
