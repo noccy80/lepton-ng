@@ -7,7 +7,5 @@ interface IDatabaseDriver {
     function query($sql);
 }
 
-abstract class DatabaseDriver implements IDatabaseDriver {
-
-}
+abstract class DatabaseDriver implements IDatabaseDriver { }
 
