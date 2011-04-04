@@ -90,20 +90,21 @@ if (!defined('APP_PATH')) {
         define('APP_PATH', realpath(getenv('APP_PATH')) . '/');
     } else {
         if (getenv('SCRIPT_FILENAME')) {
-            $path = getenv('SCRIPT_FILENAME');
-            $path = realpath(pathinfo($path, PATHINFO_DIRNAME));
+            $_spath = getenv('SCRIPT_FILENAME');
+            $_spath = realpath(pathinfo($path, PATHINFO_DIRNAME));
         } else {
-            $path = getcwd();
+            $_spath = getcwd();
         }
         // If in /bin, assume base is at ..
-        if (substr($path, strlen($path) - 4, 4) == '/bin') {
+        if (substr($_spath, strlen($_spath) - 4, 4) == '/bin') {
             $path = $path . '/../';
         }
-        if (substr($path, strlen($path) - 4, 4) == '/app') {
-            $path = $path . '/../';
+        if (substr($_spath, strlen($_spath) - 4, 4) == '/app') {
+            $_spath = $_spath . '/../';
         }
-        $path = $path . '/app';
-        define('APP_PATH', realpath($path) . '/');
+        $_spath = $_spath . '/app';
+        define('APP_PATH', realpath($_spath) . '/');
+        unset($_spath);
     }
 } else {
     Console::warn("APP_PATH already defined and set to %s", APP_PATH);
@@ -139,16 +140,17 @@ if (getenv("DEBUG") >= 1) {
     define('DEBUGMODE', true);
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
-	$dlevel = intval(getenv("DEBUG"));
-	if ($dlevel > 7) { $dlevel = 7; }
-	define('DEBUGLEVEL', $dlevel);
+    $dlevel = intval(getenv("DEBUG"));
+    if ($dlevel > 7) { $dlevel = 7; }
+    base::logLevel($dlevel);
 } else {
     define('DEBUGMODE', false);
-	define('DEBUGLEVEL', 0);
+    base::logLevel(0);
 }
 
 if (php_sapi_name() == 'cli') {
     define('LEPTON_CONSOLE', true);
+    base::logLevel(LOG_INFO);
 } else {
 	define('LEPTON_CONSOLE', false);
 }
@@ -172,11 +174,12 @@ abstract class base {
     private static $_basepath = null;
     private static $_apppath = null;
     private static $_syspath = null;
+    private static $_loglevel = 0;
 
     static function basePath($newpath=null) {
         $ret = (self::$_basepath) ? self::$_basepath : BASE_PATH;
-        if ($newpath) {
-            self::$_basepath = str_replace('//','/',realpath($newpath).'/');
+        if ($newpath != null) {
+            self::$_basepath = realpath($newpath).'/';
             console::debug("Setting base path: %s", self::$_basepath);
         }
         return $ret;
@@ -184,15 +187,26 @@ abstract class base {
 
     static function appPath($newpath=null) {
         $ret = (self::$_apppath) ? self::$_apppath : APP_PATH;
-        if ($newpath)
-            self::$_apppath =  str_replace('//','/',realpath($newpath).'/');
+        if ($newpath != null) {
+            self::$_apppath =  realpath($newpath).'/';
+            console::debug("Setting app path: %s", self::$_apppath);
+        }
         return $ret;
     }
 
     static function sysPath($newpath=null) {
         $ret = (self::$_syspath) ? self::$_syspath : SYS_PATH;
-        if ($newpath)
+        if ($newpath != null) {
             self::$_syspath =  str_replace('//','/',realpath($newpath).'/');
+            console::debug("Setting sys path: %s", self::$_syspath);
+        }
+        return $ret;
+    }
+
+    static function logLevel($newlevel=null) {
+        $ret = self::$_loglevel;
+        if ($newlevel)
+            self::$_loglevel = $newlevel;
         return $ret;
     }
 
@@ -1149,6 +1163,10 @@ abstract class string {
         return strToLower($string);
     }
     
+    public static function toProperCase($string) {
+    	return ucwords($string);
+    }
+    
     public static function length($string) {
         return strlen($string);
     }
@@ -1603,7 +1621,7 @@ abstract class Logger {
     }
 
     private static function __log($prio, $msg) {
-		if ($prio <= DEBUGLEVEL) {
+		if ($prio <= base::logLevel()) {
 			foreach (self::$_loggers as $logger) {
 				$logger->__logMessage($prio, $msg);
 			}

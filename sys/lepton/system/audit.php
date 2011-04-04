@@ -91,6 +91,6 @@ class AuditEvent {
 
 class ExceptionAuditEvent extends AuditEvent { }
 
-$ae = AuditLog::getLogger('tester');
+// $ae = AuditLog::getLogger('tester');
 // $ae->addEvent(new ExceptionAuditEvent('Unhandled Exception',0,array(),user::getActiveUserId()));
-$ae->addEvent(new ExceptionAuditEvent('Unhandled Exception',0,array(),0));
+// $ae->addEvent(new ExceptionAuditEvent('Unhandled Exception',0,array(),0));

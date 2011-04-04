@@ -56,7 +56,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         Console::writeLn("    LOGFILE              Log file to output debug info to");
         Console::writeLn("");
     }
-    
+
     /**
      * @brief Run the application. Invoked by Lepton.
      * Will parse the arguments and make sure everything is in order.
@@ -244,7 +244,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 
 interface IConsoleService {
     function servicemain();
-    function signal($sig);
+    static function signal($sig);
 }
 
 /**
@@ -255,15 +255,15 @@ interface IConsoleService {
 abstract class ConsoleService extends ConsoleApplication implements IConsoleService {
 
     public function __construct() {
-        // Console::debug("Constructing service instance");
+        Console::debug("Constructing service instance");
         // register_shutdown_function(array(&$this, 'fatal'));
-        pcntl_signal(SIGINT, array(&$this, 'signal'));
-        pcntl_signal(SIGQUIT, array(&$this,'signal'));
-        pcntl_signal(SIGTERM, array(&$this,'signal'));
-        pcntl_signal(SIGHUP, array(&$this,'signal'));
-        pcntl_signal(SIGUSR1, array(&$this,'signal'));
         gc_enable();
-        register_tick_function(array(&$this,'checkstate'));
+        declare(ticks=1);
+        register_tick_function(array($this,'checkstate'));
+    }
+
+    protected function attachSignal($signal) {
+        pcntl_signal($signal, array($this,'signal'));
     }
 
     public function __destruct() {
@@ -273,10 +273,9 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
 
     public function checkstate() {
         // TODO: Time this better
-        gc_collect_cycles();
     }
 
-    function signal($signal) {
+    static function signal($signal) {
         echo "\n";
         Console::debug("Caught signal %d", $signal);
         if ($signal === SIGINT || $signal === SIGTERM) {
