@@ -26,7 +26,8 @@ class AvatarProvider extends UserExtension {
 	function getAvatar($size=null) {
 		$prov = config('lepton.avatar.providers');
 		foreach($prov as $provider) {
-			$avatar = $provider::getAvatar($this->user,$size);
+			$prov = new $provider();
+			$avatar = $prov->getAvatar($this->user,$size);
 			if ($avatar) break;
 		}
 		return $avatar;
