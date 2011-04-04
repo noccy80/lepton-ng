@@ -46,13 +46,13 @@ class PdoDatabaseDriver extends DatabaseDriver {
         try {
             $this->conn = new PDO($this->dsn,$this->user,$this->pass);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            if (isset($this->db) && ($this->db['database'] != '')) $this->exec("USE ".$this->db);
             $cs = config::get('lepton.charset');
             $cs = str_replace('utf-','utf',$cs); // 'utf8';
             // $this->exec("CHARSET ".$cs);
             if ($this->driver == 'mysql') {
-		        $this->exec("SET NAMES '".$cs."'");
-		        $this->exec("SET character_set_results='".$cs."'");
+                if (isset($this->db) && ($this->db['database'] != '')) $this->execute("USE ".$this->db);
+		        $this->execute("SET NAMES '".$cs."'");
+		        $this->execute("SET character_set_results='".$cs."'");
 			}
         } catch (PDOException $e) {
             throw new Databasexception("Could not connect to database type '".$cfg['driver']."'. ".$e->getMessage());
