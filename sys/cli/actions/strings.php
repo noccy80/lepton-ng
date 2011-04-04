@@ -26,8 +26,16 @@ class StringsAction extends Action {
 			'info' => 'Translate using service'
 		),
 		'spell' => array(
-			'arguments' => '\g{lang}',
+			'arguments' => '[\g{lang}]',
 			'info' => 'Spell check language'
+		),
+		'display' => array(
+			'arguments' => '[\g{lang}]',
+			'info' => 'Display a language'
+		),
+		'languages' => array(
+			'arguments' => '',
+			'info' => 'List languages'
 		)
 	);
 
@@ -99,6 +107,47 @@ class StringsAction extends Action {
 
     }
 
+    public function display($lang=null) {
+        $this->openDatabase();
+        if (!$lang) $lang = $this->db['db:defaultlang'];
+        foreach($this->db['lang:'.$lang] as $key=>$str) {
+             console::writeLn(__astr("\g{%s}: %s"), $key, $str);
+        }
+    }
+
+    public function languages() {
+        $this->openDatabase();
+        foreach($this->db as $key=>$val) {
+            if (string::like('lang:*',$key)) {
+                $keyparts = explode(':',$key);
+                console::writeLn('%s: %d strings',$keyparts[1], count($val));
+            }
+        }
+    }
+
+    public function translate($tolang=null) {
+
+        if (!$tolang) throw new BadArgumentException("Translate requires a language!");
+		using('lepton.google.translate');
+
+        $this->openDatabase();
+
+        $fromlang = $this->db['db:defaultlang'];
+
+		$to = new GoogleTranslate($fromlang,$tolang);
+		$tstra = array();
+
+        foreach($this->db['lang:'.$fromlang] as $key=>$str) {
+        	$tstr = $to->translate($str);
+        	$tstra[$key] = $tstr;
+            console::writeLn(__astr("\g{%s}: %s"), $key, $tstr);
+        }
+
+        $this->db['lang:'.$tolang] = $tstra;
+        $this->saveDatabase();
+
+    }
+
     public function spell($lang=null) {
 
         $this->openDatabase();
@@ -130,6 +179,7 @@ class StringsAction extends Action {
         }
 
     }
+
 }
 
 actions::register(

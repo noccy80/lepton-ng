@@ -2,7 +2,7 @@
 
 class intl {
 
-	private static $strings = array();
+	public static $strings = array();
 	private static $lang = null;
 	private static $region = null;
 

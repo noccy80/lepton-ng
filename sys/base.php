@@ -1152,6 +1152,10 @@ abstract class string {
     public static function length($string) {
         return strlen($string);
     }
+
+    public static function like($pattern,$string) {
+        return fnmatch($pattern,$string,FNM_CASEFOLD);
+    }
 }
 
 abstract class integer {
