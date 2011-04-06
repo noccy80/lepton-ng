@@ -105,12 +105,13 @@ class EngageAuthentication extends AuthenticationProvider {
 					$u->firstname = $firstname;
 					$u->lastname = $lastname;
 					$u->email = $email;
-					$cu = user::create($u);
+					$cuid = user::create($u);
+					$cu = user::getUser($cuid);
 				} else {
 					$cu = user::getActiveUser();
 				}
 				// Add identifier to user
-				$db->updateRow("INSERT INTO userengage (userid,identifier,provider,lastseen,lastip) VALUES (%d,%s,%s,NOW(),%s)", $cu->userid, $identifier, $provider, request::getRemoteHost());
+				$db->updateRow("INSERT INTO userengage (userid,identifier,provider,lastseen,lastip) VALUES (%d,%s,%s,NOW(),%s)", $cu->userid, $identifier, $provider, request::getRemoteIp());
 			}
 			$this->userid = $cu;
 		} else {

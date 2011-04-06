@@ -289,7 +289,8 @@ class Request {
      */
     static function getRemoteHost() {
         $host = GetHostByName(self::getRemoteIp());
-        return($host || $ip);
+        if ($host) return $host;
+        return self::getRemoteIp();
     }
 
 }
