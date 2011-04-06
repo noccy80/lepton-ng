@@ -79,6 +79,7 @@ class EngageAuthentication extends AuthenticationProvider {
 
 			if ($idrs) {
 				$cu = $idrs['userid'];
+				$db->updateRow("UPDATE userengage SET lastseen=NOW(), lastip=%s WHERE id=%d", request::getRemoteIp(), $idrs['id']);
 			} else {
 				if (!user::isAuthenticated()) {
 					if (!config::get(EngageAuthentication::KEY_ALLOW_CREATION, false)) {
