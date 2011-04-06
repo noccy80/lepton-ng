@@ -1,0 +1,5 @@
+<?php
+
+config::set('lepton.user.engage.apikey',null);
+config::set('lepton.user.engage.defaultflags','e');
+config::set('lepton.user.engage.allowcreation',true);
