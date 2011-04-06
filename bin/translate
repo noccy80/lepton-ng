@@ -1,0 +1,24 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+
+using('lepton.google.translate');
+
+class TranslateApplication extends ConsoleApplication {
+
+	var $arguments = array(
+		array('f:','from','From language'),
+		array('t:','to','To language')
+	);
+
+	function main($argc,$argv) {
+	
+		$t = new GoogleTranslate($this->getArgument('f'),$this->getArgument('t'));
+		console::write($t->translate($this->getParameter(0))."\n");
+	
+	}
+
+}
+
+Lepton::run('TranslateApplication');

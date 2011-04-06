@@ -1,0 +1,38 @@
+#!/usr/bin/php
+<?php
+
+require('sys/base.php');
+
+using('lepton.google.translate');
+
+class TranslateApplication extends ConsoleApplication {
+
+	var $arguments = array(
+		array('l:','lang','Language')
+	);
+
+	function main($argc,$argv) {
+
+	        $sp = pspell_new($this->getArgument('l'));
+        	if (!$sp) {
+	            console::fatal("Couldn't load dictionary for %s", $lang);
+        	    exit(1);
+	        }
+		$str = $this->getParameter(0);
+        	    $strn = explode(' ',$str);
+	            foreach($strn as $word) {
+        	        if (!pspell_check($sp, $word)) {
+	                    console::write("%s: ", $word);
+        	            $suggestions = pspell_suggest($sp, $word);
+                	    foreach ($suggestions as $suggestion) {
+	                        console::write('%s ,',$suggestion);
+        	            }
+                	    console::writeLn();
+	                }
+        	    }
+	
+	}
+
+}
+
+Lepton::run('TranslateApplication');
