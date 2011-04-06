@@ -34,6 +34,8 @@ class EngageAuthentication extends AuthenticationProvider {
 	const DEFAULT_FLAGS = 'e';
 	const DEFAULT_ALLOW_CREATION = true;
 
+	private $userid = null;
+
 	/**
 	 * @brief Constructor for Password Authentication
 	 *
@@ -76,9 +78,12 @@ class EngageAuthentication extends AuthenticationProvider {
 			$idrs = $db->getSingleRow("SELECT * FROM userengage WHERE identifier=%s", $identifier);
 
 			if ($idrs) {
-				user::authenticate(new NullAuthentication($idrs['userid']));
+				$cu = $idrs['userid'];
 			} else {
 				if (!user::isAuthenticated()) {
+					if (!config::get(EngageAuthentication::KEY_ALLOW_CREATION, false)) {
+						throw new SecurityException("User creation is disabled for EngageAuthentication");
+					}
 					// Check username, add random numbers if not available
 					$username = $preferredusername;
 					$retrycount = 0;
@@ -100,16 +105,16 @@ class EngageAuthentication extends AuthenticationProvider {
 					$u->firstname = $firstname;
 					$u->lastname = $lastname;
 					$u->email = $email;
-					$uid = user::create($u);
-					user::authenticate(new NullAuthentication($uid));
+					$cu = user::create($u);
+				} else {
+					$cu = user::getActiveUser();
 				}
-				$cu = user::getActiveUser();
 				// Add identifier to user
 				$db->updateRow("INSERT INTO userengage (userid,identifier,provider,lastseen,lastip) VALUES (%d,%s,%s,NOW(),%s)", $cu->userid, $identifier, $provider, request::getRemoteHost());
 			}
-			response::redirect('/control/panel');
+			$this->userid = $cu;
 		} else {
-			response::redirect('/');
+			$this->userid = null;
 		}
 
     }
@@ -120,13 +125,7 @@ class EngageAuthentication extends AuthenticationProvider {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function isTokenValid() {
-		if ($this->auth_backend->validateCredentials($this->username, $this->password)) {
-			console::debugex(LOG_DEBUG2, __CLASS__, "Matched token valid for %s", $this->username);
-			return true;
-		} else {
-			console::debugex(LOG_DEBUG2, __CLASS__, "Matched token not valid for %s", $this->username);
-			return false;
-		}
+		return ($this->userid !== null);
 	}
 
 	/**
@@ -135,7 +134,6 @@ class EngageAuthentication extends AuthenticationProvider {
      * @return boolean True on success
      */
     function login() {
-        $this->userid = $this->auth_backend->getUserid();
         if ($this->userid) {
             $this->setUser($this->userid);
             // console::writeLn("Authenticated as user %d", $this->userid);

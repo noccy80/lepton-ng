@@ -330,6 +330,7 @@ class UserRecord {
             case 'lastip':
                 return $this->lastip;
 			case 'displayname':
+				if (strlen($this->displayname) == 0) return $this->username;
 				return $this->displayname;
             case 'password':
                 if ($this->password == null) {
