@@ -9,13 +9,18 @@ class TranslateApplication extends ConsoleApplication {
 
 	var $arguments = array(
 		array('f:','from','From language'),
-		array('t:','to','To language')
+		array('t:','to','To language'),
+		array('h','help','Show help')
 	);
 
 	function main($argc,$argv) {
-	
-		$t = new GoogleTranslate($this->getArgument('f'),$this->getArgument('t'));
-		console::write($t->translate($this->getParameter(0))."\n");
+
+		if ($this->hasArgument('f') && $this->hasArgument('t')) {
+			$t = new GoogleTranslate($this->getArgument('f'),$this->getArgument('t'));
+			console::write($t->translate($this->getParameter(0))."\n");
+		} else {
+			console::writeLn("You need to specify -f and -t");
+		}
 	
 	}
 
