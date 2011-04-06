@@ -1,11 +1,24 @@
 <?php __fileinfo("Internationalization (i18n) support");
 
+/**
+ * @class intl
+ *
+ * Internationalisation and localisation functions
+ *
+ * @author Christopher Vagnetoft <noccy@chillat.net>
+ * @license GPL v3
+ */
 class intl {
 
 	public static $strings = array();
 	private static $lang = null;
 	private static $region = null;
 
+	/**
+	 * @brief Return a translated formatted string
+	 *
+	 *
+	 */
 	function str() {
 		$args = func_get_args();
 		if (self::getFullLanguage()) {
@@ -38,10 +51,20 @@ class intl {
 		return $str;
 	}
 
+	/**
+	 * @brief Register a new language
+	 *
+	 *
+	 */
 	static function registerLanguage($lang,$strings) {
 		self::$strings[$lang] = (array)$strings;
 	}
 
+	/**
+	 * @brief Set the default language
+	 *
+	 *
+	 */
 	static function setLanguage($lang) {
 		if (preg_match('/^[a-z]{2}$/',$lang)) {
 			// Two letter iso code found
@@ -58,14 +81,29 @@ class intl {
 		}
 	}
 
+	/**
+	 * @brief Get the assigned language
+	 *
+	 *
+	 */
 	static function getLanguage() {
 		return self::$lang;
 	}
 
+	/**
+	 * @brief Get the geographical region that match the language
+	 *
+	 *
+	 */
 	static function getRegion() {
 		return self::$region;
 	}
 
+	/**
+	 * @brief Return the full language string including region
+	 *
+	 *
+	 */
 	static function getFullLanguage() {
 		return self::$lang.((self::$region!=null)?'-'.self::$region:'');
 	}
