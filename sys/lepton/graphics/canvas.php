@@ -43,6 +43,7 @@ class Canvas implements IDrawable,ICanvas {
 	private $imgtype = null;
 	private $imgsize = null;
 	private $imgmime = "";
+	private $alphablending = false;
 	protected $filename = "";
 
 	private $gotmeta = false;
@@ -110,6 +111,12 @@ class Canvas implements IDrawable,ICanvas {
 	/**
 	 * @brief Property overloading to get tag information and image properties.
 	 *
+	 * @property exif Return the exif information
+	 * @property iptc Return the iptc information
+	 * @property height The height of the image
+	 * @property width The width of the image
+	 * @property alphablending True if alphablending is enabled
+	 *
 	 * @param string $key The key to query
 	 * @return any
 	 */
@@ -130,8 +137,28 @@ class Canvas implements IDrawable,ICanvas {
 				return $this->height;
 			case 'width':
 				return $this->width;
+			case 'alphablending':
+				return $this->alphablending;
+			default:
+				throw BadPropertyException("No property get ".$key." on Canvas");
 		}
 
+	}
+	
+	function __set($key,$value) {
+	
+		$this->checkImage();
+	
+		switch($key) {
+			case 'alphablending':
+				$this->alphablending = ($value == true);
+				imagealphablending($this->himage, $this->alphablending);
+				break;
+			default:
+				throw BadPropertyException("No property set ".$key." on Canvas");
+		
+		}
+	
 	}
 
 	/**
