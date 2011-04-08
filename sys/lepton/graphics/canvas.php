@@ -46,8 +46,8 @@ class Canvas implements IDrawable,ICanvas {
 	private $alphablending = false;
 	protected $filename = "";
 
-	private $gotmeta = false;
-	private $gotimage = false;
+	protected $gotmeta = false;
+	protected $gotimage = false;
 
 	const KEEP_NONE = 0;  // Ignore the aspect ratio
 	const KEEP_CROP = 1;  // Maintain aspect, crop and fill
@@ -140,7 +140,7 @@ class Canvas implements IDrawable,ICanvas {
 			case 'alphablending':
 				return $this->alphablending;
 			default:
-				throw BadPropertyException("No property get ".$key." on Canvas");
+				throw new BadPropertyException("No property get ".$key." on Canvas");
 		}
 
 	}
@@ -155,7 +155,7 @@ class Canvas implements IDrawable,ICanvas {
 				imagealphablending($this->himage, $this->alphablending);
 				break;
 			default:
-				throw BadPropertyException("No property set ".$key." on Canvas");
+				throw new BadPropertyException("No property set ".$key." on Canvas");
 		
 		}
 	
