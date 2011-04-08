@@ -4,6 +4,8 @@ config::def('lepton.net.mail.from', 'Local Lepton Installation <lepton@localhost
 config::def('lepton.net.mail.smtpserver','localhost');
 config::def('lepton.net.mail.backend','smtp');
 
+class MailException extends Exception { }
+
 class MailMessage {
 
 	private $message = null;
@@ -30,17 +32,26 @@ class MailMessage {
 	
 	function send() {
 
-		require_once('Mail.php');
+		@require_once('Mail.php');
 	
 		$headers = array(
 			'From' => config::get('lepton.net.mail.from'),
 			'To' => join(',',$this->recipients),
 			'Subject' => $this->subject
 		);
-	
-		$omail =& Mail::factory('smtp',)
-		$omail->send($this->recipients,$headers,$this->message);
-	
+		$params = array(
+			'host' => config::get('lepton.net.mail.smtpserver','localhost'),
+			'port' => config::get('lepton.net.mail.smtpport',25),
+			'localhost' => config::get('lepton.net.mail.localhost','localhost')
+		);
+
+		try {
+			$omail =& Mail::factory('smtp', $params);
+			$omail->send($this->recipients,$headers,$this->message);
+		} catch (Exception $e) {
+			throw new MailException("Sending of mail failed");
+		}
+
 	}
 
 }
