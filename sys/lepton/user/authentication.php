@@ -1,8 +1,4 @@
-<?php __fileinfo("Authentication Provider Base Classes", array(
-    'depends' => array(
-        'lepton.user.user'
-    )
-));
+<?php __fileinfo("Authentication Provider Base Classes");
 
 
 
@@ -67,6 +63,7 @@
     }
 
     ModuleManager::load('lepton.user.user');
+    ModuleManager::load('lepton.user.userrecord');
     ModuleManager::load('lepton.user.backends.*');
     ModuleManager::load('lepton.user.providers.*');
 
