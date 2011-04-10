@@ -46,5 +46,5 @@ class LdwpNode extends Runnable {
 
 }
 
-LdwpNode::start(new LdwpLocalTransport(),'a1',true);
+// LdwpNode::start(new LdwpLocalTransport(),'a1',true);
 

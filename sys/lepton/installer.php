@@ -1,5 +1,7 @@
 <?php
 
+using('lepton.mvc.router');
+
     class LeptonInstaller {
 
         static function request($uri) {

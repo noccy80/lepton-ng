@@ -144,22 +144,20 @@
 
     }
 
-    class WikiPage extends AbstractDataStore {
-        function __construct($page=null) {
-            parent::__construct(array(
-                'ns'         => 'string',
-                'uri'         => 'string',
-                'author'     => 'any',
-                'authorname'=> 'any',
-                'lastedit'  => 'any',
-                'revision'    => 'int protected',
-                'title'        => 'string',
-                'content'    => 'string',
-                'reverted'    => 'bool false',
-                'locked'    => 'bool false',
-                'hidden'    => 'bool false'
-            ),    $page);
-        }
+    class WikiPage extends AbstractModel {
+        protected $_fields = array(
+            'ns'         => 'string',
+            'uri'         => 'string',
+            'author'     => 'any',
+            'authorname'=> 'any',
+            'lastedit'  => 'any',
+            'revision'    => 'int protected',
+            'title'        => 'string',
+            'content'    => 'string',
+            'reverted'    => 'bool false',
+            'locked'    => 'bool false',
+            'hidden'    => 'bool false'
+        );
         function getFullUri() {
             $ns = $this->getNs();
             $uri = $this->getUri();
