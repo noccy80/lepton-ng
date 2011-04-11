@@ -16,7 +16,7 @@ class JobQueue {
 	 *
 	 */
 	public function __construct() {
-		// $this->db = new DatabaseConnection();
+		$this->db = new DatabaseConnection();
 	}
 
 	/**
@@ -46,7 +46,10 @@ class JobQueue {
 	 */
 	public function getJob($jobid) {
 		// Fetch the job with the specified id
-		return new DownloadJob('foo','bar');
+		$job = new DownloadJob('foo','bar');
+		// Assign the queue to the job and return it
+		$job->setQueue($this);
+		return $job;
 	}
 
 	/**
@@ -55,7 +58,8 @@ class JobQueue {
 	 * @return String The ID of the next scheduled job
 	 */
 	public function getNextJobId() {
-		// Return the jobid of the topmost job that is queued
+		// Return the jobid of the topmost job that is queued with
+		// the appropriate status.
 	}
 
 	/**

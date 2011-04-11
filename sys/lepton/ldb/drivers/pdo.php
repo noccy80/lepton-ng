@@ -51,9 +51,9 @@ class PdoDatabaseDriver extends DatabaseDriver {
             // $this->exec("CHARSET ".$cs);
             if ($this->driver == 'mysql') {
                 if (isset($this->db) && ($this->db['database'] != '')) $this->execute("USE ".$this->db);
-		        $this->execute("SET NAMES '".$cs."'");
-		        $this->execute("SET character_set_results='".$cs."'");
-			}
+                $this->execute("SET NAMES '".$cs."'");
+                $this->execute("SET character_set_results='".$cs."'");
+            }
         } catch (PDOException $e) {
             throw new Databasexception("Could not connect to database type '".$cfg['driver']."'. ".$e->getMessage());
         }

@@ -19,7 +19,7 @@ abstract class LdwpJob {
 	const STATE_RUNNING = 2; ///< @var Job is running
 	const STATE_SUSPENDED = 3; ///< @var Job has been suspended
 
-	protected $_state = 0;
+	protected $_state = null;
 	protected $_message = null;
 	protected $_progress = null;
 	protected $_id = null;
@@ -30,8 +30,8 @@ abstract class LdwpJob {
 	 *
 	 */
 	public function __construct() {
-		$this->setState(null);
-		$this->setProgress("Job not yet queued");
+		$this->setState(self::STATE_QUEUED);
+		$this->setProgress("Job queued");
 		$this->_id = uuid::v4();
 	}
 
