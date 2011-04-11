@@ -1,5 +1,8 @@
 <?php
 
+// Provide your Engage API key here
 config::set('lepton.user.engage.apikey',null);
-config::set('lepton.user.engage.defaultflags','e');
+
+// Allow creation of new users (false=only add to existing users) and default flags
 config::set('lepton.user.engage.allowcreation',true);
+config::set('lepton.user.engage.defaultflags','e');
