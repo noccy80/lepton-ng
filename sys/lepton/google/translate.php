@@ -7,8 +7,9 @@ class GoogleTranslate extends TranslationService {
 
 	private $fromlang = null;
 	private $tolang = null;
+	private $apiversion = 1;
 
-	function __construct($fromlang,$tolang) {
+	function __construct($fromlang,$tolang,$apiversion=1) {
 
 		$this->fromlang = reset(split('-',$fromlang));
 		$this->tolang = reset(split('-',$tolang));
@@ -19,24 +20,28 @@ class GoogleTranslate extends TranslationService {
 
 	function translate($string) {
 
-		$langs = join('|',array($this->fromlang,$this->tolang));
+		switch($apiversion) {
+		case 1:
+			$langs = join('|',array($this->fromlang,$this->tolang));
+			$translation = array();
 
-		$translation = array();
+			$url = 'http://ajax.googleapis.com/ajax/services/language/translate';
+			$r = new HttpRequest($url,array(
+				'parameters' => array(
+					'v' => '1.0',
+					'q' => $string,
+					'langpair' => $langs
+				)
+			));
+			$rd = json_decode($r->responseText(),true);
+			$rstr = $rd['responseData']['translatedText'];
+			break;
+		case 2:
+			throw new BaseException("GoogleTranslate API Version 2 not implemented");
+			break;
+		}
 
-		$url = 'http://ajax.googleapis.com/ajax/services/language/translate';
-		$opts = array(
-			'v' => '1.0',
-			'q' => $string,
-			'langpair' => $langs
-		);
-		$r = new HttpRequest($url,array(
-			'parameters' => $opts
-		));
-		$rd = json_decode($r->responseText(),true);
-		$rstr = $rd['responseData']['translatedText'];
-		
 		return $rstr;
-
 	}
 
 }
