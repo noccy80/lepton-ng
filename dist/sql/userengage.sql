@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS userengage (
 	provider VARCHAR(64) NOT NULL,
 	lastseen DATETIME NOT NULL,
 	lastip VARCHAR(64) NOT NULL,
-	UNIQUE INDEX identifier(identifier)
+	UNIQUE INDEX identifier(identifier(256))
 );
