@@ -344,7 +344,7 @@ function __deprecated($oldfunc, $newfunc = null) {
         $msg = sprintf('%s. Function %s is deprecated', $caller, $oldfunc);
     }
 
-    trigger_error($msg, E_USER_DEPRECATED);
+    @trigger_error($msg, E_USER_DEPRECATED);
     if (config::get('lepton.base.strict', false) == true) {
         throw new BaseException($msg);
     }
