@@ -671,6 +671,11 @@ class Canvas implements IDrawable,ICanvas {
 
 	}
 
+	function getColorAt($x,$y) {
+		$rgb = imagecolorat($this->himage, $x, $y);
+		$cv = imagecolorsforindex($this->himage, $rgb);	
+		return rgb($cv['red'],$cv['green'],$cv['blue']);
+	}
 
 }
 

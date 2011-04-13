@@ -23,6 +23,16 @@ class LeptonCanvasTests extends LunitCase {
 		$this->canvas = new Canvas(640,480);
 		$this->assertNotNull($this->canvas);
 	}
+
+	/**
+	 * @description Creating canvas
+	 */
+	function canvascreatecolor() {
+		$c = new Canvas(640,480,rgb(0,0,0));
+		$this->assertEquals($c->getColorAt(0,0),rgb(0,0,0));
+		$c = new Canvas(640,480,rgb(255,255,255));
+		$this->assertEquals($c->getColorAt(0,0),rgb(255,255,255,255));
+	}
 	
 	/**
 	 * @description Testing canvas properties

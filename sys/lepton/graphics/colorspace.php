@@ -20,5 +20,10 @@ abstract class Color implements IColor {
 		//}
 		//return imagecolorallocate($himage, $r, $g, $b);
 	}
+	
+	function __toString() {
+		list($r,$g,$b,$a) = $this->getRGBA();
+		return sprintf('#%02x%02x%02x',$r,$g,$b);
+	}
 
 }
