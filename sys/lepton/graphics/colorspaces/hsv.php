@@ -121,3 +121,15 @@
 
     }
 
+function hsv() {
+	$args = func_get_args();
+	if (count($args) == 0) {
+		return new HsvColor();
+	} elseif (count($args) == 3) {
+		return new HsvColor($args[0],$args[1],$args[2]);
+	} elseif (count($args) == 4) {
+		return new HsvColor($args[0],$args[1],$args[2],$args[3]);
+	} else {
+		throw new BadArgumentException("hsv() expects 0, 3 or 4 parameters");
+	}
+}

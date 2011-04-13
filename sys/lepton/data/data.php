@@ -12,14 +12,11 @@ class DataSet {
 	}
 	
 	function addSeries($label, DataSeries $s) {
-		$this->series[] = array(
-			'label' => $label,
-			'data' => $s
-		);
+		$this->series[] = array($label, $s);
 	}
 	
 	function getSeries($index) {
-		return $this->serieß[$index];
+		return $this->series[$index];
 	}
 	
 	function getCount() {
@@ -37,12 +34,13 @@ class DataSeries {
 		// This is values
 		foreach($args as $arg) {
 			if (is_array($arg)) {
-				$this->data[] = $arg[0];
-				$this->label[] = $arg[1];
+				$value = $arg[0];
+				$label = $arg[1];
 			} else {
-				$this->data[] = $arg;
-				$this->label[] = null;
+				$value = $arg;
+				$label = null;
 			}
+			$this->data[] = array($value, $label);
 		}
 	}
 	
@@ -50,13 +48,20 @@ class DataSeries {
 		return count($this->data);
 	}
 	
+	function getSum() {
+		$sum = 0;
+		for($n = 0; $n < count($this->data); $n++) {
+			$sum += $this->data[$n][0];
+		}
+		return $sum;
+	}
+	
 	function addValue($value,$label=null) {
-		$this->data[] = $value;
-		$this->label[] = $label;
+		$this->data[] = array($value, $label);
 	}
 	
 	function getValue($index) {
-		return array($this->data[$index], $this->label[$index]);
+		return $this->data[$index];
 	}
 	
 }

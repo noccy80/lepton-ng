@@ -26,6 +26,7 @@ class RgbColor extends Color {
 	 *   #RRGGBBAA   rgba, as a hexidecimal string (00-FF)
 	 */
 	function __construct() {
+		$args = func_get_args();
 		switch (func_num_args ()) {
 			case 0:
 				$red = 0;
@@ -132,3 +133,17 @@ class RgbColor extends Color {
 
 }
 
+function rgb() {
+	$args = func_get_args();
+	if (count($args) == 0) {
+		return new RgbColor();
+	} elseif (count($args) == 1) {
+		return new RgbColor($args[0]);
+	} elseif (count($args) == 3) {
+		return new RgbColor($args[0],$args[1],$args[2]);
+	} elseif (count($args) == 4) {
+		return new RgbColor($args[0],$args[1],$args[2],$args[3]);
+	} else {
+		throw new BadArgumentException("rgb() expects 0, 1, 3 or 4 parameters");
+	}
+}

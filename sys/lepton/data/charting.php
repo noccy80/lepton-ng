@@ -1,5 +1,8 @@
 <?php
 
+using('lepton.graphics.canvas');
+using('lepton.graphics.colorspaces.*');
+
 interface IChart { 
 	public function __construct($width,$height);
 	// Render and return canvas
