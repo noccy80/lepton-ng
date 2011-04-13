@@ -57,13 +57,35 @@ class Canvas implements IDrawable,ICanvas {
 
 	static function load($filename) {
 
-		$i = new Canvas();
-		$i->loadImage($filename);
-		return $i;
+		__deprecated('Canvas::load()', 'new Image()');
+		return new Image($filename);
 
 	}
 
 ///// Class Methods /////////////////////////////////////////////////////////
+
+	/**
+	 * @brief Constructor, creates a canvas based on the parameters.
+	 *
+	 * @note  Currently works even when called without any parameters, this
+	 *		should throw an exception of operated upon! It is supported here
+	 *		for the purpose of loading an image that already exists.
+	 * @param integer $width The width of the canvas to create
+	 * @param integer $height The height of the canvas to create
+	 * @param Color $color The background color of the new canvas
+	 */	
+	function __construct($width,$height,Color $color = null) {
+
+		$this->himage = imagecreatetruecolor($width,$height);
+		$this->gotmeta = true; // We set this to true to avoid trying to read metadata
+		$this->gotimage = true; // We created the image so we got it
+		$this->width = $width;
+		$this->height = $height;
+		if ($color != null) {
+			imagefilledrectangle($this->himage,0,0,$this->width,$this->height,$color->getColor($this->himage));
+		}
+
+	}
 
 	/**
 	 * @brief Retrieve the GD image handle
@@ -185,25 +207,6 @@ class Canvas implements IDrawable,ICanvas {
 		__deprecated('getIptc()', '$i->iptc');
 		$iptc = new ImageIptc($this);
 		return $iptc;
-
-	}
-
-
-	/**
-	 * @brief Constructor, creates a canvas based on the parameters.
-	 *
-	 * @note  Currently works even when called without any parameters, this
-	 *		should throw an exception of operated upon! It is supported here
-	 *		for the purpose of loading an image that already exists.
-	 * @param integer $width The width of the canvas to create
-	 * @param integer $height The height of the canvas to create
-	 * @param Color $color The background color of the new canvas
-	 */	
-	function __construct($width=null,$height=null,Color $color = null) {
-
-		if ($width && $height) {
-			$this->createImage($width,$height,$color);
-		}
 
 	}
 

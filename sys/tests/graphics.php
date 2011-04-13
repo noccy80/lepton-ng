@@ -25,7 +25,7 @@ class LeptonCanvasTests extends LunitCase {
 	}
 
 	/**
-	 * @description Creating canvas
+	 * @description Creating canvas with background color
 	 */
 	function canvascreatecolor() {
 		$c = new Canvas(640,480,rgb(0,0,0));
