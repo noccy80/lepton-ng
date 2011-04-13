@@ -1,6 +1,7 @@
 <?php
 
 using('lepton.data.charting');
+using('lepton.data.charting.renderers.*');
 
 class PieChart extends Chart {
 
@@ -24,7 +25,7 @@ class PieChart extends Chart {
 
 		$cx = $c->getWidth() / 2;
 		$cy = $c->getHeight() / 2;
-		$explode = $this->getProperty('explosion',0);
+		$explode = $this->getProperty('explode',0);
 
 		$palette = array(
 			'#FF7777',
@@ -46,7 +47,8 @@ class PieChart extends Chart {
 			$ea = $sa + $a;
 			$ch = rgb($palette[$ci]);
 			$cs = hsv();
-			$cs->value = $cs->value - 10;
+			$cs->setRGBA($ch->getRGBA());
+			$cs->value = $cs->value - 30;
 			$data[] = array(
 				'key' => $key,
 				'c1' => $ch,
@@ -76,7 +78,12 @@ class PieChart extends Chart {
 				// $c->drawText($f, new Color(0,0,0), $cx+($ox*10),$cy+($oy*10),$slice['key']);
 			}
 		}
-
+		
+		/*
+		$legend = new ChartLegend(array('#FF0000'=>'Hello','#0000FF'=>'World'));
+		$legend->draw($c,10,10,150,100);
+		*/
+		
 		// Return the canvas
 		return $c;
 	

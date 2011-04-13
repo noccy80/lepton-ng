@@ -3,6 +3,7 @@
 __fileinfo("RGB Color Space Routines");
 
 using('lepton.graphics.colorspace');
+using('lepton.graphics.graphics');
 
 class RgbColor extends Color {
 
@@ -93,6 +94,13 @@ class RgbColor extends Color {
 
 	function getRGBA() {
 		return array($this->c['r'],$this->c['g'],$this->c['b'],$this->c['a']);
+	}
+
+	function setRGBA($rgba) {
+		$this->c['r'] = $this->bounds($rgba[0]);
+		$this->c['g'] = $this->bounds($rgba[1]);
+		$this->c['b'] = $this->bounds($rgba[2]);
+		$this->c['a'] = $this->bounds($rgba[3]);
 	}
 
 	function __get($key) {

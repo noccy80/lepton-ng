@@ -2,6 +2,7 @@
 
 interface IColor {
 	function getRGBA();
+	function setRGBA($rgba);
 }
 
 abstract class Color implements IColor {
@@ -21,6 +22,20 @@ abstract class Color implements IColor {
 		return imagecolorallocate($himage, $r, $g, $b);
 	}
 	
+	/**
+	 * @brief Helper function to assign a color value from an existing color
+	 *
+	 * @param Color $color The color to assign
+	 */
+	function setColor(Color $color) {
+		$this->setRGBA($color->getRGBA());
+	}
+
+	/**
+	 * @brief Return the RGB value of the color
+	 *
+	 * @return String The RGB balue
+	 */
 	function __toString() {
 		list($r,$g,$b,$a) = $this->getRGBA();
 		return sprintf('#%02x%02x%02x',$r,$g,$b);
