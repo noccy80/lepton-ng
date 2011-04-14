@@ -127,7 +127,7 @@ class Canvas implements IDrawable,ICanvas {
 
 		$this->checkMeta();
 		return array($this->width,$this->height);
-		
+
 	}
 
 	/**
@@ -279,6 +279,11 @@ class Canvas implements IDrawable,ICanvas {
 
 	}
 
+	function saveImage($filename=null) {
+		__deprecated('Canvas->saveImage()','Canvas->save()');
+		return $this->save($filename);
+	}
+
 	/**
 	 * Saves the image. If no filename is specified, the one used to load
 	 * the file is used. If no filename can be determined, an exeption is
@@ -286,7 +291,7 @@ class Canvas implements IDrawable,ICanvas {
 	 *
 	 * @param string $filename The filename to write to (optional)
 	 */
-	function saveImage($filename=null) {
+	function save($filename=null) {
 
 		$this->checkImage();
 		//$fn = ($filename)?$filename:$this->filename;
