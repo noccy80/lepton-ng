@@ -27,14 +27,14 @@ class LeptonCaptchaTests extends LunitCase {
 		$this->captchatext = captcha::getstring($this->captchaid);
 		$this->assertNotNull($this->captchatext);
 	}
-	
+
 	/**
 	 * @description Displaying/saving captcha
 	 */
 	function display() {
 		captcha::display($this->captchaid,$this->getTempFile('png'));
 	}
-	
+
 	/**
 	 * @description Validating captcha string
 	 */

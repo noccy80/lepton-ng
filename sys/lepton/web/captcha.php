@@ -105,7 +105,7 @@ class Captcha {
         }
 
 		if ($saveto) {
-			$c->saveImage($saveto);
+			$c->save($saveto);
 		} else {
 	        $c->output();
 	    }

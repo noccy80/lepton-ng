@@ -107,10 +107,10 @@ class LeptonCanvasTests extends LunitCase {
 	 * @description Saving as common formats
 	 */
 	function canvassave() {
-		$this->canvas->saveImage($this->getTempFile('png'));
-		$this->canvas->saveImage($this->getTempFile('gif'));
-		$this->canvas->saveImage($this->getTempFile('jpg'));
-		$this->canvas->saveImage('test.png');
+		$this->canvas->save($this->getTempFile('png'));
+		$this->canvas->save($this->getTempFile('gif'));
+		$this->canvas->save($this->getTempFile('jpg'));
+		$this->canvas->save('test.png');
 	}
 	
 	/**
@@ -118,7 +118,7 @@ class LeptonCanvasTests extends LunitCase {
 	 */
 	function canvasload() {
 		$tf = $this->getTempFile('png');
-		$this->canvas->saveImage($tf);
+		$this->canvas->save($tf);
 		$c = new Image($tf);
 		$this->assertEquals($this->canvas->width, $c->width);
 		$this->assertEquals($this->canvas->height, $c->height);
