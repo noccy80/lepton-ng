@@ -58,7 +58,7 @@ class LeptonCanvasTests extends LunitCase {
 		$this->clone = $this->canvas->duplicate();
 		$this->assertNotNull($this->clone);
 	}
-	
+
 	/**
 	 * @description Resizing the canvas
 	 */
@@ -67,14 +67,26 @@ class LeptonCanvasTests extends LunitCase {
 		$this->assertEquals($this->clone->width,400);
 		$this->assertEquals($this->clone->height,300);
 	}
-	
+
+	/**
+	 * @description Rotating canvas
+	 */
+	function canvasrotate() {
+		$this->canvas->rotate(90);
+		$this->assertEquals($this->canvas->width,480);
+		$this->assertEquals($this->canvas->height,640);
+		$this->canvas->rotate(90);
+		$this->assertEquals($this->canvas->width,640);
+		$this->assertEquals($this->canvas->height,480);
+	}
+
 	/**
 	 * @description Testing of IDrawable and ICanvas
 	 */
 	function canvasdrawable() {
 		$this->clone->draw($this->canvas,100,100);
 	}
-	
+
 	/**
 	 * @description Loading fonts
 	 */
@@ -82,7 +94,7 @@ class LeptonCanvasTests extends LunitCase {
 		$this->font = new TruetypeFont('arial.ttf',24);
 		$this->assertNotNull($this->font);
 	}
-	
+
 	/**
 	 * @description Drawing text on the canvas
 	 */
@@ -102,7 +114,7 @@ class LeptonCanvasTests extends LunitCase {
 		$this->font->drawText($this->canvas, 50, 90, new RgbColor(0,255,0), 'Hello Bitmapworld!');
 		$this->assertNotNull($this->font);
 	}
-	
+
 	/**
 	 * @description Saving as common formats
 	 */
@@ -112,7 +124,7 @@ class LeptonCanvasTests extends LunitCase {
 		$this->canvas->save($this->getTempFile('jpg'));
 		$this->canvas->save('test.png');
 	}
-	
+
 	/**
 	 * @description Load canvas from file
 	 */

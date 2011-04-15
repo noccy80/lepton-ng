@@ -543,7 +543,7 @@ class Canvas implements IDrawable,ICanvas {
 	function rotate($degrees, Color $color = null) {
 		if (function_exists('imagerotate')) {
 			if (!$color) $color = rgb(255,255,255);
-			$htmp = imagerotate($this->himage, $degrees, $color->getColor($this->hImage));
+			$htmp = imagerotate($this->himage, $degrees, $color->getColor($this->himage));
 			imagedestroy($this->himage);
 			$this->himage = $htmp;
 			$this->width = imageSX($this->himage);
