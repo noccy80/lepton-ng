@@ -27,6 +27,12 @@ interface ICanvas {
  *   width The width of the canvas
  *   height The height of the canvas
  *
+ * @property get exif Return the exif information
+ * @property get iptc Return the iptc information
+ * @property get height The height of the image
+ * @property get width The width of the image
+ * @property getset alphablending True if alphablending is enabled
+ *
  * @todo Private properties should be prefixed with an underscore.
  * @note This class uses late loading, meaning that it will load the
  *		 image as required. F.ex. simply calling write() after loading
@@ -133,12 +139,6 @@ class Canvas implements IDrawable,ICanvas {
 	/**
 	 * @brief Property overloading to get tag information and image properties.
 	 *
-	 * @property exif Return the exif information
-	 * @property iptc Return the iptc information
-	 * @property height The height of the image
-	 * @property width The width of the image
-	 * @property alphablending True if alphablending is enabled
-	 *
 	 * @param string $key The key to query
 	 * @return any
 	 */
@@ -167,6 +167,12 @@ class Canvas implements IDrawable,ICanvas {
 
 	}
 	
+	/**
+	 * @brief Property set overloading.
+	 *
+	 * @param string $key The key to set
+	 * @param mixed $value The value
+	 */
 	function __set($key,$value) {
 	
 		$this->checkImage();
@@ -526,6 +532,25 @@ class Canvas implements IDrawable,ICanvas {
 		$this->width = imageSX($this->himage);
 		$this->height = imageSY($this->himage);
 
+	}
+	
+	/**
+	 * @brief Rotate the canvas by the specified number of degrees
+	 *
+	 * @param float $degrees The number of degrees to rotate the image by
+	 * @param Color $color The new background color
+	 */
+	function rotate($degrees, Color $color = null) {
+		if (function_exists('imagerotate')) {
+			if (!$color) $color = rgb(255,255,255);
+			$htmp = imagerotate($this->himage, $degrees, $color->getColor($this->hImage));
+			imagedestroy($this->himage);
+			$this->himage = $htmp;
+			$this->width = imageSX($this->himage);
+			$this->height = imageSY($this->himage);
+		} else {
+			throw new FunctionNotSupportedException("imagerotate() not present");
+		}
 	}
 
 	/**

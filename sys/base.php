@@ -422,6 +422,7 @@ class FilesystemException extends BaseException { }
 class FileNotFoundException extends FilesystemException { }
 class FileAccessException extends FilesystemException { }
 class UnsupportedPlatformException extends BaseException { }
+class FunctionNotSupportedException extends BaseException { }
 class SystemException extends BaseException { }
 class ClassNotFoundException extends BaseException { }
 class BadPropertyException extends BaseException { }
