@@ -6,8 +6,8 @@ using('lepton.graphics.canvas');
 using('lepton.graphics.drawable');
 
 interface IFont {
-
 	function drawText(Canvas $canvas, $x, $y, $color, $text);
+	function measure($text);
 }
 
 /**
@@ -95,9 +95,9 @@ class TruetypeFont implements IFont {
 				}
 		// destroy img and serve the result
 		imagedestroy($img);
+		//	"left" => $left - $rleft,
+		//	"top" => $top - $rtop,
 		return array(
-			"left" => $left - $rleft,
-			"top" => $top - $rtop,
 			"width" => $rright - $rleft + 1,
 			"height" => $rbottom - $rtop + 1
 		);
@@ -184,6 +184,13 @@ class BitmapFont implements IFont {
 			}
 		}
 		imagestring($himage, $this->font, $x, $y, $text, $color->getColor($himage));
+	}
+
+	function measure($text) {
+		return array(
+			'width' => (imagefontwidth($this->font) * strlen($text)),
+			'height' => (imagefontheight($this->font) * count(explode("\n",$text)))
+		);
 	}
 
 }

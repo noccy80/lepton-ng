@@ -123,6 +123,7 @@ class LeptonCanvasTests extends LunitCase {
 		$this->canvas->save($this->getTempFile('png'));
 		$this->canvas->save($this->getTempFile('gif'));
 		$this->canvas->save($this->getTempFile('jpg'));
+	}
 
 	/**
 	 * @description Load canvas from file
