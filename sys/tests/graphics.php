@@ -14,6 +14,7 @@ class LeptonCanvasTests extends LunitCase {
 	function __construct() {
 		using('lepton.graphics.canvas');
 		using('lepton.graphics.capture');
+		using('lepton.graphics.filters.*');
 	}
 
 	/**
@@ -33,7 +34,7 @@ class LeptonCanvasTests extends LunitCase {
 		$c = new Canvas(640,480,rgb(255,255,255));
 		$this->assertEquals($c->getColorAt(0,0),rgb(255,255,255,255));
 	}
-	
+
 	/**
 	 * @description Testing canvas properties
 	 */
@@ -41,7 +42,7 @@ class LeptonCanvasTests extends LunitCase {
 		$this->assertEquals($this->canvas->width,640);
 		$this->assertEquals($this->canvas->height,480);
 	}
-	
+
 	/**
 	 * @description Painting on the canvas
 	 */
@@ -100,7 +101,7 @@ class LeptonCanvasTests extends LunitCase {
 	 */
 	function canvastext() {
 		$this->assertNotNull($this->font);
-		$this->font->drawText($this->canvas, 0, 0, new RgbColor(255,0,0), 'Hello World!');
+		$this->canvas->drawText($this->font, rgb(255,0,0), 0, 0, 'Hello World!');
 	}
 
 	/**
@@ -109,9 +110,9 @@ class LeptonCanvasTests extends LunitCase {
 	function canvasbitmapfonts() {
 		$this->font = new BitmapFont(3);
 		$this->font->setTextEffect(BitmapFont::EFFECT_OUTLINE,new RgbColor(0,0,200));
-		$this->font->drawText($this->canvas, 50, 50, new RgbColor(0,255,0), 'Hello Bitmapworld!');
+		$this->canvas->drawText($this->font, new RgbColor(0,255,0), 50, 50, 'Hello Bitmapworld!');
 		$this->font->setTextEffect(BitmapFont::EFFECT_SHADOW,new RgbColor(0,0,200));
-		$this->font->drawText($this->canvas, 50, 90, new RgbColor(0,255,0), 'Hello Bitmapworld!');
+		$this->canvas->drawText($this->font, new RgbColor(0,255,0), 50, 90, 'Hello Bitmapworld!');
 		$this->assertNotNull($this->font);
 	}
 
@@ -122,8 +123,6 @@ class LeptonCanvasTests extends LunitCase {
 		$this->canvas->save($this->getTempFile('png'));
 		$this->canvas->save($this->getTempFile('gif'));
 		$this->canvas->save($this->getTempFile('jpg'));
-		$this->canvas->save('test.png');
-	}
 
 	/**
 	 * @description Load canvas from file
@@ -134,6 +133,15 @@ class LeptonCanvasTests extends LunitCase {
 		$c = new Image($tf);
 		$this->assertEquals($this->canvas->width, $c->width);
 		$this->assertEquals($this->canvas->height, $c->height);
+	}
+
+	/**
+	 * @description Canvas filtering
+	 */
+	function canvasfilter() {
+		$f = new Canvas(100,100,rgb(0,255,0));
+		$f->apply(new HueImageFilter(rgb(0,0,255)));
+		$this->assertEquals($f->getColorAt(0,0),rgb(0,0,255));
 	}
 
 	/**

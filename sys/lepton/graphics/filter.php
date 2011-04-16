@@ -48,7 +48,7 @@
 
 ////////// Utility classes //////////////////////////////////////////////////
 
-class ImageUtils {
+class ImageUtilsOld {
 
 	/**
 	 * imageconvolution replacement for when the gd function is missing.

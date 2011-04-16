@@ -10,17 +10,17 @@ class DataSet {
 		// This is labels
 		$this->labels = $args;
 	}
-	
+
 	function addSeries($label, DataSeries $s) {
 		$this->series[] = array($label, $s);
 	}
-	
+
 	function getSeries($index) {
 		return $this->series[$index];
 	}
-	
+
 	function getCount() {
-		return count($this->series);	
+		return count($this->series);
 	}
 
 }
@@ -43,11 +43,11 @@ class DataSeries {
 			$this->data[] = array($value, $label);
 		}
 	}
-	
+
 	function getCount() {
 		return count($this->data);
 	}
-	
+
 	function getSum() {
 		$sum = 0;
 		for($n = 0; $n < count($this->data); $n++) {
@@ -55,15 +55,53 @@ class DataSeries {
 		}
 		return $sum;
 	}
-	
+
 	function addValue($value,$label=null) {
 		$this->data[] = array($value, $label);
 	}
-	
+
 	function getValue($index) {
 		return $this->data[$index];
 	}
-	
+
+}
+
+class FormulaSeries extends DataSeries {
+
+	private $numValues = null;
+	private $values = null;
+	private $callback = null;
+	private $min = -1;
+	private $max = 1;
+	private $step = 0.1;
+
+	function __construct($callback) {
+		$this->callback = $callback;
+	}
+
+	function setBoundaries($min,$max,$step) {
+		// Calculate how many values we will store
+		$this->numValues = floor(($max - $min) / $step);
+		$this->values = null;
+		$this->min = $min;
+		$this->max = $max;
+		$this->step = $step;
+	}
+
+	function getValue($index) {
+		if (!$this->values) {
+			for($n = 0; $n < $this->values; $n++) {
+				$val = $this->min + ($n * $this->step);
+				$this->values[$n] = array($this->callback($val), $val);
+			}
+		}
+		return $this->values[$n];
+	}
+
+	function getCount() {
+		return $this->numValues;
+	}
+
 }
 
 /*

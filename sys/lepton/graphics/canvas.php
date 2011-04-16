@@ -649,13 +649,7 @@ class Canvas implements IDrawable,ICanvas {
 	function drawText(IFont $font, Color $color, $x, $y, $text) {
 
 		$this->checkImage();
-		$fd = $font->__getFont();
-		imagettftext(
-			$this->himage,
-			$fd['fontsize'], $fd['angle'], $x, $y,
-			$color->getColor($this->himage),
-			$fd['fontname'], $text
-		);
+		$font->drawText($this,$x,$y,$color,$text);
 
 	}
 
