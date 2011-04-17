@@ -293,6 +293,26 @@ class Request {
         return self::getRemoteIp();
     }
 
+    static function getURL() {
+        if (isset($_SERVER['HTTP_HOST'])) {
+            if ($_SERVER['HTTPS']) {
+                $proto = 'https://';
+                $port = (intval($_SERVER['SERVER_PORT'])!=443)?':'.$_SERVER['SERVER_PORT']:'';
+            } else {
+                $proto = 'http://';
+                $port = (intval($_SERVER['SERVER_PORT'])!=80)?':'.$_SERVER['SERVER_PORT']:'';
+            }
+            if ($_SERVER['QUERY_STRING']!='?') {
+                $querystring = $_SERVER['QUERYSTRING'];
+            } else {
+                $querystring = '';
+            }
+            return $proto . $_SERVER['HTTP_HOST'] . $port . $_SERVER['REQUEST_URI'] . $querystring;
+        } else {
+            return null;
+        }
+    }
+
 }
 /*
 $use_sts = TRUE;
