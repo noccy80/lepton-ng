@@ -16,13 +16,46 @@ class HsvColor extends Color {
 	public function __construct() {
 		$args = func_get_args();
 		switch (count($args)) {
+			case 1:
+				if (is_a($args[0],'Color')) {
+					$this->setRGBA($args[0]->getRGBA());
+				} else {
+					throw new BadArgumentException("Single argument for HSL must be instance of Color");
+				}
 			case 3:
 				// HSV
 				$this->hue = $args[0];
 				$this->sat = $args[1];
 				$this->value = $args[2];
 				break;
-			case 0;
+			case 0;					if (is_a($args[0], 'Color')) {
+						$this->setRGBA($args[0]->getRGBA());
+						break;
+					} else {
+						$arg = func_get_arg(0);
+						if (substr($arg, 0, 1) == "#") {
+							if (strlen($arg) == 9) {
+								$red = hexdec(substr($arg, 1, 2));
+								$green = hexdec(substr($arg, 3, 2));
+								$blue = hexdec(substr($arg, 5, 2));
+								$alpha = hexdec(substr($arg, 7, 2));
+							} elseif (strlen($arg) == 7) {
+								$red = hexdec(substr($arg, 1, 2));
+								$green = hexdec(substr($arg, 3, 2));
+								$blue = hexdec(substr($arg, 5, 2));
+								$alpha = 255;
+							} elseif (strlen($arg) == 4) {
+								$red = hexdec(str_repeat(substr($arg, 1, 1), 2));
+								$green = hexdec(str_repeat(substr($arg, 2, 1), 2));
+								$blue = hexdec(str_repeat(substr($arg, 3, 1), 2));
+								$alpha = 255;
+							}
+						} else {
+							throw new GraphicsException("Invalid color specification", GraphicsException::ERR_BAD_COLOR);
+						}
+						break;
+					}
+
 				break;
 			default:
 				throw new GraphicsException('Bad constructor invocation for '.__CLASS__);
@@ -73,10 +106,12 @@ class HsvColor extends Color {
 	}
 
 	public function getRGBA() {
+		$c = array();
+
 		if( $this->sat == 0 ) {
-			$this->c['r'] = $this->value;
-			$this->c['g'] = $this->value;
-			$this->c['b'] = $this->value;
+			$c['r'] = $this->value;
+			$c['g'] = $this->value;
+			$c['b'] = $this->value;
 			return;
 		}
 
@@ -89,7 +124,6 @@ class HsvColor extends Color {
 		$q = $v * ( 1 - $s * $f );
 		$t = $v * ( 1 - $s * ( 1 - $f ) );
 
-		$c = array();
 		switch( $i ) {
 			case 0:
 				$c['r'] = $v;
@@ -132,6 +166,8 @@ function hsv() {
 	$args = func_get_args();
 	if (count($args) == 0) {
 		return new HsvColor();
+	} elseif (count($args) == 1) {
+		return new HsvColor($args[0]);
 	} elseif (count($args) == 3) {
 		return new HsvColor($args[0],$args[1],$args[2]);
 	} elseif (count($args) == 4) {

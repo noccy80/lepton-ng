@@ -24,7 +24,11 @@
 			$image = new Canvas($width,$height);
 			$p = $image->getPainter();
 
-			if ($x && $y && $width && $height) {
+			if (!$x) $x = 0;
+			if (!$y) $y = 0;
+			if (!$width) $width = $dest->width;
+			if (!$height) $height = $dest->height;
+			if ($width && $height) {
 				$grad = $height; // Top down
 				$this->colors['step'] = array(
 					(float)($this->colors['delta'][0] / $grad),

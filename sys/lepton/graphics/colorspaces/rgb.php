@@ -30,34 +30,39 @@ class RgbColor extends Color {
 		$args = func_get_args();
 		switch (func_num_args ()) {
 			case 0:
-				$red = 0;
-				$green = 0;
-				$blue = 0;
-				$alpha = 255;
-				break;
-			case 1: { // #RRGGBB[AA]
-					$arg = func_get_arg(0);
-					if (substr($arg, 0, 1) == "#") {
-						if (strlen($arg) == 9) {
-							$red = hexdec(substr($arg, 1, 2));
-							$green = hexdec(substr($arg, 3, 2));
-							$blue = hexdec(substr($arg, 5, 2));
-							$alpha = hexdec(substr($arg, 7, 2));
-						} elseif (strlen($arg) == 7) {
-							$red = hexdec(substr($arg, 1, 2));
-							$green = hexdec(substr($arg, 3, 2));
-							$blue = hexdec(substr($arg, 5, 2));
-							$alpha = 255;
-						} elseif (strlen($arg) == 4) {
-							$red = hexdec(str_repeat(substr($arg, 1, 1), 2));
-							$green = hexdec(str_repeat(substr($arg, 2, 1), 2));
-							$blue = hexdec(str_repeat(substr($arg, 3, 1), 2));
-							$alpha = 255;
-						}
-					} else {
-						throw new GraphicsException("Invalid color specification", GraphicsException::ERR_BAD_COLOR);
-					}
+					$red = 0;
+					$green = 0;
+					$blue = 0;
+					$alpha = 255;
 					break;
+			case 1: { // #RRGGBB[AA]
+					if (is_a($args[0], 'Color')) {
+						$this->setRGBA($args[0]->getRGBA());
+						break;
+					} else {
+						$arg = func_get_arg(0);
+						if (substr($arg, 0, 1) == "#") {
+							if (strlen($arg) == 9) {
+								$red = hexdec(substr($arg, 1, 2));
+								$green = hexdec(substr($arg, 3, 2));
+								$blue = hexdec(substr($arg, 5, 2));
+								$alpha = hexdec(substr($arg, 7, 2));
+							} elseif (strlen($arg) == 7) {
+								$red = hexdec(substr($arg, 1, 2));
+								$green = hexdec(substr($arg, 3, 2));
+								$blue = hexdec(substr($arg, 5, 2));
+								$alpha = 255;
+							} elseif (strlen($arg) == 4) {
+								$red = hexdec(str_repeat(substr($arg, 1, 1), 2));
+								$green = hexdec(str_repeat(substr($arg, 2, 1), 2));
+								$blue = hexdec(str_repeat(substr($arg, 3, 1), 2));
+								$alpha = 255;
+							}
+						} else {
+							throw new GraphicsException("Invalid color specification", GraphicsException::ERR_BAD_COLOR);
+						}
+						break;
+					}
 				}
 			case 3: { // (R,G,B)
 					$red = func_get_arg(0);
@@ -93,7 +98,7 @@ class RgbColor extends Color {
 	}
 
 	function getRGBA() {
-		return array($this->c['r'],$this->c['g'],$this->c['b'],$this->c['a']);
+		return array($this->c['r'], $this->c['g'], $this->c['b'], $this->c['a']);
 	}
 
 	function setRGBA($rgba) {
@@ -148,9 +153,9 @@ function rgb() {
 	} elseif (count($args) == 1) {
 		return new RgbColor($args[0]);
 	} elseif (count($args) == 3) {
-		return new RgbColor($args[0],$args[1],$args[2]);
+		return new RgbColor($args[0], $args[1], $args[2]);
 	} elseif (count($args) == 4) {
-		return new RgbColor($args[0],$args[1],$args[2],$args[3]);
+		return new RgbColor($args[0], $args[1], $args[2], $args[3]);
 	} else {
 		throw new BadArgumentException("rgb() expects 0, 1, 3 or 4 parameters");
 	}
