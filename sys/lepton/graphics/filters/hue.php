@@ -1,6 +1,7 @@
 <?php
 
-ModuleManager::load('lepton.graphics.filter');
+using('lepton.graphics.filter');
+using('lepton.graphics.colorspaces.hsv');
 
 /**
  * GrayscaleImageFilter converts an image to grayscale. Uses the PHP/GD
@@ -12,10 +13,13 @@ class HueImageFilter extends ImageFilter {
 	private $r = null;
 	private $g = null;
 	private $b = null;
+	private $hue = null;
 	function __construct(Color $color) {
 		$this->rs = (float)($color->r / 255);
 		$this->gs = (float)($color->g / 255);
 		$this->bs = (float)($color->b / 255);
+		$hsv = hsv($color);
+		$this->hue = $hsv->hue;
 	}
 	function applyFilter(Canvas $canvas) {
 		$himage = $canvas->getImage();
@@ -25,10 +29,13 @@ class HueImageFilter extends ImageFilter {
 			// This works for indexed images but not for truecolor
 			for ( $i = 0; $i < $total; $i++ ) {
 				$index = imagecolorsforindex( $himage, $i );
-				$avg = ( $index["red"] + $index["green"] + $index["blue"] ) / 3;
-				$red = $index["red"] * $this->rs;
-				$green = $index["green"] * $this->gs;
-				$blue = $index["blue"] * $this->bs;
+				$rgb = rgb($index['red'],$index['green'],$index['blue']);
+				$hsv = hsv($rgb);
+				$hsv->hue = $this->hue;
+				$rgb = rgb($hsv);
+				$red = $rgb->red;
+				$green = $rgb->green;
+				$blue = $rgb->blue;
 				imagecolorset( $himage, $i, $red, $green, $blue );
 			}
 		} else {
@@ -36,9 +43,13 @@ class HueImageFilter extends ImageFilter {
 			for ( $x = 0; $x < imagesx($himage); $x++ ) {
 				for ( $y = 0; $y < imagesy($himage); $y++) {
 					$index = imagecolorat($himage, $x, $y);
-					$red = $index["red"] * $this->rs;
-					$green = $index["green"] * $this->gs;
-					$blue = $index["blue"] * $this->bs;
+					$rgb = rgb($index['red'],$index['green'],$index['blue'],$index['alpha']);
+					$hsv = hsv($rgb);
+					$hsv->hue = $this->hue;
+					$rgb = rgb($hsv);
+					$red = $rgb->red;
+					$green = $rgb->green;
+					$blue = $rgb->blue;
 					imagesetpixel($himage, $x, $y, ($red << 16) | ($green < 8) | ($blue));
 				}
 			}

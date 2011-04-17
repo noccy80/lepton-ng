@@ -38,7 +38,7 @@ class RgbColor extends Color {
 			case 1: { // #RRGGBB[AA]
 					if (is_a($args[0], 'Color')) {
 						$this->setRGBA($args[0]->getRGBA());
-						break;
+						return;
 					} else {
 						$arg = func_get_arg(0);
 						if (substr($arg, 0, 1) == "#") {

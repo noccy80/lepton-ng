@@ -22,6 +22,7 @@ class HsvColor extends Color {
 				} else {
 					throw new BadArgumentException("Single argument for HSL must be instance of Color");
 				}
+				break;
 			case 3:
 				// HSV
 				$this->hue = $args[0];
