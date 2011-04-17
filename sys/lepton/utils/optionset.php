@@ -10,10 +10,10 @@
  * @license GPL v3
  */
 class OptionSet {
-	
+
 	private $options = array();
 	private $defaults = null;
-	
+
 	/**
 	 * @brief Constructor
 	 *
@@ -42,7 +42,7 @@ class OptionSet {
 			}
 		}
 	}
-	
+
 	/**
 	 * @brief Property checker
 	 *
@@ -52,9 +52,9 @@ class OptionSet {
 	function __isset($key) {
 		return (isset($this->options[$key]));
 	}
-	
+
 	/**
-	 * @brief Get method with explicit default 
+	 * @brief Get method with explicit default
 	 *
 	 * @param string $key The key to access
 	 * @param Mixed $default The default value to use if not set
@@ -75,7 +75,7 @@ class OptionSet {
 			}
 		}
 	}
-	
+
 	/**
 	 * @brief Property checker
 	 *
@@ -85,5 +85,5 @@ class OptionSet {
 	function has($key) {
 		return (isset($this->options[$key]));
 	}
-	
+
 }

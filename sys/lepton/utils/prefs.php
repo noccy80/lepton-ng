@@ -1,10 +1,30 @@
 <?php
 
+/**
+ * @brief Interface for preferences storage
+ *
+ */
 interface IPrefs {
+	/**
+	 * @brief Save the preferences set
+	 *
+	 * Saves the preferences set to the storage
+	 */
 	function flush();
+	/**
+	 * @brief Destroy the preferences set
+	 *
+	 * This is NOT a destructor. It will drop the table/delete the file/void your
+	 * dataset entirely!
+	 */
 	function destroy();
 }
 
+/**
+ * @brief Preference Storage Base Class
+ *
+ *
+ */
 abstract class Prefs {
 
 	protected $data;
@@ -26,12 +46,27 @@ abstract class Prefs {
 		if (isset($this->data[$name])) unset($this->data[$name]);
 	}
 
+	public function get($name,$default=null) {
+		if (isset($this->data[$name])) return $this->data[$name];
+		return $default;
+	}
+
+	public function set($name,$value) {
+		$this->data[$name] = $value;
+	}
+
 	public function  __isset($name) {
 		return (isset($this->data[$name]));
 	}
 
 }
 
+/**
+ * @brief Filesystem backed Preference Storage
+ *
+ * Stores preferences in a gzip-compressed file consisting of serialized data
+ * representing the options.
+ */
 class FsPrefs extends Prefs {
 
 	private $filename;
@@ -62,6 +97,11 @@ class FsPrefs extends Prefs {
 
 }
 
+/**
+ * @brief Database backed Preferences Storage
+ *
+ *
+ */
 class DbPrefs extends Prefs {
 
 	private $table;
@@ -80,7 +120,7 @@ class DbPrefs extends Prefs {
 			try {
 				$this->db->exec("CREATE TABLE ".$this->table." (prefskey VARCHAR(64) NOT NULL PRIMARY KEY, data BLOB)");
 			} catch(Exception $e) { }
-		} 
+		}
 		$keys = $this->db->getRows("SELECT * FROM ".$this->table);
 		foreach((array)$keys as $row) {
 			$this->data[$row['prefskey']] = unserialize($row['data']);
@@ -94,16 +134,21 @@ class DbPrefs extends Prefs {
 			}
 		}
 	}
-	
+
 	public function destroy() {
 		if ($this->db) {
 			$this->db->exec("DROP TABLE ".$this->table);
 			unset($this->db);
 		}
 	}
-	
+
 }
 
+/**
+ * @brief INI-file backed Preferences Storage
+ *
+ * This storage is read only
+ */
 class IniPrefs extends Prefs {
 
 	public function __construct($filename) {
@@ -113,13 +158,18 @@ class IniPrefs extends Prefs {
 	public function flush() {
 		return; // This is read only
 	}
-	
+
 	public function destroy() {
 		return;
 	}
-		
+
 }
 
+/**
+ * @brief JSON-file backed Preferences Storage
+ *
+ *
+ */
 class JsonPrefs extends Prefs {
 
 	private $filename;
@@ -140,5 +190,22 @@ class JsonPrefs extends Prefs {
 	public function destroy() {
 		return;
 	}
-	
+
+}
+
+/**
+ * @brief Array backed Preferences Storage
+ *
+ * This storage is read only
+ */
+class ArrayPrefs extends Prefs {
+
+	public function flush() { }
+
+	public function destroy() { }
+
+	public function __construct(Array $data) {
+		$this->data = (array)$data;
+	}
+
 }

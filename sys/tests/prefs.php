@@ -60,6 +60,18 @@ class LeptonPrefsTests extends LunitCase {
 		// unlink('/tmp/jsonprefs.tmp');
 	}
 
+	/**
+	 * @description Array-based storage (Optionset)
+	 */
+	function arrayprefs() {
+		$s = new ArrayPrefs(array(
+			'foo' => 'bar'
+		));
+		$this->assertEquals($s->foo,'bar');
+		$this->assertEquals($s->get('foo'),'bar');
+		$this->assertEquals($s->get('bar','baz'),'baz');
+	}
+
 }
 
 Lunit::register('LeptonPrefsTests');
