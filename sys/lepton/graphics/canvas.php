@@ -50,6 +50,7 @@ class Canvas implements IDrawable,ICanvas {
 	private $imgsize = null;
 	private $imgmime = "";
 	private $alphablending = false;
+	private $savealpha = true;
 	protected $filename = "";
 
 	protected $gotmeta = false;
@@ -161,6 +162,8 @@ class Canvas implements IDrawable,ICanvas {
 				return $this->width;
 			case 'alphablending':
 				return $this->alphablending;
+			case 'savealpha':
+				return $this->savealpha;
 			default:
 				throw new BadPropertyException("No property get ".$key." on Canvas");
 		}
@@ -181,6 +184,9 @@ class Canvas implements IDrawable,ICanvas {
 			case 'alphablending':
 				$this->alphablending = ($value == true);
 				imagealphablending($this->himage, $this->alphablending);
+				break;
+			case 'savealpha':
+				$this->savealpha = $value;
 				break;
 			default:
 				throw new BadPropertyException("No property set ".$key." on Canvas");
@@ -300,6 +306,10 @@ class Canvas implements IDrawable,ICanvas {
 	function save($filename=null) {
 
 		$this->checkImage();
+		if ($this->savealpha) {
+			$s = $this->alphablending;
+			$this->alphablending = false;
+		}
 		//$fn = ($filename)?$filename:$this->filename;
 		if ($filename == null) throw new GraphicsException("No filename specified for save operation");
 		$fn = $filename;
@@ -324,6 +334,9 @@ class Canvas implements IDrawable,ICanvas {
 		} else {
 			throw new GraphicsException("Invalid filename", GraphicsException::ERR_SAVE_FAILURE);
 		}
+		if ($this->savealpha) {
+			$this->alphablending = $s;
+		}
 
 	}
 
@@ -338,6 +351,10 @@ class Canvas implements IDrawable,ICanvas {
 	function output($contenttype='image/png', $qualitycompression=75, $return=false) {
 
 		$this->checkImage();
+		if ($this->savealpha) {
+			$s = $this->alphablending;
+			$this->alphablending = false;
+		}
 		if (!$return) {
 			response::contentType($contenttype);
 		} else {
@@ -354,6 +371,9 @@ class Canvas implements IDrawable,ICanvas {
 				$quality = $qualitycompression;
 				imagejpeg($this->himage, null, $quality);
 				break;
+		}
+		if ($this->savealpha) {
+			$this->alphablending = $s;
 		}
 		if ($return) {
 			$img = response::getBuffer();

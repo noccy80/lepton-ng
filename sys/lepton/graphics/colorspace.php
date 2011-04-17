@@ -17,11 +17,11 @@ abstract class Color implements IColor {
 	function getColor($himage, $withalpha=false) {
 		list($r,$g,$b,$a) = $this->getRGBA();
 		if ($withalpha) {
-			return imagecolorallocatealpha($himage, $r, $g, $b, $a);
+			return imagecolorallocatealpha($himage, $r, $g, $b, floor($a/2));
 		}
 		return imagecolorallocate($himage, $r, $g, $b);
 	}
-	
+
 	/**
 	 * @brief Helper function to assign a color value from an existing color
 	 *

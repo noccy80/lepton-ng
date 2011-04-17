@@ -3,9 +3,11 @@
 class CanvasPainter {
 
 	private $himage;
+	private $canvas;
 
 	function __construct(Canvas $canvas) {
 		$this->himage = $canvas->getImage();
+		$this->canvas = $canvas;
 	}
 
 	/**
@@ -17,7 +19,7 @@ class CanvasPainter {
      */
     function setPixel($x, $y, Color $color) {
 
-        imagesetpixel($this->himage,$x,$y,$color->getColor($this->himage));
+        imagesetpixel($this->himage,$x,$y,$color->getColor($this->himage,$this->canvas->savealpha));
 
     }
 
@@ -43,7 +45,7 @@ class CanvasPainter {
 
         $w = imageSX($this->himage);
         $h = imageSY($this->himage);
-        imagefilledrectangle($this->himage, 0, 0, $w, $h, $fillcolor->getColor($this->himage));
+        imagefilledrectangle($this->himage, 0, 0, $w, $h, $fillcolor->getColor($this->himage,$this->canvas->savealpha));
 
     }
 
