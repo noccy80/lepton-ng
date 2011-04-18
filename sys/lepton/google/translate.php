@@ -20,7 +20,7 @@ class GoogleTranslate extends TranslationService {
 
 	function translate($string) {
 
-		switch($apiversion) {
+		switch($this->apiversion) {
 		case 1:
 			$langs = join('|',array($this->fromlang,$this->tolang));
 			$translation = array();
@@ -37,7 +37,9 @@ class GoogleTranslate extends TranslationService {
 			$rstr = $rd['responseData']['translatedText'];
 			break;
 		case 2:
+		default:
 			throw new BaseException("GoogleTranslate API Version 2 not implemented");
+			$rstr = $string;
 			break;
 		}
 
