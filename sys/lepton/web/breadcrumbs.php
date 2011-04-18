@@ -12,7 +12,7 @@ class Breadcrumbs {
 		$this->crumbs[] = array(
 			'text' => $text,
 			'url' => $url,
-			'options' => $optionso
+			'options' => $options
 		);
 	}
 

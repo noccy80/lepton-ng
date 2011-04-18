@@ -15,10 +15,10 @@
 foreach (array(
     'LEPTON_MAJOR_VERSION'		=> 1,
     'LEPTON_MINOR_VERSION'		=> 0,
-    'LEPTON_RELEASE_VERSION'	=> 0,
+    'LEPTON_RELEASE_VERSION'		=> 0,
     'LEPTON_RELEASE_TAG'		=> "alpha",
     'LEPTON_PLATFORM'			=> "Lepton Application Framework",
-    'PHP_RUNTIME_OS'			 => php_uname('s')
+    'PHP_RUNTIME_OS'			=> php_uname('s')
 ) as $def => $val) define($def, $val);
 
 // Various constants
@@ -31,9 +31,9 @@ declare(ticks = 1);
 
 // Compatibility definitions
 foreach (array(
-    'COMPAT_GETOPT_LONGOPTS'	=> (PHP_VERSION >= "5.3"),
+    'COMPAT_GETOPT_LONGOPTS'		=> (PHP_VERSION >= "5.3"),
     'COMPAT_SOCKET_BACKLOG'		=> (PHP_VERSION >= "5.3.3"),
-    'COMPAT_HOST_VALIDATION'	=> (PHP_VERSION >= "5.2.13"),
+    'COMPAT_HOST_VALIDATION'		=> (PHP_VERSION >= "5.2.13"),
     'COMPAT_NAMESPACES'			=> (PHP_VERSION >= "5.3.0"),
     'COMPAT_INPUT_BROKEN'		=> ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1")),
     'COMPAT_CALLSTATIC'			=> (PHP_VERSION >= "5.3.0"),
@@ -563,7 +563,7 @@ function config($key,$value=null) {
 class BasicList implements IteratorAggregate {
 
     private $list;
-    private $typeconst;
+    private $type = null;
 
     public function __construct($typeconst=null) {
         $this->type = $typeconst;
@@ -607,7 +607,10 @@ class BasicContainer {
     }
 
     function __get($property) {
-        if (isset($this->properties[$property])) {
+        if (!isset($this->properties)) {
+            throw new RuntimeException("BasicContainer descendant doesn't have a protected variable properties");
+        }
+        if (arr::hasKey($this->properties,$property)) {
             return $this->properties[$property];
         } else {
             throw new BadPropertyException("No such property: $property");
@@ -615,7 +618,10 @@ class BasicContainer {
     }
 
     function __set($property, $value) {
-        if (isset($this->properties[$property])) {
+        if (!isset($this->properties)) {
+            throw new RuntimeException("BasicContainer descendant doesn't have a protected variable properties");
+        }
+        if (arr::hasKey($this->properties,$property)) {
             if (is_array($this->properties[$property]) &&
                 (!is_array($value))) {
                 throw new RuntimeException("Attempting to assign non-array to array property");
@@ -627,6 +633,9 @@ class BasicContainer {
     }
 
     function __isset($property) {
+        if (!isset($this->properties)) {
+            throw new RuntimeException("BasicContainer descendant doesn't have a protected variable properties");
+        }
         return (isset($this->properties[$property]));
     }
     
@@ -644,15 +653,22 @@ class BasicContainer {
 
 /**
  * @class Console
- * @brief Console management function
+ * @brief Console management function.
+ *
+ * This class handles all console-related input and output.
  */
 class Console {
 
     /**
+     * @brief Output a debug message of a custom level
      *
+     * @param integer $level The level of debug detail
+     * @param string $module The module this message relates to
+     * @param string $format The format of the message
+     * @param Mixed ... The debug output in sprintf format
      */
     static function debugEx($level, $module) {
-		$args = func_get_args();
+        $args = func_get_args();
         $strn = @call_user_func_array('sprintf', array_slice($args, 2));
         $ts = Console::ts();
         $lines = explode("\n", $strn);
@@ -687,7 +703,10 @@ class Console {
     }
 
     /**
+     * @brief Print a message and exit with an error code
      *
+     * @param string $format The format of the message
+     * @param Mixed ...The elements of the output
      */
     static function fatal() {
         $args = func_get_args();
@@ -697,7 +716,10 @@ class Console {
     }
 
     /**
+     * @brief Print an error message to standard error
      *
+     * @param string $format The format of the message
+     * @param Mixed ...The elements of the output
      */
     static function error() {
         $args = func_get_args();
@@ -705,7 +727,11 @@ class Console {
     }
 
     /**
+     * @brief Print a debug backtrace
      *
+     * @param integer $trim Number of items to trim from the top of the stack
+     * @param array $stack The stack, if null will get current stack
+     * @param boolean $return If true the result will be returned instead of outputted
      */
     static function backtrace($trim=1, $stack=null, $return=false) {
         if (!$stack) {
@@ -812,7 +838,9 @@ class Console {
     }
 
     /**
+     * @brief Get a timestamp
      *
+     * @return string The timestamp
      */
     static function ts() {
         return @date("M-d H:i:s", time());
@@ -829,7 +857,8 @@ class Console {
      *
      */
     static function readLine($hidden=false) {
-        
+        if ($hidden) return console::readPass();
+        return console::readLn();
     }
 
 }
