@@ -13,6 +13,46 @@ class HsvColor extends Color {
 
 	//public function __construct(Color $color) {
 
+	public function __get($key) {
+		switch($key) {
+			case 'h':
+			case 'hue':
+				return $this->hue;
+			case 's':
+			case 'saturation':
+				return $this->sat;
+			case 'v':
+			case 'value':
+				return $this->value;
+			default:
+				throw new BadPropertyException("HSV Color does not have property ".$key);
+
+		}
+	}
+
+	public function __set($key,$value) {
+		$val = intval($value);
+		if ($val > 255) $val = 255;
+		if ($val < 0) $val = 0;
+		switch($key) {
+			case 'h':
+			case 'hue':
+				$this->hue = $val;
+				break;
+			case 's':
+			case 'saturation':
+				$this->sat = $val;
+				break;
+			case 'v':
+			case 'value':
+				$this->value = $val;
+				break;
+			default:
+				throw new BadPropertyException("HSV Color does not have property ".$key);
+
+		}
+	}
+
 	public function __construct() {
 		$args = func_get_args();
 		switch (count($args)) {
