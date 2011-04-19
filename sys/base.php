@@ -938,7 +938,8 @@ class Lepton {
 
 	const EVT_SHUTDOWN = 'lepton.core.shutdown';
 
-    static $__exceptionhandler = null;
+    private static $__exceptionhandler = null;
+    private static $__errorhandler = null;
     static $mimetypes = array(
         'png' => 'image/png',
         'gif' => 'image/gif',
@@ -1022,8 +1023,8 @@ class Lepton {
      *
      */
     function setExceptionHandler($handler, $override=false) {
-        if (($override == true) || (Lepton::$__exceptionhandler == null)) {
-            Lepton::$__exceptionhandler = $handler;
+        if (($override == true) || (self::$__exceptionhandler == null)) {
+            self::$__exceptionhandler = $handler;
             Console::debugEx(LOG_BASIC, __CLASS__, "Assigned exception handler: %s", $handler);
         } else {
             Console::debugEx(LOG_BASIC, __CLASS__, "Ignoring exception handler: %s", $handler);
@@ -1034,12 +1035,31 @@ class Lepton {
      *
      */
     static function handleException(Exception $e) {
-        if (Lepton::$__exceptionhandler) {
-            $eh = new Lepton::$__exceptionhandler();
+        if (self::$__exceptionhandler) {
+            $eh = new self::$__exceptionhandler();
             $eh->exception($e);
         } else {
             printf($e);
-            die("Unhandled exception and no exception handler loaded.");
+            die("Unhandled exception and no exception handler assigned.");
+        }
+    }
+
+    static function setErrorHandler($handler, $override=false) {
+        if (($override == true) || (self::$__errorhandler == null)) {
+            self::$__errorhandler = $handler;
+            console::debugEx(LOG_BASIC, __CLASS__, "Assigned error handler: %s", $handler);
+        } else {
+            console::debugEx(LOG_BASIC, __CLASS__, "Ignoring error handler: %s", $handler);
+        }
+    }
+
+    static function handleError($errno,$errstr,$errfile,$errline,$errcontext) {
+        $args = func_get_args();
+        if (self::$__errorhandler) {
+            call_user_func_array(self::$__errorhandler,$args);
+        } else {
+            // Chain PHPs error handling
+            return false;
         }
     }
 
@@ -1074,6 +1094,7 @@ class Lepton {
 
 }
 
+set_error_handler(array('Lepton', 'handleError'));
 set_exception_handler(array('Lepton', 'handleException'));
 register_shutdown_function(array('Lepton', 'handleShutdown'));
 
