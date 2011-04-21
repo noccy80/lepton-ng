@@ -158,6 +158,7 @@ class LeptonCanvasTests extends LunitCase {
 	 * @description Verifying properties of canvas
 	 */
 	function screenshotprops() {
+		if (!isset($this->canvas)) $this->skip();
 		$this->assertTrue($this->canvas->width>0);
 		$this->assertTrue($this->canvas->height>0);
 	}

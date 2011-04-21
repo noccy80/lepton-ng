@@ -12,9 +12,13 @@ class ScreenShot extends Canvas {
 		if (WINDOWS) {
 			$sc = imagegrabscreen();
 		} else {
-			$bin = shell_exec('import -window root png:-');
-			if (!$bin) throw new GraphicsException("Failed to capture screenshot! Ensure that imagemagick is installed and try again.");
-			$sc = imagecreatefromstring($bin);
+			if (getenv('DISPLAY')) {
+				$bin = shell_exec('import -window root png:-');
+				if (!$bin) throw new GraphicsException("Failed to capture screenshot! Ensure that imagemagick is installed and try again.");
+				$sc = imagecreatefromstring($bin);
+			} else {
+				throw new GraphicsException('$DISPLAY not set');
+			}
 		}
 		if ($sc) {
 			$this->setImage($sc);

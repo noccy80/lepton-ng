@@ -26,6 +26,7 @@ class TruetypeFont implements IFont {
 	 * @param int $fontsize The size
 	 */
 	function __construct($fontname, $fontsize) {
+		$fullname = null;
 		$p = config::get('lepton.graphics.fontpaths', array(
 					'/usr/share/fonts/truetype/',
 					APP_PATH,

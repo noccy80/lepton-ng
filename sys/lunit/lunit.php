@@ -92,6 +92,7 @@ class LunitRunner {
 							$tm->stop();
 							$methodreport['passed'] = false;
 							$methodreport['skipped'] = true;
+							$methodreport['message'] = 'Skipped';
 							if ($this->statuscb) $this->statuscb->onTestEnd(null,$f->getMessage());
 						} catch (Exception $e) {
 							$tm->stop();

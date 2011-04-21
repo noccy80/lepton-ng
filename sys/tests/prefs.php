@@ -47,6 +47,7 @@ class LeptonPrefsTests extends LunitCase {
 	 * @description Saving/loading of database backed settings
 	 */
 	function dbprefs() {
+		if (!config::has('lepton.db.default')) $this->skip();
 		$tf = $this->getTempFile();
 		$s = new DbPrefs('prefstest');
 		$this->assertNotNull($s);
