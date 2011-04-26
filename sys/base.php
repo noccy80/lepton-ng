@@ -788,6 +788,10 @@ class Console {
             fprintf(LOGFILE, $strn);
     }
 
+    static function erase($count) {
+        console::write(str_repeat("\x08",$count));
+    }
+
     /**
      *
      */

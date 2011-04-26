@@ -60,4 +60,5 @@ class Ansi {
  * @return String The string with ANSI sequences
  */
 function __astr($str) { return Ansi::parse($str); }
+function _a($str) { return Ansi::parse($str); }
 

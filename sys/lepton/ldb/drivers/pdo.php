@@ -6,7 +6,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
 
     private $conn;
 
-	private $driver;
+    private $driver;
     private $host;
     private $db;
     private $user;
@@ -38,9 +38,8 @@ class PdoDatabaseDriver extends DatabaseDriver {
                     // $port = $cfg['port'];
                     $this->dsn.='host='.$this->host.';dbname='.$this->db;
                 }
-				$this->driver = 'mysql';
+                $this->driver = 'mysql';
                 break;
-                
         }
         Console::debugEx(LOG_DEBUG1,__CLASS__,"Connection DSN: %s.", $this->dsn);
         try {
@@ -53,6 +52,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
                 if (isset($this->db) && ($this->db['database'] != '')) $this->execute("USE ".$this->db);
                 $this->execute("SET NAMES '".$cs."'");
                 $this->execute("SET character_set_results='".$cs."'");
+                $this->conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             }
         } catch (PDOException $e) {
             throw new Databasexception("Could not connect to database type '".$cfg['driver']."'. ".$e->getMessage());
@@ -95,6 +95,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         Console::debugEx(LOG_DEBUG2,__CLASS__,"SQL Query: %s", $sql);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $qt = new Timer(true);
+
         $query = $this->conn->query($sql);
         $qtt = $qt->stop();
         if (class_exists('OptimizationReport') && ($qtt>=config::get(RuntimeOptimization::KEY_DBQUERYTIME))) {

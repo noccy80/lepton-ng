@@ -57,8 +57,10 @@ class UserRecord {
         $extn = get_descendants('UserExtension');
         foreach($extn as $extnclass) { 
         	$xc = new $extnclass($this);
-        	$xm = $xc->getMethods();
+		$xr = new ReflectionClass($xc);
+        	$xm = $xr->getMethods();
         	$this->extensions[] = array(
+			'name' => $extnclass,
         		'instance' => $xc,
         		'methods' => $xm
         	);
@@ -67,10 +69,13 @@ class UserRecord {
 
 	function __call($method,$args) {
 		foreach($this->extensions as $extension) {
-			if (arr::hasValue($extension['methods'], $method)) {
-				return call_user_func_array(array($extension['instance'],$method), $args);
+			foreach($extension['methods'] as $cm) {
+				if (strtolower($cm->name) == strtolower($method)) {
+					return call_user_func_array(array($extension['instance'],$method), $args);
+				}
 			}
 		}
+		throw new BadArgumentException("No method ".$method." on UserRecord");
 	}
 
     /**
