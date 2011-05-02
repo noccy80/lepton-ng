@@ -1,6 +1,6 @@
 <?php
 
-	class Url {
+	class LegacyUrl {
 
 		private $url;
 
