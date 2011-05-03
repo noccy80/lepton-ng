@@ -18,7 +18,7 @@ class HttpRequest {
 	function __construct($url, $args=null) {
 		$this->args = arr::apply(array(
 			'returndom' => false,
-            'method' => 'get',
+			'method' => 'get',
 			'useragent' => 'LeptonPHP/1.0 (+http://labs.noccy.com)'
 		),(array)$args);
 		$this->url = $url;
@@ -34,26 +34,26 @@ class HttpRequest {
 
 		$options = $this->args;
 
-        $ctxparam = array('http' => array(
-            'method' => (strtolower($options['method']) == 'post')?'POST':'GET',
-        ));
-        if (isset($options['parameters'])) {
-            $ctxparam['http']['content'] = http_build_query($options['parameters']);
-        }
+		$ctxparam = array('http' => array(
+			'method' => (strtolower($options['method']) == 'post')?'POST':'GET',
+		));
+		if (arr::hasKey($options,'parameters')) {
+			$ctxparam['http']['content'] = http_build_query($options['parameters']);
+		}
 
-        $ctx = stream_context_create($ctxparam);
-        $cfh = fopen($url, 'r', false, $ctx);
-        $buf = '';
-        while (!feof($cfh)) {
-            $buf.= fread($cfh,8192);
-        }
-        fclose($cfh);
+		$ctx = stream_context_create($ctxparam);
+		$cfh = fopen($url, 'r', false, $ctx);
+		$buf = '';
+		while (!feof($cfh)) {
+			$buf.= fread($cfh,8192);
+		}
+		fclose($cfh);
 
-        $this->ret = array(
-            'content' => $buf
-        );
+		$this->ret = array(
+			'content' => $buf
+		);
 
-    }
+	}
 
 	private function _curlDoRequest() {
 
@@ -65,7 +65,7 @@ class HttpRequest {
 		$ci->setOption(CURLOPT_FOLLOWLOCATION, true);
 		$ci->setOption(CURLOPT_AUTOREFERER, true);
 		$ci->setOption(CURLOPT_MAXREDIRS, 5);
-		$ci->setHeader('Accept', 'text/xml,application,xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5');
+		$ci->setHeader('Accept', 'text/xml,application,xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'); /* */
 		$ci->setHeader('Cache-Control', 'max-age=0');
 		$ci->setUserAgent($options['useragent']);
 		if (isset($options['username'])) {
@@ -118,6 +118,18 @@ class HttpRequest {
 		$doc = new DOMDocument();
 		$doc->loadHTML($this->ret['content']);
 
+	}
+
+	function headers() {
+		return $this->ret['headers'];
+	}
+
+	function status() {
+		return $this->ret['code'];
+	}
+
+	function error() {
+		return $this->ret['ce'];
 	}
 
 }

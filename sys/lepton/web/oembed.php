@@ -1,6 +1,6 @@
 <?php
 
-// using('lepton.web.discovery');
+using('lepton.web.discovery');
 
 abstract class oEmbed {
 	const TYP_PHOTO = 'photo';

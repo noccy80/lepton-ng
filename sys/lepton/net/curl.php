@@ -87,20 +87,20 @@
 			# $this->_responseHeaders[] = $header;
 			return strlen($header);
 		}
-		
+
 		public function setProgressCallback(Callback $cb) {
-		    $this->_progress_cb = $cb;
+			$this->_progress_cb = $cb;
 		}
-		
+
 		private function _writecb($ch, $content) {
-            $this->_bytesRead += strlen($content);
-            if ($this->_htarget) {
-                fwrite($this->_htarget, $content, strlen($content));
-            } else {
-                $this->_responseData.=$content;
-            }
-            if ($this->_progress_cb) $this->_progress_cb->call($this->_contentLength, $this->_bytesRead);
-		    return strlen($content);
+			$this->_bytesRead += strlen($content);
+			if ($this->_htarget) {
+				fwrite($this->_htarget, $content, strlen($content));
+			} else {
+				$this->_responseData.=$content;
+			}
+			if ($this->_progress_cb) $this->_progress_cb->call($this->_contentLength, $this->_bytesRead);
+			return strlen($content);
 		}
 
 		function exec($method=CurlInstance::METHOD_GET) {

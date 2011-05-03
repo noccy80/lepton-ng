@@ -47,6 +47,7 @@ abstract class LunitCase {
 		}
 	}
 	protected function assertNotNull($test) {
+		if (is_array($test)) return;
 		if ((!isset($test)) || ($test == null)) {
 			throw new LunitAssertionFailure(
 				sprintf("assertNotNull(): %s",  __printable ($test))
