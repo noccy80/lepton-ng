@@ -15,6 +15,10 @@ class UserAction extends Action {
             'arguments' => '\g{username}',
             'info' => 'Remove an existing user'
         ),
+        'password' => array(
+            'arguments' => '\g{username}',
+            'info' => 'Change the password for user'
+        ),
         'match' => array(
             'arguments' => '[\g{pattern}]',
             'info' => 'List the existing users'
@@ -34,7 +38,19 @@ class UserAction extends Action {
         'show' => array(
             'arguments' => '\g{username}',
             'info' => 'Show detailed information on a user'
-        )
+        ),
+        'addgroup' => array(
+            'arguments' => '\g{groupname}',
+            'info' => 'Add a usergroup'
+        ),
+        'remgroup' => array(
+            'arguments' => '\g{groupname}',
+            'info' => 'Removes a usergroup'
+        ),
+        'matchgroup' => array(
+            'arguments' => '[\g{pattern}]',
+            'info' => 'List the groups matching pattern'
+        ),
     );
 
     function password($username=null) {
