@@ -92,6 +92,9 @@ class HttpRequest {
 			if (isset($options['content-type'])) {
 				$ci->setHeader('content-type', $options['content-type']);
 			}
+                        if (isset($options['body'])) {
+				$ci->setParams($options['body']);
+                        }
 			$ret = $ci->exec(CurlInstance::METHOD_POST);
 		} else {
 			$ret = $ci->exec(CurlInstance::METHOD_GET);

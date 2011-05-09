@@ -48,6 +48,13 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
             $desc = $val[2];
             Console::writeLn("    %-20s %s", __astr($opts), $desc);
         }
+        if (isset($this->commands)) {
+            Console::writeLn();
+            Console::writeLn("Commands:");
+            foreach($this->commands as $cmd) {
+                Console::writeLn("    %-20s %s", __astr($cmd[0]),$cmd[1]);
+            }
+        }
         Console::writeLn();
         Console::writeLn("Environment Variables:");
         Console::writeLn("    APP_PATH             The application dir path");
