@@ -139,7 +139,7 @@ class CanvasPainter {
         $sa = ($start - 90) % 360;
         $ea = ($end - 90) % 360;
         if (function_exists('imagefilledarc')) {
-            imagefilledarc($this->himage,$x,$y,$width,$height,$sa,$ea,$color->getColor($this->himage),IMG_ARC_PIE);
+            imagefilledarc($this->himage,$x,$y,$width,$height,$sa - 90,$ea - 90,$color->getColor($this->himage),IMG_ARC_PIE);
         } else {
             $ch = $color->getColor($this->himage);
             imagearc($this->himage,$x,$y,$width,$height,$sa,$ea,$ch);
@@ -178,6 +178,18 @@ class CanvasPainter {
                 $points[$n][0], $points[$n][1],
                 $points[$n+1][0], $points[$n+1][1],
                 $c);
+        }
+
+    }
+
+    function drawCircle($x,$y,$radius,Color $fillcolor,Color $linecolor = null) {
+
+        $cf = $fillcolor->getColor($this->himage);
+
+        imagefilledarc($this->himage, $x, $y, $radius * 2, $radius * 2, 0, 360, $cf, IMG_ARC_PIE);
+        if ($linecolor) {
+	    $cl = $linecolor->getColor($this->himage);
+            imagefilledarc($this->himage, $x, $y, $radius * 2, $radius * 2, 0, 360, $cl, IMG_ARC_PIE | IMG_ARC_NOFILL);
         }
 
     }

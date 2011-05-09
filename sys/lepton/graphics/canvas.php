@@ -19,7 +19,7 @@ interface ICanvas {
  * The ImageCanvas class contains all the methods needed to work with an
  * image file, including drawing, resizing and applying filters.
  *
- * 
+ *
  *
  * Properties:
  *   exif Access to the EXIF tag data
@@ -32,6 +32,7 @@ interface ICanvas {
  * @property get height The height of the image
  * @property get width The width of the image
  * @property getset alphablending True if alphablending is enabled
+ * @property getset antialias True if drawing operations should be antialiased
  *
  * @todo Private properties should be prefixed with an underscore.
  * @note This class uses late loading, meaning that it will load the
@@ -51,6 +52,7 @@ class Canvas implements IDrawable,ICanvas {
 	private $imgmime = "";
 	private $alphablending = false;
 	private $savealpha = true;
+	private $antialias = false;
 	protected $filename = "";
 
 	protected $gotmeta = false;
@@ -80,7 +82,7 @@ class Canvas implements IDrawable,ICanvas {
 	 * @param integer $width The width of the canvas to create
 	 * @param integer $height The height of the canvas to create
 	 * @param Color $color The background color of the new canvas
-	 */	
+	 */
 	function __construct($width,$height,Color $color = null) {
 
 		$this->himage = imagecreatetruecolor($width,$height);
@@ -164,12 +166,14 @@ class Canvas implements IDrawable,ICanvas {
 				return $this->alphablending;
 			case 'savealpha':
 				return $this->savealpha;
+			case 'antialias':
+				return $this->antialias;
 			default:
 				throw new BadPropertyException("No property get ".$key." on Canvas");
 		}
 
 	}
-	
+
 	/**
 	 * @brief Property set overloading.
 	 *
@@ -177,22 +181,25 @@ class Canvas implements IDrawable,ICanvas {
 	 * @param mixed $value The value
 	 */
 	function __set($key,$value) {
-	
+
 		$this->checkImage();
-	
+
 		switch($key) {
 			case 'alphablending':
 				$this->alphablending = ($value == true);
 				imagealphablending($this->himage, $this->alphablending);
 				break;
 			case 'savealpha':
-				$this->savealpha = $value;
+				$this->savealpha = ($value == true);
+				break;
+			case 'antialias':
+				$this->antialias = ($value == true);
 				break;
 			default:
 				throw new BadPropertyException("No property set ".$key." on Canvas");
-		
+
 		}
-	
+
 	}
 
 	/**
@@ -253,11 +260,11 @@ class Canvas implements IDrawable,ICanvas {
 	 * @return Canvas The new canvas
 	 */
 	function duplicate() {
-		
+
 		$copy = new Canvas($this->width,$this->height);
 		$this->draw($copy);
 		return $copy;
-		
+
 	}
 
 	/**
@@ -268,7 +275,9 @@ class Canvas implements IDrawable,ICanvas {
 	 * @return CanvasPainter The painter for the canvas
 	 */
 	function getPainter() {
+
 		return new CanvasPainter($this);
+
 	}
 
 	/**
