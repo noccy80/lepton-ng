@@ -10,8 +10,10 @@ class GradientRenderer extends Drawable {
 
 	function __construct(Color $color1,Color $color2,$direction=0) {
 		$this->direction = $direction;
-		$cf = array($color1->r, $color1->g, $color1->b);
-		$cl = array($color2->r, $color2->g, $color2->b);
+		$cs = $color1->getRGBA();
+		$cd = $color2->getRGBA();
+		$cf = array($cs[0],$cs[1],$cs[2]);
+		$cl = array($cd[0],$cd[1],$cd[2]);
 		$cd = array($cl[0]-$cf[0], $cl[1]-$cf[1], $cl[2]-$cf[2]);
 		$this->colors = array(
 			'first' => $cf,
