@@ -17,7 +17,7 @@ abstract class Color implements IColor {
 	function getColor($himage, $withalpha=false) {
 		list($r,$g,$b,$a) = $this->getRGBA();
 		if ($withalpha) {
-			return imagecolorallocatealpha($himage, $r, $g, $b, floor($a/2));
+			return imagecolorallocatealpha($himage, $r, $g, $b, 127-floor($a/2));
 		}
 		return imagecolorallocate($himage, $r, $g, $b);
 	}

@@ -7,15 +7,10 @@ using('lepton.graphics.graphics');
 
 class RgbColor extends Color {
 
-	var $red;
-	var $green;
-	var $blue;
-	private $c = array(
-		'r' => 0,
-		'g' => 0,
-		'b' => 0,
-		'a' => 255
-	);
+	private $red;
+	private $green;
+	private $blue;
+	private $alpha;
 
 	/**
 	 * Constructor. This method will accept parameters in a number of
@@ -82,10 +77,10 @@ class RgbColor extends Color {
 					throw new GraphicsException("Invalid color specification", GraphicsException::ERR_BAD_COLOR);
 				}
 		}
-		$this->c['r'] = $this->bounds($red);
-		$this->c['g'] = $this->bounds($green);
-		$this->c['b'] = $this->bounds($blue);
-		$this->c['a'] = $this->bounds($alpha);
+		$this->red = $this->bounds($red);
+		$this->green = $this->bounds($green);
+		$this->blue = $this->bounds($blue);
+		$this->alpha = $this->bounds($alpha);
 	}
 
 	/**
@@ -98,31 +93,34 @@ class RgbColor extends Color {
 	}
 
 	function getRGBA() {
-		return array($this->c['r'], $this->c['g'], $this->c['b'], $this->c['a']);
+		return array($this->red, $this->green, $this->blue, $this->alpha);
 	}
 
 	function setRGBA($rgba) {
-		$this->c['r'] = $this->bounds($rgba[0]);
-		$this->c['g'] = $this->bounds($rgba[1]);
-		$this->c['b'] = $this->bounds($rgba[2]);
-		$this->c['a'] = $this->bounds($rgba[3]);
+		$this->red = $this->bounds($rgba[0]);
+		$this->green = $this->bounds($rgba[1]);
+		$this->blue = $this->bounds($rgba[2]);
+		$this->alpha = $this->bounds($rgba[3]);
 	}
 
 	function __get($key) {
 		switch ($key) {
 			case 'red':
 			case 'r':
-				return $this->c['r'];
+				return $this->red;
 			case 'green':
 			case 'g':
-				return $this->c['g'];
+				return $this->green;
 			case 'blue':
 			case 'b':
-				return $this->c['b'];
+				return $this->blue;
+			case 'alpha':
+			case 'a':
+				return $this->alpha;
 			case 'hex':
-				return sprintf('#%02.x%02.x%02.x', $this->c['r'], $this->c['g'], $this->c['b']);
+				return sprintf('#%02.x%02.x%02.x', $this->red, $this->green, $this->blue);
 			case 'hexstr':
-				return sprintf('%02.x%02.x%02.x', $this->c['r'], $this->c['g'], $this->c['b']);
+				return sprintf('%02.x%02.x%02.x', $this->red, $this->green, $this->blue);
 		}
 		return null;
 	}
@@ -131,16 +129,19 @@ class RgbColor extends Color {
 		switch ($key) {
 			case 'red':
 			case 'r':
-				$this->c['r'] = $this->bounds($value);
+				$this->red = $this->bounds($value);
 				break;
 			case 'green':
 			case 'g':
-				$this->c['g'] = $this->bounds($value);
+				$this->green = $this->bounds($value);
 				break;
 			case 'blue':
 			case 'b':
-				$this->c['b'] = $this->bounds($value);
+				$this->blue = $this->bounds($value);
 				break;
+			case 'alpha':
+			case 'a':
+				$this->alpha = $this->bounds($value);
 		}
 	}
 

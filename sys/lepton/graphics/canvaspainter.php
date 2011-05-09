@@ -45,7 +45,9 @@ class CanvasPainter {
 
         $w = imageSX($this->himage);
         $h = imageSY($this->himage);
-        imagefilledrectangle($this->himage, 0, 0, $w, $h, $fillcolor->getColor($this->himage,$this->canvas->savealpha));
+        imagealphablending($this->himage,false);
+        imagefilledrectangle($this->himage, 0, 0, $w, $h, $fillcolor->getColor($this->himage,true));
+        imagealphablending($this->himage,$this->alphablend);
 
     }
 
