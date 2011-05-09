@@ -7,9 +7,10 @@ using('lepton.graphics.graphics');
 
 class HsvColor extends Color {
 
-	var $hue;
-	var $sat;
-	var $value;
+	private $hue = 0;
+	private $sat = 0;
+	private $value = 0;
+	private $alpha = 1.0;
 
 	//public function __construct(Color $color) {
 
@@ -24,6 +25,9 @@ class HsvColor extends Color {
 			case 'v':
 			case 'value':
 				return $this->value;
+			case 'a':
+			case 'alpha':
+				return $this->alpha;
 			default:
 				throw new BadPropertyException("HSV Color does not have property ".$key);
 
@@ -31,21 +35,21 @@ class HsvColor extends Color {
 	}
 
 	public function __set($key,$value) {
-		$val = intval($value);
-		if ($val > 255) $val = 255;
-		if ($val < 0) $val = 0;
 		switch($key) {
 			case 'h':
 			case 'hue':
-				$this->hue = $val;
+				$this->hue = $this->argToValue($value,359);
 				break;
 			case 's':
 			case 'saturation':
-				$this->sat = $val;
+				$this->sat = $this->argToValue($value,255);
 				break;
 			case 'v':
 			case 'value':
-				$this->value = $val;
+				$this->value = $this->argToValue($value,255);
+				break;
+			case 'a':
+				$this->alpha = $this->argToValue($value,255);
 				break;
 			default:
 				throw new BadPropertyException("HSV Color does not have property ".$key);
@@ -65,38 +69,9 @@ class HsvColor extends Color {
 				break;
 			case 3:
 				// HSV
-				$this->hue = $args[0];
-				$this->sat = $args[1];
-				$this->value = $args[2];
-				break;
-			case 0;					if (is_a($args[0], 'Color')) {
-						$this->setRGBA($args[0]->getRGBA());
-						break;
-					} else {
-						$arg = func_get_arg(0);
-						if (substr($arg, 0, 1) == "#") {
-							if (strlen($arg) == 9) {
-								$red = hexdec(substr($arg, 1, 2));
-								$green = hexdec(substr($arg, 3, 2));
-								$blue = hexdec(substr($arg, 5, 2));
-								$alpha = hexdec(substr($arg, 7, 2));
-							} elseif (strlen($arg) == 7) {
-								$red = hexdec(substr($arg, 1, 2));
-								$green = hexdec(substr($arg, 3, 2));
-								$blue = hexdec(substr($arg, 5, 2));
-								$alpha = 255;
-							} elseif (strlen($arg) == 4) {
-								$red = hexdec(str_repeat(substr($arg, 1, 1), 2));
-								$green = hexdec(str_repeat(substr($arg, 2, 1), 2));
-								$blue = hexdec(str_repeat(substr($arg, 3, 1), 2));
-								$alpha = 255;
-							}
-						} else {
-							throw new GraphicsException("Invalid color specification", GraphicsException::ERR_BAD_COLOR);
-						}
-						break;
-					}
-
+				$this->hue =    $this->argToValue( $args[0], 359 );
+				$this->sat =    $this->argToValue( $args[1], 255 );
+				$this->value =  $this->argToValue( $args[2], 255 );
 				break;
 			default:
 				throw new GraphicsException('Bad constructor invocation for '.__CLASS__);
@@ -108,6 +83,7 @@ class HsvColor extends Color {
 		$r = $color[0];
 		$g = $color[1];
 		$b = $color[2];
+		$a = $color[3];
 		// TODO: Handle alpha here
 
 		$min = min( $r, $g, $b );
@@ -118,7 +94,8 @@ class HsvColor extends Color {
 		if( $max != 0 )
 			$s = $delta / $max;        // s
 		else {
-			// r = g = b = 0        // s = 0, v is undefined
+			// r = g = b = 0
+			// s = 0, v is undefined
 			$s = 0;
 			$h = -1;
 			return;
@@ -140,9 +117,10 @@ class HsvColor extends Color {
 			}
 		}
 
-		$this->hue = $h;
-		$this->sat = $s * 255;
-		$this->value = $v;
+		$this->hue =    $h;
+		$this->sat =    $s * 255;
+		$this->value =  $v;
+		$this->alpha =  $a;
 
 	}
 
@@ -214,6 +192,6 @@ function hsv() {
 	} elseif (count($args) == 4) {
 		return new HsvColor($args[0],$args[1],$args[2],$args[3]);
 	} else {
-		throw new BadArgumentException("hsv() expects 0, 3 or 4 parameters");
+		throw new BadArgumentException("hsv() expects 0, 1, 3 or 4 parameters");
 	}
 }

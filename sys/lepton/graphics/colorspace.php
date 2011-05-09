@@ -41,4 +41,18 @@ abstract class Color implements IColor {
 		return sprintf('#%02x%02x%02x',$r,$g,$b);
 	}
 
+	/**
+	 * @brief Convert a constructor argument to a number
+	 *
+	 */
+	protected function argToValue($arg,$valmax) {
+		if (is_float($arg) || is_integer($arg)) {
+			if ($arg < 0) return 0;
+			if ($arg > $valmax) return $valmax;
+			return intval($arg);
+		} else {
+			throw new ColorException("Invalid argument");
+		}
+	}
+
 }

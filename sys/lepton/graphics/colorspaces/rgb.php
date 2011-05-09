@@ -65,17 +65,17 @@ class RgbColor extends Color {
 					}
 				}
 			case 3: { // (R,G,B)
-					$red = func_get_arg(0);
-					$green = func_get_arg(1);
-					$blue = func_get_arg(2);
-					$alpha = 255;
+					$red =    $this->argToValue(func_get_arg(0),255);
+					$green =  $this->argToValue(func_get_arg(1),255);
+					$blue =   $this->argToValue(func_get_arg(2),255);
+					$alpha =  255;
 					break;
 				}
 			case 4: { // (R,G,B,A)
-					$red = func_get_arg(0);
-					$green = func_get_arg(1);
-					$blue = func_get_arg(2);
-					$alpha = func_get_arg(3);
+					$red =    $this->argToValue(func_get_arg(0),255);
+					$green =  $this->argToValue(func_get_arg(1),255);
+					$blue =   $this->argToValue(func_get_arg(2),255);
+					$alpha =  $this->argToValue(func_get_arg(3),255);
 					break;
 				}
 			default: {
