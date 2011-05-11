@@ -1,38 +1,83 @@
 <?php
 
+/**
+ * @class DataSet
+ * @brief Create a dataset with labels, holding the series to render.
+ *
+ * @author Christopher Vagnetoft
+ */
 class DataSet {
 
 	private $labels = array();
 	private $series = array();
 
+	/**
+	 * @brief Constructor.
+	 *
+	 * Call on the constructor with the labels to use as arguments.
+	 *
+	 * @param String .. Label
+	 */
 	function __construct() {
 		$args = func_get_args();
 		// This is labels
 		$this->labels = $args;
 	}
 
+	/**
+	 * @brief Add a series to the set
+	 *
+	 * @param String $label The name of the series to add
+	 * @param DataSeries $s The series
+	 */
 	function addSeries($label, DataSeries $s) {
 		$this->series[] = array($label, $s);
 	}
 
+	/**
+	 * @brief Get a specific series from the set
+	 *
+	 * @return DataSeries The series
+	 */
 	function getSeries($index) {
 		return $this->series[$index];
 	}
 
+	/**
+	 * @brief Get the labels of the series
+	 *
+	 * @return Array The labels
+	 */
 	function getLabels() {
 		return $this->labels;
 	}
 
+	/**
+	 * @brief Return the number of series
+	 *
+	 * @return Int The number of series
+	 */
 	function getCount() {
 		return count($this->series);
 	}
 
 }
 
+/**
+ * @class DataSeries
+ * @brief Holds a data series for a set
+ */
 class DataSeries {
 
 	private $data = array();
 
+	/**
+	 * @brief Constructor
+	 *
+	 * Call with the values to create the set from.
+	 *
+	 * @param Mixed .. The values
+	 */
 	function __construct() {
 		$args = func_get_args();
 		// This is values
@@ -48,10 +93,20 @@ class DataSeries {
 		}
 	}
 
+	/**
+	 * @brief Return the number of values in the series
+	 *
+	 * @reeturn Int The number of values
+	 */
 	function getCount() {
 		return count($this->data);
 	}
 
+	/**
+	 * @brief Return the sum of all the values
+	 *
+	 * @return Mixed The sum
+	 */
 	function getSum() {
 		$sum = 0;
 		for($n = 0; $n < count($this->data); $n++) {
@@ -60,10 +115,22 @@ class DataSeries {
 		return $sum;
 	}
 
+	/**
+	 * @brief Add a value with an optional label
+	 *
+	 * @param Mixed $value The value
+	 * @param String $label The label
+	 */
 	function addValue($value,$label=null) {
 		$this->data[] = array($value, $label);
 	}
 
+	/**
+	 * @brief Get a specific value
+	 *
+	 * @param Integer $index The index of the value to get
+	 * @return Array The value and label (can be null)
+	 */
 	function getValue($index) {
 		return $this->data[$index];
 	}
