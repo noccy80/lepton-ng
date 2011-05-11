@@ -194,6 +194,9 @@ class Canvas implements IDrawable,ICanvas {
 				break;
 			case 'antialias':
 				$this->antialias = ($value == true);
+				if (function_exists('imageantialias')) {
+					imageantialias($this->himage,$this->antialias);
+				}
 				break;
 			default:
 				throw new BadPropertyException("No property set ".$key." on Canvas");

@@ -5,6 +5,8 @@ interface IColor {
 	function setRGBA($rgba);
 }
 
+class ColorException extends BaseException { }
+
 abstract class Color implements IColor {
 	/**
 	 * Returns a color allocated from the image. If the second parameter

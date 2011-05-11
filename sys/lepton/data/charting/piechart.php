@@ -38,6 +38,7 @@ class PieChart extends Chart {
 		);
 
 		list($label,$vals) = $this->dataset->getSeries(0);
+		$labels = $this->dataset->getLabels();
 		$sum = $vals->getSum();
 		$ci = 0;
 		$sa = 0;
@@ -46,11 +47,11 @@ class PieChart extends Chart {
 			$a = (360/$sum)*$val; // Get angle
 			$ea = $sa + $a;
 			$ch = rgb($palette[$ci]);
-			$cs = hsv();
-			$cs->setRGBA($ch->getRGBA());
+			$cs = hsv($ch);
 			$cs->value = $cs->value - 30;
 			$data[] = array(
 				'key' => $key,
+				'label' => $labels[$n],
 				'c1' => $ch,
 				'c2' => $cs,
 				'sa' => $sa,
@@ -65,25 +66,33 @@ class PieChart extends Chart {
 			$avg = ($slice['sa'] + $slice['ea']) / 2;
 			$data[$id]['ox'] = cos(((($avg-90)%360) * PI) / 180) * $explode;
 			$data[$id]['oy'] = sin(((($avg-90)%360) * PI) / 180) * $explode;
+			$data[$id]['dx'] = cos(((($avg-180)%360) * PI) / 180);
+			$data[$id]['dy'] = sin(((($avg-180)%360) * PI) / 180);
 		}
 
-		$f = new TruetypeFont('FreeSerif.ttf',8);
+		$f = new BitmapFont(3);
+		$f->setTextEffect(BitmapFont::EFFECT_OUTLINE,rgb(255,255,255));
 		$p = $c->getPainter();
 		for ($yp = 20; $yp >= 0; $yp--) {
 			foreach($data as $slice) {
 				$ox = $slice['ox'];
 				$oy = $slice['oy'];
 				$p->drawFilledArc($cx+$ox,$cy+$oy+$yp,$radiusx*2,$radiusy*2,$slice['sa'],$slice['ea'],($yp==0)?$slice['c1']:$slice['c2']);
-				// TODO: Labels
-				// $c->drawText($f, new Color(0,0,0), $cx+($ox*10),$cy+($oy*10),$slice['key']);
 			}
 		}
-		
-		/*
+		for ($yp = 20; $yp >= 0; $yp--) {
+			foreach($data as $slice) {
+				// TODO: Labels
+				$m = $f->measure($slice['label']);
+				$dx = $slice['dx'];
+				$dy = $slice['dy'];
+				$c->drawText($f, rgb(0,0,0), $cx+($dx*$radiusx/1.5)-($m['width']/2),$cx+($dy*$radiusy/1.5)-($m['height']/2),$slice['label']);
+			}
+		}
+/*		
 		$legend = new ChartLegend(array('#FF0000'=>'Hello','#0000FF'=>'World'));
 		$legend->draw($c,10,10,150,100);
-		*/
-		
+*/		
 		// Return the canvas
 		return $c;
 	

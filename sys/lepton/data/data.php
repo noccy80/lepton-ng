@@ -19,6 +19,10 @@ class DataSet {
 		return $this->series[$index];
 	}
 
+	function getLabels() {
+		return $this->labels;
+	}
+
 	function getCount() {
 		return count($this->series);
 	}
@@ -103,12 +107,3 @@ class FormulaSeries extends DataSeries {
 	}
 
 }
-
-/*
-$ds = new DataSet('Jan','Feb','Mar','Apr','May','Jun');
-$ds->addSeries('Sales', new DataSeries(100, 150, 200, 250, 300, 350));
-$ds->addSeries('Services', new DataSeries(50, 55, 60, 65, 70, 75));
-
-$pc = new PieChart('Totals for Q1-Q2');
-$pc->setData($ds);
-*/
