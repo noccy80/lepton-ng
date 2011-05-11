@@ -15,6 +15,7 @@ abstract class Chart implements IChart {
 	protected $height = null;
 	protected $dataset = null;
 	protected $props = array();
+	protected $ovlobjects = array();
 
 	protected function getProperty($key,$default=null) {
 		if (isset($this->props[$key]))
@@ -48,6 +49,20 @@ abstract class Chart implements IChart {
 		if (isset($this->props[$key]))
 			return ($this->props[$key]);
 		return null;
+	}
+	
+	public function addObject(Drawable $object, Rect $placement) {
+		$this->ovlobjects[] = array(
+			'object' => $object,
+			'placement' => $placement
+		);
+	}
+	
+	protected function renderObjects(Canvas $c) {
+		foreach($this->ovlobjects as $object) {
+			list($x,$y,$w,$h) = $object['placement']->getRect();
+			$object['object']->draw($c,$x,$y,$w,$h);
+		}
 	}
 
 }

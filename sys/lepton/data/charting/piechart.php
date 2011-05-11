@@ -89,10 +89,7 @@ class PieChart extends Chart {
 				$c->drawText($f, rgb(0,0,0), $cx+($dx*$radiusx/1.5)-($m['width']/2),$cx+($dy*$radiusy/1.5)-($m['height']/2),$slice['label']);
 			}
 		}
-/*		
-		$legend = new ChartLegend(array('#FF0000'=>'Hello','#0000FF'=>'World'));
-		$legend->draw($c,10,10,150,100);
-*/		
+		$this->renderObjects($c);
 		// Return the canvas
 		return $c;
 	
