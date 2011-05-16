@@ -204,3 +204,5 @@ class url {
 	}
 
 }
+
+function url($url) { return new url($url); }

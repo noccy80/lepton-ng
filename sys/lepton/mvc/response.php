@@ -15,8 +15,8 @@
          */
         static function expires($minutes) {
             $offset = 60 * $minutes;
-            header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
-            // header('Cache-Control: must-revalidate');
+            header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s', time() ) . ' GMT');
+            header('Cache-Control: max-age='.$offset);
             header('Expires: '.gmdate("D, d M Y H:i:s",time() + $offset) . ' GMT');
         }
 
