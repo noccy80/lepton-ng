@@ -35,7 +35,7 @@ class CssRule {
         foreach($this->attributes as $key=>$rule) {
             $rules[] = $key.':'.$rule.';';
         }
-        $rulestr = '{'.join(',',$rules).'}';
+        $rulestr = '{'.join(' ',$rules).'}';
         $ret = $this->selector.$rulestr;
         return $ret;
     }
