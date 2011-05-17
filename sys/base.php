@@ -141,7 +141,7 @@ if (getenv("DEBUG") >= 1) {
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
     $dlevel = intval(getenv("DEBUG"));
-    if ($dlevel > 7) { $dlevel = 7; }
+    if ($dlevel > 10) { $dlevel = 10; }
     base::logLevel($dlevel);
 } else {
     define('DEBUGMODE', false);
@@ -150,7 +150,7 @@ if (getenv("DEBUG") >= 1) {
 
 if (php_sapi_name() == 'cli') {
     define('LEPTON_CONSOLE', true);
-    base::logLevel(LOG_INFO);
+    if (base::logLevel() == 0) base::logLevel(LOG_INFO);
 } else {
 	define('LEPTON_CONSOLE', false);
 }

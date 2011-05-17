@@ -32,6 +32,11 @@ abstract class Color implements IColor {
 	function setColor(Color $color) {
 		$this->setRGBA($color->getRGBA());
 	}
+	
+	function getLuma() {
+		list($r,$g,$b,$a) = $this->getRGBA();
+		return (($r*0.3)+($g*0.59)+($b*0.11));
+	}
 
 	/**
 	 * @brief Return the RGB value of the color

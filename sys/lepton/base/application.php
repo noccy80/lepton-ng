@@ -391,5 +391,5 @@ class ConsoleExceptionHandler extends ExceptionHandler {
 }
 
 Lepton::setExceptionHandler('ConsoleExceptionHandler');
-
+Logger::registerFactory(new ConsoleLoggerFactory());
 

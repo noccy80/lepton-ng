@@ -76,6 +76,7 @@ class HsvColor extends Color {
 			default:
 				throw new GraphicsException('Bad constructor invocation for '.__CLASS__);
 		}
+		logger::debug("h:%.2f s:%.2f v:%.2f", $this->hue, $this->sat, $this->value);
 	}
 
 	public function setRGBA($color) {
@@ -91,36 +92,35 @@ class HsvColor extends Color {
 		$v = $max;                // v
 		$delta = $max - $min;
 
-		if( $max != 0 )
+		if( $max != 0 ) {
 			$s = $delta / $max;        // s
-		else {
+			if( $delta == 0) {
+				$h = 0;
+			} else {
+				if( $r == $max ) {
+					$h = ( $g - $b ) / $delta;        // between yellow & magenta
+				} else if( $g == $max ) {
+					$h = 2 + ( $b - $r ) / $delta;    // between cyan & yellow
+				} else {
+					$h = 4 + ( $r - $g ) / $delta;    // between magenta & cyan
+				}
+				$h *= 60;                // degrees
+				if( $h < 0 ) {
+					$h += 360;
+				}
+			}
+		} else {
 			// r = g = b = 0
 			// s = 0, v is undefined
 			$s = 0;
 			$h = -1;
-			return;
-		}
-
-		if( $delta == 0) {
-			$h = 0;
-		} else {
-			if( $r == $max ) {
-				$h = ( $g - $b ) / $delta;        // between yellow & magenta
-			} else if( $g == $max ) {
-				$h = 2 + ( $b - $r ) / $delta;    // between cyan & yellow
-			} else {
-				$h = 4 + ( $r - $g ) / $delta;    // between magenta & cyan
-			}
-			$h *= 60;                // degrees
-			if( $h < 0 ) {
-				$h += 360;
-			}
 		}
 
 		$this->hue =    $h;
 		$this->sat =    $s * 255;
 		$this->value =  $v;
 		$this->alpha =  $a;
+		logger::debug("h:%.2f s:%.2f v:%.2f", $this->hue, $this->sat, $this->value);
 
 	}
 

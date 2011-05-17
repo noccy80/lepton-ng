@@ -163,6 +163,13 @@ class LeptonCanvasTests extends LunitCase {
 		$this->assertTrue($this->canvas->height>0);
 	}
 
+	function imagickcreate() {
+		if (!class_exists('imagick')) $this->skip();
+		$tf = $this->getTempFile('.png');
+		$this->canvas->save($tf);
+		$im = new ImagickImage($tf);
+		$this->assertNotNull($im);
+	}
 }
 
 Lunit::register('LeptonCanvasTests');
