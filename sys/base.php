@@ -273,7 +273,7 @@ function __fileinfo($strinfo, $vars=null) {
     }
 }
 
-function get_descendants($baseclass) {
+function getDescendants($baseclass) {
 
 	$descendants = array();
 	$cl = get_declared_classes();

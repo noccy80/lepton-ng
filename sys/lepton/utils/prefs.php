@@ -28,13 +28,15 @@ interface IPrefs {
 abstract class Prefs {
 
 	protected $data;
+	private $modified = false;
 
 	function __destruct() {
-		$this->flush();
+		if ($this->modified) $this->flush();
 	}
 
 	public function  __set($name, $value) {
 		$this->data[$name] = $value;
+		$this->modified = true;
 	}
 
 	public function  __get($name) {
@@ -53,6 +55,7 @@ abstract class Prefs {
 
 	public function set($name,$value) {
 		$this->data[$name] = $value;
+		$this->modified = true;
 	}
 
 	public function  __isset($name) {

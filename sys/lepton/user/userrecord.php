@@ -54,7 +54,7 @@ class UserRecord {
         } else {
             $this->active = (!config::get('lepton.user.disabledbydefault', false));
         }
-        $extn = get_descendants('UserExtension');
+        $extn = getDescendants('UserExtension');
         foreach($extn as $extnclass) { 
         	$xc = new $extnclass($this);
 		$xr = new ReflectionClass($xc);
