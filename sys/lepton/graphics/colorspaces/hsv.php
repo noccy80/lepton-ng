@@ -127,12 +127,12 @@ class HsvColor extends Color {
 	public function getRGBA() {
 		$c = array();
 
-		if( $this->sat == 0 ) {
+		/*if( $this->sat == 0 ) {
 			$c['r'] = $this->value;
 			$c['g'] = $this->value;
 			$c['b'] = $this->value;
 			return;
-		}
+		}*/
 
 		$s = (float)($this->sat / 256);
 		$h = (float)($this->hue / 60);
