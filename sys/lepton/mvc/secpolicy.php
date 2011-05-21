@@ -1,9 +1,9 @@
 <?php
 
 class SystemSecurityPolicy {
-	
+
 	private static $cache = null;
-	
+
 	private static function initPolicyProviderCache() {
 		if (self::$cache != null) return;
 		$cd = getDescendants('SecurityPolicyProvider');
@@ -11,7 +11,7 @@ class SystemSecurityPolicy {
 			self::$cache[] = new $cc();
 		}
 	}
-	
+
 	static function inAllowedPath($file) {
 		self::initPolicyProviderCache();
 		foreach(self::$cache as $p) {
@@ -21,10 +21,10 @@ class SystemSecurityPolicy {
 		}
 		return false;
 	}
-	
+
 }
 
-interface ISecurityPolicyProvider {	
+interface ISecurityPolicyProvider {
 	function getPolicyRecord($type,$key);
 }
 abstract class SecurityPolicyProvider implements ISecurityPolicyProvider {
@@ -33,7 +33,7 @@ abstract class SecurityPolicyProvider implements ISecurityPolicyProvider {
 }
 
 class BaseSecurityPolicyProvider extends SecurityPolicyProvider {
-	
+
 	function getPolicyRecord($type,$key) {
 		if ($type == self::SPT_FILEPOLICY) {
 			$ap = base::appPath();
@@ -49,5 +49,5 @@ class BaseSecurityPolicyProvider extends SecurityPolicyProvider {
 		}
 		return null;
 	}
-	
+
 }
