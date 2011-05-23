@@ -25,9 +25,9 @@ $i->alphablending = false;
 // Draw the hue swatches
 for ($x = 0; $x < 359; $x++) {
 	for ($y = 0; $y < 255; $y++) {
-		$c = hsv($x,$y,128);
+		$c = hsl($x,$y,128);
 		$p->setPixel($x, $y, $c);
-		$c = hsv($x,128,$y);
+		$c = hsl($x,128,$y);
 		$p->setPixel($x, $y+256, $c);
 	}
 }
@@ -35,9 +35,9 @@ for ($x = 0; $x < 359; $x++) {
 // Draw the RGB color swatches
 for ($x = 0; $x < 255; $x++) {
 	for ($y = 0; $y < 255; $y++) {
-		$c = hsv(0,$x,$y); $p->setPixel(360+$x,$y,$c);
-		$c = hsv(120,$x,$y); $p->setPixel(360+$x,256+$y,$c);
-		$c = hsv(240,$x,$y); $p->setPixel(360+256+$x,$y,$c);
+		$c = hsl(0,$x,$y); $p->setPixel(360+$x,$y,$c);
+		$c = hsl(120,$x,$y); $p->setPixel(360+$x,256+$y,$c);
+		$c = hsl(240,$x,$y); $p->setPixel(360+256+$x,$y,$c);
 	}
 }
 
@@ -53,5 +53,5 @@ $i->drawText($f,rgb(255,255,255),365+256,5,"H=120");
 $i->drawText($f,rgb(255,255,255),365,256+5,"H=240");
 
 // Save the image
-echo "Saving colortest.png\n";
-$i->save('colortest.png');
+echo "Saving colortest-hsl.png\n";
+$i->save('colortest-hsl.png');
