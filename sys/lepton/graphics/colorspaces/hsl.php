@@ -123,7 +123,8 @@ class HslColor extends Color {
 
 		$this->hue =    $h * 60;
 		$this->sat =    $s * 255;
-		$this->lum =    $v * 255;
+		$this->lum =    $l * 255;
+		if ($this->hue < 0) $this->hue += 360;
 		$this->alpha =  $a;
 		logger::debug("hsl in - h:%.2f s:%.2f v:%.2f", $this->hue, $this->sat, $this->lum);
 
@@ -148,11 +149,11 @@ class HslColor extends Color {
 			if ($l < 0.5) {
 				$temp2 = $l * (1.0 + $s);
 			} else {
-				$temp2 = $l * ($l + $s) - ($l * $s);
+				$temp2 = ($l + $s) - ($l * $s);
 			}
 
+			// temp1 = 2.0*L - temp2
 			$temp1 = 2.0 * $l - $temp2;
-		
 		
 			// For each of R, G, B, compute another temporary value, temp3, as follows:
 			// for R, temp3=H+1.0/3.0
@@ -175,7 +176,6 @@ class HslColor extends Color {
 			// Else if 2.0*temp3 < 1, color=temp2
 			// Else if 3.0*temp3 < 2, color=temp1+(temp2-temp1)*((2.0/3.0)-temp3)*6.0
 			// Else color=temp1
-
 			foreach(array('r'=>$rtemp3,'g'=>$gtemp3,'b'=>$btemp3) as $ck=>$temp3) {
 				if (6.0 * $temp3 < 1) {
 					$c[$ck] = $temp1+($temp2-$temp1)*6.0*$temp3;
