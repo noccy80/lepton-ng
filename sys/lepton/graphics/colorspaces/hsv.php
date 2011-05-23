@@ -127,54 +127,55 @@ class HsvColor extends Color {
 	public function getRGBA() {
 		$c = array();
 
-		/*if( $this->sat == 0 ) {
+		if( $this->sat == 0 ) {
 			$c['r'] = $this->value;
 			$c['g'] = $this->value;
 			$c['b'] = $this->value;
-			return;
-		}*/
+		} else {
 
-		$s = (float)($this->sat / 256);
-		$h = (float)($this->hue / 60);
-		$v = (float)($this->value);
-		$i = floor( $h );
-		$f = $h - $i;            // factorial part of h
-		$p = $v * ( 1 - $s );
-		$q = $v * ( 1 - $s * $f );
-		$t = $v * ( 1 - $s * ( 1 - $f ) );
+			$s = (float)($this->sat / 256);
+			$h = (float)($this->hue / 60);
+			$v = (float)($this->value);
+			$i = floor( $h );
+			$f = $h - $i;            // factorial part of h
+			$p = $v * ( 1 - $s );
+			$q = $v * ( 1 - $s * $f );
+			$t = $v * ( 1 - $s * ( 1 - $f ) );
 
-		switch( $i ) {
-			case 0:
-				$c['r'] = $v;
-				$c['g'] = $t;
-				$c['b'] = $p;
-				break;
-			case 1:
-				$c['r'] = $q;
-				$c['g'] = $v;
-				$c['b'] = $p;
-				break;
-			case 2:
-				$c['r'] = $p;
-				$c['g'] = $v;
-				$c['b'] = $t;
-				break;
-			case 3:
-				$c['r'] = $p;
-				$c['g'] = $q;
-				$c['b'] = $v;
-				break;
-			case 4:
-				$c['r'] = $t;
-				$c['g'] = $p;
-				$c['b'] = $v;
-				break;
-			default:        // case 5:
-				$c['r'] = $v;
-				$c['g'] = $p;
-				$c['b'] = $q;
-				break;
+			switch( $i ) {
+				case 0:
+					$c['r'] = $v;
+					$c['g'] = $t;
+					$c['b'] = $p;
+					break;
+				case 1:
+					$c['r'] = $q;
+					$c['g'] = $v;
+					$c['b'] = $p;
+					break;
+				case 2:
+					$c['r'] = $p;
+					$c['g'] = $v;
+					$c['b'] = $t;
+					break;
+				case 3:
+					$c['r'] = $p;
+					$c['g'] = $q;
+					$c['b'] = $v;
+					break;
+				case 4:
+					$c['r'] = $t;
+					$c['g'] = $p;
+					$c['b'] = $v;
+					break;
+				default:        // case 5:
+					$c['r'] = $v;
+					$c['g'] = $p;
+					$c['b'] = $q;
+					break;
+			}
 		}
+		
 		return array($c['r'], $c['g'], $c['b'], 255);
 
 	}

@@ -1,5 +1,7 @@
 <?php
 
+using('lepton.net.httprequest');
+
 /**
  * Xmlrpc utility class, loaded into controllers and libraries as xmlrpc
  * and provides shorthand functions for creating a new server and client.
@@ -162,11 +164,13 @@ class XmlrpcClient {
 	function call($method,$args=null) {
 
 		$req = xmlrpc_encode_request($method, $args);
-		$ret = http::post($this->url, $req, array(
+		$ret = new HttpRequest($this->url, array(
+			'method' => 'post',
+			'parameters' => $req,
 			'content-type' => 'text/xml'
 		));
 		$mtd = null;
-		$dec = xmlrpc_decode_request($ret,$mtd);
+		$dec = xmlrpc_decode_request($ret->responseText(),$mtd);
 		return $dec;
 
 	/*

@@ -112,8 +112,13 @@ class HttpRequest {
 			}
 		}
 	}
+	
+	function getResponse() {
+		return $this->ret['content'];
+	}
 
 	function responseText() {
+		__deprecated('HttpRequest->responseText', 'HttpRequest->getResponse');
 		return $this->ret['content'];
 	}
 

@@ -649,6 +649,31 @@ class BasicContainer {
 
 }
 
+class Globals {
+	
+	private static $globals;
+	
+	private function __construct() { }
+	
+	function get($key) {
+		if (arr::hasKey(self::$globals,$key)) return self::$globals[$key];
+		return null;
+	}
+	
+	function set($key,$value) {
+		self::$globals[$key] = $value;
+	}
+	
+	function has($key) {
+		return (arr::hasKey(self::$globals,$key));
+	}
+	
+	function clr($key) {
+		unset(self::$globals[$key]);
+	}
+	
+}
+
 ////// Console ////////////////////////////////////////////////////////////////
 
 /**
