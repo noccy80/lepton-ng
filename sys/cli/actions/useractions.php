@@ -39,6 +39,14 @@ class UserAction extends Action {
             'arguments' => '\g{username}',
             'info' => 'Show detailed information on a user'
         ),
+        'password' => array(
+            'arguments' => '\g{username}',
+            'info' => 'Change password for user'
+        ),
+        'setprop' => array(
+            'arguments' => '\g{username} \g{property} \g{value}',
+            'info' => 'Set specific property for user'
+        ),
         'addgroup' => array(
             'arguments' => '\g{groupname}',
             'info' => 'Add a usergroup'
@@ -66,6 +74,20 @@ class UserAction extends Action {
                 }
                 $u->password = $p;
                 console::writeLn("Password for user %s updated", $username);
+            } else {
+                console::writeLn("Could not find record for user %s", $username);
+            }
+
+        }
+    }
+
+    function setprop($username=null,$property=null,$value=null) {
+        using('lepton.user.*');
+        if ($username) {
+            $u = user::find($username);
+            if ($u) {
+                $u->{$property} = $value;
+                console::writeLn("Property %s for user %s updated", $property, $username);
             } else {
                 console::writeLn("Could not find record for user %s", $username);
             }
