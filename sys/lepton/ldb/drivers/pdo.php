@@ -55,7 +55,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
                 $this->conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             }
         } catch (PDOException $e) {
-            throw new Databasexception("Could not connect to database type '".$cfg['driver']."'. ".$e->getMessage());
+            throw new DatabaseException("Could not connect to database type '".$cfg['driver']."'. ".$e->getMessage());
         }
     }
     

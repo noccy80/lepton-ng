@@ -146,6 +146,19 @@ class LeptonCanvasTests extends LunitCase {
 	}
 
 	/**
+	 * @description Testing imagick integration
+	 */
+	function imagickcreate() {
+		if (!class_exists('imagick')) $this->skip();
+		if (!class_exists('ImagickImage')) $this->skip();
+		$tf = $this->getTempFile('.png');
+		$this->assertNotNull($this->canvas);
+		$this->canvas->save($tf);
+		$im = new ImagickImage($tf);
+		$this->assertNotNull($im);
+	}
+
+	/**
 	 * @description Screen capture with Screenshot() class.
 	 */
 	function screenshot() {
@@ -163,13 +176,6 @@ class LeptonCanvasTests extends LunitCase {
 		$this->assertTrue($this->canvas->height>0);
 	}
 
-	function imagickcreate() {
-		if (!class_exists('imagick')) $this->skip();
-		$tf = $this->getTempFile('.png');
-		$this->canvas->save($tf);
-		$im = new ImagickImage($tf);
-		$this->assertNotNull($im);
-	}
 }
 
 Lunit::register('LeptonCanvasTests');
