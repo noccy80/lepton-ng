@@ -118,7 +118,7 @@ class HttpRequest {
 	}
 
 	function responseText() {
-		__deprecated('HttpRequest->responseText', 'HttpRequest->getResponse');
+		// __deprecated('HttpRequest->responseText', 'HttpRequest->getResponse');
 		return $this->ret['content'];
 	}
 

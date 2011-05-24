@@ -113,11 +113,11 @@ class HslColor extends Color {
 		// If R=maxcolor, H = (G-B)/(maxcolor-mincolor)
 		// If G=maxcolor, H = 2.0 + (B-R)/(maxcolor-mincolor)
 		// If B=maxcolor, H = 4.0 + (R-G)/(maxcolor-mincolor)
-		if ($r == $maxcolor) {
+		if ($r == $max) {
 			$h = ($g - $b) / ($max - $min);
-		} elseif ($g == $maxcolor) {
+		} elseif ($g == $max) {
 			$h = 2.0 + ($b - $r) / ($max - $min);
-		} else {
+		} elseif ($b == $max) {
 			$h = 4.0 + ($r - $g) / ($max - $min);
 		}
 
