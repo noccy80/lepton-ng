@@ -18,6 +18,7 @@ abstract class LdwpJob {
 	const STATE_ERROR = 1; ///< @var Job has encountered an error condition
 	const STATE_RUNNING = 2; ///< @var Job is running
 	const STATE_SUSPENDED = 3; ///< @var Job has been suspended
+	const STATE_COMPLETED = 4; ///< @var Job has finished
 
 	protected $_state = null;
 	protected $_message = null;
