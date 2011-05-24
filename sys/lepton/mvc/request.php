@@ -148,23 +148,39 @@ class Request {
      * @param mixed $def Default value if not present
      * @return string The posted data or the default value if not present
      */
-    function get($key, $def = null) {
-        if (isset($_REQUEST[$key])) return(new RequestString($_REQUEST[$key]));
+    static function get($key, $def = null) {
+        if (arr::hasKey($_REQUEST,$key)) 
+            return(new RequestString($_REQUEST[$key]));
         return new RequestString($def);
     }
 
-    function has($key) {
-        return (isset($_REQUEST[$key]));
+    static function has($key) {
+        return (
+            arr::hasKey($_REQUEST,$key) || 
+            arr::hasKey($_POST,$key) || 
+            arr::hasKey($_FILES,$key)
+        );
+    }
+
+    static function hasGet($key) {
+        return (arr::hasKey($_REQUEST,$key));
+    }
+
+    static function hasPost($key) {
+        return (
+            arr::hasKey($_POST,$key) || 
+            arr::hasKey($_FILES,$key)
+        );
     }
     
-    function post($key, $def = null) {
-    	// Check if file
-   	if (isset($_FILES[$key])) return(new RequestFile($key));
-        if (isset($_POST[$key])) return(new RequestString($_POST[$key]));
+    static function post($key, $def = null) {
+    	// Check if the request field is a file
+        if (arr::hasKey($_FILES,$key)) return(new RequestFile($key));
+        if (arr::hasKey($_POST,$key)) return(new RequestString($_POST[$key]));
         return new RequestString($def);
     }
 
-	function useSts() {
+	static function useSts() {
 		$use_sts = config::get('lepton.security.sts');
 		if ($use_sts && isset($_SERVER['HTTPS'])) {
 		  header('Strict-Transport-Security: max-age=500');
@@ -174,11 +190,11 @@ class Request {
 		}
 	}
 
-	function getDomain() {
+	static function getDomain() {
 		return strtolower($_SERVER['HTTP_HOST']);
 	}
     
-    function getQueryString() {
+    static function getQueryString() {
     	$data = $_GET;
     	if (isset($data['/index_php'])) {
     		$data = array_slice($data,2);
@@ -186,11 +202,11 @@ class Request {
     	return $data;
     }
 
-    function getUserAgent() {
+    static function getUserAgent() {
         return new RequestUserAgent();
     }
 
-    function getRawQueryString() {
+    static function getRawQueryString() {
         $data = $_SERVER['QUERY_STRING'];
         return $data;
     }
@@ -200,7 +216,7 @@ class Request {
      *
      * @return string The data posted
      */
-    function getInput() {
+    static function getInput() {
         if (isset($HTTP_RAW_POST_DATA)) {
             $data = HTTP_RAW_POST_DATA;
         } else {
@@ -223,7 +239,7 @@ class Request {
      *
      * @return bool True if the client is still connected
      */
-    function clientConnected() {
+    static function clientConnected() {
         return (!client_aborted());
     }
 
@@ -238,7 +254,7 @@ class Request {
      * @param bool $value The new value
      * @return bool Previous value
      */
-    function ignoreDisconnect($value=true) {
+    static function ignoreDisconnect($value=true) {
         return (ignore_user_abort($value)==1)?true:false;
     }
 
@@ -247,7 +263,7 @@ class Request {
      *
      * @return bool True if the request is a http post request
      */
-    function isPost() {
+    static function isPost() {
         if (!isset($_SERVER['REQUEST_METHOD'])) return (count($_POST)>0);
         return ($_SERVER['REQUEST_METHOD'] == 'POST');
     }
@@ -257,7 +273,7 @@ class Request {
      *
      * @return bool True if the request is a http get request
      */
-    function isGet() {
+    static function isGet() {
         if (!isset($_SERVER['REQUEST_METHOD'])) return (count($_GET)>0);
         return ($_SERVER['REQUEST_METHOD'] == 'GET');
     }

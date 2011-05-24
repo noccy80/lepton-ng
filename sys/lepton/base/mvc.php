@@ -17,6 +17,7 @@
     ModuleManager::load('lepton.mvc.document');
     ModuleManager::load('lepton.mvc.forms');
     ModuleManager::load('lepton.mvc.content');
+    ModuleManager::load('lepton.mvc.secpolicy');
 
     ModuleManager::load('lepton.web.*');
 
