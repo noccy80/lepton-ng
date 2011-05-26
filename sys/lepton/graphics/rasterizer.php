@@ -22,7 +22,6 @@ class SvgRasterizer extends Canvas {
 	
 	function __construct($svgfile) {
 		
-		$this->imh = new Imagick();
 		$this->svg = file_get_contents($svgfile);
 
 		$this->svgToImage();
@@ -52,9 +51,11 @@ class SvgRasterizer extends Canvas {
 	
 	private function svgToImage() {
 
+		$this->imh = new Imagick();
+		$this->imh->setBackgroundColor(new ImagickPixel('transparent'));
 		$this->imh->readImageBlob($this->svg);
 
-		$this->imh->setImageFormat("png24");
+		$this->imh->setImageFormat("png32");
 		/*
 		if ($height && $width) {
 			$this->imh->resizeImage($width, $height, imagick::FILTER_LANCZOS, 1);

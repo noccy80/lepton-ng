@@ -37,6 +37,16 @@ abstract class Color implements IColor {
 		list($r,$g,$b,$a) = $this->getRGBA();
 		return (($r*0.3)+($g*0.59)+($b*0.11));
 	}
+	
+	function set($property,$value) {
+		$this->{$property} = $value;
+		return $this;
+	}
+	
+	function adjust($property,$value) {
+		$this->{$property} += $value;
+		return $this;
+	}
 
 	/**
 	 * @brief Return the RGB value of the color
