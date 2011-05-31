@@ -16,12 +16,13 @@ abstract class GeoCountry {
 
 }
 
-using('ldwp.action');
+// using('ldwp.action');
 
 /**
  * Lepton Worker for installing of geo country database
  */
-class GeoCountryAction extends LdwpAction {
+
+class GeoCountryAction {
 
     const PSTATE_INITIALIZE = NULL;
     const PSTATE_DOWNLOAD = 1;
