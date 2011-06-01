@@ -679,9 +679,8 @@ class Canvas implements IDrawable,ICanvas {
 	 */
 	function apply(ImageFilter $filter) {
 
-		$this->checkImage();
 		$htemp = $filter->applyFilter($this);
-		if ($htemp) {
+		if ($htemp != null) {
 			imagedestroy($this->himage);
 			$this->himage = $htemp;
 		}

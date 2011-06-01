@@ -1,6 +1,14 @@
 <?php
 
 config::def(GeoLocation::KEY_RESOLVER,'GeopluginResolver');
+
+interface IGeoResolver {
+	static function getInformationFromIp($ip);
+}
+
+abstract class GeoResolver implements IGeoResolver {
+}
+
 using('lepton.geo.resolvers.*');
 
 /**
@@ -111,8 +119,8 @@ class GeoUtil {
 		$cosLat2 = cos(deg2rad($pos2->lat));
 		$a = $sinLatD*$sinLatD + $cosLat1*$cosLat2*$sinLngD*$sinLngD*$sinLngD;
 		if($a<0) $a = -1*$a;
-			$c = 2*atan2(sqrt($a), sqrt(1-$a));
-		$distance = self::EARTH_RADIUS_METER*$c;
+		$c = 2*atan2(sqrt($a), sqrt(1-$a));
+		$distance = self::EARTH_RADIUS_METER * $c;
 
 		return $distance;
 

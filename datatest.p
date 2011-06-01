@@ -2,6 +2,7 @@
 <?php
 
 require('lepton-framework');
+using('lepton.graphics.filters.*');
 using('lepton.data.*');
 using('lepton.data.charting.piechart');
 
@@ -11,6 +12,8 @@ $ds->addSeries('Services', new DataSeries(50, 55, 60, 65));
 
 $pc = new PieChart(400,400);
 $pc->setData($ds);
-$pc->addObject(new ChartLegend(array('#FF0000'=>'Hello','#0000FF'=>'World')), rect(10,10,150,100));
+$pc->addObject(new ChartLegend($ds), rect(10,10,150,100));
 
-$pc->render()->save('chart.png');
+$c = $pc->render();
+$c->apply(new PixelateImageFilter(50));
+$c->save('chart.png');

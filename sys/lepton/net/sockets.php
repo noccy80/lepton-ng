@@ -9,6 +9,18 @@ define('SOCKSTATE_CONNECTING', 1);
 define('SOCKSTATE_CONNECTED', 2);
 define('SOCKSTATE_ERROR', 3);
 
+class NsLookup {
+
+	static function resolve($hostname) {
+
+	}
+
+	static function getLocalIp() {
+
+	}
+
+}
+
 class NetworkResolver {
     static function resolve($hostname) {
         return gethostbyname($hostname);
@@ -146,4 +158,3 @@ abstract class UdpSocket extends Socket {
 
 }
 
-?>

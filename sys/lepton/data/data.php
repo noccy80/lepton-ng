@@ -51,6 +51,15 @@ class DataSet {
 	function getLabels() {
 		return $this->labels;
 	}
+	
+	/**
+	 * @brief Return the color theme used for the labels
+	 *
+	 * @return Array The color palette
+	 */
+	function getLabelColors() {
+		return null;
+	}
 
 	/**
 	 * @brief Return the number of series

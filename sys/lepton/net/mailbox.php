@@ -71,7 +71,7 @@ class Mailbox {
             // Activate the selected backend
             console::debugEx(LOG_DEBUG,__CLASS__,"Opening identity: %s", $identity);
             $this->mailbox = new $handler($identity);
-            
+
         } else {
             throw new MailException("Bad backend: ". $box['scheme']." (from ".$identity.")");
         }

@@ -44,7 +44,7 @@
 				unset($this->ch);
 			}
 		}
-		
+
 		function setTarget($target=null) {
 		    $this->_target = $target;
 		    if ($this->_target) {
@@ -170,7 +170,7 @@
 			$this->setOption(CURLOPT_HEADERFUNCTION, array(&$this,'_headercb'));
 			$this->setOption(CURLOPT_WRITEFUNCTION, array(&$this,'_writecb'));
 
-            curl_exec($this->ch);
+			curl_exec($this->ch);
 			$r['content'] = $this->_responseData;
 			$r['headers'] = $this->_responseHeaders;
 			$r['code'] = curl_getinfo($this->ch,CURLINFO_HTTP_CODE);
