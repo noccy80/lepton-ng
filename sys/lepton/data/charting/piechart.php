@@ -11,12 +11,25 @@ class PieChart extends Chart {
 	function __construct($width,$height) {
 		$this->setProperties(array(
 			'legend' => true,
-			'style' => PieChart::STYLE_3D
+			'style' => PieChart::STYLE_3D,
+			'palette' => array(
+				'#FF7777',
+				'#77FF77',
+				'#7777FF',
+				'#FFFF77',
+				'#77FFFF',
+				'#FF77FF',
+				'#FFAAFF'
+			)
 		));
 		parent::__construct($width,$height);
 	}
 
-	function render() {
+	public function render() {
+		return $this->render3D();
+	}
+	
+	private function render3D() {
 
 		$c = new Canvas($this->width, $this->height, rgb($this->getProperty('background','#FFFFFF')));
 
@@ -27,15 +40,7 @@ class PieChart extends Chart {
 		$cy = $c->getHeight() / 2;
 		$explode = $this->getProperty('explode',0);
 
-		$palette = array(
-			'#FF7777',
-			'#77FF77',
-			'#7777FF',
-			'#FFFF77',
-			'#77FFFF',
-			'#FF77FF',
-			'#FFAAFF'
-		);
+		$palette = $this->getProperty('palette');
 
 		list($label,$vals) = $this->dataset->getSeries(0);
 		$labels = $this->dataset->getLabels();
