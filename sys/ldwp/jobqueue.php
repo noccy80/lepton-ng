@@ -15,7 +15,7 @@ class JobQueue {
 	 * Constructor
 	 *
 	 */
-	public function __construct() {
+	public function __construct($queue = null) {
 		$this->db = new DatabaseConnection();
 	}
 

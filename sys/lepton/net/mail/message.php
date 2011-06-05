@@ -1,6 +1,6 @@
 <?php
 
-config::def('lepton.net.mail.from', 'Local Lepton Installation <lepton@localhost>');
+config::def('lepton.net.mail.from', '"Local Lepton Installation" <lepton@localhost>');
 config::def('lepton.net.mail.smtpserver','localhost');
 config::def('lepton.net.mail.backend','smtp');
 
@@ -14,6 +14,7 @@ class MailMessage {
     const KEY_MAIL_FROM = 'lepton.net.mail.from';
     private $recipient;
     private $subject;
+    private $body;
     /**
      * @brief Constructor
      *
@@ -24,10 +25,21 @@ class MailMessage {
     public function __construct($recipient,$subject,IMimeEntity $body=null) {
         $this->recipient = (array)$recipient;
         $this->subject = $subject;
+        $this->body = $body;
+    }
+
+    public function getMessage() {
+        $headers = $this->buildHeaders();
+        $headerstr = '';
+        foreach($headers as $k=>$v) {
+            $headerstr.=sprintf("%s: %s\r\n",$k,$v);
+        }
+        $message = (string)$this->body;
+        return $headerstr.$message;
     }
     
     private function buildRecipientList() {
-        
+        return array();
     }
     
     /**
@@ -115,7 +127,9 @@ class MimeMultipartEntity implements IMimeEntity {
     function __construct() {
         // Create a unique boundary
         $this->boundary = sprintf('%08x%06x',time(),rand()*0xFFFFFF);
-        $this->contenttype = sprintf('multipart/alternative; boundary="%s"'),$this->boundary);
+        $this->contenttype = sprintf('multipart/alternative; boundary="%s"',$this->boundary);
+        $args = func_get_args();
+        $this->parts = $args;
     }
     
     /**
@@ -150,10 +164,22 @@ class MimeMultipartEntity implements IMimeEntity {
 
 class MimeEntity implements IMimeEntity { 
     private $mimetype;
+    private $content;
+    private $options;
     function __construct($content,$mimetype=null,Array $options=null) {
         // TODO: Encode with QuotedPrintable as needed
+        $this->options = (array)$options;
+        $this->mimetype = $mimetype;
+        $this->content = $content;
     }
     function __toString() {
+        $headers = array();
+        $extra = (arr::hasKey($this->options,'charset'))?';charset='.$this->options['charset']:'';
+        $headers["Content-Type"] = $this->mimetype.$extra;
+
+        $headersstr = '';
+        foreach($headers as $k=>$v) { $headersstr.=$k.': '.$v."\r\n"; }
+        return $headersstr."\r\n".$this->content;
     }
 }
 
@@ -178,8 +204,8 @@ class MimeAttachment implements IMimeEntity {
         );
         $headersstr = '';
         $content = base64_encode(file_get_contents($filename));
-        foreach($headers as $k=>$v) { $headersstr.=$k.'='.$v."\r\n"; }
-        return "\r\n".$headersstr."\r\n".$content;
+        foreach($headers as $k=>$v) { $headersstr.=$k.': '.$v."\r\n"; }
+        return $headersstr."\r\n".$content;
     }
 }
 
