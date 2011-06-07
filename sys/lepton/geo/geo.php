@@ -68,7 +68,7 @@ class GeoPosition {
 	}
 
 	function getDistance(GeoPosition $target) {
-		return Geo::getDistance($this,$target);
+		return GeoUtil::getDistance($this,$target);
 	}
 
 	public function __get($key) {
@@ -99,6 +99,10 @@ class GeoPosition {
 			default:
 				throw new BadPropertyException("No such property ".$key." in ".__CLASS__);
 		}
+	}
+
+	public function __toString() {
+		return sprintf('lat: %.5f, lon: %.5f', $this->lat, $this->lon);
 	}
 
 }

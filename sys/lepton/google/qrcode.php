@@ -17,7 +17,7 @@ class QRCode {
 		$this->ecc = $ecc;
 	}
 
-	function getImage() {
+	private function getImageUrl() {
 		$opts = array(
 			'cht' => 'qr',
 			'chs' => $this->size,
@@ -30,7 +30,29 @@ class QRCode {
 		}
 		$url = 'https://chart.googleapis.com/chart';
 		$url.= '?'.join('&',$optstr);
+		return $url;
+	}
+
+	/**
+	 * @brief Redirects to the image url
+	 *
+	 * This function used to be called "getImage"
+	 */
+	public function redirect() {
+		$url = $this->getImageUrl();
 		header('location: '.$url);
 	}
 
+	/**
+	 * @brief Return the canvas containing the QR code
+	 *
+	 * @todo This function is a quick-hack, returning the canvas by calling
+	 *   on new Image() to load it. This is depending on whether fopen can
+	 *   operate on URLs and thus the function need to be optimized and
+	 *   improved to use curl/httprequest where possible.
+	 * @return Canvas The canvas contianing the QR code
+	 */
+	public function getImage() {
+		return new Image($this->getImageUrl());
+	}
 }
