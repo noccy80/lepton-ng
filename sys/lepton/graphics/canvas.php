@@ -12,40 +12,7 @@ interface ICanvas {
 	function getDimensions();
 }
 
-class Point {
-	private $x, $y;
-	function __construct($x,$y) { 
-		$this->x = intval($x); $this->y = intval($y); 
-	}
-	function __get($key) {
-		if (isset($this->{$key})) return $this->{$key};
-		throw new BadPropertyException($key);
-	}
-	function getPoint() { 
-		return array($this->x, $this->y); 
-	}
-}
-class Rect {
-	private $x, $y, $w, $h;
-	function __construct($x,$y,$w,$h) { 
-		$this->x = intval($x); $this->y = intval($y); 
-		$this->w = intval($w); $this->h = intval($h); 
-	}
-	function __get($key) {
-		if (isset($this->{$key})) return $this->{$key};
-		throw new BadPropertyException($key);
-	}
-	function getRect() { 
-		return array($this->x, $this->y, $this->w, $this->h); 
-	}
-}
-
-function point($x,$y) {
-	return new Point($x,$y);
-}
-function rect($x,$y,$w,$h) {
-	return new Rect($x,$y,$w,$h);
-}
+using('lepton.graphics.structs');
 
 /**
  * @class Canvas
@@ -801,6 +768,25 @@ class Image extends Canvas {
 			throw new GraphicsException("File not found", GraphicsException::ERR_FILE_NOT_FOUND);
 		}
 
+	}
+
+}
+
+class StringImage extends Canvas {
+
+	/**
+	 * @overload Canvas::__construct()
+	 * @param string $filename The file to load
+	 * @throws GraphicsException
+	 */
+	function __construct($string) {
+		$img = @imagecreatefromstring($string);
+		if ($img) {
+			$this->setImage($img);
+			$this->gotimage = true;
+		} else {
+			throw new GraphicsException("Failed to load the image.", GraphicsException::ERR_LOAD_FAILURE);
+		}
 	}
 
 }

@@ -1,5 +1,8 @@
 <?php
 
+using('lepton.graphics.canvas');
+using('lepton.net.httprequest');
+
 class QRCode {
 
 	const ECC_LOW='L';
@@ -53,6 +56,12 @@ class QRCode {
 	 * @return Canvas The canvas contianing the QR code
 	 */
 	public function getImage() {
-		return new Image($this->getImageUrl());
+		$irequest = new HttpRequest($this->getImageUrl());
+		if ($irequest) {
+			$img = new StringImage($irequest->getResponse());
+			if ($img) return $img;
+			throw new BaseException("Could not create canvas from response");
+		}
+		throw new BaseException("Error requesting QR Code");
 	}
 }
