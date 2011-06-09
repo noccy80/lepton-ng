@@ -4,6 +4,7 @@
 set_time_limit(0);
 
 using('lepton.cli.debug');
+using('lepton.system.process');
 
 interface IConsoleApplication {
     function main($argc,$argv);
@@ -432,5 +433,4 @@ class ConsoleExceptionHandler extends ExceptionHandler {
 }
 
 Lepton::setExceptionHandler('ConsoleExceptionHandler');
-Logger::registerFactory(new ConsoleLoggerFactory());
 
