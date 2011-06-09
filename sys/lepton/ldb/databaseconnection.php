@@ -46,7 +46,7 @@ class DatabaseConnection {
         Database::$queries['QUERYING']++;
         $queryresult = $this->conn->query($sql);
 
-        return $queryresult['data'];
+        return (array)$queryresult['data'];
 
     }
 

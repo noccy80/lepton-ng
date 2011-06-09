@@ -1294,7 +1294,7 @@ abstract class arr {
 
     static function bucketize(array $array,$index) {
         $ret = array();
-        foreach($array as $item) {
+        foreach((array)$array as $item) {
             $ret[$item[$index]][] = $item;
         }
         return $ret;
