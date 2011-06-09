@@ -351,6 +351,11 @@ function __deprecated($oldfunc, $newfunc = null) {
 
 }
 
+function filename($filename) {
+    return pathinfo($filename, PATHINFO_FILENAME);
+}
+function __filename($filename) { return filename($filename); }
+
 function __fileext($filename) {
     return pathinfo($filename, PATHINFO_EXTENSION);
 }
@@ -425,7 +430,18 @@ class UnsupportedPlatformException extends BaseException { }
 class FunctionNotSupportedException extends BaseException { }
 class SystemException extends BaseException { }
 class ClassNotFoundException extends BaseException { }
-class BadPropertyException extends BaseException { }
+class BadPropertyException extends BaseException { 
+	function __construct($cname,$pname=null) {
+		if (!$pname) { $this->message = $cname; return; }
+		$this->message = sprintf("No property %s in class %s", $pname, $cname);
+	}
+}
+class ProtectedPropertyException extends BaseException { 
+	function __construct($cname,$pname=null) {
+		if (!$pname) { $this->message = $cname; return; }
+		$this->message = sprintf("Property %s in class %s is protected", $pname, $cname);
+	}
+}
 class BadArgumentException extends BaseException { }
 class CriticalException extends BaseException { }
 class SecurityException extends CriticalException { 
@@ -1697,7 +1713,13 @@ abstract class Logger {
     }
 
     public static function registerFactory(LoggerFactory $factory) {
-		self::$_loggers[] = $factory;
+        foreach(self::$_loggers as $logger) {
+            if (typeOf($logger) == typeOf($factory)) {
+                logger::warning('Attempting to registering logger %s twice',typeOf($factory));
+                return;
+            }
+        }
+        self::$_loggers[] = $factory;
     }
 
     private static function __log($prio, $msg) {

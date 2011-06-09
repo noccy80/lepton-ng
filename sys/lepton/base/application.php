@@ -20,8 +20,15 @@ logger::registerFactory(new ConsoleLoggerFactory());
  *
  */
 abstract class ConsoleApplication extends Application implements IConsoleApplication {
+
     protected $_args;
     protected $_params;
+    protected $_pidfile;
+
+    const PROCESS_RUNNING = 0;
+    const PROCESS_CLEAR = 1;
+    const PROCESS_STALE = 2;
+
     /**
      * @brief Show usage information on the command.
      *
@@ -247,6 +254,40 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
     function sleep($ms=100) {
         usleep($ms*1000);
     }
+
+    function checkPidFile($pidfile=null) {
+        if ($pidfile == null) {
+            if ($this->_pidfile) {
+                $pidfile = $this->_pidfile;
+            } else {
+                $pidfile = $this->getName().'.pid';
+            }
+        }
+        logger::debug('Checking pidfile: %s', $pidfile);
+        // Check if the process exist
+        if (file_exists($pidfile)) {
+            $pid = file_get_contents($pidfile);
+            $p = new Process($pid);
+            logger::debug(' - Inspecting pid %d', $pid);
+            if ($p->exists()) {
+                // Already running
+               return self::PROCESS_RUNNING;
+            }
+            unlink($pidfile);
+            $retval = self::PROCESS_STALE;
+        } else {
+            $retval = self::PROCESS_CLEAR;
+        }
+        $tp = new Process();
+        file_put_contents($pidfile, $tp->getPid());
+        $this->_pidfile = $pidfile;
+        return $retval;
+    }
+
+    function __destruct() {
+        if ($this->_pidfile) unlink($this->_pidfile);
+    }
+
 }
 
 interface IConsoleService {

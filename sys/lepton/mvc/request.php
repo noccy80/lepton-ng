@@ -277,6 +277,30 @@ class Request {
         if (!isset($_SERVER['REQUEST_METHOD'])) return (count($_GET)>0);
         return ($_SERVER['REQUEST_METHOD'] == 'GET');
     }
+    
+    /**
+     * @brief Return the upper case http method
+     *
+     * @return string The request method
+     */
+    static function getRequestMethod() {
+        if (!isset($_SERVER['REQUEST_METHOD'])) {
+        	if (count($_POST)>0) { 
+				$method = 'POST';        	
+        	} elseif (count($_GET)>0) {
+        		$method = 'GET';
+        	} else {
+        		$method = null;
+        	}
+        } else {
+        	if (arr::hasKey($_SERVER,'REQUEST_METHOD')) {
+        		$method = strToUpper($_SERVER['REQUEST_METHOD']);
+        	} else {
+        		$method = null;
+        	}
+        }
+    	return $method;
+    }
 
     /**
      * @brief Inspect the state of the request
