@@ -65,3 +65,7 @@ class QRCode {
 		throw new BaseException("Error requesting QR Code");
 	}
 }
+
+function QRCode($size,$data,$ecc=QRCode::ECC_LOW) {
+	return new QRCode($size,$data,$ecc);
+}

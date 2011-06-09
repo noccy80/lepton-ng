@@ -4,6 +4,8 @@ config::def('lepton.net.mail.from', '"Local Lepton Installation" <lepton@localho
 config::def('lepton.net.mail.smtpserver','localhost');
 config::def('lepton.net.mail.backend','smtp');
 
+using('lepton.mvc.response'); // has content type code for now
+
 /**
  * @class MailMessage
  * @brief Constructs a MIME encapsulated message
@@ -12,7 +14,7 @@ config::def('lepton.net.mail.backend','smtp');
  */
 class MailMessage {
     const KEY_MAIL_FROM = 'lepton.net.mail.from';
-    private $recipient;
+    private $recipients;
     private $subject;
     private $body;
     /**
@@ -22,8 +24,8 @@ class MailMessage {
      * @param String $subject The subject of the message
      * @param Mixed $body The message body as a string or a IMimeEntity class
      */
-    public function __construct($recipient,$subject,IMimeEntity $body=null) {
-        $this->recipient = (array)$recipient;
+    public function __construct($recipients,$subject,IMimeEntity $body=null) {
+        $this->recipients = (array)$recipients;
         $this->subject = $subject;
         $this->body = $body;
     }
@@ -32,14 +34,21 @@ class MailMessage {
         $headers = $this->buildHeaders();
         $headerstr = '';
         foreach($headers as $k=>$v) {
-            $headerstr.=sprintf("%s: %s\r\n",$k,$v);
+            if ($k) 
+	            $headerstr.=sprintf("%s: %s\r\n",$k,$v);
+            else
+                    $headerstr.=sprintf("%s\r\n",$v);
         }
         $message = (string)$this->body;
         return $headerstr.$message;
     }
     
     private function buildRecipientList() {
-        return array();
+        $rep = array();
+        foreach($this->recipients as $v) {
+            $rep[] = sprintf("To: %s",$v);
+	}
+        return $rep;
     }
     
     /**
@@ -194,16 +203,16 @@ class MimeAttachment implements IMimeEntity {
     
     function __construct($filename,Array $options=null) {
         $this->filename = $filename;
-        $this->options = $options;
+        $this->options = (array)$options;
         if (!file_exists($filename)) throw new FileNotFoundException();
     }
     function __toString() {
         $headers = array(
-            'content-type' => 'foo/bar',
+            'content-type' => response::contentTypeFromFile($this->filename),
             'content-transfer-encoding' => 'base64'
         );
         $headersstr = '';
-        $content = base64_encode(file_get_contents($filename));
+        $content = base64_encode(file_get_contents($this->filename));
         foreach($headers as $k=>$v) { $headersstr.=$k.': '.$v."\r\n"; }
         return $headersstr."\r\n".$content;
     }
