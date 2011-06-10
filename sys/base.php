@@ -1662,6 +1662,31 @@ class ConsoleLoggerFactory extends LoggerFactory {
 
 }
 
+class FileLoggerFactory extends LoggerFactory {
+
+	private $filename = null;
+
+	private static $level = array(
+		'BASE','EMERG','ALERT','CRIT','WARN','NOTICE','INFO','DEBUG'
+	);
+
+	function __construct($filename) {
+		$this->filename = filename;
+	}
+
+	function __logMessage($prio,$msg) {
+		$ts = @date("M-d H:i:s", time());
+		$lines = explode("\n", $msg);
+		$fh = fopen($this->filename,'w+');
+		foreach ($lines as $line) {
+			fprintf($fh, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
+			//fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
+		}
+		fclose($this->file);
+	}
+
+}
+
 abstract class Logger {
 
     static $_loggers = array();
