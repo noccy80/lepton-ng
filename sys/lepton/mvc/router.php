@@ -61,7 +61,7 @@ abstract class Router implements IRouter {
          }
         $secure = true;
         // Parse query string
-        if (strpos($uri,'?')) {
+		if (strpos($uri,'?')) {
             $base = substr($uri,0,strpos($uri,'?'));
             $rest = substr($uri,strpos($uri,'?') + 1);
             // Apache mod_rewrite workaround for existing folders - requests
@@ -85,6 +85,12 @@ abstract class Router implements IRouter {
                 $uri = $base;
             }
         }
+		
+		// Quick fix for first index being '/index_php' when invoked via
+		// apache - hopefully sorts bug with php oauth.
+		if (arr::hasKey($_GET,'/index_php')) {
+			array_shift($_GET); array_shift($_GET);
+		}
 
 		$secure = isset($_SERVER['HTTPS']);
 
