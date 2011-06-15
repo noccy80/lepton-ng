@@ -37,6 +37,11 @@ class MvcExceptionHandler extends ExceptionHandler {
 
         header('HTTP/1.1 501 Server Error', true);
 
+        if (($_SERVER['HTTPS'] != 'off') && ($_SERVER['HTTPS'] != null)) {
+            $ssl = 'Yes ('.$_SERVER['SSL_TLS_SNI'].')';
+        } else {
+            $ssl = 'No';
+        }
         $id = uniqid();
         $dbg = sprintf("Unhandled exception: (%s) %s\n  in %s:%d", get_class($e), $e->getMessage(), str_replace(SYS_PATH,'',$e->getFile()), $e->getLine())
             . Console::backtrace(0,$e->getTrace(),true)
@@ -54,6 +59,7 @@ class MvcExceptionHandler extends ExceptionHandler {
             . "Request method: ".$_SERVER['REQUEST_METHOD']."\n"
             . "Remote IP: ".$_SERVER['REMOTE_ADDR']." (".gethostbyaddr($_SERVER['REMOTE_ADDR']).")\n"
             . "Hostname: ".$_SERVER['HTTP_HOST']."\n"
+            . "Secure: ".$ssl."\n"
             . "Referrer: ".(isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'null')."\n"
             . sprintf("Running as: %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid())."\n"
             . sprintf("Server: %s", $_SERVER['SERVER_SOFTWARE'])." (".php_sapi_name().")\n"

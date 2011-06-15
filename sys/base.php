@@ -672,6 +672,7 @@ class Globals {
 	private function __construct() { }
 	
 	function get($key) {
+		if (!self::$globals) return null;
 		if (arr::hasKey(self::$globals,$key)) return self::$globals[$key];
 		return null;
 	}

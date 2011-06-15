@@ -181,6 +181,9 @@
                 $location = $to; // Absolute URL
             } else {
                 $schema = $_SERVER['SERVER_PORT']=='443'?'https':'http';
+                if (($_SERVER['HTTPS'] != null) && ($_SERVER['HTTPS'] != 'off'))
+			$schema = 'https';
+		else	$schema = 'http';
                 $host = strlen($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:$_SERVER['SERVER_NAME'];
                 if (substr($to,0,1)=='/') {
                     $location = "$schema://$host$to";
