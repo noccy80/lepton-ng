@@ -54,9 +54,12 @@ class PieChart extends Chart {
 			$ch = rgb($palette[$ci]);
 			$cs = hsv($ch);
 			$cs->value = $cs->value - 30;
+			if (arr::hasKey($labels,$n))
+				$l = $labels[$n];
+				else $l = $n;
 			$data[] = array(
 				'key' => $key,
-				'label' => $labels[$n],
+				'label' => $l,
 				'c1' => $ch,
 				'c2' => $cs,
 				'sa' => $sa,

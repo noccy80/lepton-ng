@@ -30,19 +30,27 @@ class MailMessage {
         $this->body = $body;
     }
 
+    /**
+     *
+     *
+     */
     public function getMessage() {
         $headers = $this->buildHeaders();
         $headerstr = '';
         foreach($headers as $k=>$v) {
             if ($k) 
-	            $headerstr.=sprintf("%s: %s\r\n",$k,$v);
+                $headerstr.=sprintf("%s: %s\r\n",$k,$v);
             else
-                    $headerstr.=sprintf("%s\r\n",$v);
+                $headerstr.=sprintf("%s\r\n",$v);
         }
         $message = (string)$this->body;
         return $headerstr.$message;
     }
     
+    /**
+     *
+     *
+     */
     private function buildRecipientList() {
         $rep = array();
         foreach($this->recipients as $v) {
@@ -140,7 +148,7 @@ class MimeMultipartEntity implements IMimeEntity {
         $args = func_get_args();
         $this->parts = $args;
     }
-    
+
     /**
      * @brief Cast the multipart entity to a string
      *
@@ -159,7 +167,7 @@ class MimeMultipartEntity implements IMimeEntity {
         }
         return $body;
     }
-    
+
     /**
      * @brief Add a message part to the message
      *
@@ -171,16 +179,30 @@ class MimeMultipartEntity implements IMimeEntity {
 }
 
 
-class MimeEntity implements IMimeEntity { 
+/**
+ *
+ *
+ */
+class MimeEntity implements IMimeEntity {
     private $mimetype;
     private $content;
     private $options;
+
+    /**
+     *
+     *
+     */
     function __construct($content,$mimetype=null,Array $options=null) {
         // TODO: Encode with QuotedPrintable as needed
         $this->options = (array)$options;
         $this->mimetype = $mimetype;
         $this->content = $content;
     }
+
+    /**
+     *
+     *
+     */
     function __toString() {
         $headers = array();
         $extra = (arr::hasKey($this->options,'charset'))?';charset='.$this->options['charset']:'';
@@ -198,14 +220,24 @@ class MimeEntity implements IMimeEntity {
  *
  */
 class MimeAttachment implements IMimeEntity {
+
     private $filename;
     private $options;
-    
+
+    /**
+     *
+     *
+     */
     function __construct($filename,Array $options=null) {
         $this->filename = $filename;
         $this->options = (array)$options;
         if (!file_exists($filename)) throw new FileNotFoundException();
     }
+
+    /**
+     *
+     *
+     */
     function __toString() {
         $headers = array(
             'content-type' => response::contentTypeFromFile($this->filename),

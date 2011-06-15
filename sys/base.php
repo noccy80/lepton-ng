@@ -1741,7 +1741,7 @@ abstract class Logger {
     public static function registerFactory(LoggerFactory $factory) {
         foreach(self::$_loggers as $logger) {
             if (typeOf($logger) == typeOf($factory)) {
-                logger::warning('Attempting to registering logger %s twice',typeOf($factory));
+                logger::warning('Attempting to register logger %s twice',typeOf($factory));
                 return;
             }
         }
