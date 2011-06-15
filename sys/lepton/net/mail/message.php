@@ -212,7 +212,7 @@ class MimeAttachment implements IMimeEntity {
             'content-transfer-encoding' => 'base64'
         );
         $headersstr = '';
-        $content = base64_encode(file_get_contents($this->filename));
+        $content = chunk_split(base64_encode(file_get_contents($this->filename)));
         foreach($headers as $k=>$v) { $headersstr.=$k.': '.$v."\r\n"; }
         return $headersstr."\r\n".$content;
     }
