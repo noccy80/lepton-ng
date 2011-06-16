@@ -164,3 +164,11 @@ abstract class Controller implements IController {
 
 }
 
+abstract class HttpProtectedController extends Controller {
+    function __construct() {
+        if (!user::isAuthenticated()) {
+            user::authenticate(new HttpAuthentication());
+        }
+        parent::__construct();
+    }
+}
