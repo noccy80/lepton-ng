@@ -3,40 +3,37 @@
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>'
 ));
 
-    // Lepton MVC bootstrapper
+// Lepton MVC bootstrapper
+using('lepton.mvc.model');
+using('lepton.mvc.view');
+using('lepton.mvc.controller');
+using('lepton.mvc.request');
+using('lepton.mvc.response');
+using('lepton.mvc.session');
+using('lepton.user.authentication');
+using('lepton.mvc.routers.defaultrouter');
+using('lepton.mvc.templates');
+using('lepton.mvc.document');
+using('lepton.mvc.forms');
+using('lepton.mvc.content');
+using('lepton.mvc.secpolicy');
+using('lepton.mvc.viewstate');
+// Web libraries
+using('lepton.web.*');
 
-    ModuleManager::load('lepton.mvc.model');
-    ModuleManager::load('lepton.mvc.view');
-    ModuleManager::load('lepton.mvc.controller');
-    ModuleManager::load('lepton.mvc.request');
-    ModuleManager::load('lepton.mvc.response');
-    ModuleManager::load('lepton.mvc.session');
-    ModuleManager::load('lepton.user.authentication');
-    ModuleManager::load('lepton.mvc.routers.defaultrouter');
-    ModuleManager::load('lepton.mvc.templates');
-    ModuleManager::load('lepton.mvc.document');
-    ModuleManager::load('lepton.mvc.forms');
-    ModuleManager::load('lepton.mvc.content');
-    ModuleManager::load('lepton.mvc.secpolicy');
-    ModuleManager::load('lepton.mvc.viewstate');
+class MvcApplication extends Application {
+	const KEY_MVC_ROUTER = 'lepton.mvc.router';
+	static $app;
+	function run($app='app') {
+		MvcApplication::$app = $app;
+		Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking router...');
+		// Create new router and invoke it
+		response::setStatus(200);
+		$router = config::get(self::KEY_MVC_ROUTER,'DefaultRouter');
+		$r = new $router();
+		$r->route();
+		return 0;
+	}
+}
 
-    ModuleManager::load('lepton.web.*');
-
-    class MvcApplication extends Application {
-        const KEY_MVC_ROUTER = 'lepton.mvc.router';
-        static $app;
-        function run($app='app') {
-            MvcApplication::$app = $app;
-            Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking router...');
-            // Create new router and invoke it
-            response::setStatus(200);
-            $router = config::get(self::KEY_MVC_ROUTER,'DefaultRouter');
-            $r = new $router();
-            $r->route();
-            return 0;
-        }
-    }
-
-    declare(encoding = 'UTF-8');
-
-?>
+declare(encoding = 'UTF-8');
