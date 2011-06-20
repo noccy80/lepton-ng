@@ -248,10 +248,19 @@ class MimeAttachment implements IMimeEntity {
      *
      */
     function __toString() {
+    
+    	// Resolve the content disposition as per RFC 2183
+    	if (arr::hasKey($this->options,'inline') && ($this->options['inline'] == true)) {
+    		$disposition = 'inline';
+    	} else {
+    		$disposition = 'attachment; filename="'.basename($this->filename).'"';
+    	}
+    	
+    	// Assemble the headers
         $headers = array(
-            'content-type' => response::contentTypeFromFile($this->filename),
-            'content-transfer-encoding' => 'base64',
-            'content-disposition' => 'attachment; filename="'.basename($this->filename).'"'
+            'Content-Type' => response::contentTypeFromFile($this->filename),
+            'Content-Transfer-Encoding' => 'base64',
+            'Content-Disposition' => $disposition
         );
         $headersstr = '';
         $content = chunk_split(base64_encode(file_get_contents($this->filename)));
