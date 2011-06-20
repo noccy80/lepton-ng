@@ -3,14 +3,19 @@
 
 require('sys/base.php');
 
-using('lepton.net.mail.*');
+config::set('lepton.net.mail.from', '"Local Lepton Installation" <lepton@noccylabs.info>');
 
-$m = new MailMessage('bob@domain.com', 'Test message', new MimeMultipartEntity(
+using('lepton.net.mail.*');
+using('lepton.net.protocol.smtp');
+
+$m = new MailMessage('noccy@chillat.net', 'Test message', new MimeMultipartEntity(
 	new MimeEntity('This is a mime text entity', 'text/plain'),
 	new MimeEntity('This is a mime <b>html</b> entity', 'text/html', array(
 		'charset' => 'utf8'
 	)),
-	new MimeAttachment('mimetest.p')
+	new MimeAttachment('colortest-hsl.png')
 ));
 
-echo $m->getMessage();
+$s = new SmtpConnection('127.0.0.1');
+$s->sendMessage('lepton@noccylabs.info', 'noccy@chillat.net', $m->getMessage());
+unset($s);

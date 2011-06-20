@@ -1,8 +1,6 @@
 <?php
 
 config::def('lepton.net.mail.from', '"Local Lepton Installation" <lepton@localhost>');
-config::def('lepton.net.mail.smtpserver','localhost');
-config::def('lepton.net.mail.backend','smtp');
 
 using('lepton.mvc.response'); // has content type code for now
 
@@ -47,6 +45,14 @@ class MailMessage {
         return $headerstr.$message;
     }
     
+    public function getSubject() {
+    	return $this->subject;
+    }
+    
+    public function getRecipients() {
+    	return $this->recipients;
+    }
+    
     /**
      *
      *
@@ -55,7 +61,7 @@ class MailMessage {
         $rep = array();
         foreach($this->recipients as $v) {
             $rep[] = sprintf("To: %s",$v);
-	}
+		}
         return $rep;
     }
     
@@ -74,7 +80,8 @@ class MailMessage {
     private function buildHeaders() {
         $headers = array(
             'MIME-Version' => '1.0 (Lepton Mail)',
-            'From' => config::get(self::KEY_MAIL_FROM)
+            'From' => config::get(self::KEY_MAIL_FROM),
+            'Subject' => $this->subject
         );
         $address = $this->buildRecipientList();
         $headers = array_merge($headers,$address);
@@ -160,12 +167,14 @@ class MimeMultipartEntity implements IMimeEntity {
      */
     function __toString() {
         // Assemble headers and encode the body parts
-        $body = "\r\n--".$this->boundary."--\r\n";
+        $head = 'Content-Type: '.$this->contenttype."\r\n";
+        $body = '';
         foreach((array)$this->parts as $part) {
+            $body.= "\r\n--".$this->boundary."\r\n";
             $body.= (string)$part;
-            $body.= "\r\n--".$this->boundary."--\r\n";
         }
-        return $body;
+        $body.= "--".$this->boundary."--\r\n";
+	    return $head.$body;
     }
 
     /**
@@ -210,7 +219,7 @@ class MimeEntity implements IMimeEntity {
 
         $headersstr = '';
         foreach($headers as $k=>$v) { $headersstr.=$k.': '.$v."\r\n"; }
-        return $headersstr."\r\n".$this->content;
+        return $headersstr."\r\n".$this->content."\r\n";
     }
 }
 
@@ -241,12 +250,13 @@ class MimeAttachment implements IMimeEntity {
     function __toString() {
         $headers = array(
             'content-type' => response::contentTypeFromFile($this->filename),
-            'content-transfer-encoding' => 'base64'
+            'content-transfer-encoding' => 'base64',
+            'content-disposition' => 'attachment; filename="'.basename($this->filename).'"'
         );
         $headersstr = '';
         $content = chunk_split(base64_encode(file_get_contents($this->filename)));
         foreach($headers as $k=>$v) { $headersstr.=$k.': '.$v."\r\n"; }
-        return $headersstr."\r\n".$content;
+        return $headersstr."\r\n".$content."\r\n";
     }
 }
 
