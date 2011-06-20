@@ -24,9 +24,10 @@ class Acl {
      * @param mixed $objectid One or more object IDs as string or array.
      * @return AclList The access control list for the object.
      */
-    function getAclForObject($objectid) {
+    function getAclForObject(AclObject $object) {
+		$objectid = $object->getObjectUuid();
 		$db = new DatabaseConnection();
-		$acl = $db->getRows("SELECT * FROM acl WHERE objectuuid=%s", $objectid);
+		$acl = $db->getRows("SELECT * FROM acl WHERE object=%s", $objectid);
     }
 
     /**
@@ -36,7 +37,7 @@ class Acl {
      */
     function getAclForUser($userid) {
 		$db = new DatabaseConnection();
-		$acl = $db->getRows("SELECT * FROM acl WHERE useruuid=%s", $userid);
+		$acl = $db->getRows("SELECT * FROM acl WHERE subject=%s", $userid);
     }
 
     /**
@@ -47,7 +48,7 @@ class Acl {
      */
     function hasAccess($userid, $objectid, $default=false) {
 		$db = new DatabaseConnection();
-		$acl = $db->getSingleRow("SELECT * FROM acl WHERE objectuuid=%s AND useruuid=%s", $objectid, $userid);
+		$acl = $db->getSingleRow("SELECT * FROM acl WHERE object=%s AND subject=%s", $objectid, $userid);
 		if ($acl) {
 			// Check values
 		} else {

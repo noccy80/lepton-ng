@@ -719,7 +719,7 @@ class Canvas implements IDrawable,ICanvas {
 	 * @param integer $width The width of the drawing
 	 * @param integer $height The height of the drawing
 	 */
-	function draw(Canvas $dest,$x=null,$y=null,$width=null,$height=null) {
+	function draw(Canvas $dest,$x=null,$y=null,$width=null,$height=null,$alpha=false) {
 
 		$dstimage = $dest->getImage();
 		if (!$x) $x = 0;
@@ -727,8 +727,9 @@ class Canvas implements IDrawable,ICanvas {
 		if (!$width) $width = $this->width;
 		if (!$height) $height = $this->height;
 
-		imagecopy($dstimage, $this->himage, $x, $y, 0, 0, $width, $height);
-
+		if (!$alpha) imagecopy($dstimage, $this->himage, $x, $y, 0, 0, $width, $height);
+			else imagecopymerge_alpha($dstimage, $this->himage, $x, $y, 0, 0, $width, $height,0);
+		
 	}
 
 	function getColorAt($x,$y) {
@@ -789,4 +790,24 @@ class StringImage extends Canvas {
 		}
 	}
 
+}
+
+
+
+/**
+ * PNG ALPHA CHANNEL SUPPORT for imagecopymerge();
+ * @author Sina Salek <http://sina.salek.ws/en/contact>
+ * @todo Merge with applyfilter function
+ */
+function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct){
+	$opacity=$pct;
+	$w = imagesx($src_im);
+	$h = imagesy($src_im);
+
+	$cut = imagecreatetruecolor($src_w, $src_h);
+	imagecopy($cut, $dst_im, 0, 0, $dst_x, $dst_y, $src_w, $src_h);
+	$opacity = 100 - $opacity;
+
+	imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w, $src_h);
+	imagecopymerge($dst_im, $cut, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $opacity);
 }

@@ -8,7 +8,7 @@ class mvc {
 
 	function utfdecode($str) {
 		$enc = mb_detect_encoding($str);
-		if ($enc == 'UTF-8') return utf8_decode($str)
+		if ($enc == 'UTF-8') return utf8_decode($str);
 		return $str;
 	}
 
