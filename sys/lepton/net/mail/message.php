@@ -145,13 +145,13 @@ interface IMimeEntity {
  * Compliant with RFC2046
  */
 class MimeMultipartEntity implements IMimeEntity {
-    private $contenttype = null;
-    private $boundary = null;
-    private $parts = array();
+    protected $contenttype = null;
+    protected $boundary = null;
+    protected $parts = array();
     function __construct() {
         // Create a unique boundary
         $this->boundary = sprintf('%08x%06x',time(),rand()*0xFFFFFF);
-        $this->contenttype = sprintf('multipart/alternative; boundary="%s"',$this->boundary);
+        $this->contenttype = sprintf('multipart/mixed; boundary="%s"',$this->boundary);
         $args = func_get_args();
         $this->parts = $args;
     }
@@ -184,6 +184,16 @@ class MimeMultipartEntity implements IMimeEntity {
      */
     function addMessagePart(IMimeEntity $part) {
         $this->parts[] = $part;
+    }
+}
+
+class MimeAlternativeEntity extends MimeMultipartEntity {
+    function __construct() {
+        // Create a unique boundary
+        $this->boundary = sprintf('%08x%06x',time(),rand()*0xFFFFFF);
+        $this->contenttype = sprintf('multipart/alternative; boundary="%s"',$this->boundary);
+        $args = func_get_args();
+        $this->parts = $args;
     }
 }
 

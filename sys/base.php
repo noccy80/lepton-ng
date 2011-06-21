@@ -1295,6 +1295,10 @@ abstract class float {
 
 abstract class arr {
 
+    static function merge($dest, $array) {
+        return (array_merge($array,$dest));
+    }
+
     static function apply($dest, $array) {
         foreach ($array as $k => $v) {
             $dest[$k] = $v;
