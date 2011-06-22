@@ -3,6 +3,13 @@
 using('lepton.graphics.canvas');
 using('lepton.net.httprequest');
 
+/**
+ * @class QRCode
+ * @brief Generate QR-Codes (Quick Response) embedding an URL or a message.
+ *
+ * @author Christopher Vagnetoft
+ * @package lepton.google.qrcode
+ */
 class QRCode {
 
 	const ECC_LOW='L';
@@ -49,10 +56,6 @@ class QRCode {
 	/**
 	 * @brief Return the canvas containing the QR code
 	 *
-	 * @todo This function is a quick-hack, returning the canvas by calling
-	 *   on new Image() to load it. This is depending on whether fopen can
-	 *   operate on URLs and thus the function need to be optimized and
-	 *   improved to use curl/httprequest where possible.
 	 * @return Canvas The canvas contianing the QR code
 	 */
 	public function getImage() {

@@ -14,7 +14,7 @@ using('lepton.net.mailbox');
  *
  * @see DatabaseMailStorage
  * @author Christopher Vagnetoft <noccy@chillat.net>
- * @package lepton.net.mail
+ * @package lepton.net.mailbox
  *
  */
 class FilesystemMailStorage extends MailStorage {

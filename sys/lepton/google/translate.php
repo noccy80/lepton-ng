@@ -3,6 +3,13 @@
 using('lepton.utils.translationservice');
 using('lepton.net.httprequest');
 
+/**
+ * @class GoogleTranslate
+ * @brief Translate strings using Google's tranlation service
+ *
+ * @author Christopher Vagnetoft
+ * @package lepton.google.translate
+ */
 class GoogleTranslate extends TranslationService {
 
 	private $fromlang = null;

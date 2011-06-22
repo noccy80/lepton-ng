@@ -1,0 +1,15 @@
+PANTONE® and other Pantone LLC. properties are trademarks or registered 
+trademark of Pantone LLC. in the United States and other countries.
+Any omission of such trademarks from any product is regretted and is not 
+intended as an infringement on such trademarks. Pantone LLC. is a wholly
+owned subsidiary of X-Rite, Incorporated. © 2009 X-Rite, Incorporated 
+and Pantone LLC. All rights reserved
+
+To convert the data set (tab-separated input file) based on the key "pantone"
+to pantone.sd, issue the following command:
+
+$ bin/csv2pdf -o sys/lepton/graphics/colorspaces/pantone.sd -k pantone sys/lepton/graphics/colorspaces/pantone.dat
+
+If the dataset is missing, please copy the table of a website such as
+http://www.umsiko.co.za/links/color.html and save it as pantone.dat or
+similar for using with above command line.

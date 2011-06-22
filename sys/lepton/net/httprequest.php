@@ -112,7 +112,11 @@ class HttpRequest {
 			}
 		}
 	}
-	
+
+	function __toString() {
+		return $this->getResponse();
+	}
+
 	function getResponse() {
 		return $this->ret['content'];
 	}

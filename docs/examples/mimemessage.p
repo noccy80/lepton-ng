@@ -1,5 +1,7 @@
 #!/usr/bin/php
-<?php require('sys/base');
+<?php 
+
+require('sys/base.php');
 
 // Change this line to cause the message to be sent to the specific recipient
 // rather than output to the console.

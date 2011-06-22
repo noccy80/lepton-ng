@@ -6,9 +6,11 @@ using('lepton.mvc.response'); // has content type code for now
 
 /**
  * @class MailMessage
+ * @example mimemessage.p
  * @brief Constructs a MIME encapsulated message
  *
- * Compliant with RFC2045 and RFC822
+ * The created message is compliant with RFC2045 and RFC822 and can be sent
+ * using any SMTP backend.
  */
 class MailMessage {
     const KEY_MAIL_FROM = 'lepton.net.mail.from';

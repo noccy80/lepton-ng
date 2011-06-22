@@ -16,6 +16,7 @@ interface IChart {
  *
  * @property width The width of the graph
  * @property height The height of the graph
+ * @package lepton.google.charting
  */
 abstract class GChart {
 
