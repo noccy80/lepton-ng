@@ -12,6 +12,7 @@ using('lepton.mvc.response'); // has content type code for now
  */
 class MailMessage {
     const KEY_MAIL_FROM = 'lepton.net.mail.from';
+    const NEW_LINE = "\n";
     private $recipients;
     private $subject;
     private $body;
@@ -26,6 +27,10 @@ class MailMessage {
         $this->recipients = (array)$recipients;
         $this->subject = $subject;
         $this->body = $body;
+    }
+    
+    public function __toString() {
+    	return $this->getMessage();
     }
 
     /**

@@ -24,8 +24,11 @@ class SmtpConnection {
 	}
 	
 	function sendMessage($from,$to,$body) {
+	
+		// Create the socket and connect to the server
 		$this->ssmtp = new TcpSocket();
 		if ($this->ssmtp->connect($this->server,$this->port)) {
+			// If we are connected, wait for the banner
 			$this->wait();
 			$localhost = config::get('lepton.net.mail.localhost','localhost');
 			logger::debug("Constructing SMTP connection. Identifying as '%s'", $localhost);
@@ -33,8 +36,15 @@ class SmtpConnection {
 		} else {
 			throw new SmtpSocketException("Could not connect to SMTP server");
 		}
+
+		// Make the body conform to RFC specifications
+		$body = str_replace("\r\n","\n",$body);
+		$body = str_replace("\n.","\n..",$body);
+
+		// Send the commands
 		$this->sendCommand('MAIL FROM: '.$from);
-		$this->sendCommand('RCPT TO: '.$to);
+		foreach((array)$to as $top) 
+			$this->sendCommand('RCPT TO: '.$top);
 		$this->sendData($body);
 	}
 	
@@ -61,12 +71,12 @@ class SmtpConnection {
 		foreach($ret as $rs) {
 			if (strlen($rs)>0)logger::debug('SMTP %s < %s', $this->smtpserver, $rs);
 		}
-		$status = explode(" ",$ret[0]);
+		$status = $ret[0];
 		// Check status of the command
 		$sv = array(
-			intval($status[0][0]),
-			intval($status[0][1]),
-			intval($status[0][2])
+			intval($status[0]),
+			intval($status[1]),
+			intval($status[2])
 		);
 		if (($sv[0] == 1) || ($sv[0] == 2) || ($sv[0] == 3)) {
 			// Positive response
@@ -76,11 +86,11 @@ class SmtpConnection {
 		elseif (($sv[0] == 4) || ($sv[0] == 5)) {
 			// Negative response
 			logger::debug('SMTP %s : Server indicated error!', $this->smtpserver);
-			throw new SmtpSocketException("Server indicated error: ".$ret[0], $status[0]);
+			throw new SmtpSocketException("Server indicated error: ".$status);
 		}
 		else {
 			logger::debug('SMTP %s : Server does not seem to speak SMTP', $this->smtpserver);
-			throw new SmtpSocketException("Server does not seem to speak SMTP: ".$ret[0]);
+			throw new SmtpSocketException("Server does not seem to speak SMTP: ".$status);
 		}
 		return false;
 	}

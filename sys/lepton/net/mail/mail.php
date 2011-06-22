@@ -12,13 +12,36 @@ interface IMailerBackend {
 	public function sendMessage(MailMessage $message);
 }
 abstract class MailerBackend implements IMailerBackend {
+
 	static function send(MailMessage $message) {
+	
 		$bc = config::get('lepton.net.mail.backend');
 		$b = new $bc();
 		return $b->sendMessage($message);
+		
 	}
+	
 }
-class PearMailerBackend extends MailerBackend {
+
+class LeptonSmtpBackend extends MailerBackend {
+
+	public function sendMessage(MailMessage $message) {
+
+		$smtphost = config::get('lepton.net.mail.smtpserver','localhost');
+		$smtpport = config::get('lepton.net.mail.smtpport',25);
+		$from = 'local lepton <local@lepton.info>';
+		$rcpt = $message->getRecipients();
+
+		$s = new SmtpConnection($smtphost,$smtpport);
+		$s->sendMessage($from, $rcpt, (string)$message);
+		unset($s);
+	
+	}
+
+}
+
+class PearMailBackend extends MailerBackend {
+
 	public function sendMessage(MailMessage $message) {
 
 		@require_once('Mail.php');
@@ -42,10 +65,15 @@ class PearMailerBackend extends MailerBackend {
 		}
 
 	}
+
 }
 
 class Mail {
+
     static function send(MailMessage $message) {
+    
     	MailerBackend::send($message);
+    	
     }
+    
 }
