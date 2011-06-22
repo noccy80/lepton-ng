@@ -8,7 +8,7 @@ class Uuid {
 	const UUID_V3 = 3;
 	const UUID_V4 = 4;
 	const UUID_V5 = 5;
-	const LENGTH = 36; ///< length of a UUID
+	const LENGTH = 37; ///< length of a UUID
 
 	static $urand = null;
 	static $uobject = null;
@@ -273,4 +273,3 @@ class Uuid {
 }
 
 Uuid::initialize();
-
