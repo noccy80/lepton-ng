@@ -301,6 +301,7 @@ class UserRecord {
                 break;
             default:
                 $this->ambient[$key] = $value;
+				$key = 'ambient'; // All ambient properties are, well, ambient.
                 break;
         }
         if (!in_array($key, $this->modified)) {

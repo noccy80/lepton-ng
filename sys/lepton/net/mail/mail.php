@@ -11,6 +11,7 @@ config::def('lepton.net.mail.pear.backend','smtp');
 interface IMailerBackend {
 	public function sendMessage(MailMessage $message);
 }
+
 abstract class MailerBackend implements IMailerBackend {
 
 	static function send(MailMessage $message) {
