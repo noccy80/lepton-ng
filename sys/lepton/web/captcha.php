@@ -101,7 +101,7 @@ class Captcha {
         for ($n = 0; $n < strlen($str); $n++) {
             $f->setAngle(rand(-45,45));
             $c->drawText($f, new RgbColor(rand(230,255),rand(230,255),rand(230,255)),
-                ($wid*($n+1)), 30, substr($str,$n,1));
+                ($wid*($n+1)), 8, substr($str,$n,1));
         }
 
 		if ($saveto) {

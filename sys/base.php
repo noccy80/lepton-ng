@@ -1114,8 +1114,9 @@ class Lepton {
      */
     static function handleShutdown() {
         $error = error_get_last();
-        if (($error['type'] == 1) && (defined('LEPTON_CONSOLE'))) {
+        if (($error['type'] == 1) && LEPTON_CONSOLE) {
             $f = file($error['file']);
+			//printf('<pre>Error: %s',$error['message']);
             foreach ($f as $i => $line) {
                 $mark = (($i + 1) == $error['line']) ? '=> ' : '   ';
                 $f[$i] = sprintf('  %05d. %s', $i + 1, $mark) . $f[$i];
@@ -1129,6 +1130,7 @@ class Lepton {
                 $last = count($f) - 1;
             $source = join("\n", array_slice($f, $first, $last - $first));
             echo "\n" . $source . "\n";
+			//echo '</pre>';
             die();
         } elseif ($error['type'] == 1) {
             echo '<h1>Fatal error</h1><p>A fatal error occured processing your request</p>';
