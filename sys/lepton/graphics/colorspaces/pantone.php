@@ -1,6 +1,6 @@
 <?php
 
-using('lepton.graphics.colorspace');
+using('lepton.graphics.colorspaces.rgb');
 using('lepton.graphics.graphics');
 
 /**
