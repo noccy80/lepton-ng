@@ -14,19 +14,29 @@
 //	haval224,4	haval256,4	haval128,5	haval160,5	haval192,5
 //	haval224,5	haval256,5
 //
-config::set('lepton.user.hashalgorithm','md5');
+config::set('lepton.user.hashalgorithm','sha224');
 //
-// Desired algorithms in order of preference. This option overrides the 
-// hash algorithm option defined above.
+// New style config, number of rounds, algorithms ordered by priority and salt size
 //
-config::set('lepton.user.hashalgorithms', array(
+config::set('lepton.user.hashing.rounds', 4);
+config::set('lepton.user.hashing.saltlen', 16);
+config::set('lepton.user.hashing.algorithms', array(
+	'sha512',
 	'sha256',
+	'snefru256',
 	'ripemd256',
 	'sha224',
 	'whirlpool',
+	'ripemd160',
+	'sha1',
 	'md5'
 ));
 //
 // If users should be disabled by default
 //
 config::set('lepton.user.disabledbydefault', false);
+//
+// Default flags for new users
+//
+config::set('lepton.user.default.flag', '');
+
