@@ -16,6 +16,17 @@
 //
 config::set('lepton.user.hashalgorithm','md5');
 //
+// Desired algorithms in order of preference. This option overrides the 
+// hash algorithm option defined above.
+//
+config::set('lepton.user.hashalgorithms', array(
+	'sha256',
+	'ripemd256',
+	'sha224',
+	'whirlpool',
+	'md5'
+));
+//
 // If users should be disabled by default
 //
 config::set('lepton.user.disabledbydefault', false);
