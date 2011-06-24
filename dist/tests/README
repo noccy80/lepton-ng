@@ -1,0 +1,2 @@
+To run tese tests, make sure that the Lepton SYS folder is symlinked or added
+to your PHP include path so that sys/base.php can be found.
