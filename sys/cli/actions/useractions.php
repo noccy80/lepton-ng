@@ -146,13 +146,13 @@ class UserAction extends Action {
         $ptn = str_replace('*','%',$pattern);
         $db = new DatabaseConnection();
         $results = $db->getRows("SELECT * FROM users WHERE username LIKE %s", $ptn);
-        console::writeLn(__astr("\b{%-20s %-10s %-37s %-5s %s}"), 'Username', 'Flags', 'UUID', 'Act', 'Last login');
+        console::writeLn(__astr("\b{%-5s %-20s %-10s %-37s %-5s %s}"), 'Id', 'Username', 'Flags', 'UUID', 'Act', 'Last login');
         if (!$results) {
             console::writeLn("No matching user records found for %s.", $ptn);
             return;
         }
         foreach($results as $user) {
-            console::writeLn("%-20s %-10s %-37s %-5s %s (from %s)", $user['username'], $user['flags'], $user['uuid'], ($user['active']==1)?'Yes':'No', ($user['lastlogin'])?$user['lastlogin']:'Never', ($user['lastip'])?$user['lastip']:'Nowhere');
+            console::writeLn("%05d %-20s %-10s %-37s %-5s %s (from %s)", $user['id'], $user['username'], $user['flags'], $user['uuid'], ($user['active']==1)?'Yes':'No', ($user['lastlogin'])?$user['lastlogin']:'Never', ($user['lastip'])?$user['lastip']:'Nowhere');
         }
     }
 
