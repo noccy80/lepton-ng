@@ -49,7 +49,11 @@ class XsnpServer {
 }
 
 
+class XsnpServerController extends Controller {
 
+	function index() {
+		$this->server = new XsnpServer();
+		$this->server->xmlrpcRequest();
+	}
 
-
-
+}

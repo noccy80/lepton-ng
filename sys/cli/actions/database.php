@@ -66,6 +66,14 @@ class DatabaseAction extends Action {
         }
         console::writeLn("Creating user...");
         $conn->exec(sprintf("GRANT ALL ON %s.* TO %s@localhost IDENTIFIED BY '%s';", $dbc['database'], $dbc['username'], $dbc['password']));
+        console::writeLn("Importing tables...");
+        $conn->exec("USE ".$dbc['database']);
+        $f = glob(base::basePath().'/dist/sql/*.sql');
+        foreach($f as $fn) {
+            $fc = file_get_contents($fn);
+            console::writeLn(" -> %s", basename($fn));
+            $conn->exec($fc);
+        }
         console::writeLn("All done.");
     }
 }

@@ -31,7 +31,7 @@ class GeopluginResolver {
 
 		$data = unserialize(file_get_contents(sprintf(self::API_QUERY_URL, $ip)));
 		foreach($data as $k=>$v) {
-			$ret[str_replace('geoplugin_','geo:',$k)] = $v;
+			$ret[str_replace('geoplugin_','geo:',strtolower($k))] = $v;
 		}
 		return $ret;
 

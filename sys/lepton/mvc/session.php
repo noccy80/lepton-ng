@@ -116,6 +116,13 @@
 
         }
 
+		/**
+		 * @brief Inspect the state of the request
+		 */
+		static function inspect() {
+		    debug::inspect($_SESSION);
+		}
+
     }
 
     class SessionKey {

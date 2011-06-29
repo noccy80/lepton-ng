@@ -1,9 +1,28 @@
 <?php
 
+config::def('lepton.gallery.mediadir', base::appPath().'/media/');
 config::def('lepton.gallery.cachedir', base::appPath().'/cache/');
+// config::def('lepton.gallery.renderer', array('WatermarkImageFilter','mylogo.png'));
 
 using('lepton.graphics.canvas');
 using('lepton.utils.pagination');
+
+class GalleryItemsTable extends SqlTableSchema {
+	function define() {
+		$this->dropOnCreate();
+		// Table name
+		$this->setName('galleryitems');
+		// Table columns
+		$this->addColumn('id', 'int', self::COL_AUTO | self::KEY_PRIMARY);
+		$this->addColumn('name', 'varchar:160');
+		$this->addColumn('uuid', 'char:37', self::COL_FIXED);
+		$this->addColumn('src','varchar:200');
+		// Indexes
+		$this->addIndex('uuid', array('uuid'));
+		$this->addIndex('src', array('src'));
+	}
+}
+SqlTableSchema::apply(new GalleryItemsTable());
 
 /**
  * @class Gallery
@@ -13,11 +32,15 @@ using('lepton.utils.pagination');
  */
 class Gallery {
 
-	static function getAllTags() {
+	static function get($selection, $paginator=null) {
+		return new GalleryCollection($selection,$paginator);
+	}
+	
+	static function getTagStatus() {
 	    // Return a lsit of all the tags applied
 	}
 	
-	static function getAllCategories() {
+	static function getCollectionStatus() {
 	    // Return a list of all the categories applied
 	}
 	
@@ -103,9 +126,13 @@ class GalleryItem {
         return (array)$this->metadata;
     }
     
-    function getThumbnail($size) {
+    function getThumbnail($width,$height) {
         // Create and return the specified thumbnail, and save a cached copy
         // of the image.
+        $c = new Image($this->filename);
+        $c->resize($width,$height);
+        // Save to cache and return cache filename
+        return 'foo.png';
     }
 
     function getImage($size) {

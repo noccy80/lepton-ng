@@ -8,6 +8,11 @@
  */
 abstract class AuditLog {
 
+	const LOG_SECURITY = 0x80;
+	const LOG_WARNING = 0x40;
+	const LOG_ERROR = 0x20;
+	const LOG_INFORMATIVE = 0x10;
+
 	public static function getLogger($component) {
 		return new AuditLogger($component);
 	}
@@ -34,6 +39,12 @@ class AuditLogger {
 		$sev = serialize($event);
 		// Shove into DB -- echo $sev;
 		echo $cn."\n\n".$sev."\n";
+		$db = new DatabaseConnection();
+		$db->insertRow(
+			"INSERT INTO auditlog ".
+			"eventclass,component,severity,eventdate,data) ".
+			"VALUES (%s,%s,%d,%d,NOW(),%s)",
+			$cn, $event->getComponent(), $event->getSeverity(), $event->getAssociatedUserId(), $sev);
 	}
 
 }
@@ -68,6 +79,13 @@ class AuditEvent {
 	public function getAssociatedUser() {
 		if ($this->_user) {
 			return user::getUser($this->_user);
+		} else {
+			return null;
+		}
+	}
+	public function getAssociatedUserId() {
+		if ($this->_user) {
+			return $this->_user;
 		} else {
 			return null;
 		}

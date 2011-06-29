@@ -17,13 +17,17 @@ class DatabaseConnection {
 		if ($connectionstring == null) {
 			$connectionstring = 'default';
 		}
-		
+		if (is_a($connectionstring, 'DatabaseDriver')) {
+			$this->conn = $connectionstring;
+			logger::debug('%s: Reusing connection...', __CLASS__);
+			return;
+		}
 		if (is_array($connectionstring)) {
 			$config = $connectionstring;
-	        Console::debugEx(LOG_DEBUG1,__CLASS__,"Initializing connection with %s.", $connectionstring['driver']);
+	        logger::debug("%s: Initializing connection with %s.", __CLASS__, $connectionstring['driver']);
 		} else {
 			$config = config::get('lepton.db.'.$connectionstring);
-	        Console::debugEx(LOG_DEBUG1,__CLASS__,"Initializing connection for %s.", $connectionstring);
+	        Console::debugEx("%s: Initializing connection for %s.", __CLASS__, $connectionstring);
 		}
 	
 		$this->conn = DatabaseConnectionPool::getPooledConnection($config);
@@ -217,6 +221,16 @@ class DatabaseConnection {
      */
     function getStatistics() {
     	return Database::$queries;
+    }
+    
+    /**
+     * @brief Return a SQL schema manager to manage the defined schemas
+     * as well as importing new ones.
+     *
+     * @return SqlSchemaManager The schema manager
+     */
+    function getSchemaManager() {
+    	return $this->conn->getSchemaManager();
     }
 
 }

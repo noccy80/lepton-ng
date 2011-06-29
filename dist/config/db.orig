@@ -1,20 +1,19 @@
 <?php __fileinfo("Configuration for my website");
 
-    /**
-     *  Lepton-ng Application Configuration
-     *
-     */
+config::set('lepton.db.default', array(
+// mysql connection
+    'driver'     => 'pdo/mysql',
+    'database'   => 'lepton',
+    'username'   => '',
+    'password'   => '',
+    'hostname'   => 'localhost',
+// sqlite connection
+/*
+    'filename'   => APP_PATH.'/system.sq3',
+*/
+// database clustering role
+    'role'       => 'read write create priority 1'
+));
 
-    config::set('lepton.db.default', array(
-        'driver'     => 'pdo/mysql',
-        'filename'   => APP_PATH.'/system.sq3',
-        'username'   => 'hadmin',
-        'password'   => 'foobar',
-        'hostname'   => 'localhost',
-        'database'   => 'hadmin',
-        'role'       => 'read write create priority 1'
-    ));
+using('lepton.ldb.database');
 
-    ModuleManager::load('lepton.db.database');
-
-?>

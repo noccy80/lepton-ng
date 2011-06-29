@@ -1,6 +1,7 @@
 <?php __fileinfo("PDO Databaase Driver");
 
 using('lepton.ldb.databasedriver');
+using('lepton.ldb.sqlschema');
 
 class PdoDatabaseDriver extends DatabaseDriver {
 
@@ -140,9 +141,99 @@ class PdoDatabaseDriver extends DatabaseDriver {
         $this->autonumber = $this->conn->lastInsertId();
         return $ret;
     }
-    
+        
     function transactionBegin() { }
     function transactionEnd() { }
 
+    function getSchemaManager() {
+		switch($this->driver) {
+			case 'mysql':
+				return new MysqlSchemaManager(new DatabaseConnection($this));
+				break;
+			case 'sqlite':
+				return new SqliteSchemaManager(new DatabaseConnection($this));
+				break;
+		}
+    }
+
+}
+
+class MysqlSchemaManager extends SqlTableSchemaManager { 
+	function apply(SqlTableSchema $schema) {
+		$sdef = $schema->getDefinition();
+		$tname = $sdef['name'];
+		$tdrop = $sdef['drop'];
+		$tcols = $sdef['columns'];
+		$tkeys = $sdef['keys'];
+		// Create table
+		$sql = 'CREATE TABLE '.$tname." (";
+		foreach($tcols as $col) {
+			$sql.= $col['name'].' '.$this->getColType($col['type'],$col['opts']);
+			if ($col != end($tcols)) $sql.= ', ';
+		}
+		foreach($tkeys as $key) {
+			switch($key['type']) {
+				case SqlTableSchema::KEY_PRIMARY:
+					$keystr = ', primary key '; break;
+				case SqlTableSchema::KEY_UNIQUE:
+					$keystr = ', unique key '; break;
+				case SqlTableSchema::KEY_FULLTEXT:
+					$keystr = ', fulltex tindex '; break;
+				case SqlTableSchema::KEY_INDEX:
+					$keystr = ', key '; break;
+			}
+			$keystr.=sprintf('%s(%s)',$key['name'],join(',',$key['cols']));
+			$sql.=$keystr;			
+		}
+		
+		$sql.= ')';
+		if ($tdrop) $this->conn->exec('DROP TABLE '.$tname);
+		$this->conn->exec($sql);
+	}
+	private function getColType($type,$flags) {
+		list($type,$constrain) = explode(':',$type.':');
+		switch(strtolower($type)) {
+			case 'int':
+				if ($constrain) {
+					$otype = sprintf('int(%d)',$constrain);
+				} else {
+					$otype = 'int';
+				}
+				if ($flags & SqlTableSchema::COL_AUTO) {
+					$otype.= ' auto_increment';
+				}
+				break;
+			case 'char':
+			case 'varchar':
+			case 'text':
+				if ($constrain) {
+					if ($flags & SqlTableSchema::COL_FIXED) {
+						$otype = sprintf('char(%d)',$constrain);
+					} else {
+						$otype = sprintf('varchar(%d)',$constrain);
+					}
+				} else {
+					if ($flags & SqlTableSchema::COL_BINARY) {
+						$otype = sprintf('blob');
+					} else {
+						$otype = sprintf('text');
+					}
+				}
+				break;
+			default:
+				logger::warning("Unhandled field type: %s", $type);
+				$otype = '';
+		}
+		if ($flags & SqlTableSchema::KEY_PRIMARY) {
+			$otype.= ' primary key';
+		}
+		if ($flags & SqlTableSchema::KEY_UNIQUE) {
+			$otype.= ' unique key';
+		}
+		return $otype;
+	}
+}
+class SqliteSchemaManager extends SqlTableSchemaManager {
+	function apply(SqlTableSchema $schema) { }
 }
 
