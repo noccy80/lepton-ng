@@ -44,7 +44,7 @@
 
         static function clr($key) {
 
-			$a = func_get_params();
+			$a = func_get_args();
 			if (is_array($key)) {
 				foreach($key as $k) session::clr($k);
 			} elseif (count($a) > 1) {
