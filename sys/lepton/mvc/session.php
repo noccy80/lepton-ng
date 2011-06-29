@@ -44,11 +44,16 @@
 
         static function clr($key) {
 
-            if (isset($_SESSION[$key])) {
-
-                unset($_SESSION[$key]);
-
-            }
+			$a = func_get_params();
+			if (is_array($key)) {
+				foreach($key as $k) session::clr($k);
+			} elseif (count($a) > 1) {
+				foreach($a as $k) session::clr($k);
+			} else {
+	            if (isset($_SESSION[$key])) {
+	                unset($_SESSION[$key]);
+	            }
+	        }
 
         }
 
