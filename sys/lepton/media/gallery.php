@@ -9,6 +9,7 @@ using('lepton.utils.pagination');
 
 class GalleryItemsTable extends SqlTableSchema {
 	function define() {
+		// Only to be used during testing!
 		$this->dropOnCreate();
 		// Table name
 		$this->setName('galleryitems');

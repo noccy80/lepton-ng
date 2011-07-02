@@ -1002,7 +1002,7 @@ class Lepton {
     /**
      *
      */
-    function run($class) {
+    static function run($class) {
         static $ic = 0;
         $args = func_get_args();
         $args = array_slice($args, 1);
@@ -1040,24 +1040,24 @@ class Lepton {
         }
     }
 
-    function using($module) {
+    static function using($module) {
         Console::warn("Lepton::using() is deprecated (%s)", $module);
         ModuleManager::load($module);
     }
 
-    function autoload($module, $as) {
+    static function autoload($module, $as) {
         Console::warn("Lepton::autoload() is deprecated (%s => %s)", $module, $as);
     }
 
     /**
      *
      */
-    function getMimeType($filename) {
+    static function getMimeType($filename) {
         $file = escapeshellarg(BASE_PATH . $filename);
         return str_replace("\n", "", shell_exec("file -b --mime-type " . $file));
     }
 
-    function getServerHostname() {
+    static function getServerHostname() {
         if (isset($_SERVER['hostname'])) {
             return $_SERVER['hostname'];
         } else {
@@ -1068,7 +1068,7 @@ class Lepton {
     /**
      *
      */
-    function setExceptionHandler($handler, $override=false) {
+    static function setExceptionHandler($handler, $override=false) {
         if (($override == true) || (self::$__exceptionhandler == null)) {
             self::$__exceptionhandler = $handler;
             Console::debugEx(LOG_BASIC, __CLASS__, "Assigned exception handler: %s", $handler);

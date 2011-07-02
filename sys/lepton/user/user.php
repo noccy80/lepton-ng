@@ -75,12 +75,16 @@
          * Create a user record and set up the authentication credentials.
          *
          * @param UserRecord $user The user record to create.
-         * @return Boolean True on success
+         * @return integer The user ID on success
          */
         static function create(UserRecord $user) {
 
-            $user->save();
-            return $user->userid;
+			if ($user->username) {
+	            $user->save();
+    	        return $user->userid;
+    	    } else {
+    	    	throw new UserException("New user need to have a username set!");
+    	    }
 
         }
 

@@ -1,8 +1,9 @@
 <?php
 
-__fileinfo("User Classes");
+__fileinfo("UserRecord Management");
 
 using('lepton.crypto.uuid');
+using('lepton.user.acl');
 
 /**
  * @class UserRecord
@@ -24,7 +25,7 @@ using('lepton.crypto.uuid');
  * Available ambient properties:
  *   Any property can be used as an ambient property.
  */
-class UserRecord {
+class UserRecord implements IAclSubject {
 
     private $userid = null;
     private $username = null;
@@ -42,6 +43,7 @@ class UserRecord {
     private $ambient = array();
     private $modified = array();
     private $extensions = array();
+    private $groups = array();
 
     /**
      * @brief Constructor, sets things up.
@@ -127,6 +129,10 @@ class UserRecord {
         $this->registered = $userrecord['registered'];
         $this->lastlogin = $userrecord['lastlogin'];
         $this->lastip = $userrecord['lastip'];
+    }
+    
+    function __toString() {
+    	return sprintf('%s (#%d)', $this->username, $this->userid);
     }
 
     public function hasFlag($flag) {
@@ -353,5 +359,13 @@ class UserRecord {
                 }
         }
     }
+
+	function getSubjectUuid() {
+		return $this->uuid;
+	}
+	
+	function getSubjectGroups() {
+		return array(new UserGroup());
+	}
 
 }

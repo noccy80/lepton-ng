@@ -10,6 +10,7 @@ abstract class SqlTableSchema implements ITableSchema {
 	const COL_NULLABLE	= 0x0002;
 	const COL_FIXED 	= 0x0004;
 	const COL_BINARY	= 0x0008;
+	const COL_DEFAULT	= 0x0010;
 	
 	const KEY_INDEX 	= 0x0100;
 	const KEY_UNIQUE 	= 0x0200;
@@ -27,12 +28,13 @@ abstract class SqlTableSchema implements ITableSchema {
 	protected function setName($name) {
 		$this->name = $name;
 	}
-	protected function addColumn($name,$type,$options=null) {
+	protected function addColumn($name,$type,$options=null,$default=null) {
 		// do checks
 		$this->columns[] = array(
 			'name' => $name,
 			'type' => $type,
-			'opts' => $options
+			'opts' => $options,
+			'default' => $default
 		);
 	}
 	protected function addIndex($name,array $columns,$type=self::KEY_INDEX) {

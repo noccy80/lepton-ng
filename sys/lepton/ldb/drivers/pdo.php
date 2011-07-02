@@ -159,6 +159,17 @@ class PdoDatabaseDriver extends DatabaseDriver {
 }
 
 class MysqlSchemaManager extends SqlTableSchemaManager { 
+	function schemaExists($tablename) {
+
+	    $res = $this->conn->getSingleRow("SELECT DATABASE()");
+	    $database = $res[0];
+		$res = $this->conn->getSingleRow(
+			'SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema=%s AND table_name=%s',
+			$database, $tablename
+		);
+		return ($res[0] == 1);
+
+	}
 	function apply(SqlTableSchema $schema) {
 		$sdef = $schema->getDefinition();
 		$tname = $sdef['name'];
@@ -169,18 +180,19 @@ class MysqlSchemaManager extends SqlTableSchemaManager {
 		$sql = 'CREATE TABLE '.$tname." (";
 		foreach($tcols as $col) {
 			$sql.= $col['name'].' '.$this->getColType($col['type'],$col['opts']);
+			if ($col['default']!=null) $sql.= 'DEFAULT '.$col['default'];
 			if ($col != end($tcols)) $sql.= ', ';
 		}
 		foreach($tkeys as $key) {
 			switch($key['type']) {
 				case SqlTableSchema::KEY_PRIMARY:
-					$keystr = ', primary key '; break;
+					$keystr = ', PRIMARY KEY '; break;
 				case SqlTableSchema::KEY_UNIQUE:
-					$keystr = ', unique key '; break;
+					$keystr = ', UNIQUE KEY '; break;
 				case SqlTableSchema::KEY_FULLTEXT:
-					$keystr = ', fulltex tindex '; break;
+					$keystr = ', FULLTEXT INDEX '; break;
 				case SqlTableSchema::KEY_INDEX:
-					$keystr = ', key '; break;
+					$keystr = ', KEY '; break;
 			}
 			$keystr.=sprintf('%s(%s)',$key['name'],join(',',$key['cols']));
 			$sql.=$keystr;			
@@ -195,12 +207,12 @@ class MysqlSchemaManager extends SqlTableSchemaManager {
 		switch(strtolower($type)) {
 			case 'int':
 				if ($constrain) {
-					$otype = sprintf('int(%d)',$constrain);
+					$otype = sprintf('INT(%d)',$constrain);
 				} else {
 					$otype = 'int';
 				}
 				if ($flags & SqlTableSchema::COL_AUTO) {
-					$otype.= ' auto_increment';
+					$otype.= ' AUTO_INCREMENT';
 				}
 				break;
 			case 'char':
@@ -208,27 +220,43 @@ class MysqlSchemaManager extends SqlTableSchemaManager {
 			case 'text':
 				if ($constrain) {
 					if ($flags & SqlTableSchema::COL_FIXED) {
-						$otype = sprintf('char(%d)',$constrain);
+						$otype = sprintf('CHAR(%d)',$constrain);
 					} else {
-						$otype = sprintf('varchar(%d)',$constrain);
+						$otype = sprintf('VARCHAR(%d)',$constrain);
 					}
 				} else {
 					if ($flags & SqlTableSchema::COL_BINARY) {
-						$otype = sprintf('blob');
+						$otype = sprintf('BLOB');
 					} else {
-						$otype = sprintf('text');
+						$otype = sprintf('TEXT');
 					}
 				}
+				break;
+			case 'enum':
+				$cl = explode(',',$constrain);
+				$cls = '';
+				foreach($cl as $c) {
+					if (strlen($cls)>0) $cls.=',';
+					$cls.="'".$c."'";
+				}
+				$otype = 'ENUM('.$cls.')';
 				break;
 			default:
 				logger::warning("Unhandled field type: %s", $type);
 				$otype = '';
 		}
+		// Check nullable state
+		if ($flags & SqlTableSchema::COL_NULLABLE) {
+			$otype.= ' NULL';
+		} else {
+			$otype.= ' NOT NULL';
+		}
+		// Keys
 		if ($flags & SqlTableSchema::KEY_PRIMARY) {
-			$otype.= ' primary key';
+			$otype.= ' PRIMARY KEY';
 		}
 		if ($flags & SqlTableSchema::KEY_UNIQUE) {
-			$otype.= ' unique key';
+			$otype.= ' UNIQUE KEY';
 		}
 		return $otype;
 	}
