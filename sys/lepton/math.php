@@ -1,7 +1,18 @@
 <?php
 
+/**
+ * @class Math
+ * @brief Math support functions
+ *
+ */
 abstract class Math {
 
+	/**
+	 * @brief Generate the specific number of primes
+	 *
+	 * @param Integer $n The number of primes to generate
+	 * @return Array The primes
+	 */
 	public static function generatePrimes($n) {
 		if ($n == 2) return array(2);
 		if ($n < 2) return array();

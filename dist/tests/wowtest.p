@@ -4,6 +4,6 @@
 using('blizzard.wow');
 
 $api = new WowApiQuery('eu');
-$rl = $api->getRealmStatus();
+$rl = $api->getRealmStatus($argv[1]);
 
 var_dump($rl);

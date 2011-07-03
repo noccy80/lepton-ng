@@ -2,15 +2,15 @@
 
 using('lepton.mvc.router');
 
-    class LeptonInstaller {
+class LeptonInstaller {
 
-        static function request($uri) {
+    static function request($uri) {
 
-            die($uri);
-
-        }
+        die($uri);
 
     }
 
-    Router::hookRequestUri("^\/install\/(.*)$", array('LeptonInstaller', 'request'));
+}
+
+Router::hookRequestUri("^\/install\/(.*)$", array('LeptonInstaller', 'request'));
 

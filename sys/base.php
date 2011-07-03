@@ -1323,6 +1323,14 @@ abstract class arr {
         return $ret;
     }
 
+    static function flip(array $array,$index) {
+        $ret = array();
+        foreach((array)$array as $item) {
+            $ret[$item[$index]] = $item;
+        }
+        return $ret;
+    }
+
     static function hasKey(Array $arr, $key) {
         return array_key_exists($key, $arr);
     }

@@ -59,10 +59,10 @@ class UserRecord implements IAclSubject {
         $extn = getDescendants('UserExtension');
         foreach($extn as $extnclass) { 
         	$xc = new $extnclass($this);
-		$xr = new ReflectionClass($xc);
+			$xr = new ReflectionClass($xc);
         	$xm = $xr->getMethods();
         	$this->extensions[] = array(
-			'name' => $extnclass,
+				'name' => $extnclass,
         		'instance' => $xc,
         		'methods' => $xm
         	);
