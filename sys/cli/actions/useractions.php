@@ -131,7 +131,12 @@ class UserAction extends Action {
     function remove($username=null) {
         using('lepton.user.*');
         if ($username) {
-            if (user::remove($username)) {
+            if (substr($username,0,1) == '#') {
+                $uobj = user::getUser(intval(substr($username,1)));
+            } else {
+                $uobj = user::find($username);
+            }
+            if (user::remove($uobj)) {
                 console::writeLn("Removed user");
             } else {
                 console::writeLn("User not removed, does it exist?");

@@ -30,12 +30,16 @@
                 return true;
             }
             return false;
-            
+
         }
 
         static function remove($username) {
             $db = new DatabaseConnection();
-            $user = $db->getSingleRow("SELECT * FROM users WHERE username=%s", $username);
+            if (is_a($username,'UserRecord')) {
+                $user = $db->getSingleRow("SELECT * FROM users WHERE id=%d", $username->userid);
+            } else {
+                $user = $db->getSingleRow("SELECT * FROM users WHERE username=%s", $username);
+            }
             if ($user) {
                 $uid = $user['id'];
                 $db->updateRow("DELETE FROM users WHERE id=%d", $uid);
