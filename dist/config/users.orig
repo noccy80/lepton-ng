@@ -13,8 +13,10 @@
 //	haval224,3	haval256,3	haval128,4	haval160,4	haval192,4
 //	haval224,4	haval256,4	haval128,5	haval160,5	haval192,5
 //	haval224,5	haval256,5
-//
+
+// This setting has been replaced by the hashing.algorithms key further down
 config::set('lepton.user.hashalgorithm','sha224');
+
 //
 // New style config, number of rounds, algorithms ordered by priority and salt size
 //
@@ -39,4 +41,13 @@ config::set('lepton.user.disabledbydefault', false);
 // Default flags for new users
 //
 config::set('lepton.user.default.flag', '');
+//
+// Backend to use. Nouveau is the new authentication backend to support secure
+// salting and hashing of passwords. In order to use the old not so secure
+// backend, change this to "default".
+//
+// NOTE! When changing backend, please apply the updates in the dist/sql-updates
+// folder or your passwords won't fit!
+//
+config::set('lepton.user.authbackend', 'nouveau');
 

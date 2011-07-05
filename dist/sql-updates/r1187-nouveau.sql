@@ -1,0 +1,1 @@
+ALTER TABLE users CHANGE password password VARCHAR(1024) NOT NULL;
