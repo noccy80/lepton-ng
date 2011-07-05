@@ -58,7 +58,8 @@
         static function getAuthenticationBackend() {
 
             // Resolve the authentication backend
-            $auth_backend = config::get('lepton.user.authbackend','defaultauthbackend');
+            $auth_backend = config::get('lepton.user.authbackend','default').'authbackend';
+            logger::debug('Creating auth backend instance %s', $auth_backend);
             $auth_class = new $auth_backend();
             return $auth_class;
 
