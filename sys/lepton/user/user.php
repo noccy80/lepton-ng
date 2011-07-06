@@ -33,6 +33,15 @@
 
         }
 
+        /**
+         * @brief Remove a user based on username or UserRecord.
+         * 
+         * This action can not be reverted, so make sure that you really want
+         * to remove the username before actually doing this.
+         * 
+         * @param String|UserRecord $username The user to remove
+         * @return Boolean True if the operation was successful 
+         */
         static function remove($username) {
             $db = new DatabaseConnection();
             if (is_a($username,'UserRecord')) {
@@ -58,7 +67,9 @@
         static function getAuthenticationBackend() {
 
             // Resolve the authentication backend
-            $auth_backend = config::get('lepton.user.authbackend','default').'authbackend';
+            $auth_backend = config::get('lepton.user.authbackend','default');
+            if (strpos(strtolower($auth_backend),'authbackend') === false)
+                $auth_backend.= 'AuthBackend';
             logger::debug('Creating auth backend instance %s', $auth_backend);
             $auth_class = new $auth_backend();
             return $auth_class;
@@ -93,6 +104,14 @@
 
         }
 
+        /**
+         * @brief Check if the user has a specific flag set
+         * 
+         * Shorthand version of user->hasFlag()
+         * 
+         * @param String $flag The flag to look for
+         * @return Bool True if the user has the flag set
+         */
         static function hasFlag($flag) {
             $u = user::getActiveUser();
             return $u->hasFlag($flag);
@@ -136,6 +155,14 @@
 
         }
 
+        /**
+         * @brief Return the user record of the active user
+         * 
+         * Returns null if no user is authenticated
+         * 
+         * @todo Gracefully handle situations where the session is not available
+         * @return UserRecord The UserRecord of the active user
+         */
         static function getActiveUser() {
             if (ModuleManager::has('lepton.mvc.session')) {
                 $uid = (session::get(User::KEY_USER_AUTH,null));

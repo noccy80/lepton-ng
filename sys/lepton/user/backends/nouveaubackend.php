@@ -1,12 +1,14 @@
 <?php
 
-__fileinfo("Default Authentication Backend (DB)");
+__fileinfo("Nouveau Authentication Backend (DB)");
 
 using('lepton.crypto.uuid');
 using('lepton.user.authentication');
+using('lepton.crypto.hash');
 
 /**
  * @file nouveauauthbackend.php
+ * @class NouveauAuthBackend
  * @package lepton.user.backends.nouveauauthbackend
  *
  * The new authentication backend, with flexible salting and hashing supporting
@@ -17,15 +19,12 @@ using('lepton.user.authentication');
  * @copyright (c) 2010, NoccyLabs.info
  * @license GNU GPL v3
  */
-
-using('lepton.crypto.hash');
-
-/**
- * @class NouveauAuthBackend
- *
- */
 class NouveauAuthBackend extends AuthenticationBackend {
 
+    const KEY_HASH_ALGORITHMS = 'lepton.user.hashing.algorithms';
+    const KEY_SALTLEN = 'lepton.user.hashing.saltlen';
+    const DEF_SALTLEN = 16;
+    
     private $userid;
 
 	/**
@@ -51,11 +50,17 @@ class NouveauAuthBackend extends AuthenticationBackend {
 	
 	}
 
+    /**
+     * @brief Return the best hashing algorithm that is supported
+     * 
+     * 
+     * @return type 
+     */
 	private function hashGetBestAlgorithm() {
 	
 		// Go over the algorithms available and pick the best one from the
 		// list.
-		$algos = config('lepton.user.hashing.algorithms');
+		$algos = config(self::KEY_HASH_ALGORITHMS);
 		foreach($algos as $algo) {
 			try {
 				$h = new Hash($algo);
@@ -211,12 +216,22 @@ class NouveauAuthBackend extends AuthenticationBackend {
         }
     }
 
+    /**
+     * @brief Generate salt for the password hashing.
+     * 
+     * This method currently uses a sha1 hash of the current time for generating
+     * the random string to use for salting.
+     * 
+     * @return String The generated salt
+     */
     function generateSalt() {
 
-		$len = config::get('lepton.user.hashing.saltlen', 16);
+		$len = config::get(self::KEY_SALTLEN, self::DEF_SALTLEN);
+        while(!isset($raw) || strlen($raw)<$len)
+            $raw = sha1(uniqid(microtime(true) * 1000));
 
-        $start = md5(uniqid(microtime(true) * 1000));
-        $salt = substr($start, 4, $len); // Grab 16 bytes from middle
+        $salt = substr($raw, strlen($raw)-$len, $len); // Grab requested number of bytes
+        logger::debug("Generated salt '%s' -> used as '%s'", $raw, $salt);
         return $salt;
     }
 
