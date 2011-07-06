@@ -1,4 +1,4 @@
-<?php __fileinfo("Disqus Widget");
+<?php module("Disqus Widget");
 
 using('lepton.web.element');
 using('lepton.web.widgets');

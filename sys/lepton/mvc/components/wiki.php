@@ -1,4 +1,4 @@
-<?php __fileinfo("Wiki implementation (MVC Component)");
+<?php module("Wiki implementation (MVC Component)");
 
 using('lepton.web.markup');
 using('lepton.web.markup.*');

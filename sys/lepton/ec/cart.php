@@ -1,4 +1,4 @@
-<?php __fileinfo("Lepton EC: Shopping cart", array(
+<?php module("Lepton EC: Shopping cart", array(
 		'version' => '0.1.0'
 ));
 

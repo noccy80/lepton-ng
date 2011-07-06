@@ -10,7 +10,7 @@ abstract class CipherMode {
 }
 
 /**
- * @brief Cipher class
+ * @brief CryptoCipher class
  *
  * Encrypts and decrypts strings, possibly armored in base64. The data to
  * be encrypted is tagged with the length of the string as a 32bit unsigned
@@ -20,7 +20,7 @@ abstract class CipherMode {
  * The rawencrypt() and rawdecrypt() methods does not do anything to pad
  * or unpad the data.
  */
-class Cipher {
+class CryptoCipher {
 
     private $iv;
     private $td;

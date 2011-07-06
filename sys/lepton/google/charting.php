@@ -1,4 +1,4 @@
-<?php __fileinfo("Google Charts API");
+<?php module("Google Charts API");
 
 // Passthrough requests when possible (redirect instead of proxying)
 config::def('google.charts.api.passthrough', true);

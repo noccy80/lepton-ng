@@ -1,4 +1,4 @@
-<?php __fileinfo("MVC Exception Handler");
+<?php module("MVC Exception Handler");
 
 using('resource.resource');
 using('lepton.mvc.router');

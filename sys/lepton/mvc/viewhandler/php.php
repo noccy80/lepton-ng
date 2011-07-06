@@ -1,4 +1,4 @@
-<?php __fileinfo("Pure PHP View Handler", array(
+<?php module("Pure PHP View Handler", array(
     'version' => '1.0',
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>'
 ));

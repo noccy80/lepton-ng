@@ -1,4 +1,4 @@
-<?php __fileinfo("Default settings for Lepton Application Framework", array(
+<?php module("Default settings for Lepton Application Framework", array(
     'version' => '2011.02.01'
 ));
 

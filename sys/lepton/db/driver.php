@@ -1,4 +1,4 @@
-<?php __fileinfo("Database Driver Base Class");
+<?php module("Database Driver Base Class");
 
 interface IDatabaseDriver {
     function connect();

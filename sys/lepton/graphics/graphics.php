@@ -1,4 +1,4 @@
-<?php __fileinfo("Graphics library (Deprecated)");
+<?php module("Graphics library (Deprecated)");
 
 // __deprecated('lepton.graphics.graphics', 'lepton.graphics.canvas');
 

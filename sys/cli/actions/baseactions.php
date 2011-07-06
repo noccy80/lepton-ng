@@ -1,4 +1,4 @@
-<?php __fileinfo("Basic actions for the Lepton utilities", array(
+<?php module("Basic actions for the Lepton utilities", array(
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
     'version' => '1.0',
     'updater' => null

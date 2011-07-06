@@ -1,4 +1,4 @@
-<?php __fileinfo("Request wrapper for MVC support");
+<?php module("Request wrapper for MVC support");
 
 interface IRequestObject {
 	function __construct($data);

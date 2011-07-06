@@ -1,4 +1,4 @@
-<?php __fileinfo("Markup Parser Core",
+<?php module("Markup Parser Core",
     array(
         'version' => '1.0'
     )

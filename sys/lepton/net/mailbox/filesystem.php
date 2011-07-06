@@ -1,4 +1,4 @@
-<?php __fileinfo("Mail store: Filesystem");
+<?php module("Mail store: Filesystem");
 
 using('lepton.crypto.uuid');
 using('lepton.net.mailbox');

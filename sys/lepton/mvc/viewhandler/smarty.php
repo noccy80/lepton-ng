@@ -1,4 +1,4 @@
-<?php __fileinfo("Smarty View Handler", array(
+<?php module("Smarty View Handler", array(
     'version' => '1.0',
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>'
 ));

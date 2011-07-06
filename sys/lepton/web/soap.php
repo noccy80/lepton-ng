@@ -1,4 +1,4 @@
-<?php __fileinfo("SOAP Web Service Query Library");
+<?php module("SOAP Web Service Query Library");
 
 ModuleManager::load('lepton.web.serviceconsumer');
 

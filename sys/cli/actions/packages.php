@@ -19,7 +19,7 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-__fileinfo("CLI Package management", array(
+module("CLI Package management", array(
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
     'version' => '1.0',
     'updater' => null

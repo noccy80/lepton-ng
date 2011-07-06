@@ -1,4 +1,4 @@
-<?php __fileinfo("Captcha generation");
+<?php module("Captcha generation");
 
 using('lepton.graphics.canvas');
 

@@ -1,4 +1,4 @@
-<?php __fileinfo("Markup Parser: Wiki", array(
+<?php module("Markup Parser: Wiki", array(
     'depends' => array(
         'lepton.web.markup'
     )

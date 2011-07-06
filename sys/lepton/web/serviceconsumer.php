@@ -1,4 +1,4 @@
-<?php __fileinfo("Web Service Consumer Base Class");
+<?php module("Web Service Consumer Base Class");
 
 interface IServiceConsumer { }
 

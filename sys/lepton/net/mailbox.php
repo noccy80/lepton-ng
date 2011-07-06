@@ -1,4 +1,4 @@
-<?php __fileinfo("Mail and Message functionality", array(
+<?php module("Mail and Message functionality", array(
     'author' => 'noccy@chillat.net',
     'version' => '1.0.0'
 ));

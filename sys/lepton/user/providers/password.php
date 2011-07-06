@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("Password Authentication Provider", array(
+module("Password Authentication Provider", array(
     'version' => '1.0'
 ));
 

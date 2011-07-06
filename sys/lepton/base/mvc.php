@@ -1,4 +1,4 @@
-<?php __fileinfo("MVC Web Application framework", array(
+<?php module("MVC Web Application framework", array(
     'version' => '1.0',
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>'
 ));

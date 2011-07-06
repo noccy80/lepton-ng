@@ -1,4 +1,4 @@
-<?php __fileinfo("View and ViewHandler base functions", array(
+<?php module("View and ViewHandler base functions", array(
     'version' => '1.0'
 ));
 

@@ -1,4 +1,4 @@
-<?php     __fileinfo("Graphics Filter: Perspective Transform",array(
+<?php     module("Graphics Filter: Perspective Transform",array(
     'depends' => array(
         'lepton.graphics.canvas',
         'lepton.graphics.filter'

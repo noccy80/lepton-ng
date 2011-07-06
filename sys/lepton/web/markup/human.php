@@ -1,4 +1,4 @@
-<?php __fileinfo("Markup Parser: Human", array(
+<?php module("Markup Parser: Human", array(
     'depends' => array(
         'lepton.web.markup'
     )

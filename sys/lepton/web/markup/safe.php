@@ -1,4 +1,4 @@
-<?php __fileinfo("Markup Parser: Safe", array(
+<?php module("Markup Parser: Safe", array(
     'depends' => array(
         'lepton.web.markup'
     )

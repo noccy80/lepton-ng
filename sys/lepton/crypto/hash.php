@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("Hashing Functions");
+module("Hashing Functions");
 
 /**
  * @class Hash

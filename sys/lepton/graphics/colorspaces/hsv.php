@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("HSV Color Space Routines");
+module("HSV Color Space Routines");
 
 using('lepton.graphics.colorspace');
 using('lepton.graphics.graphics');

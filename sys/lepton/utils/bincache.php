@@ -1,4 +1,4 @@
-<?php __fileinfo("Binary Blob Cache", array(
+<?php module("Binary Blob Cache", array(
     'version' => '1.0'
 ));
 

@@ -1,4 +1,4 @@
-<?php __fileinfo("SQL Helpers and Tools");
+<?php module("SQL Helpers and Tools");
 
 /**
  * @brief Class to assist in table creation and management.

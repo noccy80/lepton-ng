@@ -1,4 +1,4 @@
-<?php __fileinfo("Console application base files");
+<?php module("Console application base files");
 
 // Console applications or services shouldn't time out
 set_time_limit(0);

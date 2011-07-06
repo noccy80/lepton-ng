@@ -1,4 +1,4 @@
-<?php __fileinfo("Robots.txt generation classes");
+<?php module("Robots.txt generation classes");
 
 /**
  * @class Robots

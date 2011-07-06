@@ -1,4 +1,4 @@
-<?php __fileinfo("HTTP Daemon", array(
+<?php module("HTTP Daemon", array(
 	'depends' => array(
 		'lepton.system.threading'
 		)

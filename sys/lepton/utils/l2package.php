@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("Lepton Package Manager",array(
+module("Lepton Package Manager",array(
 	'version' => '1.0.0'
 ));
 

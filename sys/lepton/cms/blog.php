@@ -1,4 +1,4 @@
-<?php __fileinfo("Lepton CMS Blog Stub");
+<?php module("Lepton CMS Blog Stub");
 
 config::def('lepton.cms.blog.defaultblog','default');
 

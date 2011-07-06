@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("RGB Color Space Routines");
+module("RGB Color Space Routines");
 
 using('lepton.graphics.colorspace');
 using('lepton.graphics.graphics');

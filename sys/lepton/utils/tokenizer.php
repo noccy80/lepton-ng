@@ -1,4 +1,4 @@
-<?php __fileinfo("String and Argument tokenizers");
+<?php module("String and Argument tokenizers");
 
     class Tokenizer implements IteratorAggregate {
 

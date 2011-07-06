@@ -1,4 +1,4 @@
-<?php __fileinfo("Audit log management utilities", array(
+<?php module("Audit log management utilities", array(
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
     'version' => '1.0',
     'updater' => null

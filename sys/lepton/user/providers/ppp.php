@@ -1,4 +1,4 @@
-<?php __fileinfo("Perfect Paper Password (PPP) Authentication", array(
+<?php module("Perfect Paper Password (PPP) Authentication", array(
     'version' => '0.1',
     'depends' => array(
         'lepton.user.*'

@@ -1,4 +1,4 @@
-<?php __fileinfo("Readline wrapper", array());
+<?php module("Readline wrapper", array());
 
 class Readline {
     static $autocompleter = null;

@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("Group Management");
+module("Group Management");
 
 using('lepton.crypto.uuid');
 using('lepton.user.acl');

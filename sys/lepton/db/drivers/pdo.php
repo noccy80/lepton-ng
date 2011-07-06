@@ -1,4 +1,4 @@
-<?php __fileinfo("PDO Databaase Driver");
+<?php module("PDO Databaase Driver");
 
 class PdoDatabaseDriver extends DatabaseDriver {
 

@@ -1,4 +1,4 @@
-<?php __fileinfo("Database Connection Manager");
+<?php module("Database Connection Manager");
 
 ModuleManager::load('lepton.db.driver');
 ModuleManager::load('lepton.db.drivers.*');

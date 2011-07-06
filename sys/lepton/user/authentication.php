@@ -1,4 +1,4 @@
-<?php __fileinfo("Authentication Provider Base Classes");
+<?php module("Authentication Provider Base Classes");
 
 
 

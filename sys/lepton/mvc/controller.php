@@ -1,4 +1,4 @@
-<?php __fileinfo("Controller implementation", array(
+<?php module("Controller implementation", array(
     'version' => '1.0'
 ));
 

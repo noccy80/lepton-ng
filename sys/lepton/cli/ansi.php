@@ -1,4 +1,4 @@
-<?php __fileinfo("ANSI Highlighting and markup");
+<?php module("ANSI Highlighting and markup");
 
 class Ansi {
     static $fgcolor = array(

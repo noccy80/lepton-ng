@@ -1,4 +1,4 @@
-<?php __fileinfo("Markup Parser: bbCode", array(
+<?php module("Markup Parser: bbCode", array(
     'depends' => array(
         'lepton.web.markup'
     )

@@ -1,4 +1,4 @@
-<?php __fileinfo("Form management", array(
+<?php module("Form management", array(
     'depends' => array(
         'lepton.utils.tokenizer'
     )

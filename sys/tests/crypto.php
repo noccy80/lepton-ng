@@ -30,7 +30,7 @@ class LeptonCryptoTests extends LunitCase {
 	 * @description Blowfish Cryptography Implementation
 	 */
 	function blowfishcrypto() {
-		$c = new Cipher(MCRYPT_BLOWFISH,'hello');
+		$c = new CryptoCipher(MCRYPT_BLOWFISH,'hello');
 		$e = $c->encrypt('helloworld');
 		$this->assertEquals($e, 'DBFXfU7vX9Afijttxwhmvg==');
 		$this->assertEquals($c->decrypt($e),'helloworld');
@@ -40,7 +40,7 @@ class LeptonCryptoTests extends LunitCase {
 	 * @description Twofish Cryptography Implementation
 	 */
 	function twofishcrypto() {
-		$c = new Cipher(MCRYPT_TWOFISH,'hello');
+		$c = new CryptoCipher(MCRYPT_TWOFISH,'hello');
 		$e = $c->encrypt('helloworld');
 		$this->assertEquals($e, 'uIfx79ilnvRVY5RT/znzXA==');
 		$this->assertEquals($c->decrypt($e),'helloworld');
@@ -49,7 +49,7 @@ class LeptonCryptoTests extends LunitCase {
 	 * @description DES Cryptography Implementation
 	 */
 	function descrypto() {
-		$c = new Cipher(MCRYPT_DES,'hello');
+		$c = new CryptoCipher(MCRYPT_DES,'hello');
 		$e = $c->encrypt('helloworld');
 		$this->assertEquals($e, 'q8dBduudWGAuIw4LPXMCFQ==');
 		$this->assertEquals($c->decrypt($e),'helloworld');

@@ -1,4 +1,4 @@
-<?php __fileinfo("Lepton CMS Blog Media Manager");
+<?php module("Lepton CMS Blog Media Manager");
 
 class BlogMedia {
 

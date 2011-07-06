@@ -1,4 +1,4 @@
-<?php __fileinfo("Internationalization (i18n) support");
+<?php module("Internationalization (i18n) support");
 
 /**
  * @class intl

@@ -1,4 +1,4 @@
-<?php __fileinfo("Air Utilities", array(
+<?php module("Air Utilities", array(
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
     'version' => '1.0',
     'updater' => null

@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("Nouveau Authentication Backend (DB)");
+module("Nouveau Authentication Backend (DB)");
 
 using('lepton.crypto.uuid');
 using('lepton.user.authentication');

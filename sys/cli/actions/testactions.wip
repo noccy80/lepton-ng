@@ -1,4 +1,4 @@
-<?php __fileinfo("Crash Test Utilities", array(
+<?php module("Crash Test Utilities", array(
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
     'version' => '1.0',
     'updater' => null

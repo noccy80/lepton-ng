@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("UserRecord Management");
+module("UserRecord Management");
 
 using('lepton.crypto.uuid');
 using('lepton.user.acl');

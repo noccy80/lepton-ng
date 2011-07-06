@@ -1,4 +1,4 @@
-<?php __fileinfo("Lepton EC: Order management",array(
+<?php module("Lepton EC: Order management",array(
 	'version' => '0.1.0'
 ));
 

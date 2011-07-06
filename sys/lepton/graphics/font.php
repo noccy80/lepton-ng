@@ -1,6 +1,6 @@
 <?php
 
-__fileinfo("Font Wrapper");
+module("Font Wrapper");
 
 using('lepton.graphics.canvas');
 using('lepton.graphics.drawable');

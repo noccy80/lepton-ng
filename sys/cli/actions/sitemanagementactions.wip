@@ -1,4 +1,4 @@
-<?php __fileinfo("Site Management", array(
+<?php module("Site Management", array(
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
     'version' => '1.0',
     'updater' => null

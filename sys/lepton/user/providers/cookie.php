@@ -1,14 +1,22 @@
-<?php
+<?php module("Cookie Authentication Provider", array(
+    'version' => '1.0'
+));
 
 using('lepton.user.authentication');
 
 /**
+ * @class CookieAuthentication
+ * @package lepton.user.providers.cookie
+ * @brief Authentication with cookies, implementing "remember me" functionality.
+ * 
+ * 
+ * It does so by storing a cookie with the user ID and and a random nonce
+ * value as a cookie in the client's browser and this cookie is then matched
+ * against the pointed to user record.
  *
- * Cookie authentication provider. This provider provides the "remember me"
- * functionality when logging in. It does so by storing a cookie with
- * the user ID and a random salt value as a cookie in the client's browser
- * and this cookie is then matched against the pointed to user record.
- *
+ * Please bear in mind that cookies may be covered by legal restrictions in
+ * some countries or territories. Therefore always inform the user about the
+ * cookies being stored and the purpose thereof.
  */
 final class CookieAuthentication extends AuthenticationProvider {
 
@@ -74,14 +82,14 @@ final class CookieAuthentication extends AuthenticationProvider {
 
 	private function encryptCookie($data) {
 		$key = config::get('lepton.cookieauth.key');
-		$c = new CryptoCipher(Crypto::CIPHER_3DES, $key);
+		$c = new CryptoCipher('3DES', $key);
 		$plain = serialize($data);
 		return $c->encrypt($plain, true);
 	}
 
 	private function decryptCookie($data) {
 		$key = config::get('lepton.cookieauth.key');
-		$c = new CryptoCipher(Crypto::CIPHER_3DES, $key);
+		$c = new CryptoCipher('3DES', $key);
 		$plain = $c->decrypt($data, true);
 		return unserialize($plain);
 	}

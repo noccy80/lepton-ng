@@ -1,4 +1,4 @@
-<?php __fileinfo("UserActions for CLI Tool", array(
+<?php module("UserActions for CLI Tool", array(
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>',
     'version' => '1.0',
     'updater' => null

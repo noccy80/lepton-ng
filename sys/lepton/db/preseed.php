@@ -1,4 +1,4 @@
-<?php __fileinfo("Data import support for databases");
+<?php module("Data import support for databases");
 
 class DatabaseSeed {
 

@@ -1,4 +1,4 @@
-<?php __fileinfo("PDO Databaase Driver");
+<?php module("PDO Databaase Driver");
 
 using('lepton.ldb.databasedriver');
 using('lepton.ldb.sqlschema');

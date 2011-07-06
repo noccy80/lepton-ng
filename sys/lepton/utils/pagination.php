@@ -1,4 +1,4 @@
-<?php __fileinfo("Pagination classes");
+<?php module("Pagination classes");
 
 /**
  *

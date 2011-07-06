@@ -1,4 +1,4 @@
-<?php __fileinfo("Widgets for HTML");
+<?php module("Widgets for HTML");
 
 interface IHtmlWidget {
     function __construct(array $params);
