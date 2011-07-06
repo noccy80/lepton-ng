@@ -160,6 +160,7 @@ class LeptonCanvasTests extends LunitCase {
 
 	/**
 	 * @description Screen capture with Screenshot() class.
+	 * @repeat 5
 	 */
 	function screenshot() {
 		unset($this->canvas);

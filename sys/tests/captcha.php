@@ -30,6 +30,7 @@ class LeptonCaptchaTests extends LunitCase {
 
 	/**
 	 * @description Displaying/saving captcha
+	 * @repeat 20
 	 */
 	function display() {
 		captcha::display($this->captchaid,$this->getTempFile('png'));

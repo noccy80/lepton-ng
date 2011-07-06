@@ -1,6 +1,7 @@
 <?php
 
 using('lunit.lunitcase');
+using('lepton.math');
 
 interface ILunitStatusCallback {
 	function onCaseBegin($name,$meta);
@@ -68,45 +69,67 @@ class LunitRunner {
 					$methodreport = array();
 					$tmeta = LunitUtil::parseDoc($method->getDocComment());
 					if (!isset($tmeta['description'])) $tmeta['description'] = $methodname;
+					if (!isset($tmeta['repeat'])) $tmeta['repeat'] = 1;
 
 					// Save meta to method report
 					$methodreport['meta'] = $tmeta;
+                    // Times to repeat the test
+                    $repeat = intval($tmeta['repeat']);
 					// Callback if set, then create timer
 					if ($this->statuscb) $this->statuscb->onTestBegin($methodname,$tmeta);
 					$methodreport['skipped'] = false;
-					if (!$skip) {
-						$tm = new Timer();
-						try {
-							$tm->start();
-							$tc->{$methodname}();
-							$tm->stop();
-							$methodreport['passed'] = true;
-							$methodreport['message'] = null;
-							if ($this->statuscb) $this->statuscb->onTestEnd(true,null);
-						} catch (LunitAssertionFailure $f) {
-							$tm->stop();
-							$methodreport['passed'] = false;
-							$methodreport['message'] = $f->getMessage();
-							if ($this->statuscb) $this->statuscb->onTestEnd(false,$f->getMessage());
-						} catch (LunitAssertionSkip $f) {
-							$tm->stop();
-							$methodreport['passed'] = false;
-							$methodreport['skipped'] = true;
-							$methodreport['message'] = 'Skipped';
-							if ($this->statuscb) $this->statuscb->onTestEnd(null,$f->getMessage());
-						} catch (Exception $e) {
-							$tm->stop();
-							$methodreport['passed'] = false;
-							$methodreport['message'] = $e->getMessage();
-							if ($this->statuscb) $this->statuscb->onTestEnd(false,$e->getMessage());
-						}
-					} else {
-						$methodreport['passed'] = false;
-						$methodreport['skipped'] = true;
-						$methodreport['message'] = $skipmsg;
-						$this->statuscb->onTestEnd(null,$skipmsg);
-					}
+					$tavg = null; $tmax = null; $tmin = null;
+                    if (!$skip) {
+                        $tm = new Timer();
+                        try {
+                            $telapsed = array();
+                            $ttotal = 0;
+                            for($n = 0; $n < $repeat; $n++) {
+                                $tm->start();
+                                $tc->{$methodname}();
+                                $tm->stop();
+                                $telapsed[] = $tm->getElapsed() * 1000;
+                                $ttotal += $tm->getElapsed() * 1000;
+                            }
+                            $ttot = math::sum($telapsed);
+                            $tavg = math::average($telapsed);
+                            $tmin = math::min($telapsed);
+                            $tmax = math::max($telapsed);
+                            $tdev = math::deviation($telapsed);
+                            $methodreport['passed'] = true;
+                            $methodreport['message'] = null;
+                            if ($repeat>1) {
+                                console::write('%.1fms <%.1fms> %.1fms ', $tmin, $tavg, $tmax);
+                            } else {
+                                console::write('%.1fms ', $tmax);
+                            }
+                            if ($this->statuscb) $this->statuscb->onTestEnd(true,null);
+                        } catch (LunitAssertionFailure $f) {
+                            $tm->stop();
+                            $methodreport['passed'] = false;
+                            $methodreport['message'] = $f->getMessage();
+                            if ($this->statuscb) $this->statuscb->onTestEnd(false,$f->getMessage());
+                        } catch (LunitAssertionSkip $f) {
+                            $tm->stop();
+                            $methodreport['passed'] = false;
+                            $methodreport['skipped'] = true;
+                            $methodreport['message'] = 'Skipped';
+                            if ($this->statuscb) $this->statuscb->onTestEnd(null,$f->getMessage());
+                        } catch (Exception $e) {
+                            $tm->stop();
+                            $methodreport['passed'] = false;
+                            $methodreport['message'] = $e->getMessage();
+                            if ($this->statuscb) $this->statuscb->onTestEnd(false,$e->getMessage());
+                        }
+                    } else {
+                        $methodreport['passed'] = false;
+                        $methodreport['skipped'] = true;
+                        $methodreport['message'] = $skipmsg;
+                        $this->statuscb->onTestEnd(null,$skipmsg);
+                    }
 					$methodreport['elapsed'][] = $tm->getElapsed();
+                    $methodreport['average'] = $tavg;
+                    $methodreport['minmax'] = array($tmin,$tmax);
 					// Save report
 					$casereport['tests'][$methodname] = $methodreport;
 				}

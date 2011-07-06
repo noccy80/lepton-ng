@@ -37,5 +37,34 @@ abstract class Math {
 		foreach($s as $v) if ($v) $ret[] = $v;
 		return $ret;
 	}
+    
+    public function sum(Array $a) {
+        return array_sum($a);
+    }
+    
+    public function average(Array $a) {
+        $sum = array_sum($a);
+        $num = count($a);
+        return ($sum / $num);
+    }
+    
+    public function max(Array $a) {
+        $max = null;
+        foreach($a as $v) if ((!$max) || ($max < $v)) $max = $v;
+        return $max;
+    }
+    
+    public function min(Array $a) {
+        $min = null;
+        foreach($a as $v) if ((!$min) || ($min > $v)) $min = $v;
+        return $min;
+    }
+    
+    public function deviation(Array $a) {
+        $max = abs(math::max($a));
+        $min = abs(math::min($a));
+        $avg = abs(math::average($a));
+        return $avg - ($max + $min) / 2;
+    }
 
 }

@@ -13,9 +13,21 @@ class LunitApplication extends ConsoleApplication implements ILunitStatusCallbac
 		array('h','help','Show this help'),
 		array('t:','tests','Load tests from, comma separated (default: app.tests.*)'),
 		array('r:','reporter','Specify the reporter to use (default:none)'),
-		array('f:','file','File to write the report to (default:report.txt)')
+		array('f:','file','File to write the report to (default:report.txt)'),
+        array('d','database','Log information to database (use -t to define table)'),
+        array('t:','table','Database table to log to with -t'),
 	);
 	var $description = 'Lunit Console Tester';
+    
+    function usage() {
+        
+        parent::usage();
+        console::writeLn("Database Backing:        To save the test results to a database, use the -d option");
+        console::writeLn("                         on the command line. The data will be written to the");
+        console::writeLn("                         system database, or the database defined with the key");
+        console::writeLn("                         lunit.database in the configuration.");
+        
+    }
 
 	function main($argc,$argv) {
 
