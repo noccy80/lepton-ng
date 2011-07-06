@@ -46,6 +46,14 @@ final class CookieAuthentication extends AuthenticationProvider {
 			}
 		}
 	}
+	
+	public function isTokenValid() {
+	    return false;
+	}
+	
+	public function login() {
+	    return false;
+	}
 
 	public function setCookie($expiry = CookieAuthentication::DEF_EXPIRY) {
 		// Set the cookie for autoauth for current user
