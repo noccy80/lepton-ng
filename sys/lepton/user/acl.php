@@ -222,6 +222,10 @@ class Acl {
 		// Retrieve the subjects UUID and query it
 		$suuid = $subject->getSubjectUuid();
 	
+	    $ar = self::getEffectiveAccess($object,$subject);
+	    return $ar[$role];
+	    
+	
 	}
 
     /**
@@ -247,7 +251,7 @@ class Acl {
 		
 		// Convert the access into a string
 		if ($access === self::ACL_NULL) {
-			$accessstr = '-';
+			$accesstr = '-';
 		} elseif ($access === self::ACL_ALLOW) {
 			$accesstr = 'Y';
 		} else {
@@ -257,7 +261,7 @@ class Acl {
 		// Update the record
 		$db = new DatabaseConnection();
 		$db->updateRow("REPLACE INTO aclconf (object,role,subject,access) VALUES (%s,%s,%s,%s)",
-			$ouuid, $role, $suuid, $accessstr);
+			$ouuid, $role, $suuid, $accesstr);
     }
 
 }
