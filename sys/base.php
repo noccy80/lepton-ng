@@ -252,6 +252,9 @@ abstract class DataProvider implements IDataProvider {
 
 ////// Utility Functions and Aliases //////////////////////////////////////////
 
+function __fileinfo($strinfo, $vars=null) {
+	module($strinfo, $vars);
+}
 function module($strinfo, $vars=null) {
     if (count(ModuleManager::$_order) > 0) {
         $mod = ModuleManager::$_order[count(ModuleManager::$_order) - 1];

@@ -26,15 +26,17 @@ class LunitRunner {
 	private $results = null;
 
 	function setStatusCallback(ILunitStatusCallback $object) {
-		
-		$this->statuscb = $object;	
-		
+		$this->statuscb = $object;
 	}
-	
+
+	function setDatabaseLogger(LunitDatabaseLogger $logger) {
+		$this->dblog = $logger;
+	}
+
 	function getResults() {
-	
+
 		return $this->results;
-		
+
 	}
 
 	function run() {

@@ -23,6 +23,7 @@ class LeptonIpcTests extends LunitCase {
 
 	/**
 	 * @description MessageQueue: Posting message to queue
+	 * @repeat 50
 	 */
 	function queuepostmessage() {
 		$this->queue->push(1,new MessageEnvelope('lepton.test',array('foo'=>'bar')));
@@ -30,6 +31,7 @@ class LeptonIpcTests extends LunitCase {
 
 	/**
 	 * @description MessageQueue: Reading message from queue
+	 * @repeat 50
 	 */
 	function queuegetmessage() {
 		$message = $this->queue->pop(1);

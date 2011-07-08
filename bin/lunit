@@ -14,8 +14,8 @@ class LunitApplication extends ConsoleApplication implements ILunitStatusCallbac
 		array('t:','tests','Load tests from, comma separated (default: app.tests.*)'),
 		array('r:','reporter','Specify the reporter to use (default:none)'),
 		array('f:','file','File to write the report to (default:report.txt)'),
-        array('d','database','Log information to database (use -t to define table)'),
-        array('t:','table','Database table to log to with -t'),
+		array('d','database','Log information to database (use -t to define table)'),
+		array('b:','table','Database table to log to with -d'),
 	);
 	var $description = 'Lunit Console Tester';
     
@@ -55,6 +55,10 @@ class LunitApplication extends ConsoleApplication implements ILunitStatusCallbac
 
 		$lur = new LunitRunner();
 		$lur->setStatusCallback($this);
+		if ($this->hasArgument('d')) {
+			$t = $this->getArgument('b','lunit');
+			$lur->setDatabaseLogger(new LunitDatabaseLogger($t));
+		}
 		$lur->run();
 		
 		if ($reporter && $rep) {
