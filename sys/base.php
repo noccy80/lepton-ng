@@ -1666,7 +1666,7 @@ class EventLoggerFactory extends LoggerFactory {
 class ConsoleLoggerFactory extends LoggerFactory {
 
 	private static $level = array(
-		'BASE','EMERG','ALERT','CRIT','WARN','NOTICE','INFO','DEBUG'
+		'Base','Emerge','Alert','Critical','Warning','Notice','Info','Debug'
 	);
 
 	function __logMessage($prio,$msg) {
@@ -1967,6 +1967,13 @@ if (config::has('lepton.db.tableprefix')) {
 } else {
     define('LEPTON_DB_PREFIX', '');
 }
+
+class LeptonInstanceScopeWatcher {
+    function __destruct() {
+        Console::debugEx(LOG_BASIC, '(destructor)', "Memory allocated at shutdown: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
+    }
+}
+$__leptonisntancescope = new LeptonInstanceScopeWatcher();
 
 using('lepton.utils.rtoptimization');
 RuntimeOptimization::enable();
