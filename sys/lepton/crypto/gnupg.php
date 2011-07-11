@@ -72,6 +72,47 @@ class GnupgKey {
 		$this->subkeys = $keyblob['subkeys'];
 	}
 
+	function getSubkey($index) {
+		if ($index >= count($this->subkeys)) return null;
+		return $this->subkeys[$index];
+	}
+
+	function getSubkeyCount() {
+		return count($this->subkeys);
+	}
+
+	function getUid($index) {
+		if ($index >= count($this->uids)) return null;
+		return $this->uids[$index];
+	}
+	
+	function getUidCount() {
+		return count($this->uids);
+	}
+	
+	function __get($key) {
+		switch($key) {
+			case 'disabled':
+				return $this->disabled;
+				break;
+			case 'expired':
+				return $this->expired;
+				break;
+			case 'revoked':
+				return $this->revoked;
+				break;
+			case 'secret':
+				return $this->secret;
+				break;
+			case 'cansign':
+				return $this->cansign;
+				break;
+			case 'canencrypt':
+				return $this->canencrypt;
+				break;
+		}
+	}
+
 }
 
 class GnupgKeyRing {
@@ -94,6 +135,13 @@ class GnupgKeyRing {
 
 	function getKeyByFingerprint($fp) {
 		foreach($this->keys as $key) {
+			if (
+				(($purpose & GnupgKey::FOR_SIGNING) && ($key['can_sign'] && $key['secret']))
+				||
+				(($purpose & GnupgKey::FOR_ENCRYPTING) && ($key['can_encrypt'] && $key['secret']))
+				||
+				(($purpose == GnupgKey::FOR_ANY))
+			)
 			foreach($key['subkeys'] as $subkey) {
 				if ($subkey['fingerprint'] == $fp) {
 					return new GnupgKey($key);
@@ -105,9 +153,9 @@ class GnupgKeyRing {
 	function getKeyByEmail($email,$purpose = self::FOR_ANY) {
 		foreach($this->keys as $key) {
 			if (
-				(($purpose & GnupgKey::FOR_SIGNING) && ($key['can_sign']))
+				(($purpose & GnupgKey::FOR_SIGNING) && ($key['can_sign'] && $key['secret']))
 				||
-				(($purpose & GnupgKey::FOR_ENCRYPTING) && ($key['can_encrypt']))
+				(($purpose & GnupgKey::FOR_ENCRYPTING) && ($key['can_encrypt'] && $key['secret']))
 				||
 				(($purpose == GnupgKey::FOR_ANY))
 			)
