@@ -47,13 +47,27 @@
     // Session save handler - default to null
     config::set('lepton.session.savehandler', null);
 
-    // Authentication backend to use, you probably want to leave this at default.
-    config::set('lepton.user.authbackend','DefaultAuthBackend');
+    // Authentication backend to use, you probably want to leave this at nouveau.
+    config::set('lepton.user.authbackend','NouveauAuthBackend');
     // Hashing algorithm, can be any supported by hash_algos()
     config::set('lepton.user.hashalgorithm','md5');
     // If users should be disabled by default, if this is true users need to be
     // activated before being allowed to log in.
     config::set('lepton.user.disabledbydefault', false);
+    // Defaults for new user backend
+	config::set('lepton.user.hashing.rounds', 4);
+	config::set('lepton.user.hashing.saltlen', 16);
+	config::set('lepton.user.hashing.algorithms', array(
+		'sha512',
+		'sha256',
+		'snefru256',
+		'ripemd256',
+		'sha224',
+		'whirlpool',
+		'ripemd160',
+		'sha1',
+		'md5'
+	));
 
     // What class should be responsible for showing the available payment options?
     config::set('lepton.ec.paymentselector', 'DefaultPaymentSelector');
@@ -65,6 +79,7 @@
 
     // Strict sessions protect against session hijacking attacks
     config::set('lepton.security.strictsessions', true);
+    
     // Use SecurityException in case of a security-related failure. Unless
     // you specifically handle the exceptions, you should leave this as
     // false, causing the execution to end.

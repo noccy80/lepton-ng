@@ -13,12 +13,12 @@
 
 // Version definitions
 foreach (array(
-    'LEPTON_MAJOR_VERSION'		=> 1,
-    'LEPTON_MINOR_VERSION'		=> 0,
-    'LEPTON_RELEASE_VERSION'		=> 0,
-    'LEPTON_RELEASE_TAG'		=> "alpha",
-    'LEPTON_PLATFORM'			=> "Lepton Application Framework",
-    'PHP_RUNTIME_OS'			=> php_uname('s')
+    'LEPTON_MAJOR_VERSION'      => 1,
+    'LEPTON_MINOR_VERSION'      => 0,
+    'LEPTON_RELEASE_VERSION'    => 0,
+    'LEPTON_RELEASE_TAG'        => "alpha",
+    'LEPTON_PLATFORM'           => "Lepton Application Framework",
+    'PHP_RUNTIME_OS'            => php_uname('s')
 ) as $def => $val) define($def, $val);
 
 // Various constants
@@ -31,14 +31,14 @@ declare(ticks = 1);
 
 // Compatibility definitions
 foreach (array(
-    'COMPAT_GETOPT_LONGOPTS'		=> (PHP_VERSION >= "5.3"),
-    'COMPAT_SOCKET_BACKLOG'		=> (PHP_VERSION >= "5.3.3"),
-    'COMPAT_HOST_VALIDATION'		=> (PHP_VERSION >= "5.2.13"),
-    'COMPAT_NAMESPACES'			=> (PHP_VERSION >= "5.3.0"),
-    'COMPAT_INPUT_BROKEN'		=> ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1")),
-    'COMPAT_CALLSTATIC'			=> (PHP_VERSION >= "5.3.0"),
-    'COMPAT_CRYPT_BLOWFISH'		=> (PHP_VERSION >= "5.3.0"),
-    'COMPAT_PHP_FNMATCH'		=> (PHP_OS == "Linux") || ((PHP_OS == "Windows") && (PHP_VERSION >= "5.3"))
+    'COMPAT_GETOPT_LONGOPTS'    => (PHP_VERSION >= "5.3"),
+    'COMPAT_SOCKET_BACKLOG'     => (PHP_VERSION >= "5.3.3"),
+    'COMPAT_HOST_VALIDATION'    => (PHP_VERSION >= "5.2.13"),
+    'COMPAT_NAMESPACES'         => (PHP_VERSION >= "5.3.0"),
+    'COMPAT_INPUT_BROKEN'       => ((PHP_VERSION >= "5") && (PHP_VERSION < "5.3.1")),
+    'COMPAT_CALLSTATIC'         => (PHP_VERSION >= "5.3.0"),
+    'COMPAT_CRYPT_BLOWFISH'     => (PHP_VERSION >= "5.3.0"),
+    'COMPAT_PHP_FNMATCH'        => (PHP_OS == "Linux") || ((PHP_OS == "Windows") && (PHP_VERSION >= "5.3"))
 ) as $compat => $val) define($compat, $val);
 
 // Additional verison definitions
