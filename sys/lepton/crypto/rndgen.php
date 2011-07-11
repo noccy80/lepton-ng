@@ -6,6 +6,16 @@ config::def('lepton.crypto.rndsources', array(
 	'TimebasedRndSource',
 ));
 
+/**
+ * @class RndGen
+ * @brief Random number generation
+ *
+ * This class calls on the best supported random number source available to the
+ * system. New sources can be added with the lepton.crypto.rndsources config
+ * setting.
+ *
+ * @author Christopher Vagnetoft <noccy.com>
+ */
 class RndGen {
 	
 	const KEY_RND_SOURCES = 'lepton.crypto.rndsources';
@@ -44,6 +54,11 @@ class RndGen {
 	
 }
 
+/**
+ * @interface IRndSource
+ *
+ * Random number generator source
+ */
 interface IRndSource {
 	function supported();
 	function getRandom($bytes=1);

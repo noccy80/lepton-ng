@@ -257,7 +257,7 @@ class Uuid {
 	 * @param String $uuid The UUID to check
 	 * @return Bool True if the provided value is a valid UUID
 	 */
-	public static static function isValidUuid($uuid) {
+	public static function isValidUuid($uuid) {
 		return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?'.
 			'[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid) === 1;
 	}
