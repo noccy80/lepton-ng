@@ -2,6 +2,12 @@
 
 ModuleManager::checkExtension('uuid');
 
+/**
+ * @class Uuid
+ * @brief UUID generation
+ * 
+ * @author Christopher Vagnetoft <noccy.com>
+ */
 class Uuid {
 	const UUID_V1 = 1;
 	const UUID_V2 = 2;
@@ -41,13 +47,23 @@ class Uuid {
 		self::$init = true;
 	}
 
-	function getBackend() {
+	/**
+	 * @brief Return the name of the UUID that is being used
+	 *
+	 * @return String The backend
+	 */
+	static function getBackend() {
 		return (self::$usepecl)?
 			'PECL UUID Implementation':
 			'Lepton Software UUID Implementation';
 
 	}
 
+	/**
+	 * @brief Generate a new UUID when in an object context
+	 *
+	 * @return String The newly generated UUID
+	 */
 	function update() {
 		$this->uuid = Uuid::generate($this->version);
 		return $this->uuid;
@@ -56,9 +72,9 @@ class Uuid {
 	/**
 	 * Return a type 1 (MAC address and time based) uuid
 	 *
-	 * @return String
+	 * @return String The newly generated UUID
 	 */
-	public static function v1() {
+	public function v1() {
 		Uuid::initialize();
 
 		if (isset(Uuid::$uobject)) {
@@ -75,11 +91,11 @@ class Uuid {
 	}
 
 	/**
+	 * @brief Generate a v3 uuid
 	 *
-	 *
-	 *
+	 * @return String The newly generated UUID
 	 */
-	public static function v3($namespace, $name) {
+	public function v3($namespace, $name) {
 		if(!self::is_valid($namespace)) return false;
 		// Get hexadecimal components of namespace
 		$nhex = str_replace(array('-','{','}'), '', $namespace);
@@ -117,9 +133,9 @@ class Uuid {
 	/**
 	 * Return a type 4 (random) uuid
 	 *
-	 * @return String
+	 * @return String The newly generated UUID
 	 */
-	function v4() {
+	public function v4() {
 
 		Uuid::initialize();
 
@@ -184,9 +200,11 @@ class Uuid {
 	/**
 	 * Return a type 5 (SHA-1 hash) uuid
 	 *
-	 * @return String
+	 * @param String $namespace The namespace to use
+	 * @param String $name The name to use
+	 * @return String The newly generated UUID
 	 */
-	public static function v5($namespace, $name) {
+	public function v5($namespace, $name) {
 
 		if(!self::isValidUuid($namespace)) return false;
 
@@ -231,11 +249,15 @@ class Uuid {
 
 
 	/**
+	 * @brief Check if the provided value is a valid UUID.
 	 *
+	 * This method can be used to check the validity of the UUID. It only
+	 * checks the character groups and the characters therein.
 	 *
-	 *
+	 * @param String $uuid The UUID to check
+	 * @return Bool True if the provided value is a valid UUID
 	 */
-	public static function isValidUuid($uuid) {
+	public static static function isValidUuid($uuid) {
 		return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?'.
 			'[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid) === 1;
 	}
