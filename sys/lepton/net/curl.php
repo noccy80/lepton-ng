@@ -78,7 +78,7 @@
 		}
 
 		private function _headercb($ch, $header) {
-			if (preg_match('/^(.*)\: (.*)\r$/',$header,&$vals)) {
+			if (preg_match('/^(.*)\: (.*)\r$/',$header,$vals)) {
 				$this->_responseHeaders[$vals[1]] = $vals[2];
 				if (strtolower($vals[1]) == 'content-length') {
 				    $this->_contentLength = $vals[2];

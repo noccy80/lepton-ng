@@ -1105,10 +1105,21 @@ class Lepton {
     static function handleError($errno,$errstr,$errfile,$errline,$errcontext) {
         $args = func_get_args();
         if (self::$__errorhandler) {
-            call_user_func_array(self::$__errorhandler,$args);
+            return (call_user_func_array(self::$__errorhandler,$args) == true);
         } else {
             // Chain PHPs error handling
-            return false;
+            switch($errno) {
+            case E_STRICT:
+                    logger::debug('Warning: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                    break;
+	    case E_DEPRECATED:
+                    logger::warning('Deprecated: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                    break;
+            default:
+                   logger::warning('%s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                    break;
+            }
+            return true;
         }
     }
 
@@ -1469,7 +1480,7 @@ class ModuleManager {
 
         // Check if the module is already loaded
         if (ModuleManager::has($module)) {
-            Console::debugEx(LOG_EXTENDED, __CLASS__, "Already loaded %s.", $module);
+            logger::debug("Already loaded %s.", $module);
             return true;
         }
 

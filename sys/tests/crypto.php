@@ -54,6 +54,14 @@ class LeptonCryptoTests extends LunitCase {
 		$this->assertEquals($e, 'q8dBduudWGAuIw4LPXMCFQ==');
 		$this->assertEquals($c->decrypt($e),'helloworld');
 	}
+	
+	/**
+	 * @description Generate UUID V4
+	 */
+	function uuid_v4() {
+		$uuid = uuid::v4();
+		$this->assertEquals(strlen($uuid), uuid::LENGTH);
+	}
 }
 
 Lunit::register('LeptonCryptoTests');
