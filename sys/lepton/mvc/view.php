@@ -94,6 +94,11 @@ abstract class ViewHandler implements IViewHandler {
         view::embed($view);
         // include(base::appPath().'/views/'.$view);
     }
+    
+    static function register($class,$pattern) {
+		View::$_handlers[$class] = $pattern;
+    }
+    
 
 }
 

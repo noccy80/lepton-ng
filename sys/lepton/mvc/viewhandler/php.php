@@ -30,4 +30,5 @@ class PlainViewHandler extends ViewHandler {
     }
 }
 
-View::$_handlers['PlainViewHandler'] = '.*\.php$';
+ViewHandler::register('PlainViewHandler','.*\.php$');
+

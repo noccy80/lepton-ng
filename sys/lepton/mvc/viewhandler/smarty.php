@@ -44,4 +44,4 @@ class SmartyViewHandler extends ViewHandler {
     }
 }
 
-View::$_handlers['SmartyViewHandler'] = '.*\.tpl$';
+ViewHandler::register('SmartyViewHandler','.*\.tpl$');
