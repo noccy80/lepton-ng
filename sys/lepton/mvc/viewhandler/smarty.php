@@ -3,7 +3,7 @@
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>'
 ));
 
-ModuleManager::load('lepton.mvc.view');
+using('lepton.mvc.view');
 
 class SmartyViewHandler extends ViewHandler {
     private $smarty;

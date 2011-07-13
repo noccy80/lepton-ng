@@ -176,6 +176,22 @@ abstract class base {
     private static $_syspath = null;
     private static $_loglevel = 0;
 
+	static function expand($pathstr,$prefix=null) {
+		if (substr($pathstr,0,1) == '/') {
+			$path = base::appPath().'/'.$prefix.'/'.substr($pathstr,1);
+		} elseif (strtolower(substr($pathstr,0,4)) == 'app:') {
+			$path = base::appPath().'/'.$prefix.'/'.substr($pathstr,4);
+		} elseif (strtolower(substr($pathstr,0,5)) == 'base:') {
+			$path = base::basePath().'/'.$prefix.'/'.substr($pathstr,5);
+		} elseif (strtolower(substr($pathstr,0,4)) == 'sys:') {
+			$path = base::sysPath().'/'.$prefix.'/'.substr($pathstr,4);
+		} else {
+			$path = base::appPath().'/'.$prefix.'/'.$pathstr;
+		}		
+		while (strpos($path,'//')) $path = str_replace('//','/',$path);
+		return $path;
+	}
+
     static function basePath($newpath=null) {
         $ret = (self::$_basepath) ? self::$_basepath : BASE_PATH;
         if ($newpath != null) {

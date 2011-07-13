@@ -3,12 +3,12 @@
     'author' => 'Christopher Vagnetoft <noccy@chillat.net>'
 ));
 
-ModuleManager::load('lepton.mvc.view');
+using('lepton.mvc.view');
 
 class PlainViewHandler extends ViewHandler {
     private $path;
     function loadView($view) {
-        $path = base::appPath().'/views/'.$view;
+        $path = base::expand($view,'/views');
         Console::debugEx(LOG_BASIC,__CLASS__,"Attempting to invoke view from %s", $path);
         if (file_exists($path)) {
             Console::debugEx(LOG_BASIC,__CLASS__,"Invoking as Pure PHP View");
