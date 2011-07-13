@@ -180,11 +180,11 @@ abstract class base {
 		if (substr($pathstr,0,1) == '/') {
 			$path = base::appPath().'/'.$prefix.'/'.substr($pathstr,1);
 		} elseif (strtolower(substr($pathstr,0,4)) == 'app:') {
-			$path = base::appPath().'/'.$prefix.'/'.substr($pathstr,4);
+			$path = base::appPath().'/'.substr($pathstr,4);
 		} elseif (strtolower(substr($pathstr,0,5)) == 'base:') {
-			$path = base::basePath().'/'.$prefix.'/'.substr($pathstr,5);
+			$path = base::basePath().'/'.substr($pathstr,5);
 		} elseif (strtolower(substr($pathstr,0,4)) == 'sys:') {
-			$path = base::sysPath().'/'.$prefix.'/'.substr($pathstr,4);
+			$path = base::sysPath().'/'.substr($pathstr,4);
 		} else {
 			$path = base::appPath().'/'.$prefix.'/'.$pathstr;
 		}		

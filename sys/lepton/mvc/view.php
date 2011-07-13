@@ -154,7 +154,7 @@ class View {
      * @param array $data Optional data to pass to the view
      */
     static function embed($view,$data=null) {
-        $vp = base::appPath().'/views/'.$view;
+        $vp = base::expand($view,'/views/');
         if (file_exists($vp)) {
 			if (is_array($data)) View::set($data);
             View::load($view);
