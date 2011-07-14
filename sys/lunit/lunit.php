@@ -101,9 +101,9 @@ class LunitRunner {
                             $methodreport['passed'] = true;
                             $methodreport['message'] = null;
                             if ($repeat>1) {
-                                console::write('%.1fms <%.1fms> %.1fms ', $tmin, $tavg, $tmax);
+                                console::write('%6.1fms <%6.1fms> %6.1fms ', $tmin, $tavg, $tmax);
                             } else {
-                                console::write('%.1fms ', $tmax);
+                                console::write('%6.1fms ', $tmax);
                             }
                             if ($this->statuscb) $this->statuscb->onTestEnd(true,null);
                         } catch (LunitAssertionFailure $f) {

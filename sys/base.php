@@ -291,6 +291,16 @@ function module($strinfo, $vars=null) {
         Console::warn("Module reported modinfo '%s' without being requested?", $string);
     }
 }
+function using($mod) {
+    ModuleManager::load($mod);
+}
+function depends($functionality) {
+    if (extension_loaded($functionality)) {
+        return;
+    }
+    throw new BaseException("Required functionality ".$functionality." missing");
+}
+function provides($functionality) { }
 
 function getDescendants($baseclass) {
 
@@ -316,10 +326,6 @@ function typeof($obj) {
     } else {
         return gettype($obj);
     }
-}
-
-function using($mod) {
-    ModuleManager::load($mod);
 }
 
 function __fmt($args=null) {
