@@ -16,11 +16,15 @@ class Uuid {
 	const UUID_V5 = 5;
 	const LENGTH = 37; ///< length of a UUID
 
+    const USE_PECL_MAKE = 'make';
+    const USE_PECL_CREATE = 'create';
+    const USE_PHP = 'php';
+
 	static $urand = null;
 	static $uobject = null;
 	static $init = false;
-	static $usepecl = false;
 	private $version = null;
+	private static $method = 'null';
 	protected $uuid;
 
 	public function __construct($version = Uuid::UUID_V4) {
@@ -35,14 +39,15 @@ class Uuid {
 	 */
 	static function initialize() {
 		if (self::$init) return;
-		if (function_exists('uuid_create')) {
-			uuid_create ( &Uuid::$uobject );
-		}
-		if (ModuleManager::hasExtension('uuid')) {
-			self::$usepecl = true;
+		if (function_exists('uuid_make')) {
+		    @uuid_create(&uuid::$uobject);
+		    self::$method = self::USE_PECL_MAKE;
+		} elseif (function_exists('uuid_create')) {
+			@uuid_create(&Uuid::$uobject );
+		    self::$method = self::USE_PECL_CREATE;
 		} else {
 			Uuid::$urand = @fopen ( '/dev/urandom', 'rb' );
-			self::$usepecl = false;
+			self::$method = self::USE_PHP;
 		}
 		self::$init = true;
 	}
@@ -53,9 +58,14 @@ class Uuid {
 	 * @return String The backend
 	 */
 	static function getBackend() {
-		return (self::$usepecl)?
-			'PECL UUID Implementation':
-			'Lepton Software UUID Implementation';
+	    switch(self::$method) {
+	    case self::USE_PECL_MAKE:
+	        return 	'PECL PHP5-UUID Implementation';
+	    case self::USE_PECL_CREATE;
+	        return 'PECL OSSP-UUID Implementation';
+	    case self::USE_PHP;
+			return 'Lepton Software UUID Implementation';
+		}
 
 	}
 
@@ -76,13 +86,12 @@ class Uuid {
 	 */
 	public function v1() {
 		Uuid::initialize();
-
-		if (isset(Uuid::$uobject)) {
+        switch(self::$method) {
+        case self::USE_PECL_MAKE:
 			uuid_make ( Uuid::$uobject, UUID_MAKE_V1 );
 			@uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
 			return trim ( $uuidstring );
-		}
-		if (self::$usepecl) {
+		case self::USE_PECL_CREATE:
 			$uuidstring = uuid_create ( 1 );
 			return trim ( $uuidstring );
 		}
@@ -139,12 +148,12 @@ class Uuid {
 
 		Uuid::initialize();
 
-		if (isset(Uuid::$uobject)) {
+		if (self::$method == self::USE_PECL_MAKE) {
 			uuid_make ( Uuid::$uobject, UUID_MAKE_V4 );
 			@uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
 			return trim ( $uuidstring );
 		}
-		if (self::$usepecl) {
+		if (self::$method == self::USE_PECL_CREATE) {
 			$uuidstring = uuid_create ( 4 );
 			return trim ( $uuidstring );
 		}
@@ -210,7 +219,7 @@ class Uuid {
 
 		Uuid::initialize();
 
-		if (isset(Uuid::$uobject)) {
+		if (self::$method == self::USE_PECL_MAKE) {
 			uuid_make ( Uuid::$uobject, UUID_MAKE_V4 );
 			@uuid_export ( Uuid::$uobject, UUID_FMT_STR, &$uuidstring );
 			return trim ( $uuidstring );
