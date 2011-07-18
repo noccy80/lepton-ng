@@ -1953,7 +1953,7 @@ abstract class CoreEvents implements IEventList {
 
 class Callback {
     private $cbarray = null;
-    function __construct($object,$method) {
+    function __construct(&$object,$method) {
         $this->cbarray = array($object,$method);
     }
     function call() {
