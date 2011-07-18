@@ -345,6 +345,12 @@ function __experimental() {
     }
 }
 
+function __callee() {
+    $stack = debug_backtrace(false);
+    $ret = sprintf('%s:%d', str_replace(base::basePath(),'',$stack[1]['file']), $stack[1]['line']);
+    return $ret;
+}
+
 function __deprecated($oldfunc, $newfunc = null) {
 
     $stack = debug_backtrace(false);
@@ -1442,12 +1448,14 @@ class ModuleManager {
         if (extension_loaded($extension)) {
             return true;
         }
-        logger::info("PHP extension not loaded: %s", $extension);
-        $filename = (PHP_SHLIB_SUFFIX === 'dll' ? 'php_' : '') . $extension . PHP_SHLIB_SUFFIX;
+        logger::debug("Requested PHP extension not loaded: %s (from %s)", $extension, __callee());
+        $filename = (PHP_SHLIB_SUFFIX === 'dll' ? 'php_' : '') . $extension . '.' . PHP_SHLIB_SUFFIX;
         logger::debug("Attempting a manual load of %s from %s", $extension, $filename);
-        if (function_exists('dl') && !@dl($filename) && ($required)) {
-            logger::warn("Dynamic loading of extensions disabled and extension %s flagged as required. Please load it manually or enable the dl() function.", $extension);
-            exit(1);
+        if (ini_get('enable_dl') && !ini_get('safe_mode')) {
+            if (function_exists('dl') && ($required) && !@dl($filename)) {
+                logger::warnin("Dynamic loading of extensions disabled and extension %s flagged as required. Please load it manually or enable the dl() function.", $extension);
+                exit(1);
+            }
         }
         return (extension_loaded($extension));
     }

@@ -190,10 +190,14 @@ class Request {
 		}
 	}
 
-	static function getDomain() {
-		return strtolower($_SERVER['HTTP_HOST']);
-	}
-    
+    static function getDomain() {
+        if (arr::hasKey($_SERVER,'HTTP_HOST')) {
+            return strtolower($_SERVER['HTTP_HOST']);
+	} else {
+            return 'localhost';
+        }
+    }
+
     static function getQueryString() {
     	$data = $_GET;
     	if (isset($data['/index_php'])) {
