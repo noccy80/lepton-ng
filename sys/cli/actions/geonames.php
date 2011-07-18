@@ -282,7 +282,7 @@ class GeonamesAction extends Action {
 			$this->activityobject = $fn;
 			$t = new Timer(true);
 			$dl = new HttpDownload($this->baseurl . $fn, base::appPath() . '/geocache/' . $fn, array(
-				'onprogress' => new Callback(&$this, 'onprogress')
+				'onprogress' => new Callback($this, 'onprogress')
 			));
 			$td = $t->getElapsed();
 			$this->clearTask();
@@ -323,7 +323,7 @@ class GeonamesAction extends Action {
 				$this->activity = "Downloading";
 				$this->activityobject = $fn;
 				$dl = new HttpDownload($this->baseurl . $fn, base::appPath() . '/geocache/' . $fn, array(
-					'onprogress' => new Callback(&$this, 'onprogress')
+					'onprogress' => new Callback($this, 'onprogress')
 				));
 				$this->handleUpdateFile($fn);
 				$this->clearTask();
