@@ -20,7 +20,7 @@ class UserGroup implements IAclSubject {
 	public function getSubjectUuid() {
 		return $this->uuid;
 	}
-	
+
 	/**
 	 * @brief Returns the groups that this group is a member of
 	 *
@@ -29,33 +29,75 @@ class UserGroup implements IAclSubject {
 	public function getSubjectGroups() {
 		return array();
 	}
-	
+
 	static function find($groupname) {
-	
+
 	}
-	
+
 	public function __get($property) {
-	
+		switch($property) {
+		case 'groupname':
+
+		case 'uuid':
+
+		case 'description':
+
+		default:
+			throw new BadPropertyException("No ");
+		}
 	}
-	
+
 	public function __set($property,$value) {
-	
+
 	}
-	
+
 	public function __unset($property) {
-	
+
 	}
-	
-	public function __construct() {
+
+	public function __construct($groupid=null) {
+		if ($groupid) {
+
+		} else {
+
+		}
 		$this->uuid = uuid::v4();
 	}
-	
+
 	public function __destruct() {
-	
+
 	}
-	
+
 	public function __toString() {
 		return typeOf($this);
+	}
+
+	static function getGroup($id) {
+
+	}
+
+	static function findGroup($groupname) {
+
+	}
+
+	static function getGroupByUuid($uuid) {
+
+	}
+
+	static function create($groupname,$description) {
+		$g = new UserGroup();
+		$g->groupname = $groupname;
+		$g->uuid = uuid::v4();
+		$g->description = $description;
+		return $g;
+	}
+
+	static function remove(UserGroup $usergroup) {
+
+	}
+
+	public function addUser(UserObject $user) {
+		if (!isset($this)) throw new BaseException("Invoking object method as static method");
 	}
 
 }

@@ -1442,11 +1442,11 @@ class ModuleManager {
         if (extension_loaded($extension)) {
             return true;
         }
-        Console::debug("PHP extension not loaded: %s", $extension);
+        logger::info("PHP extension not loaded: %s", $extension);
         $filename = (PHP_SHLIB_SUFFIX === 'dll' ? 'php_' : '') . $extension . PHP_SHLIB_SUFFIX;
-        Console::debug("Attempting a manual load of %s from %s", $extension, $filename);
+        logger::debug("Attempting a manual load of %s from %s", $extension, $filename);
         if (function_exists('dl') && !@dl($filename) && ($required)) {
-            Console::warn("Dynamic loading of extensions disabled and extension %s flagged as required. Please load it manually or enable the dl() function.", $extension);
+            logger::warn("Dynamic loading of extensions disabled and extension %s flagged as required. Please load it manually or enable the dl() function.", $extension);
             exit(1);
         }
         return (extension_loaded($extension));
@@ -1911,7 +1911,7 @@ class EventHandler {
  */
 abstract class Event {
 
-    static $_handlers = array();
+    private static $_handlers = array();
 
     /**
      * Register an event handler
@@ -1919,7 +1919,7 @@ abstract class Event {
      * @param Mixed $event The event to register
      * @param EventHandler $handler The EventHandler in charge of the event.
      */
-    function register($event, EventHandler $handler) {
+    static function register($event, EventHandler $handler) {
         if (!arr::hasKey(self::$_handlers, strtolower($event))) {
             self::$_handlers[$event] = array();
         }
@@ -1932,7 +1932,7 @@ abstract class Event {
      * @param Mixed $event The event to invoke
      * @param Array $data The data to pass to the handler
      */
-    function invoke($event, Array $data) {
+    static function invoke($event, Array $data) {
         if (arr::hasKey(self::$_handlers, strtolower($event))) {
             foreach (self::$_handlers[$event] as $evt) {
                 if ($evt->dispatch($event, $data) == true)
