@@ -199,7 +199,7 @@ class MysqlSchemaManager extends SqlTableSchemaManager {
 		}
 		
 		$sql.= ')';
-		if ($tdrop) $this->conn->exec('DROP TABLE '.$tname);
+		if ($tdrop) $this->conn->exec('DROP TABLE IF EXISTS '.$tname);
 		$this->conn->exec($sql);
 	}
 	private function getColType($type,$flags) {
