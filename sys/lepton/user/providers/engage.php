@@ -106,8 +106,9 @@ class EngageAuthentication extends AuthenticationProvider {
 					$u->firstname = $firstname;
 					$u->lastname = $lastname;
 					$u->email = $email;
-					$cuid = user::create($u);
-					$cu = user::getUser($cuid);
+					//$cuid = user::create($u);
+					$cu = user::create($u);
+					//$cu = user::getUser($cuid);
 				} else {
 					$cu = user::getActiveUser();
 				}
