@@ -210,7 +210,7 @@ class UserRecord implements IAclSubject {
                     // Update complete userdata table
                     $ambient = serialize($this->ambient);
                     $db->updateRow(
-                            "Update " . LEPTON_DB_PREFIX . "userdata SET displayname=%s,firstname=%s,lastname=%s,sex=%s,country=%s,ambient=%s WHERE id=%d)",
+                            "Update " . LEPTON_DB_PREFIX . "userdata SET displayname=%s,firstname=%s,lastname=%s,sex=%s,country=%s,ambient=%s WHERE id=%d",
                             $this->displayname, $this->firstname, $this->lastname, $this->sex,
                             $this->country, $ambient, $this->userid
                     );
