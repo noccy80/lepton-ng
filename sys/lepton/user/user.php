@@ -53,6 +53,7 @@
                 $uid = $user['id'];
                 $db->updateRow("DELETE FROM users WHERE id=%d", $uid);
                 $db->updateRow("DELETE FROM userdata WHERE id=%d", $uid);
+                $db->updateRow("DELETE FROM userengage WHERE id=%d", $uid);
                 $db->updateRow("DELETE FROM userppp WHERE id=%d", $uid);
                 return true;
             }
