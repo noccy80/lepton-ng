@@ -79,6 +79,10 @@
 		}
 
 	}
+    
+    function duration($dur) {
+        return Duration::toSeconds('! '.$dur);
+    }
 
 ////////// Timestamp //////////////////////////////////////////////////////////
 

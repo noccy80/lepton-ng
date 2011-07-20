@@ -10,6 +10,7 @@ using('lepton.mvc.controller');
 using('lepton.mvc.request');
 using('lepton.mvc.response');
 using('lepton.mvc.session');
+using('lepton.mvc.cookies');
 using('lepton.user.authentication');
 using('lepton.mvc.routers.defaultrouter');
 using('lepton.mvc.templates');
