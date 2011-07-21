@@ -3,7 +3,8 @@
 /**
  * @class Cookies
  * 
- * 
+ * Cookie management class that mades use of a jar for storing the cookies that
+ * can not be saved at the requested time.
  * 
  * 
  * 

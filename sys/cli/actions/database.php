@@ -58,22 +58,34 @@ class DatabaseAction extends Action {
         $db['password'] = $pass;
         config::set('lepton.db.default', $db);
         $conn = new DatabaseConnection();
-        console::writeLn("Creating database...");
-        try {
-            $conn->exec(sprintf("CREATE DATABASE %s;", $dbc['database']));
-        } catch(Exception $e) {
-            console::writeLn("Not successful, does the database already exist?"); 
+        $dblist = $conn->getRows("SHOW DATABASES LIKE %s", $dbc['database']);
+        if (count($dblist) == 0) {
+            console::writeLn("Creating database...");
+            try {
+                $conn->exec(sprintf("CREATE DATABASE %s;", $dbc['database']));
+            } catch(Exception $e) {
+                console::writeLn("Not successful, does the database already exist?"); 
+            }
         }
         console::writeLn("Creating user...");
         $conn->exec(sprintf("GRANT ALL ON %s.* TO %s@localhost IDENTIFIED BY '%s';", $dbc['database'], $dbc['username'], $dbc['password']));
         console::writeLn("Importing tables...");
         $conn->exec("USE ".$dbc['database']);
+
         $f = glob(base::basePath().'/dist/sql/*.sql');
         foreach($f as $fn) {
             $fc = file_get_contents($fn);
-            console::writeLn(" -> %s", basename($fn));
+            console::writeLn("  [sys] %s", basename($fn));
             $conn->exec($fc);
         }
+
+        $f = glob(base::appPath().'/sql/*.sql');
+        foreach($f as $fn) {
+            $fc = file_get_contents($fn);
+            console::writeLn("  [app] %s", basename($fn));
+            $conn->exec($fc);
+        }
+
         console::writeLn("All done.");
     }
 }
