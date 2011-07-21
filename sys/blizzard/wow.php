@@ -14,23 +14,25 @@ using('lepton.net.httprequest');
  */
 class WowApiQuery {
 
-	const CHAR_ITEMS        = 0x0001; // equipped items
-	const CHAR_STATS        = 0x0002; // stats
-	const CHAR_REPUTATION   = 0x0004; // reputation
-	const CHAR_SKILLS       = 0x0008; // primary and secondary skills
-	const CHAR_ACHIEVEMENTS = 0x0010; // achievements/statistics
-	const CHAR_TALENTS      = 0x0020; // talents
-	const CHAR_TITLES       = 0x0040; // titles
-	const CHAR_MOUNTS       = 0x0080; // collected mounts and companions
-	const CHAR_QUESTS       = 0x0100; // quests
-	const CHAR_RECIPES      = 0x0200; // profession recipes
-	const CHAR_HUNTERPETS   = 0x0400; // Hunter pets
-	const CHAR_PVP          = 0x0800; //PvP information
-	const CHAR_ALL          = 0xFFFF; // All information
-	const CHAR_BASIC        = self::CHAR_ITEMS | self::CHAR_STATS | self::CHAR_SKILLS | self::CHAR_TALENTS | self::CHAR_HUNTERPETS;
-	const CHAR_STATISTICS   = self::CHAR_ACHIEVEMENTS | self::CHAR_TITLES | self::CHAR_QUESTS;
-	const CHAR_TRADESKILLS  = self::CHAR_SKILLS | self::CHAR_RECIPES;
+	const CHAR_ITEMS         = 0x0001; // equipped items
+	const CHAR_STATS         = 0x0002; // stats
+	const CHAR_REPUTATION    = 0x0004; // reputation
+	const CHAR_SKILLS        = 0x0008; // primary and secondary skills
+	const CHAR_ACHIEVEMENTS  = 0x0010; // achievements/statistics
+	const CHAR_TALENTS       = 0x0020; // talents
+	const CHAR_TITLES        = 0x0040; // titles
+	const CHAR_MOUNTS        = 0x0080; // collected mounts and companions
+	const CHAR_QUESTS        = 0x0100; // quests
+	const CHAR_RECIPES       = 0x0200; // profession recipes
+	const CHAR_HUNTERPETS    = 0x0400; // Hunter pets
+	const CHAR_PVP           = 0x0800; // PvP information
+	const CHAR_ALL           = 0xFFFF; // All information
 
+    const GUILD_ROSTER       = 0x0001; // members (roster)
+    const GUILD_ACHIEVEMENTS = 0x0002; // achievements
+
+    const ARENA_ROSTER       = 0x0001; // members (roster)
+    
 	/**
 	 * @brief Constructor
 	 *
@@ -75,23 +77,35 @@ class WowApiQuery {
 		// Optional fields: equipped items, stats, reputation, primary and secondary skills, achievements/statistics, talents, titles, collected mounts and companions, quests, profession recipes, Hunter pets, PvP information
 
 		$url = sprintf('http://%s.battle.net/api/wow/character/%s/%s', $this->region, $realm, $character);
-		// ex -> http://eu.battle.net/api/wow/character/aggramar/eani
 		$request = new HttpRequest($url);
-		$ret = json_decode((string)$request);
+   		$ret = json_decode((string)$request);
 		return $ret;
 
 	}
 
-/*
-URL: /api/wow/guild/{realm}/{name}
-Basic information: name, level, achievement points
-Optional fields: members (roster), achievements
+    public function getGuild($realm,$guildname,$fields=null) {
+        
+        // URL: /api/wow/guild/{realm}/{name}
+        // Basic information: name, level, achievement points
+        // Optional fields: members (roster), achievements
 
-Arena Team
-URL: /api/wow/arena/{realm}/{size}/{name} (size being 2v2, 3v3 or 5v5)
-Basic information: name, ranking, rating, weekly/season statistics
-Optional fields: members (roster)
-*/
+		$url = sprintf('http://%s.battle.net/api/wow/guild/%s/%s', $this->region, $realm, $guildname);
+		$request = new HttpRequest($url);
+   		$ret = json_decode((string)$request);
+		return $ret;
+    }
+
+    public function getArenaTeam($realm,$teamname,$size,$fields=null) {
+        
+        // URL: /api/wow/arena/{realm}/{size}/{name} (size being 2v2, 3v3 or 5v5)
+        // Basic information: name, ranking, rating, weekly/season statistics
+        // Optional fields: members (roster)
+
+		$url = sprintf('http://%s.battle.net/api/wow/arena/%s/%s/%s', $this->region, $realm, $size, $teamname);
+		$request = new HttpRequest($url);
+   		$ret = json_decode((string)$request);
+		return $ret;
+    }
 
 }
 
