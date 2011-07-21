@@ -40,37 +40,50 @@ class DatabaseAction extends Action {
         )
     );
     public function initialize($rootuser=null) {
+        console::writeLn(__astr('\b{Initializing database}'));
         $db = config::get('lepton.db.default');
         $dbc = config::get('lepton.db.default');
+        console::writeLn("  Database:  %s", $dbc['database']);
+        console::writeLn("  User:      %s", $dbc['username']);
+        console::writeLn("  Host:      %s", $dbc['hostname']);
         switch($db['driver']) {
         case 'pdo/mysql':
         case 'mysql':
-            console::writeLn("Using MySQL ...");
+            console::writeLn("  Driver:    MySQL");
             break;
         default:
             console::fatal('This version of the script does not support anything else than MySQL');
             exit(1);
         }
-        console::write("Password for root user: ");
+
+        console::writeLn(__astr("\n\b{Creating database and user}"));
+        console::writeLn("  The script can create the database and the user. Hit enter to skip this step.");
+        console::write("  Password for root user: ");
         $pass = console::readPass();
-        $db['database'] = null;
-        $db['username'] = 'root';
-        $db['password'] = $pass;
-        config::set('lepton.db.default', $db);
-        $conn = new DatabaseConnection();
-        $dblist = $conn->getRows("SHOW DATABASES LIKE %s", $dbc['database']);
-        if (count($dblist) == 0) {
-            console::writeLn("Creating database...");
-            try {
-                $conn->exec(sprintf("CREATE DATABASE %s;", $dbc['database']));
-            } catch(Exception $e) {
-                console::writeLn("Not successful, does the database already exist?"); 
+        if ($pass) {
+            $db['database'] = null;
+            $db['username'] = 'root';
+            $db['password'] = $pass;
+            config::set('lepton.db.default', $db);
+            $conn = new DatabaseConnection();
+            $dblist = $conn->getRows("SHOW DATABASES LIKE %s", $dbc['database']);
+            if (count($dblist) == 0) {
+                console::writeLn("Creating database...");
+                try {
+                    $conn->exec(sprintf("CREATE DATABASE %s;", $dbc['database']));
+                } catch(Exception $e) {
+                    console::writeLn("Not successful, does the database already exist?"); 
+                }
             }
+            console::writeLn("Creating user...");
+            $conn->exec(sprintf("GRANT ALL ON %s.* TO %s@localhost IDENTIFIED BY '%s';", $dbc['database'], $dbc['username'], $dbc['password']));
+            $conn->exec("USE ".$dbc['database']);
+        } else {
+            console::writeLn("No password specified, ignoring database and user creation.");
+            $conn = new DatabaseConnection();
         }
-        console::writeLn("Creating user...");
-        $conn->exec(sprintf("GRANT ALL ON %s.* TO %s@localhost IDENTIFIED BY '%s';", $dbc['database'], $dbc['username'], $dbc['password']));
-        console::writeLn("Importing tables...");
-        $conn->exec("USE ".$dbc['database']);
+
+        console::writeLn(__astr("\n\b{Importing tables}"));
 
         $f = glob(base::basePath().'/dist/sql/*.sql');
         foreach($f as $fn) {

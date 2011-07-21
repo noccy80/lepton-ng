@@ -99,7 +99,7 @@ class DatabaseConnection {
         $queryresult = $this->conn->query($sql);
 
         // Only return first column of first item
-        if ($queryresult->count > 0) {
+        if ($queryresult['count'] > 0) {
             return $queryresult['data'][0][0];
         } else {
             return null;

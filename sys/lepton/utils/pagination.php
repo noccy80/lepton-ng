@@ -8,8 +8,9 @@
  */
 class Paginator {
 
-    private $page = 0;
-	private $itemsperpage = 0;
+    private $_gpage = 0;
+	private $_gitemsperpage = 0;
+    private $_gnumitems = 0;
 
     /**
      *
@@ -18,16 +19,21 @@ class Paginator {
      */
 	function __construct($page,$itemsperpage) {
         if ($itemsperpage == 0) { throw new LogicException("Items per page can not be 0"); }
-		$this->itemsperpage = $itemsperpage;
-		$this->page = $page;
+		$this->_gitemsperpage = $itemsperpage;
+		$this->_gpage = $page;
 	}
 
+    function setNumItems($numitems) {
+        $this->_gnumitems = intval($numitems);
+    }
+    
     /**
      *
      * @return <type>
      */
-	function getNumPages($numitems) {
-		return floor(($numitems - 1) / $this->itemsperpage) + 1;
+	function getNumPages($numitems=null) {
+        if (!$numitems) $numitems = $this->_gnumitems;
+		return floor(($numitems - 1) / $this->_gitemsperpage) + 1;
 	}
 
     /**
@@ -36,7 +42,7 @@ class Paginator {
      * @return <type>
      */
     function getSqlLimit() {
-        return sprintf("LIMIT %d,%d", ($this->itemsperpage * ($this->page - 1)), $this->itemsperpage);
+        return sprintf("LIMIT %d,%d", ($this->_gitemsperpage * ($this->_gpage - 1)), $this->_gitemsperpage);
     }
 
     /**
@@ -46,7 +52,7 @@ class Paginator {
      * @return <type>
      */
     function getPageFromArray(Array $array) {
-        return array_slice($array, ($this->itemsperpage * ($this->page - 1)), $this->itemsperpage);
+        return array_slice($array, ($this->_gitemsperpage * ($this->_gpage - 1)), $this->_gitemsperpage);
     }
     
 }
