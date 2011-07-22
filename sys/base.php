@@ -1716,7 +1716,10 @@ class ConsoleLoggerFactory extends LoggerFactory {
 		$ts = @date("M-d H:i:s", time());
 		$lines = explode("\n", $msg);
 		foreach ($lines as $line) {
-			fprintf(STDERR, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
+            if (defined('STDERR'))
+                fprintf(STDERR, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
+            else
+                printf("%s %-20s %s\n", $ts, self::$level[$prio], $line);
 			//fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
 		}
 	}

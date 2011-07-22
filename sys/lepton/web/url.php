@@ -202,6 +202,22 @@ class url {
 		$url = $scheme.$auth.$host.$path.$query.$fragment;
 		return $url;
 	}
+    
+    /**
+     * @brief Helper function to return a URL object from the current URL
+     *
+     * Will return an empty URL if the request object is not present.
+     * 
+     * @static
+     * @return Url The URL object
+     */
+    static function createFromCurrent() {
+        if (class_exists('request')) {
+            return url(request::getURL());
+        } else {
+            return url();
+        }
+    }
 
 }
 
