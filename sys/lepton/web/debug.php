@@ -11,9 +11,9 @@ class WebDebugProvider implements IDebugProvider {
             echo 'td { padding:3px; border:solid 1px #BBB}';
             echo '</style>';
             if ($table) {
-                echo self::inspectTable($data);
+                echo self::inspectTable((array)$data);
             } else {
-                echo self::inspectArray($data);
+                echo self::inspectArray((array)$data);
             }
         }
     }

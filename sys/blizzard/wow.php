@@ -28,11 +28,11 @@ class WowApiQuery {
 	const CHAR_PVP           = 0x0800; // PvP information
 	const CHAR_ALL           = 0xFFFF; // All information
 
-    const GUILD_ROSTER       = 0x0001; // members (roster)
-    const GUILD_ACHIEVEMENTS = 0x0002; // achievements
+	const GUILD_ROSTER       = 0x0001; // members (roster)
+	const GUILD_ACHIEVEMENTS = 0x0002; // achievements
 
-    const ARENA_ROSTER       = 0x0001; // members (roster)
-    
+	const ARENA_ROSTER       = 0x0001; // members (roster)
+
 	/**
 	 * @brief Constructor
 	 *
@@ -75,8 +75,29 @@ class WowApiQuery {
 		// ?fields=...,...,...
 		// Basic information: name, level, class, race, gender, faction, guild, achievement points
 		// Optional fields: equipped items, stats, reputation, primary and secondary skills, achievements/statistics, talents, titles, collected mounts and companions, quests, profession recipes, Hunter pets, PvP information
+		$fieldsarr = array();
+		if ($fields & self::CHAR_ITEMS)        $fieldsarr[] = 'items';
+		if ($fields & self::CHAR_STATS)        $fieldsarr[] = 'stats';
+		if ($fields & self::CHAR_REPUTATION)   $fieldsarr[] = 'reputation';
+		if ($fields & self::CHAR_SKILLS)       $fieldsarr[] = 'skills'; // <- incorrect
+		if ($fields & self::CHAR_ACHIEVEMENTS) $fieldsarr[] = 'achievements';
+		if ($fields & self::CHAR_TALENTS)      $fieldsarr[] = 'talents';
+		if ($fields & self::CHAR_TITLES)       $fieldsarr[] = 'titles';
+		if ($fields & self::CHAR_MOUNTS)       $fieldsarr[] = 'mounts';
+		if ($fields & self::CHAR_QUESTS)       $fieldsarr[] = 'quests'; // <- incorrect
+		if ($fields & self::CHAR_RECIPES)      $fieldsarr[] = 'recipes'; // <- incorrect
+		if ($fields & self::CHAR_HUNTERPETS)   $fieldsarr[] = 'hunterpets'; // <- incorrect
+		if ($fields & self::CHAR_PVP)          $fieldsarr[] = 'pvpinformation'; // <- incorrect
 
-		$url = sprintf('http://%s.battle.net/api/wow/character/%s/%s', $this->region, $realm, $character);
+// equipped items, stats, reputation, primary and secondary skills, achievements/statistics, talents, titles, collected mounts and companions, quests, profession recipes, Hunter pets, PvP information
+
+		if (count($fields)>0) {
+			$fieldstr = '?fields='.join(',',$fieldsarr);
+		} else {
+			$fieldstr = '';
+		}
+
+		$url = sprintf('http://%s.battle.net/api/wow/character/%s/%s%s', $this->region, $realm, $character, $fieldstr);
 		$request = new HttpRequest($url);
    		$ret = json_decode((string)$request);
 		return $ret;
@@ -105,7 +126,30 @@ class WowApiQuery {
 		$request = new HttpRequest($url);
    		$ret = json_decode((string)$request);
 		return $ret;
-    }
+	}
+
+	public function classIdToString($id) {
+		switch($id) {
+			case 1: return "Warrior";
+			case 2: return "Paladin";
+			case 3: return "Hunter";
+			case 4: return "Rogue";
+			case 5: return "Priest";
+			case 8: return "Mage";
+			case 9: return "Warlock";
+			case 11: return "Druid";
+			default: return sprintf("Class[#%d]", $id);
+		}
+	}
+
+	public function raceIdToString($id) {
+		switch($id) {
+			case 1: return "Human";
+			case 4: return "Night Elf";
+			case 7: return "Gnome";
+			default: return sprintf("Race[#%d]", $id);
+		}
+	}
 
 }
 

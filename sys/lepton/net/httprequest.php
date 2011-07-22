@@ -23,6 +23,7 @@ class HttpRequest {
 		),(array)$args);
 		$this->url = $url;
 
+		logger::debug('HTTPRequest() query for "%s"', $url);
 		if (function_exists('curl_init')) {
 			$this->_curlDoRequest();
 		} else {
