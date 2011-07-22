@@ -88,7 +88,7 @@ class Acl {
 	 *
 	 * @param IAclObject $object The object to for which the access is queried
 	 * @param IAclSubject $subject The subject whos access is being queried
-	 * @return Array The access mnatrix
+	 * @return Array The access matrix
 	 */
 	static function getAccessMatrix(IAclObject $object, IAclSubject $subject) {
 	
@@ -158,7 +158,17 @@ class Acl {
 
 	}
 	
-	static function getExplicitAccessRecord($suuid,$ouuid,$rlist) {
+	/**
+	 * @brief Retrieve the explicitly defined access record.
+	 *
+	 * This function is used internally to retrieve a complete list of roles
+	 * with the defined access modifiers included.
+	 *
+	 * @param String $suuid The subject UUID
+	 * @param String $ouuid The object UUID
+	 * @return Array The access record
+	 */
+	private static function getExplicitAccessRecord($suuid,$ouuid,$rlist) {
 
 		$db = new DatabaseConnection();
 		$rolesraw = $db->getRows("SELECT role,access FROM aclconf WHERE object=%s AND subject=%s", $ouuid, $suuid);
@@ -240,7 +250,7 @@ class Acl {
      * @param IAclSubject $subject One or more user or group IDs as string or array.
      * @param boolean $access One of the acl::ACL_* flags.
      */
-    function setAccess(IAclObject $object, $role, IAclSubject $subject, $access) {
+    static function setAccess(IAclObject $object, $role, IAclSubject $subject, $access) {
 
 		// If the subject is not specified, set it to the current user.
 		if (!$subject) $subject = user::getActiveUser();

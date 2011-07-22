@@ -2,9 +2,17 @@
 
 require('sys/base.php');
 
+// The ACL and Authentication classes ar eneeded to get access to the user
+// record (subject) and the actual ACL classes.
 using('lepton.user.acl');
 using('lepton.user.authentication');
 
+/*
+ * This is an example of how to implement the IAclObject interface. It should
+ * not be used as it is, but rather implemented in a similar fashion. The
+ * important thing to make sure that each instance is assigned a unique and
+ * constant uuid.
+ */
 class Guestbook implements IAclObject {
 
 	// This objects UUID
@@ -18,26 +26,21 @@ class Guestbook implements IAclObject {
 	);
 
 	function getObjectUuid() {
-	
 		// return the UUID of the object here
 		return $this->uuid;
-		
 	}
-	
+
 	function getObjectRoles() {
-	
 		// return the ACL roles of the object here
 		return $this->roles;
-		
 	}
 
 	function __construct($guestbookid) {
-	
 		// Assuming that the guestbook is opened with its UUID
 		$this->uuid = $guestbookid;
-		
 	}
 
+	// This is one of the methods used to perform an action on the object.
 	function post($message,$attachment=null) {
 	
 		// Check the ACL entries. Leaving out parameter 3 will cause the ACL
@@ -57,8 +60,9 @@ class Guestbook implements IAclObject {
 	}
 
 }
-	
 
+
+// Create an instance of the test class and retrieve the active user.
 $book = new Guestbook('954c1ea0-fd9a-44e6-8cad-f601fe079a36');
 $user = user::getActiveUser();
 

@@ -464,19 +464,21 @@ class ClassNotFoundException extends BaseException { }
 class BadPropertyException extends BaseException { 
 	function __construct($cname,$pname=null) {
 		if (!$pname) { $this->message = $cname; return; }
-		$this->message = sprintf("No property %s in class %s", $pname, $cname);
+		$this->message = sprintf("Property %s->%s does not exist", $cname, $pname);
 	}
 }
 class ProtectedPropertyException extends BaseException { 
 	function __construct($cname,$pname=null) {
 		if (!$pname) { $this->message = $cname; return; }
-		$this->message = sprintf("Property %s in class %s is protected", $pname, $cname);
+		$this->message = sprintf("Property %s->%s is protected", $cname, $pname);
 	}
 }
 class BadArgumentException extends BaseException { }
 class CriticalException extends BaseException { }
 class SecurityException extends CriticalException { 
 	const ERR_ACCESS_DENIED = 1;
+	const ERR_SESSION_INVALID = 2;
+	const ERR_POLICY_BREACH = 3;
 }
 
 ////// Configuration //////////////////////////////////////////////////////////
