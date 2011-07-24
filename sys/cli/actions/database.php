@@ -33,12 +33,52 @@ class DatabaseAction extends Action {
             'info' => 'Initialize the database tables',
             'alias' => 'initialize-db'
         ),
+        'import' => array(
+            'arguments' => '[\g{tablename}]',
+            'info' => 'Import one or more tables from the app/sql folder'
+        ),
         'upgrade' => array(
             'arguments' => '',
             'info' => 'Apply upgrades from the dist/upgrades/*.sql',
             'alias' => 'db-upgrade'
         )
     );
+    public function import() {
+        console::writeLn(__astr('\b{Importing tables and data}'));
+        $db = new DatabaseConnection();
+        $args = func_get_args();
+        if (count($args) == 0) {
+            $args = array();
+            foreach(glob(base::appPath().'/sql/*.sql') as $fn) $args[] = basename($fn,'.sql');
+        }
+        foreach($args as $arg) {
+            console::write("  [app] %-30s ", $arg);
+            $sqlfile = base::appPath().'/sql/'.$arg.'.sql';
+            if (file_exists($sqlfile)) {
+                console::write("SQL ");
+                $db->exec(file_get_contents($sqlfile));
+            }
+            $csvfile = base::appPath().'/sql/'.$arg.'.csv';
+            if (file_exists($csvfile)) {
+                console::write("CSV ");
+                $fh = fopen($csvfile,'r');
+                $head = fgetcsv($fh,8192,';','"');
+                $sql = "INSERT INTO ".$arg." (".join(',',$head).") VALUES ";
+                $darr = array();
+                while (!feof($fh)) {
+                    $data = fgetcsv($fh,8192,';','"');
+                    if (!$data) break;
+                    $dval = array();
+                    foreach($data as $v) $dval[] = "'".str_replace("'","\\'",$v)."'";
+                    $darr[] = '('.join(',',$dval).')';
+                }
+                $sql.= join(',',$darr).";";
+                $db->exec($sql);
+                fclose($fh);
+            }
+            console::writeLn();
+        }
+    }
     public function initialize($rootuser=null) {
         console::writeLn(__astr('\b{Initializing database}'));
         $db = config::get('lepton.db.default');
