@@ -83,7 +83,7 @@ class Paginator {
      */
     function getSummary() {
         $first = ($this->_gitemsperpage * ($this->_gpage - 1)) + 1;
-        $last = $first + $this->_gitemsperpage;
+        $last = $first + $this->_gitemsperpage - 1;
         if ($last > $this->getNumItems())
             $last = $this->getNumItems();
         return array(
