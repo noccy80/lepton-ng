@@ -33,7 +33,8 @@ class intl {
 					$str = $args[0];
 				}
 				if (count($args)>1) {
-					$str = sprintf($str,array_slice($args,1));
+
+					$str = call_user_func_array('sprintf', array_merge(array($str),array_slice($args,1)));
 				}
 			} else {
 				$str = $args[0];
@@ -42,7 +43,7 @@ class intl {
 			if (count($args) > 0) {
 				$str = $args[0];
 				if (count($args) > 1) {
-					$str = sprintf($str,array_slice($args,1));
+					$str = call_user_func_array('sprintf', array_merge(array($str),array_slice($args,1)));
 				}
 			} else {
 				$str = $args[0];

@@ -1,4 +1,6 @@
-<?php module("Pagination classes");
+<?php
+
+module("Pagination classes");
 
 /**
  * @class Paginator
@@ -21,7 +23,7 @@
 class Paginator {
 
     private $_gpage = 0;
-	private $_gitemsperpage = 0;
+    private $_gitemsperpage = 0;
     private $_gnumitems = 0;
 
     /**
@@ -30,11 +32,13 @@ class Paginator {
      * @param Integer $page The page to display, starting at 1
      * @param Integer $itemsperpage The number of items to display per page
      */
-	function __construct($page,$itemsperpage) {
-        if ($itemsperpage == 0) { throw new LogicException("Items per page can not be 0"); }
-		$this->_gitemsperpage = $itemsperpage;
-		$this->_gpage = ($page < 1)?1:$page;
-	}
+    function __construct($page, $itemsperpage) {
+        if ($itemsperpage == 0) {
+            throw new LogicException("Items per page can not be 0");
+        }
+        $this->_gitemsperpage = $itemsperpage;
+        $this->_gpage = ($page < 1) ? 1 : $page;
+    }
 
     /**
      * @brief Set the number of items in the data set.
@@ -44,7 +48,7 @@ class Paginator {
     function setNumItems($numitems) {
         $this->_gnumitems = intval($numitems);
     }
-    
+
     /**
      * @brief Return the number of items in the data set.
      * 
@@ -56,7 +60,7 @@ class Paginator {
     function getNumItems() {
         return $this->_gnumitems;
     }
-    
+
     /**
      * @brief Return the current page number.
      *
@@ -67,7 +71,7 @@ class Paginator {
     function getCurrentPage() {
         return $this->_gpage;
     }
-    
+
     /**
      * @brief Return summary information of the pagination.
      * 
@@ -80,6 +84,8 @@ class Paginator {
     function getSummary() {
         $first = ($this->_gitemsperpage * ($this->_gpage - 1)) + 1;
         $last = $first + $this->_gitemsperpage;
+        if ($last > $this->getNumItems())
+            $last = $this->getNumItems();
         return array(
             'page' => $this->getCurrentPage(),
             'first' => $first,
@@ -87,7 +93,7 @@ class Paginator {
             'total' => $this->getNumItems()
         );
     }
-    
+
     /**
      * @brief Return the number of pages in the set.
      *
@@ -97,10 +103,11 @@ class Paginator {
      * @param Integer $numitems The number of items to use for calculation (Optional)
      * @return Integer The number of pages needed to cover the set.
      */
-	function getNumPages($numitems=null) {
-        if (!$numitems) $numitems = $this->_gnumitems;
-		return floor(($numitems - 1) / $this->_gitemsperpage) + 1;
-	}
+    function getNumPages($numitems=null) {
+        if (!$numitems)
+            $numitems = $this->_gnumitems;
+        return floor(($numitems - 1) / $this->_gitemsperpage) + 1;
+    }
 
     /**
      * @brief Return a SQL LIMIT statement to use for database filtering.
@@ -124,6 +131,6 @@ class Paginator {
         $this->_gnumitems = count($array);
         return array_slice($array, ($this->_gitemsperpage * ($this->_gpage - 1)), $this->_gitemsperpage);
     }
-    
+
 }
 
