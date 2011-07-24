@@ -1,4 +1,4 @@
-<?php __fileinfo("Configuration for my website");
+<?php module("Configuration for my website");
 
 config::set('lepton.db.default', array(
 // mysql connection
