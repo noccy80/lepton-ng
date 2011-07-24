@@ -1,22 +1,50 @@
 <?php
 
+
+config::def('cache.memcached.servers', array('127.0.0.1:11211'));
+
 using('lepton.utils.datetime');
 
 class CacheException extends Exception { }
 
+/**
+ * @class Cache
+ * @brief Cache implementation based on memcached.
+ * 
+ * 
+ * 
+ * @todo Make abstract to allow to work 
+ * @author Christopher Vagnetoft <noccy.com>
+ */
 class Cache {
 
 	private static $initialized = false;
 	private static $mci = null;
 
+    /**
+     * @brief Initialize the cache subsystem.
+     * 
+     * 
+     */
 	private static function initialize() {
 		if (!self::$initialized) {
 			self::$mci = new Memcached();
-			self::$mci->addServer('127.0.0.1',11211);
+            foreach(config::get('cache.memcached.servers') as $server) {
+                list($host,$port) = explode(':',$server);
+    			self::$mci->addServer($host,$port);
+            }
 			self::$initialized = true;
 		}
 	}
 
+    /**
+     * @brief Helper function to check if the last operation was successful.
+     * 
+     * This method is called internally to make sure that nothing went wrong
+     * when getting or setting data.
+     * 
+     * @return Boolean True if the operation was successful
+     */
 	private static function check() {
 		$rc = self::$mci->getResultCode();
 		switch($rc) {
@@ -67,12 +95,28 @@ class Cache {
 		}
 	}
 
+    /**
+     * @brief Retrieve data from the cache
+     * 
+     * Attempts to retrieve data from the cache. Will throw an exception if the
+     * operation was not successful.
+     * 
+     * @param String $key The key to retrieve
+     * @return Mixed The cached data
+     */
 	public static function get($key) {
 		self::initialize();
 		$val = self::$mci->get($key);
 		if (self::check()) return $val;
 	}
 
+    /**
+     * @brief Set or update an entry in the cache
+     * 
+     * @param String $key The key to set
+     * @param Mixed $value The data to set
+     * @param Mixed $validity Validity as a string, such as "5m" or "1h"
+     */
 	public static function set($key,$value,$validity = null) {
 		self::initialize();
 		if ($validity) {
@@ -85,6 +129,12 @@ class Cache {
 		self::check();
 	}
 
+    /**
+     * @brief Removes data from the cache.
+     * 
+     * @param String $key The key to remove
+     * @return Boolean True on success, false otherwise
+     */
 	public static function clr($key) {
 		try {
 			self::$mci->delete($key);

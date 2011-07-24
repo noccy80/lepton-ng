@@ -33,7 +33,7 @@ class Paginator {
 	function __construct($page,$itemsperpage) {
         if ($itemsperpage == 0) { throw new LogicException("Items per page can not be 0"); }
 		$this->_gitemsperpage = $itemsperpage;
-		$this->_gpage = $page;
+		$this->_gpage = ($page < 1)?1:$page;
 	}
 
     /**

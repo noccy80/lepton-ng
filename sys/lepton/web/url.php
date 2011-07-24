@@ -134,7 +134,6 @@ class url {
 	 *
 	 * @param
 	 * @param
-	 * @return
 	 */
 	public function setParameter($key,$value) {
 		$this->query[$key] = $value;
