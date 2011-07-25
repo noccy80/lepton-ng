@@ -1,6 +1,7 @@
 <?php
 
 using('lepton.net.httprequest');
+using('lepton.web.json');
 
 /**
  * @class WowApiQuery
@@ -12,7 +13,7 @@ using('lepton.net.httprequest');
  * @license GNU General Public License Verison 3
  * @author Christopher Vagnetoft <noccy.com>
  */
-class WowApiQuery {
+class WowQuery {
 	const CHAR_ITEMS = 0x0001; // equipped items
 	const CHAR_STATS = 0x0002; // stats
 	const CHAR_REPUTATION = 0x0004; // reputation
@@ -112,7 +113,7 @@ class WowApiQuery {
 
 		$url = sprintf('http://%s.battle.net/api/wow/character/%s/%s%s', $this->region, $realm, $character, $fieldstr);
 		$request = new HttpRequest($url);
-		$ret = json_decode((string) $request);
+		$ret = json::decode((string) $request);
 		$char = new WowCharacter($this->region, $ret);
 		return $char;
 		
@@ -138,7 +139,7 @@ class WowApiQuery {
 
 		$url = sprintf('http://%s.battle.net/api/wow/guild/%s/%s%s', $this->region, $realm, $guildname, $fieldstr);
 		$request = new HttpRequest($url);
-		$ret = json_decode((string) $request);
+		$ret = json::decode((string) $request);
 		return $ret;
 		
 	}

@@ -21,9 +21,9 @@ class WebDebugProvider implements IDebugProvider {
     static function inspectArray($data) {
         $ret = '<table>';
         foreach ($data as $key => $value) {
-            $ret.='<tr><th>' . htmlentities($key) . '</th><td>';
-            if (is_array($value)) {
-                $ret.= self::inspectArray($value);
+            $ret.='<tr><th>' . htmlentities($key) . ' <br><em style="font-size:10px; font-weight:normal">'.typeOf($value).'</em></th><td>';
+            if (is_array($value) || is_a($value, 'StdClass')) {
+                $ret.= self::inspectArray((array)$value);
             } else {
 				if ($value === null) {
 					$ret.= '<img src="data:image/gif;base64,R0lGODdhEwAHAKECAAAAAPj4/////////ywAAAAAEwAHAAACHYSPmWIB/KKBkznIKI0iTwlKXuR8B9aUXdYprlsAADs=">';
