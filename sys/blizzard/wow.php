@@ -190,6 +190,7 @@ class WowCharacter {
 
 	private $_region;
 	private $_data;
+	private $_thumbnail;
 
 	function __construct($region, $data) {
 
@@ -200,8 +201,8 @@ class WowCharacter {
 	}
 	
 	function __get($key) {
-		if (arr::has(self::$_data,$key)) 
-			return self::$_data[$key];
+		if (arr::hasKey($this->_data,$key)) 
+			return $this->_data[$key];
 		return null;
 	}
 
