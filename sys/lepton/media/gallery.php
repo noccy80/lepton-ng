@@ -19,8 +19,8 @@ class GalleryItemsTable extends SqlTableSchema {
 		$this->addColumn('uuid', 'char:37', self::COL_FIXED);
 		$this->addColumn('src','varchar:200');
 		// Indexes
-		$this->addIndex('uuid', array('uuid'));
-		$this->addIndex('src', array('src'));
+		$this->addIndex('uuidkey', array('uuid'), self::KEY_UNIQUE);
+		$this->addIndex('srckey', array('src'), self::KEY_UNIQUE);
 	}
 }
 SqlTableSchema::apply(new GalleryItemsTable());
