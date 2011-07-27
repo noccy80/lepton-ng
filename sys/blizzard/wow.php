@@ -165,6 +165,8 @@ class WowQuery {
 			case 3: return "Hunter";
 			case 4: return "Rogue";
 			case 5: return "Priest";
+			case 6: return "DeathKnight";
+			case 7: return "Shaman";
 			case 8: return "Mage";
 			case 9: return "Warlock";
 			case 11: return "Druid";
@@ -177,9 +179,22 @@ class WowQuery {
 		
 		switch ($id) {
 			case 1: return "Human";
+			case 3: return "Dwarf";
 			case 4: return "Night Elf";
 			case 7: return "Gnome";
+			case 11: return "Draenei";
+			case 22: return "Worgen";
 			default: return sprintf("Race[#%d]", $id);
+		}
+		
+	}
+	
+	public function genderIdToString($id) {
+		
+		switch ($id) {
+			case 1: return "Female";
+			case 0: return "Male";
+			default: return sprintf("Gender[#%d]", $id);
 		}
 		
 	}
@@ -201,14 +216,46 @@ class WowCharacter {
 	}
 	
 	function __get($key) {
-		if (arr::hasKey($this->_data,$key)) 
-			return $this->_data[$key];
+		switch($key) {
+			case 'genderstr': 
+				return WowQuery::genderIdToString($this->_data['gender']);
+			case 'classstr': 
+				return WowQuery::classIdToString($this->_data['class']);
+			case 'racestr': 
+				return WowQuery::raceIdToString($this->_data['race']);
+			default:
+				if (arr::hasKey($this->_data,$key)) 
+					return $this->_data[$key];
+		}
 		return null;
+	}
+	
+	function __sleep() {
+		return array_keys(get_object_vars($this));
 	}
 
 	function getThumbnailSrc() {
 
 		return sprintf('http://%s.battle.net/static-render/%s/%s', $this->_region, $this->_region, $this->_thumbnail);
+	}
+
+}
+
+class WowItem {
+
+	private $_region;
+	private $_icon;
+
+	/**
+	 * @brief Retrieve the image URL of the item
+	 *
+	 * @param Integer $size Size in pixels, one of 18,36 or 56
+	 * @return String The url of the image
+	 */
+	static function getImageSrc($size=56) {
+
+		return sprintf('http://%s.media.blizzard.com/wow/icons/%d/%s', $this->_region, $size, $this->_icon);
+
 	}
 
 }
