@@ -57,7 +57,7 @@ class WowQuery {
 		if ($realm != null)
 			$url.= '?realm=' . $realm;
 		$request = new HttpRequest($url);
-		$ret = json_decode((string) $request);
+		$ret = json::decode((string)$request);
 
 		return $ret;
 		
@@ -113,7 +113,7 @@ class WowQuery {
 
 		$url = sprintf('http://%s.battle.net/api/wow/character/%s/%s%s', $this->region, $realm, $character, $fieldstr);
 		$request = new HttpRequest($url);
-		$ret = json::decode((string) $request);
+		$ret = json::decode((string)$request);
 		$char = new WowCharacter($this->region, $ret);
 		return $char;
 		
@@ -139,7 +139,7 @@ class WowQuery {
 
 		$url = sprintf('http://%s.battle.net/api/wow/guild/%s/%s%s', $this->region, $realm, $guildname, $fieldstr);
 		$request = new HttpRequest($url);
-		$ret = json::decode((string) $request);
+		$ret = json::decode((string)$request);
 		return $ret;
 		
 	}
@@ -152,41 +152,17 @@ class WowQuery {
 
 		$url = sprintf('http://%s.battle.net/api/wow/arena/%s/%s/%s', $this->region, $realm, $size, $teamname);
 		$request = new HttpRequest($url);
-		$ret = json_decode((string) $request);
+		$ret = json::decode((string) $request);
 		return $ret;
 		
 	}
 
 	public function classIdToString($id) {
-		
-		switch ($id) {
-			case 1: return "Warrior";
-			case 2: return "Paladin";
-			case 3: return "Hunter";
-			case 4: return "Rogue";
-			case 5: return "Priest";
-			case 6: return "DeathKnight";
-			case 7: return "Shaman";
-			case 8: return "Mage";
-			case 9: return "Warlock";
-			case 11: return "Druid";
-			default: return sprintf("Class[#%d]", $id);
-		}
-		
+		return WowCharacter::className($id);
 	}
 
 	public function raceIdToString($id) {
-		
-		switch ($id) {
-			case 1: return "Human";
-			case 3: return "Dwarf";
-			case 4: return "Night Elf";
-			case 7: return "Gnome";
-			case 11: return "Draenei";
-			case 22: return "Worgen";
-			default: return sprintf("Race[#%d]", $id);
-		}
-		
+		return WowCharacter::raceName($id);
 	}
 	
 	public function genderIdToString($id) {
@@ -203,6 +179,17 @@ class WowQuery {
 
 class WowCharacter {
 
+	const CLASS_DEATHKNIGHT = 6;
+	const CLASS_DRUID = 11;
+	const CLASS_HUNTER = 3;
+	const CLASS_MAGE = 8;
+	const CLASS_PALADIN = 2;
+	const CLASS_PRIEST = 5;
+	const CLASS_ROGUE = 4;
+	const CLASS_SHAMAN = 7;
+	const CLASS_WARLOCK = 9;
+	const CLASS_WARRIOR = 1;
+	
 	private $_region;
 	private $_data;
 	private $_thumbnail;
@@ -235,10 +222,56 @@ class WowCharacter {
 	}
 
 	function getThumbnailSrc() {
-
 		return sprintf('http://%s.battle.net/static-render/%s/%s', $this->_region, $this->_region, $this->_thumbnail);
 	}
+	
+	static function thumbnail($region,$surl) {
+		return sprintf('http://%s.battle.net/static-render/%s/%s', $region, $region, $surl);
+	}
+	
+	static function classColor($classid) {
+		switch($classid) {
+			case self::CLASS_DEATHKNIGHT: return '#C41F3B';
+			case self::CLASS_DRUID: return '#FF7D0A';
+			case self::CLASS_HUNTER: return '#ABD473';
+			case self::CLASS_MAGE: return '#69CCF0';
+			case self::CLASS_PALADIN: return '#F58CBA';
+			case self::CLASS_PRIEST: return '#FFFFFF';
+			case self::CLASS_ROGUE: return '#FFF569';
+			case self::CLASS_SHAMAN: return '#0070DE';
+			case self::CLASS_WARLOCK: return '#9482C9';
+			case self::CLASS_WARRIOR: return '#C79C6E';
+		}
+	}
 
+	static function className($classid) {
+		switch ($classid) {
+			case 1: return "Warrior";
+			case 2: return "Paladin";
+			case 3: return "Hunter";
+			case 4: return "Rogue";
+			case 5: return "Priest";
+			case 6: return "DeathKnight";
+			case 7: return "Shaman";
+			case 8: return "Mage";
+			case 9: return "Warlock";
+			case 11: return "Druid";
+			default: return sprintf("Class[#%d]", $id);
+		}
+	}
+
+	static function raceName($raceid) {
+		switch ($raceid) {
+			case 1: return "Human";
+			case 3: return "Dwarf";
+			case 4: return "Night Elf";
+			case 7: return "Gnome";
+			case 11: return "Draenei";
+			case 22: return "Worgen";
+			default: return sprintf("Race[#%d]", $id);
+		}
+	}
+	
 }
 
 class WowItem {
