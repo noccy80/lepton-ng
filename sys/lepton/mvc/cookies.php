@@ -77,7 +77,14 @@ class Cookies {
             setcookie($name, '', time() - 3600);
         }
     }
-    
+
+    /**
+     * @brief Inspect the state of the request
+     */
+    static function inspect() {
+        debug::inspect(self::$cookies);
+    }
+        
 }
 
 Cookies::initialize();
