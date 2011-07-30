@@ -243,10 +243,13 @@ abstract class Router implements IRouter {
      * The domain "foo.test.com" would return an array consisting of "com",
      * "test" and "foo".
      *
+	 * @param $normal bool Return in normal order (not reverse)
      * @return array The domain components in reverse order
      */
-    protected function getDomainComponents() {
-        return array_reverse(explode('.',strtolower($this->_domain)));
+    protected function getDomainComponents($normal=false) {
+		$comp = explode('.',strtolower($this->_domain));
+        if (!$normal) return array_reverse($comp);
+		return $comp;
     }
 
     /**

@@ -454,6 +454,7 @@ function file_find($dir,$match) {
  */
 class BaseException extends Exception { }
 class ModuleException extends BaseException { }
+class NavigationException extends BaseException { }
 class FilesystemException extends BaseException { }
 class FileNotFoundException extends FilesystemException { }
 class FileAccessException extends FilesystemException { }

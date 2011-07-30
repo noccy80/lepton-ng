@@ -34,6 +34,14 @@ abstract class Controller implements IController {
      * @return int Exit code
      */
     static function invoke($controller=null,$method=null,Array $arguments=null) {
+		if (strpos($controller,'/') !== false) {
+			$cfull = explode('/',$controller);
+			$cpath = join('/',array_slice($cfull,0,count($cfull)-1)).'/controllers';
+			$controller = $cfull[count($cfull)-1];
+		} else {
+			$cpath = 'controllers';
+		}
+		
         if (!$controller) $controller = 'default'; // config
         if (!$method) $method = 'index'; // config
         if (config::get(controller::KEY_TRANSLATE,false)==true) $method = str_replace('-','_',$method);
@@ -41,14 +49,14 @@ abstract class Controller implements IController {
         $controller = strtolower($controller);
         $method = strtolower($method);
 
-        $ctlpath = base::apppath().'/controllers/'.$controller.'.php';
+        $ctlpath = base::apppath().'/'.$cpath.'/'.$controller.'.php';
         Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking %s:%s (%s)', $controller, $method, $ctlpath);
         $cc = $controller.'Controller';
         if(!class_exists($cc)) {
             if (file_exists($ctlpath)) {
                 require($ctlpath);
             } else {
-                throw new BaseException("Could not find controller class ". $controller);
+                throw new NavigationException("Could not find controller class ". $controller);
                 return RETURN_ERROR;
             }
         }
