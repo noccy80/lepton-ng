@@ -67,10 +67,11 @@ class DatabaseAction extends Action {
                 $darr = array();
                 while (!feof($fh)) {
                     $data = fgetcsv($fh,8192,';','"');
-                    if (!$data) break;
-                    $dval = array();
-                    foreach($data as $v) $dval[] = "'".str_replace("'","\\'",$v)."'";
-                    $darr[] = '('.join(',',$dval).')';
+                    if (count((array)$data)>=count($head)) {
+                        $dval = array();
+                        foreach($data as $v) $dval[] = "'".str_replace("'","\\'",$v)."'";
+                        $darr[] = '('.join(',',$dval).')';
+                    }
                 }
                 $sql.= join(',',$darr).";";
                 $db->exec($sql);

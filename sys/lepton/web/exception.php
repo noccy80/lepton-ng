@@ -150,5 +150,3 @@ MvcExceptionHandler::$js = '<script type="text/javascript">'.
 
 
 Lepton::setExceptionHandler('MvcExceptionHandler');
-
-?>
