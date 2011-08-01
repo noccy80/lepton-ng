@@ -247,6 +247,9 @@ abstract class utils {
 
 }
 
+// For the lazy developer in you
+abstract class u extends utils { }
+
 ////// Interfaces /////////////////////////////////////////////////////////////
 
 /*
