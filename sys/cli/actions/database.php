@@ -58,6 +58,7 @@ class DatabaseAction extends Action {
                 console::write("SQL ");
                 $db->exec(file_get_contents($sqlfile));
             }
+
             $csvfile = base::appPath().'/sql/'.$arg.'.csv';
             if (file_exists($csvfile)) {
                 console::write("CSV ");
@@ -77,6 +78,29 @@ class DatabaseAction extends Action {
                 $db->exec($sql);
                 fclose($fh);
             }
+
+            $recfile = base::appPath().'/sql/'.$arg.'.rec';
+            if (file_exists($recfile)) {
+                console::write("REC ");
+                $fh = fopen($recfile,'r');
+                $sql = "INSERT INTO ".$arg." (".join(',',$head).") VALUES ";
+                $darr = array();
+                while (!feof($fh)) {
+                    $data = trim(fgets($fh,8192));
+                    if (sub_str($data,strlen($data),1)) {
+                        printf("%s --", $data);
+                    }
+                    if (count((array)$data)>=count($head)) {
+                        $dval = array();
+                        foreach($data as $v) $dval[] = "'".str_replace("'","\\'",$v)."'";
+                        $darr[] = '('.join(',',$dval).')';
+                    }
+                }
+                $sql.= join(',',$darr).";";
+                $db->exec($sql);
+                fclose($fh);
+            }
+
             console::writeLn();
         }
     }

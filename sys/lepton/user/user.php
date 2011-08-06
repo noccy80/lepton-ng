@@ -13,13 +13,28 @@
         const ERR_USER_INACTIVE = 1;
 
         /**
+         * @brief Check if the user has a specific flag set
+         * 
+         * Shorthand version of user->hasFlag()
+         * 
+         * @param String $flag The flag to look for
+         * @return Bool True if the user has the flag set
+         */
+	static function hasFlag($flag) {
+		if (user::isAuthenticated()) {
+			return (user::getActiveUser()->hasFlag($flag));
+		}
+		return null;
+	}
+
+        /**
          * Attempt to authenticate the user through a provider.
          *
          * @param AuthenticationProvider $authrequest The authetication request
          * @return Bool True on success
          */
         static function authenticate($authrequest) {
-        
+
             // Resolve the authentication backend
             $auth_class = User::getAuthenticationBackend();
             // Assign the authentication backend to the request
@@ -32,6 +47,20 @@
             return false;
 
         }
+
+	static function suid(UserRecord $user = null) {
+		$suid = (array)session::get('lepton.suid');
+		if (arr::get($suid,'issuid')) {
+			// Can unsuid
+		} else {
+			// Can suid
+			session::set('lepton.suid', array(
+				'issuid' => true,
+				'uid' => user::getActiveUser()->userid,
+				'suid' => $user->userid
+			));
+		}
+	}
 
         /**
          * @brief Remove a user based on username or UserRecord.
@@ -87,7 +116,7 @@
 			session::set(User::KEY_USER_AUTH, null);
 
 		}
-        
+
         /**
          * Create a user record and set up the authentication credentials.
          *
@@ -105,19 +134,6 @@
 
         }
 
-        /**
-         * @brief Check if the user has a specific flag set
-         * 
-         * Shorthand version of user->hasFlag()
-         * 
-         * @param String $flag The flag to look for
-         * @return Bool True if the user has the flag set
-         */
-        static function hasFlag($flag) {
-            $u = user::getActiveUser();
-            return $u->hasFlag($flag);
-        }
-        
         /**
          * Check if a user is authenticated.
          *
