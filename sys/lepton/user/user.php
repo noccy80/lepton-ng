@@ -9,6 +9,7 @@
     abstract class User {
 
 		const KEY_USER_AUTH = 'lepton.user.identity';
+		const KEY_USER_SUID = 'lepton.user.suid';
 		const ERR_USER_UNASSOCIATED = 2;
         const ERR_USER_INACTIVE = 1;
 
@@ -49,16 +50,24 @@
         }
 
 	static function suid(UserRecord $user = null) {
-		$suid = (array)session::get('lepton.suid');
-		if (arr::get($suid,'issuid')) {
+                $suid = (array)session::get(User::KEY_USER_SUID,null);
+		if (arr::hasKey($suid,'issuid') && ($user == null)) {
 			// Can unsuid
-		} else {
+			$uid = $suid['uid'];
+			session::set(User::KEY_USER_AUTH, $uid);
+			session::clr(User::KEY_USER_SUID);
+			// user::set
+		} elseif ($user) {
 			// Can suid
 			session::set('lepton.suid', array(
 				'issuid' => true,
 				'uid' => user::getActiveUser()->userid,
 				'suid' => $user->userid
 			));
+			session::set(User::KEY_USER_AUTH, $user->userid);
+			response::redirect('/');
+		} else {
+			throw new SecurityException("Invalid suid attempt");
 		}
 	}
 
