@@ -114,6 +114,7 @@ class WowQuery {
 		$url = sprintf('http://%s.battle.net/api/wow/character/%s/%s%s', $this->region, $realm, $character, $fieldstr);
 		$request = new HttpRequest($url);
 		$ret = json::decode((string)$request);
+
 		$char = new WowCharacter($this->region, $ret);
 		return $char;
 		
@@ -198,6 +199,7 @@ class WowCharacter {
 
 		$this->_region = $region;
 		$this->_data = (array)$data;
+		if (count($this->_data) == 0) throw new BaseException("Bad character data");
 
 		$this->_thumbnail = $this->_data['thumbnail'];
 	}
@@ -213,6 +215,7 @@ class WowCharacter {
 			default:
 				if (arr::hasKey($this->_data,$key)) 
 					return $this->_data[$key];
+				throw new WowException("No such key in character: ".$key);
 		}
 		return null;
 	}
