@@ -89,6 +89,7 @@ if (!defined('APP_PATH')) {
     if (getenv('APP_PATH')) {
         define('APP_PATH', realpath(getenv('APP_PATH')) . '/');
     } else {
+        $path = '';
         if (getenv('SCRIPT_FILENAME')) {
             $_spath = getenv('SCRIPT_FILENAME');
             $_spath = realpath(pathinfo($path, PATHINFO_DIRNAME));
