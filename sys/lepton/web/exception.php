@@ -37,11 +37,6 @@ class MvcExceptionHandler extends ExceptionHandler {
 
         header('HTTP/1.1 501 Server Error', true);
 
-        if (($_SERVER['HTTPS'] != 'off') && ($_SERVER['HTTPS'] != null)) {
-            $ssl = 'Yes ('.$_SERVER['SSL_TLS_SNI'].')';
-        } else {
-            $ssl = 'No';
-        }
         $id = uniqid();
         $dbg = sprintf("Unhandled exception: (%s) %s\n  in %s:%d", get_class($e), $e->getMessage(), str_replace(SYS_PATH,'',$e->getFile()), $e->getLine())
             . Console::backtrace(0,$e->getTrace(),true)
@@ -49,23 +44,7 @@ class MvcExceptionHandler extends ExceptionHandler {
             . "Loaded modules:\n"
             . ModuleManager::debug()
             . "\n"
-            . "Request time: ".date(DATE_RFC822,$_SERVER['REQUEST_TIME'])."\n"
-            . "Event id: ".$id."\n"
-            . "Base path: ".base::basePath()."\n"
-            . "App path: ".base::appPath()."\n"
-            . "Sys path: ".base::sysPath()."\n"
-            . "User-agent: ".$_SERVER['HTTP_USER_AGENT']."\n"
-            . "Request URI: ".$_SERVER['REQUEST_URI']."\n"
-            . "Request method: ".$_SERVER['REQUEST_METHOD']."\n"
-            . "Remote IP: ".$_SERVER['REMOTE_ADDR']." (".gethostbyaddr($_SERVER['REMOTE_ADDR']).")\n"
-            . "Hostname: ".$_SERVER['HTTP_HOST']."\n"
-            . "Secure: ".$ssl."\n"
-            . "Referrer: ".(isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'null')."\n"
-            . sprintf("Running as: %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid())."\n"
-            . sprintf("Server: %s", $_SERVER['SERVER_SOFTWARE'])." (".php_sapi_name().")\n"
-            . sprintf("Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024))."\n"
-            . "Platform: ".LEPTON_PLATFORM_ID."\n"
-            . sprintf("Runtime: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS)."\n"
+            . request::getDebugInformation()
         ;
 
         logger::emerg($dbg);

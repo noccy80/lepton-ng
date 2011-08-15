@@ -190,6 +190,34 @@ class Request {
 		}
 	}
 
+    static function getDebugInformation() {
+        if (($_SERVER['HTTPS'] != 'off') && ($_SERVER['HTTPS'] != null)) {
+            $ssl = 'Yes ('.$_SERVER['SSL_TLS_SNI'].')';
+        } else {
+            $ssl = 'No';
+        }
+        return join("\n",array(
+            "Request time: ".date(DATE_RFC822,$_SERVER['REQUEST_TIME']),
+            /* "Event id: ".$id, */
+            "Base path: ".base::basePath(),
+            "App path: ".base::appPath(),
+            "Sys path: ".base::sysPath(),
+            "User-agent: ".$_SERVER['HTTP_USER_AGENT'],
+            "Request URI: ".$_SERVER['REQUEST_URI'],
+            "Request method: ".$_SERVER['REQUEST_METHOD'],
+            "Remote IP: ".$_SERVER['REMOTE_ADDR']." (".gethostbyaddr($_SERVER['REMOTE_ADDR']).")",
+            "Hostname: ".$_SERVER['HTTP_HOST'],
+            "Secure: ".$ssl,
+            "Referrer: ".(isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'null'),
+            sprintf("Running as: %s (uid=%d, gid=%d) with pid %d", get_current_user(), getmyuid(), getmygid(), getmypid()),
+            sprintf("Server: %s", $_SERVER['SERVER_SOFTWARE'])." (".php_sapi_name().")",
+            sprintf("Memory allocated: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024)),
+            "Platform: ".LEPTON_PLATFORM_ID,
+            sprintf("Runtime: PHP v%d.%d.%d (%s)", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_OS)
+        ));
+        
+    }
+    
     static function getDomain() {
         if (arr::hasKey($_SERVER,'HTTP_HOST')) {
             return strtolower($_SERVER['HTTP_HOST']);
