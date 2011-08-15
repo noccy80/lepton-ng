@@ -43,7 +43,6 @@ class TemplateParser {
                 case 'indent':
                     $rvalarr = explode("\n",$rval);
                     $indentstr = str_repeat(' ',intval($alist[1]));
-                    var_dump($rvalarr);
                     $rval = $indentstr.join($indentstr, $rvalarr);
                     break;
                 case 'wrap':
