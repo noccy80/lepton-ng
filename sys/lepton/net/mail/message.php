@@ -15,9 +15,12 @@ using('lepton.mvc.response'); // has content type code for now
 class MailMessage {
     const KEY_MAIL_FROM = 'lepton.net.mail.from';
     const NEW_LINE = "\n";
-    private $recipients;
-    private $subject;
-    private $body;
+    private $recipients = array();
+    private $recipientscc = array();
+    private $recipientsbcc = array();
+    private $subject = null;
+    private $body = null;
+    private $headers = array();
     /**
      * @brief Constructor
      *
@@ -52,6 +55,15 @@ class MailMessage {
         return $headerstr.$message;
     }
     
+    function addHeader($header,$value) {
+        $this->headers[$header] = $value;
+    }
+    
+    function getHeaders() {
+        return $this->headers;
+    }
+
+    
     public function getSubject() {
     	return $this->subject;
     }
@@ -68,6 +80,12 @@ class MailMessage {
         $rep = array();
         foreach($this->recipients as $v) {
             $rep[] = sprintf("To: %s",$v);
+		}
+        foreach($this->recipientscc as $v) {
+            $rep[] = sprintf("Cc: %s",$v);
+		}
+        foreach($this->recipientsbcc as $v) {
+            $rep[] = sprintf("Bcc: %s",$v);
 		}
         return $rep;
     }
@@ -90,8 +108,9 @@ class MailMessage {
             'From' => config::get(self::KEY_MAIL_FROM),
             'Subject' => $this->subject
         );
+        
         $address = $this->buildRecipientList();
-        $headers = array_merge($headers,$address);
+        $headers = array_merge($headers,$address,$this->headers);
 
         return $headers;
     }
