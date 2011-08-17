@@ -84,7 +84,7 @@ class Uuid {
 	 *
 	 * @return String The newly generated UUID
 	 */
-	public function v1() {
+	public static function v1() {
 		Uuid::initialize();
 		switch (self::$method) {
 			case self::USE_PECL_MAKE:
@@ -104,7 +104,7 @@ class Uuid {
 	 *
 	 * @return String The newly generated UUID
 	 */
-	public function v3($namespace, $name) {
+	public static function v3($namespace, $name) {
 		if (!self::is_valid($namespace))
 			return false;
 		// Get hexadecimal components of namespace
@@ -145,7 +145,7 @@ class Uuid {
 	 *
 	 * @return String The newly generated UUID
 	 */
-	public function v4() {
+	public static function v4() {
 
 		Uuid::initialize();
 
@@ -213,7 +213,7 @@ class Uuid {
 	 * @param String $name The name to use
 	 * @return String The newly generated UUID
 	 */
-	public function v5($namespace, $name) {
+	public static function v5($namespace, $name) {
 
 		if (!self::isValidUuid($namespace))
 			return false;

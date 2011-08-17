@@ -182,6 +182,7 @@ class UserRecord implements IAclSubject {
                         throw new BadArgumentException("Unknown field modified: {$mod}");
                 }
             }
+			$this->modified = array();
             
             if (!$this->userid) {
                 // Check to see if the username already exists
