@@ -137,11 +137,22 @@ class StringsAction extends Action {
 		$to = new GoogleTranslate($fromlang,$tolang);
 		$tstra = array();
 
+	$err = 0;
+	$tstra = $this->db['lang:'.$tolang];
         foreach($this->db['lang:'.$fromlang] as $key=>$str) {
-        	$tstr = $to->translate($str);
-        	$tstra[$key] = $tstr;
-            console::writeLn(__astr("\g{%s}: %s"), $key, $tstr);
+        	if (!arr::hasKey($tstra,$key)) {
+			$tstr = $to->translate($str);
+			if ($tstr) {
+		        	$tstra[$key] = $tstr;
+			} else {
+				$err++;
+			}
+	                console::writeLn(__astr("\g{%s}: %s"), $key, $tstr);
+			usleep(1000000);
+		}
         }
+
+	if ($err > 0) { console::writeLn(__astr("\c{red %d strings could not be translated.}\nYou should run the script again."), $err); }
 
         $this->db['lang:'.$tolang] = $tstra;
         $this->saveDatabase();
