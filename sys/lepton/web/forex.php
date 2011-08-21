@@ -79,11 +79,26 @@ class CurrencyExchange {
 
 }
 
+/**
+ * @class CurrencyAmount
+ * @brief Holds an amount together with a currency
+ * 
+ * 
+ */
 class CurrencyAmount {
     
     private $symbol = null;
     private $amount = null;
     
+    /**
+     * @brief Constructor
+     * 
+     * Parses strings such as "159.90 SEK", "USD 59.95" etc into the amount and
+     * the symbol. The currency can then be converted to any other known symbol.
+     * 
+     * @param string $amount An amount including curency symbol
+     * @param string $currency Force a specific currency symbol
+     */
     function __construct($amount,$currency=null) {
         
         // Try to determine if a symbol is present in the string
@@ -123,16 +138,67 @@ class CurrencyAmount {
                 $this->amount = floatval($symstr);
             }
         }
+        if ((!$this->symbol) && ($currency)) {
+            $this->symbol = $currency;
+        }
         
     }
 
+    /**
+     *
+     * @return String The symbol and the currency
+     */
     function __toString() {
         return sprintf('%s %.2f', $this->symbol, $this->amount);
     }
     
+    /**
+     * 
+     * 
+     * @param type $currency
+     * @return type 
+     */
     function convert($currency) {
         $cc = new CurrencyExchange();
-        return sprintf('%s %.2f', $currency, $cc->convert($this->amount, $this->symbol, $currency));
+        return new CurrencyAmount($cc->convert($this->amount, $this->symbol, $currency),$currency);
+        // return sprintf('%s %.2f', $currency, $cc->convert($this->amount, $this->symbol, $currency));
     }
     
+    /**
+     *
+     * @param type $key
+     * @return type 
+     */
+    public function __get($key) {
+        switch($key) {
+            case 'amount':
+                return floatval($this->amount);
+            case 'symbol':
+                return strtoupper($this->symbol);
+            default:
+                throw new BadPropertyException($this,$key);
+        }
+    }
+    
+    /**
+     *
+     * @param type $key
+     * @param type $value 
+     */
+    public function __set($key,$value) {
+        switch($key) {
+            case 'amount':
+                $this->amount = floatval($value);
+            case 'symbol':
+                $db = new DatabaseConnection();
+                $sym = $db->getSingleRow("SELECT * FROM currencyexchange WHERE symbol=%s",$value);
+                if ($sym) {
+                    $this->symbol = strtoupper($value);
+                } else {
+                    throw new CurrencyException("No such symbol: ".$value);
+                }
+            default:
+                throw new BadPropertyException($this,$key);
+        }
+    }
 }
