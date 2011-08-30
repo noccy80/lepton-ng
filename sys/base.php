@@ -306,6 +306,12 @@ function depends($functionality) {
 }
 function provides($functionality) { }
 
+/**
+ * @brief Return the list of classes that directly inherits from the class.
+ * 
+ * @param Object $baseclass The baes class to query
+ * @return Array The list of descendants
+ */
 function getDescendants($baseclass) {
 
 	$descendants = array();
@@ -324,6 +330,12 @@ function getDescendants($baseclass) {
 
 }
 
+/**
+ * @brief Return the type of an object instance
+ * 
+ * @param Mixed $obj The object to retrieve the type of (or string, int etc)
+ * @return String The type
+ */
 function typeof($obj) {
     if (is_object($obj)) {
         return get_class($obj);
@@ -703,27 +715,27 @@ class BasicContainer {
 
 }
 
-class Globals {
+abstract class Globals {
 	
-	private static $globals;
+	private static $globals = array();
 	
 	private function __construct() { }
 	
-	function get($key) {
+	static function get($key) {
 		if (!self::$globals) return null;
 		if (arr::hasKey(self::$globals,$key)) return self::$globals[$key];
 		return null;
 	}
 	
-	function set($key,$value) {
+	static function set($key,$value) {
 		self::$globals[$key] = $value;
 	}
 	
-	function has($key) {
+	static function has($key) {
 		return (arr::hasKey(self::$globals,$key));
 	}
 	
-	function clr($key) {
+	static function clr($key) {
 		unset(self::$globals[$key]);
 	}
 	

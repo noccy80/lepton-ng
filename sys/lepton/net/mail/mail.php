@@ -5,7 +5,7 @@ class MailException extends Exception { }
 config::def('lepton.net.mail.smtpserver','localhost');
 config::def('lepton.net.mail.localhost','localhost');
 config::def('lepton.net.mail.smtpport',25);
-config::def('lepton.net.mail.backend','PearMailerBackend');
+config::def('lepton.net.mail.backend','PearMailBackend');
 config::def('lepton.net.mail.pear.backend','smtp');
 
 interface IMailerBackend {
