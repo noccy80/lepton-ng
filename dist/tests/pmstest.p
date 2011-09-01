@@ -2,7 +2,7 @@
 <?php
 
 require('sys/base.php');
-using('lepton.graphics.colorspaces.*');
+using('lepton.graphics.colorspace.*');
 
 $pc = pantone('299c');
-echo (string)$pc."\n";
+echo (string)$pc;
