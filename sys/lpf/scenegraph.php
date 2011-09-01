@@ -43,21 +43,50 @@ class SceneNode implements ILpfSceneNode {
 	    return $actor;
 	}
 	
-	public function addAnimator($property,ILpfAnimator $animator,$frstart,$frend) {
-	    $this->_animators[$property][] = array(
-	        'animator' => $animator,
-	        'framestart' => $frstart,
-	        'frameend' => $frend
-	    );
-	    console::writeLn("Attached animator: %s => %s", typeOf($animator), $property);
-	}
-	
 	public function render($frame) { }
 
 }
 
 class SceneActor extends SceneNode {
-    public function render($frame) { }
-    public function __construct() {
+	private $_object = null;
+	private $_properties = null;
+	private $_animators = array();
+    public function __construct($object,$blender) {
+    	$this->_object = $object;
+    	$this->_properties = $object->getProperties();
     }
+	public function addAnimator($property,ILpfAnimator $animator,$frstart,$frend) {
+		if (arr::hasKey($this->_properties,$property)) {
+			$this->_animators[$property][] = array(
+			    'animator' => $animator,
+			    'framestart' => $frstart,
+			    'frameend' => $frend
+			);
+			console::writeLn("Attached animator: %s => %s", typeOf($animator), $property);
+		} else {
+			logger::warning("Animator attached to nonexisting property %s of object %s", $property, (string)$this->_object);
+		}
+	}
+	public function render($frame) {
+		$props = $this->_properties;
+		foreach($this->_animators as $prop=>$anims) {
+			foreach($anims as $anim) {
+				// We aren't checking the framestart and frameend properties here
+				$fi = $frame;
+				$fe = 1000;
+				$animator = $anim['animator'];
+				$val = $animator->getValue($fi,$fe);
+				console::write(" %s=%s  ", $prop, $val);
+				$props[$prop] = $val;
+			}
+		
+		}
+		$framedata = array(
+			'width' => $this->scene->width,
+			'height' => $this->scene->height,
+			'frame' => $frame
+		);
+		// TODO: Pass through blender
+		return $this->_object->render($framedata,$props);
+	}
 }

@@ -1346,6 +1346,10 @@ abstract class integer {
         return ($val >= $max) ? $max : ($val <= $min) ? $min : $val;
     }
 
+    static function map($val, $minin, $maxin, $minout, $maxout) {
+        return ((($val - $minin) / ($maxin - $minin)) * ($maxout - $minout) + $minout);
+    }
+
 }
 
 abstract class float {
@@ -1981,6 +1985,9 @@ abstract class CoreEvents implements IEventList {
     const EVENT_AFTER_APPLICATION = 'lepton.application.after';
 }
 
+/**
+ * @deprecated To be replaced by delegate
+ */
 class Callback {
     private $cbarray = null;
     function __construct(&$object,$method) {
@@ -1991,6 +1998,8 @@ class Callback {
         return call_user_func_array($this->cbarray,$args);
     }
 }
+// Semantic prettification method
+function callback($o,$m) { return array($o,$m); }
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
 
 if (PHP_VERSION < "5") {

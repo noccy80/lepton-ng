@@ -39,4 +39,6 @@ $blob->addAnimator('y', new LinearAnimator(0,600), 0, 1000);
 // of the timeline.
 $tl = new Timeline(1000);
 $tl->addScene($sc,0,1000);
+
+// Render the timeline
 $tl->renderTimeline();

@@ -18,8 +18,8 @@ class GoogleTranslate extends TranslationService {
 
 	function __construct($fromlang,$tolang,$apiversion=1) {
 
-		$this->fromlang = reset(split('-',$fromlang));
-		$this->tolang = reset(split('-',$tolang));
+		$this->fromlang = reset(explode('-',$fromlang));
+		$this->tolang = reset(explode('-',$tolang));
 		
 		console::debug('Translator for %s to %s created', $this->fromlang, $this->tolang);
 	

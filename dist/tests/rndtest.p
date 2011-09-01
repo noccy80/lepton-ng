@@ -14,4 +14,4 @@ function hexstr($str) {
 	return $so;
 }
 
-console::writeLn('%s',hexstr($rg->getRandom(4)));
+printf('%s',hexstr($rg->getRandom(4)));

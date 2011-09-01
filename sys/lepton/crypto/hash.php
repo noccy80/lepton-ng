@@ -120,7 +120,13 @@ class Hash {
 				}
 				break;
 		}
-	
+
+	}
+
+	public function hmac($string,$key) {
+
+		return hash_hmac($this->algo,$string,$key);
+
 	}
 
 }
