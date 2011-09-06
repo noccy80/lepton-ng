@@ -43,7 +43,7 @@ class HtPassword {
             // save to $filename
             printf("Saving\n");
         } else {
-            throw new FileNotFoundException("No file specified for saving");
+            throw new FileNotFoundException("No file specified for saving", null);
         }
     }
 

@@ -276,7 +276,7 @@ class MimeAttachment implements IMimeEntity {
     function __construct($filename,Array $options=null) {
         $this->filename = $filename;
         $this->options = (array)$options;
-        if (!file_exists($filename)) throw new FileNotFoundException();
+        if (!file_exists($filename)) throw new FileNotFoundException("Unable to attach file since it does not exist", $filename);
     }
 
     /**

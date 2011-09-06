@@ -31,6 +31,14 @@ class MvcExceptionHandler extends ExceptionHandler {
     function exception(Exception $e) {
 
         @ob_end_clean();
+		
+		$et = typeOf($e);
+		if (($et == 'FileNotFoundException') || ($et == 'NavigationException')) {
+			response::setStatus(404);
+			header('HTTP/1.1 404 Not Found', true);
+			printf("<h1>404: Not Found</h1>");
+			return;
+		}
 
         response::setStatus(500);
         logger::emerg("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());

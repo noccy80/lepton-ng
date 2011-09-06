@@ -17,7 +17,7 @@
             if (file_exists($file)) {
                 $this->_data = file_get_contents($file);
             } else {
-                throw new FileNotFoundException("Couldn't find file to minify: ".$file);
+                throw new FileNotFoundException("Couldn't find file to minify", $file);
             }
         }
 

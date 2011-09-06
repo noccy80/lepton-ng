@@ -472,7 +472,11 @@ class BaseException extends Exception { }
 class ModuleException extends BaseException { }
 class NavigationException extends BaseException { }
 class FilesystemException extends BaseException { }
-class FileNotFoundException extends FilesystemException { }
+class FileNotFoundException extends FilesystemException { 
+	function __construct($msg,$filename=null) {
+		parent::__construct(sprintf("%s (%s)", $msg, __printable($filename)));
+	}
+}
 class FileAccessException extends FilesystemException { }
 class UnsupportedPlatformException extends BaseException { }
 class FunctionNotSupportedException extends BaseException { }
