@@ -5,7 +5,7 @@ using('lepton.web.json');
 
 abstract class ArmoryQuery {
 	function getAuthorizationHeader($verb,$url) {
-		UrlPath = <HTTP-Request-URI, from the port to the query string>
+		// UrlPath = <HTTP-Request-URI, from the port to the query string>
 		$str = join("\n", array($verb, $date, $url));
 		$h = new Hash('sha1');
 		$sig = base64($h->hmac(str,$privkey));
