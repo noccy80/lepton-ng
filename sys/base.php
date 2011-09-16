@@ -82,6 +82,7 @@ if (!function_exists('sys_getloadavg')) {
     }
 }
 
+
 ///// Path Resolution ////////////////////////////////////////////////////////
 
 // Resolve application and system paths
@@ -228,6 +229,7 @@ abstract class base {
     }
 
 }
+
 
 ///// Utility Classes ////////////////////////////////////////////////////////
 
@@ -1458,6 +1460,22 @@ class vartype {
 
 ////// ModuleManager //////////////////////////////////////////////////////////
 
+
+interface IModuleLoader {
+    function queryClass($classname);
+    function loadModule($modulename);
+}
+
+class BasicModuleLoader {
+    
+}
+
+abstract class Module {
+    static function volatile() {
+        // Flag module as volatile
+    }
+}
+
 /**
  * @class ModuleManager
  *
@@ -1553,7 +1571,7 @@ class ModuleManager {
           }
          */
 
-	if ($path) {
+        if ($path) {
             if (file_exists(basename($path,'.php').'.class.php')) {
                 $path = basename($path,'.php').'.class.php';
             }

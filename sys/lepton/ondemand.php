@@ -14,10 +14,6 @@
  * 
  */
 
-interface IModuleLoader {
-    function queryClass($classname);
-    function loadModule($modulename);
-}
 
 class OnDemandModuleLoader implements IModuleLoader {
     private $database;
