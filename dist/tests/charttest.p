@@ -5,7 +5,7 @@ require('sys/base.php');
 using('lepton.data.*');
 using('lepton.data.charting.piechart');
 
-$set = new DataSet('a','b');
+$set = new DataSet('Pie','Cookies','Chocolate','Milk');
 $data = new DataSeries(1, 2, 3, 4);
 $set->addSeries('Chart',$data);
 
