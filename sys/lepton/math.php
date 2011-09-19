@@ -1,5 +1,9 @@
 <?php
 
+module::volatile();
+
+if (!defined('PI')) define('PI', 3.1415926535897931);
+
 /**
  * @class Math
  * @brief Math support functions
