@@ -83,7 +83,7 @@ class RequestFile extends RequestObject {
 	function __construct($key,$index = null) {
 		$this->key = $key;
         $this->index = $index;
-        if ($index != null) {
+        if ($index !== null) {
             $this->name = $_FILES[$key]['name'][$index];
             $this->type = $_FILES[$key]['type'][$index];
             $this->size = $_FILES[$key]['size'][$index];
@@ -451,12 +451,3 @@ class Request {
     }
 
 }
-/*
-$use_sts = TRUE;
-
-if ($use_sts && isset($_SERVER['HTTPS']) {
-  header('Strict-Transport-Security: max-age=500');
-} elseif ($use_sts && !isset($_SERVER['HTTPS'])) {
-  header('Status-Code: 301');
-  header('Location: https://'.$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI']);
-}*/
