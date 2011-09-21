@@ -233,7 +233,7 @@ class Request {
         if (arr::hasKey($_FILES,$key)) {
             if (count($_FILES[$key]['name']) > 0) {
                 $ret = array();
-                for($n = 0; $n < count($_FILES[$key]); $n++) {
+                for($n = 0; $n < count($_FILES[$key]['name']); $n++) {
                     $ret[] = new RequestFile($key,$n);
                 }
                 return $ret;
