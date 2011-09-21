@@ -1,5 +1,13 @@
 <?php module("Request wrapper for MVC support");
 
+/**
+ * @interface IRequestObject
+ * @brief Interface for any request content object
+ * 
+ * This interface should be inherited by all data that is returned by the
+ * request methods for request::get() and request::post() and it is
+ * automatically implemented by the abstract base class RequestObject
+ */
 interface IRequestObject {
 	function __construct($data);
 	function getType();
@@ -7,18 +15,51 @@ interface IRequestObject {
 	function validate($options);
 	function __toString();
 }
+
+/**
+ * @class RequestObject
+ * @brief Abstract base class for request objects
+ */
 abstract class RequestObject implements IRequestObject {
+    /**
+     * @brief Return the type of the request object
+     * 
+     * @return string The type of request object
+     */
 	function getType() { return class_name($this); }
+    
+    /**
+     * @brief Explicitly cast the object value to a string and return it
+     * 
+     * @return string The string casted object value
+     */
 	function toString() {
 		return $this->__toString();
 	}
+    
+    /**
+     * @brief Explicitly cast the object value to a int and return it
+     * 
+     * @return int The string casted object value cast to an int 
+     */
     function toInt() {
         return intval($this->__toString());
     }
+    
+    /**
+     * @brief Explicitly cast the object value to a float and return it
+     * 
+     * @return float The string casted object value cast to a float
+     */
     function toFloat() {
         return floatval($this->__toString());
     }
 }
+
+/**
+ * @class RequestString
+ * @brief Stores a string value
+ */
 class RequestString extends RequestObject {
 	private $data = null;
 	function __construct($data) { $this->data = $data; }
@@ -27,20 +68,34 @@ class RequestString extends RequestObject {
 	function validate($options) { }
 }
 
+/**
+ * @class RequestFile
+ * @brief Stores a POSTed file
+ */
 class RequestFile extends RequestObject {
 	private $key = null;
+    private $index = null;
 	private $name = null;
 	private $type = null;
 	private $tempname = null;
 	private $size = null;
 	private $md5 = null;
-	function __construct($key) {
+	function __construct($key,$index = null) {
 		$this->key = $key;
-		$this->name = $_FILES[$key]['name'];
-		$this->type = $_FILES[$key]['type'];
-		$this->size = $_FILES[$key]['size'];
-		$this->error = $_FILES[$key]['error'];
-		$this->tempname = $_FILES[$key]['tmp_name'];
+        $this->index = $index;
+        if ($index != null) {
+            $this->name = $_FILES[$key]['name'][$index];
+            $this->type = $_FILES[$key]['type'][$index];
+            $this->size = $_FILES[$key]['size'][$index];
+            $this->error = $_FILES[$key]['error'][$index];
+            $this->tempname = $_FILES[$key]['tmp_name'][$index];
+        } else {
+            $this->name = $_FILES[$key]['name'];
+            $this->type = $_FILES[$key]['type'];
+            $this->size = $_FILES[$key]['size'];
+            $this->error = $_FILES[$key]['error'];
+            $this->tempname = $_FILES[$key]['tmp_name'];
+        }
 		if ($this->error == UPLOAD_ERR_OK) {
 			if (function_exists('mime_content_type')) {
 				$this->type = @mime_content_type($this->tempname);
@@ -175,7 +230,17 @@ class Request {
     
     static function post($key, $def = null) {
     	// Check if the request field is a file
-        if (arr::hasKey($_FILES,$key)) return(new RequestFile($key));
+        if (arr::hasKey($_FILES,$key)) {
+            if (count($_FILES[$key]['name']) > 0) {
+                $ret = array();
+                for($n = 0; $n < count($_FILES[$key]); $n++) {
+                    $ret[] = new RequestFile($key,$n);
+                }
+                return $ret;
+            } else {
+                return(new RequestFile($key));
+            }
+        }
         if (arr::hasKey($_POST,$key)) return(new RequestString($_POST[$key]));
         return new RequestString($def);
     }
