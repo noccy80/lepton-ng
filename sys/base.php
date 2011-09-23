@@ -151,8 +151,8 @@ if (getenv("DEBUG") >= 1) {
 }
 
 if (php_sapi_name() == 'cli') {
-    define('LEPTON_CONSOLE', true);
-    if (base::logLevel() == 0) base::logLevel(LOG_INFO);
+	define('LEPTON_CONSOLE', true);
+	if (base::logLevel() == 0) base::logLevel(LOG_INFO);
 } else {
 	define('LEPTON_CONSOLE', false);
 }

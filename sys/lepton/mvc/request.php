@@ -26,7 +26,7 @@ abstract class RequestObject implements IRequestObject {
      * 
      * @return string The type of request object
      */
-	function getType() { return class_name($this); }
+	function getType() { return typeOf($this); }
     
     /**
      * @brief Explicitly cast the object value to a string and return it
@@ -129,7 +129,7 @@ class RequestFile extends RequestObject {
 	}
 	function getSize() { return $this->size; }
 	function getName() { return $this->name; }
-	function getType() { return $this->type; }
+	function getMimeType() { return $this->type; }
 	function isError() { return ($this->error != UPLOAD_ERR_OK); }
 	function getError() { return $this->error; }
 	function getErrorString() {
