@@ -13,7 +13,7 @@ class HttpRequest {
 
 	private $url;
 	private $args;
-	private $ret = null;
+	protected $ret = null;
 
 	function __construct($url, $args=null) {
 		$this->args = arr::apply(array(
@@ -97,7 +97,9 @@ class HttpRequest {
 				$ci->setParams($options['body']);
                         }
 			$ret = $ci->exec(CurlInstance::METHOD_POST);
-		} else {
+        } elseif (strtolower($options['method'] == 'head')) {
+            $ret = $ci->exec(CurlInstance::METHOD_HEAD);
+        } else {
 			$ret = $ci->exec(CurlInstance::METHOD_GET);
 		}
 		if ($ret['code'] == 200) {
@@ -147,12 +149,11 @@ class HttpRequest {
 
 }
 
-class HttpDownload {
+class HttpDownload extends HttpRequest {
 
 	private $url;
 	private $args;
 	private $target;
-	private $ret = null;
 
     function __construct($url,$target,$args=null) {
 		$this->args = arr::apply(array(

@@ -11,7 +11,7 @@ abstract class GeoNames {
 		$db = new DatabaseConnection();
 		if ($callback) $callback->call('Downloading',0,1);
 		$ci = new HttpRequest(self::getUrl('countryInfo.txt'));
-		
+        
 		// When we have the countryinfo, go over and replace the entries
 		// in the database.
 		$ent = explode("\n",$ci->getResponse());
@@ -73,16 +73,32 @@ abstract class GeoNames {
 		// Pull the list of countries to update
 		$rs = $db->getRows("SELECT * FROM geonames_datasets WHERE active=1");
 		foreach($rs as $ci) {
+            $download = false;
 			if (!file_exists($cache.$ci['setkey'].'.gz')) {
+                $download = true;
+			} else {
+				$file = new HttpRequest($ci['url'], $cache.$ci['setkey'].'.zip', array(
+                     'method' => 'head'
+                ));
+                $hdr = $file->headers();
+                $etaglocal = file_get_contents($cache.$ci['setkey'].'.etag');
+                $etagremote = $hdr['ETag'];
+                if ($etaglocal != $etagremote) {
+                    $download = true;
+                }
+            }
+            if ($download) {
 				cb($callback,'Downloading '.$ci['url'],0,1);
 				$file = new HttpDownload($ci['url'], $cache.$ci['setkey'].'.zip');
+                $hdr = $file->headers();
+                file_put_contents($cache.$ci['setkey'].'.etag', $hdr['ETag']);
 				cb($callback,'Recompressing '.$ci['setkey'].'.gz',0,1);
 				// Open input stream
 				$fin = fopen('zip://'.$cache.$ci['setkey'].'.zip#'.$ci['setkey'].'.txt','r');
 				$fout = fopen('compress.zlib://'.$cache.$ci['setkey'].'.gz','w');
 				stream_copy_to_stream($fin,$fout);
 				cb($callback,'Saved '.$ci['setkey'].'.gz');
-			}
+            }
 		}
 
 	}
@@ -90,7 +106,7 @@ abstract class GeoNames {
 	public static function updateActiveCountries(callback $callback = null) {
 
 		self::updateCache($callback);
-
+        
 		$db = new DatabaseConnection();
 		$cache = base::expand('app:/cache/geonames/');
 		// Pull the list of countries to import
@@ -98,7 +114,9 @@ abstract class GeoNames {
 		foreach($rs as $ci) {
 			cb($callback,'Importing '.$ci['setkey'].' ...', 1);
 			$fin = fopen('compress.zlib://'.$cache.$ci['setkey'].'.gz','r');
-			while(!feof($fin)) {
+            $rows = 0;
+            $ltime = 0;
+            while(!feof($fin)) {
 				$dl = fgets($fin);
 				if (trim($dl) != '') {
 					$ds = explode("\t",$dl);
@@ -119,8 +137,14 @@ abstract class GeoNames {
 						$ds[12], $ds[13], $ds[14], $ds[15],
 						$ds[16], $ds[17], $ds[18]);
 				}
+                if (microtime(true) > $ltime+1) {
+        			cb($callback,'Importing '.$ci['setkey'].' ... '.$rows." records imported", 1);
+                    $ltime = microtime(true);
+                }
+                $rows++;
 			}
-			cb($callback,'Imported '.$ci['setkey']);
+			$db->exec('ALTER TABLE geonames ENABLE KEYS');
+			cb($callback,'Imported '.$ci['setkey']. " (".$rows." records)");
 		}
 
 

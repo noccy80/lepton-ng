@@ -2037,7 +2037,11 @@ function cb(callback $cb = null) {
 	if ($cb) call_user_func_array(array($cb,'call'),array_slice($args,1));
 }
 // Semantic prettification method
-function callback($o,$m) { return array($o,$m); }
+function callback(&$object,$method) { 
+    // return array($o,$m);
+	$args = func_get_args();
+	return new Callback($object,array_slice($args,1));
+}
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
 
 if (PHP_VERSION < "5") {

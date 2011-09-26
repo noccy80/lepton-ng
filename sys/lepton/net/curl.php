@@ -110,6 +110,10 @@
 			case CurlInstance::METHOD_HEAD:
 				$this->setOption(CURLOPT_URL,$this->url);
 				$this->setOption(CURLOPT_CUSTOMREQUEST,'HEAD');
+                $this->setOption(CURLOPT_FILETIME, true);
+                $this->setOption(CURLOPT_NOBODY, true);
+                // curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);            
+                
 				break;
 			case CurlInstance::METHOD_GET:
 				if (is_array($this->params)) {
