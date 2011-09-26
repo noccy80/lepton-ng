@@ -20,6 +20,13 @@ CREATE TABLE geonames_datasets (
 	url VARCHAR(255) NOT NULL
 );
 
+DROP TABLE IF EXISTS geonames_hierarchy;
+CREATE TABLE geonames_hierarchy (
+    parentid INT NOT NULL,
+    nodeid INT NOT NULL PRIMARY KEY,
+    htype VARCHAR(32)
+);
+
 DROP TABLE IF EXISTS geonames;
 CREATE TABLE geonames (
 	geonameid INT NOT NULL PRIMARY KEY,
