@@ -97,9 +97,35 @@ abstract class GeoNames {
 				$fin = fopen('zip://'.$cache.$ci['setkey'].'.zip#'.$ci['setkey'].'.txt','r');
 				$fout = fopen('compress.zlib://'.$cache.$ci['setkey'].'.gz','w');
 				stream_copy_to_stream($fin,$fout);
+                fclose($fin);
+                fclose($fout);
 				cb($callback,'Saved '.$ci['setkey'].'.gz');
             }
 		}
+        
+        // Update hierarchy
+        $url = self::getUrl('hierarchy.zip');
+        if (file_exists($cache.'hierarchy.etag')) {
+            $hetag = file_get_contents($cache.'hierarchy.etag');
+        } else {
+            $hetag = null;
+        }
+        cb($callback,'Updating hierarchy...',0,1);
+        $head = new HttpRequest($url, array(
+            'method' => 'head'
+        ));
+        $headers = $head->headers();
+        if ($hetag != $headers['ETag']) {
+            file_put_contents($cache.'hierarchy.etag', $headers['ETag']);
+            $file = new HttpDownload($url, $cache.'hierarchy.zip');
+        }
+        // Open input stream
+        $fin = fopen('zip://'.$cache.'hierarchy.zip#hierarchy.txt','r');
+        $fout = fopen('compress.zlib://'.$cache.'hierarchy.gz','w');
+        stream_copy_to_stream($fin,$fout);
+        fclose($fin);
+        fclose($fout);
+        cb($callback,'Saved hierarchy...');
 
 	}
 
@@ -109,6 +135,28 @@ abstract class GeoNames {
         
 		$db = new DatabaseConnection();
 		$cache = base::expand('app:/cache/geonames/');
+        
+        // Update hierarchy
+        cb($callback,'Importing hierarchy ...',1);
+        $fin = fopen('compress.zlib://'.$cache.'hierarchy.gz','r');
+        $rows = 0;
+        $ltime = 0;
+        while (!feof($fin)) {
+            $fd = trim(fgets($fin));
+            $ds = explode("\t", $fd."\t\t");
+            $db->updateRow("REPLACE INTO geonames_hierarchy ".
+                    "(parentid,nodeid,htype) ".
+                    "VALUES ".
+                    "(%d,%d,%s)", $ds[0],$ds[1],$ds[2]);
+            if (microtime(true) > $ltime+1) {
+                cb($callback,'Importing hierarchy ... '.$rows." records imported", 1);
+                $ltime = microtime(true);
+            }
+            $rows++;
+        }
+        cb($callback,'Imported hierarchy ('.$rows.' records)');
+        fclose($fin);
+        
 		// Pull the list of countries to import
 		$rs = $db->getRows("SELECT * FROM geonames_datasets WHERE active=1");
 		foreach($rs as $ci) {
@@ -143,7 +191,7 @@ abstract class GeoNames {
                 }
                 $rows++;
 			}
-			$db->exec('ALTER TABLE geonames ENABLE KEYS');
+            fclose($fin);
 			cb($callback,'Imported '.$ci['setkey']. " (".$rows." records)");
 		}
 

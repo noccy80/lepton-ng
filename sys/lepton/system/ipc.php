@@ -93,7 +93,7 @@ class MessageQueue {
 	}
 
 	function pop($type=0) {
-		if (msg_receive($this->queue, $type, &$msgtype, 1<<16, &$message, true)) {
+		if (msg_receive($this->queue, $type, $msgtype, 1<<16, $message, true)) {
 			return $message;
 		} else {
 			return null;

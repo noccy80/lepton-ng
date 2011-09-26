@@ -101,6 +101,14 @@ class CssStylesheet {
     function addRule(CssRule $rule) {
         $this->rules[$rule->getSelector()] = $rule;
     }
+    
+    function getRule($selector) {
+        if (arr::hasKey($this->rules,$selector)) {
+            return($this->rules[$selector]);
+        } else {
+            return null;
+        }
+    }
 
     /**
      * @brief Return the stylesheet
