@@ -14,6 +14,12 @@ using('lepton.mvc.response'); // has content type code for now
  */
 class MailMessage {
     const KEY_MAIL_FROM = 'lepton.net.mail.from';
+    const KEY_MAIL_FROMNAME = 'lepton.net.mail.fromname';
+    
+    const FROM_ADDRONLY = 1;
+    const FROM_NAMEONLY = 2;
+    const FROM_FULL = 3;
+    
     const NEW_LINE = "\n";
     private $recipients = array();
     private $recipientscc = array();
@@ -123,9 +129,17 @@ class MailMessage {
         return $headers;
     }
     
-    public function getFrom() {
-        $from = config::get(self::KEY_MAIL_FROM);
-        return $from;
+    public function getFrom($get = self::FROM_FULL) {
+        switch($get) {
+            case self::FROM_ADDRONLY:
+                return config::get(self::KEY_MAIL_FROM);
+            case self::FROM_NAMEONLY:
+                return config::get(self::KEY_MAIL_FROMNAME);
+            default:
+                return sprintf('"%s" <%s>', 
+                    config::get(self::KEY_MAIL_FROMNAME),
+                    config::get(self::KEY_MAIL_FROM));
+        }
     }
     
     /**
