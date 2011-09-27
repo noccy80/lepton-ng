@@ -33,7 +33,13 @@ class CssRule {
     function __toString() {
         $rules = array();
         foreach($this->attributes as $key=>$rule) {
-            $rules[] = $key.':'.$rule.';';
+            if (typeof($rule) == 'array') {
+                foreach($rule as $rulesub) {
+                    $rules[] = $key.':'.$rulesub.';';
+                }
+            } else {
+                $rules[] = $key.':'.$rule.';';
+            }
         }
         $rulestr = '{'.join(' ',$rules).'}';
         $ret = $this->selector.$rulestr;
