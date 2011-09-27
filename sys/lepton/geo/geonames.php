@@ -25,19 +25,19 @@ abstract class GeoNames {
 				$db->updateRow(
 					'REPLACE INTO geonames_countryinfo '.
 					'(isocode,iso3code,isonumeric,fips,'.
-					'capital,area,population,continent,'.
+					'country,capital,area,population,continent,'.
 					'tld,currencycode,currencyname,phone,'.
 					'postalcode,postalcoderegex,languages,geoid,'.
 					'neighbours,equivalentfips) '.
 					'VALUES '.
 					'(%s,%s,%s,%s, %s,%d,%d,%s, '.
-					'%s,%s,%s,%s, %s,%s,%s,%d, '.
+					'%s,%s,%s,%s,%s, %s,%s,%s,%d, '.
 					'%s,%s)',
 					$cols[0], $cols[1], $cols[2], $cols[3],
 					$cols[4], $cols[5], $cols[6], $cols[7],
 					$cols[8], $cols[9], $cols[10], $cols[11],
 					$cols[12], $cols[13], $cols[14], $cols[15],
-					$cols[16], $cols[17]
+					$cols[16], $cols[17], $cols[18]
 				);
 			}
 		} // end foreach
@@ -46,6 +46,56 @@ abstract class GeoNames {
 		self::updateSets($callback);
 
 	}
+    
+    public static function updateAdminCodes(callback $callback = null) {
+
+        $db = new DatabaseConnection();
+        
+        cb($callback,'Downloading admin1codes',0,1);
+        $url = self::getUrl('admin1CodesASCII.txt');
+        $req = new HttpRequest($url);
+
+        $reqs = explode("\n", $req->getResponse());
+        $rows = 0; $ltime = 0;
+        foreach($reqs as $reql) {
+            $rd = explode("\t",trim($reql));
+            if (count($rd)>1) {
+                $db->updateRow(
+                    "REPLACE INTO geonames_admin1codes ".
+                    "(admin1code,name,longname,geoid) VALUES (%s,%s,%s,%d)",
+                    $rd[0],$rd[1],$rd[2],$rd[3]);
+                if (microtime(true) > $ltime+1) {
+                    cb($callback,'Importing admin1codes ... '.$rows." records imported", 1);
+                    $ltime = microtime(true);
+                }
+                $rows++;
+            }
+        }
+        cb($callback,"Imported admin1codes (".$rows." rows)");
+        
+        cb($callback,'Downloading admin2codes',0,1);
+        $url = self::getUrl('admin2Codes.txt');
+        $req = new HttpRequest($url);
+        
+        $reqs = explode("\n", $req->getResponse());
+        $rows = 0; $ltime = 0;
+        foreach($reqs as $reql) {
+            $rd = explode("\t",trim($reql));
+            if (count($rd)>1) {
+                $db->updateRow(
+                    "REPLACE INTO geonames_admin2codes ".
+                    "(admin2code,name,longname,geoid) VALUES (%s,%s,%s,%d)",
+                    $rd[0],$rd[1],$rd[2],$rd[3]);
+                if (microtime(true) > $ltime+1) {
+                    cb($callback,'Importing admin2codes ... '.$rows." records imported", 1);
+                    $ltime = microtime(true);
+                }
+                $rows++;
+            }
+        }
+        cb($callback,"Imported admin2codes (".$rows." rows)");
+        
+    }
 
 	private static function updateSets(callback $callback = null) {
 
@@ -145,7 +195,7 @@ abstract class GeoNames {
             $fd = trim(fgets($fin));
             $ds = explode("\t", $fd."\t\t");
             $db->updateRow("REPLACE INTO geonames_hierarchy ".
-                    "(parentid,nodeid,htype) ".
+                    "(parentid,geoid,htype) ".
                     "VALUES ".
                     "(%d,%d,%s)", $ds[0],$ds[1],$ds[2]);
             if (microtime(true) > $ltime+1) {
@@ -170,7 +220,7 @@ abstract class GeoNames {
 					$ds = explode("\t",$dl);
 					$db->updateRow(
 						'REPLACE INTO geonames '.
-						'(geonameid,name,asciiname,alternatenames,'.
+						'(geoid,name,asciiname,alternatenames,'.
 						'latitude,longitude,featureclass,featurecode,'.
 						'countrycode,countrycodealt,admin1code,admin2code,'.
 						'admin3code,admin4code,population,elevation,'.
