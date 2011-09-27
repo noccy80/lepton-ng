@@ -23,13 +23,13 @@ CREATE TABLE geonames_datasets (
 DROP TABLE IF EXISTS geonames_hierarchy;
 CREATE TABLE geonames_hierarchy (
     parentid INT NOT NULL,
-    nodeid INT NOT NULL PRIMARY KEY,
+    geoid INT NOT NULL PRIMARY KEY,
     htype VARCHAR(32)
 );
 
 DROP TABLE IF EXISTS geonames;
 CREATE TABLE geonames (
-	geonameid INT NOT NULL PRIMARY KEY,
+	geoid INT NOT NULL PRIMARY KEY,
 	name VARCHAR(200) NOT NULL,
 	asciiname VARCHAR(200) NOT NULL,
 	alternatenames VARCHAR(5000),
@@ -80,6 +80,7 @@ CREATE TABLE geonames_countryinfo (
 	iso3code VARCHAR(3) NOT NULL,
 	isonumeric VARCHAR(10) NOT NULL,
 	fips VARCHAR(10) NOT NULL,
+	country VARCHAR(100) NOT NULL,
 	capital VARCHAR(100) NOT NULL,
 	area BIGINT,
 	population BIGINT,
