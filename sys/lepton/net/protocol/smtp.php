@@ -19,7 +19,9 @@ class SmtpConnection {
 	
 	function __destruct() {
 		logger::debug("Destructor for SmtpConnection invoked");
-		$this->sendCommand('QUIT');
+        try {
+            $this->sendCommand('QUIT');
+        } catch (SocketException $e) { }
 		unset($this->ssmtp);
 	}
 	

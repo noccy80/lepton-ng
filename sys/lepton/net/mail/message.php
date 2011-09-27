@@ -47,7 +47,13 @@ class MailMessage {
         $headerstr = '';
         foreach($headers as $k=>$v) {
             if ($k) 
-                $headerstr.=sprintf("%s: %s\r\n",$k,$v);
+                if (typeof($v) == 'array') {
+                    foreach($v as $vv) {
+                        $headerstr.=sprintf("%s\r\n", $vv);
+                    } 
+                } else {
+                    $headerstr.=sprintf("%s: %s\r\n",$k,$v);
+                }
             else
                 $headerstr.=sprintf("%s\r\n",$v);
         }
@@ -108,11 +114,18 @@ class MailMessage {
             'From' => config::get(self::KEY_MAIL_FROM),
             'Subject' => $this->subject
         );
-        
-        $address = $this->buildRecipientList();
+
+        $address = array(
+            'To' => $this->buildRecipientList()
+        );
         $headers = array_merge($headers,$address,$this->headers);
 
         return $headers;
+    }
+    
+    public function getFrom() {
+        $from = config::get(self::KEY_MAIL_FROM);
+        return $from;
     }
     
     /**

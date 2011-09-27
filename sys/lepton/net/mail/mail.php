@@ -30,7 +30,7 @@ class LeptonSmtpBackend extends MailerBackend {
 
 		$smtphost = config::get('lepton.net.mail.smtpserver','localhost');
 		$smtpport = config::get('lepton.net.mail.smtpport',25);
-		$from = 'local lepton <local@lepton.info>';
+		$from = $message->getFrom();
 		$rcpt = $message->getRecipients();
 
 		$s = new SmtpConnection($smtphost,$smtpport);
