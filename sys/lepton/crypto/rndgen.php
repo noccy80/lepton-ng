@@ -61,7 +61,7 @@ class RndGen {
  */
 interface IRndSource {
 	function supported();
-	function getRandom($bytes=1);
+	function getRandom($bytes);
 	function initialize();
 	function terminate();
 }
@@ -83,7 +83,7 @@ class RandomRndSource extends RndSource {
 	function terminate() {
 		fclose($this->fh);
 	}
-	function getRandom($bytes=1) {
+	function getRandom($bytes) {
 		$rd = fread($this->fh,$bytes);
 		return $rd;
 	}
@@ -99,7 +99,7 @@ class UrandomRndSource extends RndSource {
 		$this->fh = @fopen ( '/dev/urandom', 'rb' );
 		if (!$this->fh) throw new SecurityException("Unable to initialize RndSource ".__CLASS__);
 	}
-	function getRandom($bytes=1) {
+	function getRandom($bytes) {
 		logger::debug(__CLASS__.': Asking urandom for %d bytes', $bytes);
 		$rd = fread($this->fh,$bytes);
 		return $rd;
@@ -118,7 +118,7 @@ class TimebasedRndSource extends RndSource {
 		return false;
 	}
 	
-	function getRandom($bytes=1) { 
+	function getRandom($bytes) { 
 
 	}
 	

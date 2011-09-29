@@ -6,7 +6,7 @@ config::def('google.charts.api.passthrough', true);
 // Load the data storage that we need
 using('lepton.data.*');
 
-interface IChart {
+interface IGChart {
 	function buildPostData();
 }
 /**
@@ -18,7 +18,7 @@ interface IChart {
  * @property height The height of the graph
  * @package lepton.google.charting
  */
-abstract class GChart {
+abstract class GChart implements IGChart {
 
 	const CONF_PASSTHROUGH = 'google.charts.api.passthrough';
 	static $spool = 0; // Server pool
@@ -88,7 +88,7 @@ abstract class GChart {
 
 }
 
-class BarChart extends GChart {
+class GBarChart extends GChart {
 	function buildPostData() {
 		$pd = array(
 			'chs' => $this->width.'x'.$this->height,
@@ -98,7 +98,7 @@ class BarChart extends GChart {
 	}
 }
 
-class PieChart extends GChart {
+class GPieChart extends GChart {
 	function buildPostData() {
 		$pd = array(
 			'chs' => $this->width.'x'.$this->height,
