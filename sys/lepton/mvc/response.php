@@ -90,7 +90,7 @@
                 throw new BaseException("File not found: ".$file);
             }
 			// Streamed content expires in 1 hour
-			response::expires(60);
+			if (!(config::get('lepton.mvc.staticneverexpires',false)==true)) response::expires(60);
             if ($contenttype) {
                 response::contentType($contenttype);
             } else {

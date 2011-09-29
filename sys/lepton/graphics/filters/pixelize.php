@@ -19,8 +19,7 @@ class PixelateImageFilter extends ImageFilter {
 
 	}
 
-	function applyFilter(Canvas $canvas) {
-
+    function applyFilter(Canvas $canvas) {
 		$himage = $canvas->getImage();
 		if ($this->usegdfilter) {
 			if (!imagefilter($himage,IMG_FILTER_PIXELATE,$this->pixelsize,$this->advanced))

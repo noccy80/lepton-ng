@@ -266,6 +266,8 @@ class Canvas implements IDrawable,ICanvas {
 	 */
 	function duplicate() {
 
+        $this->checkMeta();
+        $this->checkImage();
 		$copy = new Canvas($this->width,$this->height);
 		$this->draw($copy);
 		return $copy;
@@ -403,9 +405,9 @@ class Canvas implements IDrawable,ICanvas {
 	 *
 	 * @return bool True if the image metadata is loaded
 	 */
-	private function checkMeta() {
+	private function checkMeta($force = false) {
 
-		if ($this->gotmeta) return true;
+		if ($this->gotmeta && !$force) return true;
 		if ($this->filename) {
 			$meta = getimagesize($this->filename);
 			if ($meta !== false) {
@@ -633,6 +635,7 @@ class Canvas implements IDrawable,ICanvas {
 		// Destroy the original and replace with cropped copy
 		imagedestroy($this->himage);
 		$this->himage = $n;
+        $this->checkMeta(true);
 
 	}
 
@@ -644,14 +647,22 @@ class Canvas implements IDrawable,ICanvas {
 	 * @param ImageFilter $filter The filter to apply
 	 * @todo Reread metadata after processing
 	 */
-	function apply(ImageFilter $filter) {
+	function apply(ImageFilter $filter, Rect $area = null) {
 
-		$htemp = $filter->applyFilter($this);
-		if ($htemp != null) {
-			imagedestroy($this->himage);
-			$this->himage = $htemp;
-		}
-
+        if ($area) {
+            $dup = $this->duplicate();
+            $dup->cropToXy($area->x, $area->y, $area->w, $area->h);
+            $dup->apply($filter);
+            $dup->save('temp.png');
+            $dup->draw($this,$area->x,$area->y);
+        } else {
+            $htemp = $filter->applyFilter($this);
+            if ($htemp != null) {
+                imagedestroy($this->himage);
+                $this->himage = $htemp;
+            }
+        }
+            
 	}
 
 	/**
