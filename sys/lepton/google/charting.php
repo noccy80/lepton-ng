@@ -12,26 +12,40 @@ interface IGChart {
 /**
  * @class GChart
  * @brief Google Charting Class.
- * Draws charts via Google's Chart API either by redirecting or proxying the request.
+ * Draws charts via Google's Chart API either by redirecting or proxying the
+ * request.
  *
  * @property width The width of the graph
  * @property height The height of the graph
  * @package lepton.google.charting
  */
-abstract class GChart implements IGChart {
+abstract class GChart extends Chart implements IGChart, IChart {
 
+    /// @const Configuration key for if charts are to be passed through
 	const CONF_PASSTHROUGH = 'google.charts.api.passthrough';
-	static $spool = 0; // Server pool
+    /// @var The pool to use for distributing the load over several servers
+	static $spool = 0; 
 	private $charttype = 'p3';
-	private $width;
-	private $height;
+	protected $width;
+	protected $height;
 
-	function __construct(DataSet $data, $width, $height) {
-		$this->width = $width;
-		$this->height = $height;
+    /**
+     *
+     * @param type $width
+     * @param type $height 
+     */
+	function __construct($width, $height) {
+        parent::__construct($width,$height);
 	}
 	
-	function getPooledUrl($args) {
+    /**
+     * @brief Return a pooled URL to Googles chart API
+     * 
+     * @param type $args
+     * @return string 
+     * @protected
+     */
+	protected function getPooledUrl($args) {
 		$spool = ($spool++ % 10);
 		$url = 'http://'.$spool.'.chart.apis.google.com/chart';
 		$urlqs = array();
@@ -51,7 +65,8 @@ abstract class GChart implements IGChart {
 			$this->height = $value;
 			break;
 		default:
-			throw new BaseException("No such property");
+            parent::__set($key,$value);
+            break;
 		}
 	}
 	
@@ -88,8 +103,12 @@ abstract class GChart implements IGChart {
 
 }
 
+/**
+ * @class GBarChart
+ * @brief Bar Chart via Google's Charting API
+ */
 class GBarChart extends GChart {
-	function buildPostData() {
+	public function buildPostData() {
 		$pd = array(
 			'chs' => $this->width.'x'.$this->height,
 			'cht' => $this->charttype
@@ -98,8 +117,12 @@ class GBarChart extends GChart {
 	}
 }
 
+/**
+ * @class GPieChart
+ * @brief Pie Chart via Google's Charting API
+ */
 class GPieChart extends GChart {
-	function buildPostData() {
+	public function buildPostData() {
 		$pd = array(
 			'chs' => $this->width.'x'.$this->height,
 			'cht' => $this->charttype

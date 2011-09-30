@@ -11,9 +11,13 @@ class LeptonDataTests extends LunitCase {
 
 	function __construct() {
 		using('lepton.data.*');
+		using('lepton.google.charting');
 		using('lepton.data.charting.*');
 	}
 
+	/**
+	 * @description Testing datasets
+	 */
 	function dataset() {
 		$ds = new DataSet('A','B','C','D');
 		$this->assertNotNull($ds);
@@ -22,7 +26,10 @@ class LeptonDataTests extends LunitCase {
 		$this->assertEquals($ds->getCount(),2);
 		$this->ds = $ds;
 	}
-	
+
+	/**
+	 * @description Testing native pie chart implementation
+	 */
 	function piechart() {
 		$pc = new PieChart(400,400);
 		$this->assertNotNull($pc);
@@ -30,7 +37,21 @@ class LeptonDataTests extends LunitCase {
 		$c = $pc->render();
 		$this->assertEquals($c->width,400);
 		$this->assertEquals($c->height,400);
-	}	
+	}
+
+	/**
+	 * @description Testing Google pie chart implementation
+	 */
+	function gpiechart() {
+		$this->explicitFail('Not Implemented!');
+
+		$pc = new GPieChart(400,400);
+		$this->assertNotNull($pc);
+		$pc->setData($this->ds);
+		$c = $pc->render();
+		$this->assertEquals($c->width,400);
+		$this->assertEquals($c->height,400);
+	}
 
 }
 
