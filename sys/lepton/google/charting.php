@@ -19,7 +19,7 @@ interface IGChart {
  * @property height The height of the graph
  * @package lepton.google.charting
  */
-abstract class GChart extends Chart implements IGChart, IChart {
+abstract class GChart extends Chart implements IGChart {
 
     /// @const Configuration key for if charts are to be passed through
 	const CONF_PASSTHROUGH = 'google.charts.api.passthrough';
