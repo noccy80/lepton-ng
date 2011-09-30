@@ -37,20 +37,44 @@ class TemplateParser {
 		} else {
 			$rval = "[".$svar."]";
 		}
+        $indent = 0;
+        $wrap = 0;
         foreach(array_slice($strx,1) as $strs) {
             $alist = explode(':',$strs);
             switch($alist[0]) {
                 case 'indent':
-                    $rvalarr = explode("\n",$rval);
-                    $indentstr = str_repeat(' ',intval($alist[1]));
-                    $rval = $indentstr.join($indentstr, $rvalarr);
+                    $indent = intval($alist[1]);
                     break;
                 case 'wrap':
-                    $rval = wordwrap($rval,intval($alist[1]));
+                    $wrap = intval($alist[1]);
                     break;
             }
         }
-		return $rval;
+        $buf = explode("\n", $rval);
+        foreach($buf as $bufitem) {
+            $rval = $bufitem;
+            if ($wrap > 0) {
+                $rv = array();
+                $rvalarr = explode("\n",$rval);
+                foreach($rvalarr as $line) {
+                    $rv[] = wordwrap($line,$wrap-$indent);
+                }
+                $rval = join("\n",$rv);
+            }
+            if ($indent > 0) {
+                $rv = array();
+                $rvalarr = explode("\n",$rval);
+                $indentstr = str_repeat(' ',$indent);
+                foreach($rvalarr as $line) {
+                    $rv[] = $indentstr.$line;
+                }
+                $rval = join("\n",$rv);
+            }
+            $rvals[] = $rval;
+            
+        }
+
+        return join("\n", $rvals);
 	}
 
 }
