@@ -325,6 +325,9 @@ class MimeAttachment implements IMimeEntity {
             'Content-Transfer-Encoding' => 'base64',
             'Content-Disposition' => $disposition
         );
+        if (arr::hasKey($this->options,'contentid')) {
+            $headers['Content-ID'] = $this->options['contentid'];
+        }
         $headersstr = '';
         $content = chunk_split(base64_encode(file_get_contents($this->filename)));
         foreach($headers as $k=>$v) { $headersstr.=$k.': '.$v."\r\n"; }
