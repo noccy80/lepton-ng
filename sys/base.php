@@ -137,6 +137,15 @@ if (!defined("TMP_PATH")) {
     define('TMP_PATH', $tmp . '/');
 }
 
+if ( !function_exists('sys_get_temp_dir')) {
+    function sys_get_temp_dir() {
+        if ($temp=getenv('TMP')) return $temp;
+        if ($temp=getenv('TEMP')) return $temp;
+        if ($temp=getenv('TMPDIR')) return $temp;
+        return null;
+    }
+}
+
 // Enable PHPs error reporting when the DEBUG envvar is set
 if (getenv("DEBUG") >= 1) {
     define('DEBUGMODE', true);
@@ -187,6 +196,8 @@ abstract class base {
 			$path = base::basePath().'/'.substr($pathstr,5);
 		} elseif (strtolower(substr($pathstr,0,4)) == 'sys:') {
 			$path = base::sysPath().'/'.substr($pathstr,4);
+        } elseif (strtolower(substr($pathstr,0,4)) == 'tmp:') {
+            $path = base::tmpPath().'/'.substr($pathstr,4);
 		} else {
 			$path = base::appPath().'/'.$prefix.'/'.$pathstr;
 		}		
@@ -220,6 +231,10 @@ abstract class base {
         }
         return $ret;
     }
+    
+    static function tmpPath() {
+        return realpath(sys_get_temp_dir());        
+    }
 
     static function logLevel($newlevel=null) {
         $ret = self::$_loglevel;
@@ -228,6 +243,10 @@ abstract class base {
         return $ret;
     }
     
+}
+
+function expandpath($path) {
+    return base::expand($path);
 }
 
 
