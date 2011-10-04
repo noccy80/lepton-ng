@@ -109,7 +109,7 @@ class DatabaseAction extends Action {
                     }
                     console::writeLn();
                 }
-            } catch (PDOException $e) {
+            } catch (DatabaseException $e) {
                 console::writeLn();
                 console::warn($e->getMessage());
             }

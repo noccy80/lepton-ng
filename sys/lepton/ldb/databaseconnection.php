@@ -1,5 +1,7 @@
 <?php
 
+class DatabaseException extends Exception { }
+
 using('lepton.ldb.databaseconnectionpool');
 using('lepton.ldb.drivers.*');
 

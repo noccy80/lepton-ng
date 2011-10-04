@@ -89,15 +89,22 @@ class PdoDatabaseDriver extends DatabaseDriver {
 
     function execute($sql) {
         Console::debugEx(LOG_DEBUG2,__CLASS__,"SQL Exec: %s", $sql);
-        $query = $this->conn->exec($sql);
+        try {
+            $query = $this->conn->exec($sql);
+        } catch (PDOException $e) {
+            throw new DatabaseException($e->getMessage(),$e->getCode(),$e);
+        }
     }
 
     function query($sql) {
         Console::debugEx(LOG_DEBUG2,__CLASS__,"SQL Query: %s", $sql);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $qt = new Timer(true);
-
-        $query = $this->conn->query($sql);
+        try {
+            $query = $this->conn->query($sql);
+        } catch (PDOException $e) {
+            throw new DatabaseException($e->getMessage(),$e->getCode(),$e);
+        }
         $qtt = $qt->stop();
         if (class_exists('OptimizationReport') && ($qtt>=config::get(RuntimeOptimization::KEY_DBQUERYTIME))) {
             $msg = sprintf('<p>The following query took %5.1fs to complete:</p><pre>%s</pre>',$qtt,wordwrap($sql));

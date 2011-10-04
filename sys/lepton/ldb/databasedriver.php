@@ -46,5 +46,4 @@ abstract class DatabaseDriver implements IDatabaseDriver {
 	
 }
 
-class DatabaseException extends Exception { }
 
