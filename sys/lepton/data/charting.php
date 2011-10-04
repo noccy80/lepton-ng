@@ -131,8 +131,32 @@ abstract class Chart implements IChart {
 	protected function renderObjects(Canvas $c) {
 		foreach($this->ovlobjects as $object) {
 			list($x,$y,$w,$h) = $object['placement']->getRect();
+            $object['object']->setData($this->dataset);
 			$object['object']->draw($c,$x,$y,$w,$h);
 		}
 	}
 
+}
+
+class ChartAxis {
+    
+    private $xmin = null;
+    private $ymin = null;
+    private $xmax = null;
+    private $ymax = null;
+    
+    public function __construct($xmin=null,$ymin=null,$xmax=null,$ymax=null) {
+        
+    }
+    
+    public function adjust(DataSet $data) {
+        
+        // Go over the data and adjust the series as needed
+        
+    }
+    
+}
+
+function chartaxis($xmin=null,$ymin=null,$xmax=null,$ymax=null) {
+    return new ChartAxis($xmin,$ymin,$xmax,$ymax);
 }

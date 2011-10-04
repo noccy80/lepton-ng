@@ -4,11 +4,39 @@ using('lepton.math');
 using('lepton.data.charting');
 using('lepton.data.charting.renderers.*');
 
+/**
+ * @class PieChart
+ * @brief Render pie charts
+ * 
+ * This class renders pie charts from the provided dataset. The various series
+ * will be summed and used for each of the slices. Hence this class expects
+ * one or more dataseries in the set to function properly.
+ * 
+ * The charting engine is to be able to support both 2D as well as 3D pie
+ * charts, but at this time only the 3D charts are supported.
+ * 
+ * The attributes supported are:
+ * 
+ *   - style: One of PieChart::STYLE_2D or PieChart::STYLE_3D
+ *   - palette: Colors for each of the slices
+ *   - explode: the number of pixels to offset the slices from the middle
+ * 
+ * @todo Restructure the rendering so that the sum of the series are used
+ * @todo Add attributes for the thickness of the 3D chart
+ * @todo Implement 2D charts
+ * @author Christopher Vagnetoft
+ */
 class PieChart extends Chart {
 
 	const STYLE_2D = '2d';
 	const STYLE_3D = '3d';
 
+    /**
+     * Constructor; creates a new pie chart
+     * 
+     * @param type $width
+     * @param type $height 
+     */
 	function __construct($width,$height) {
 		$this->setProperties(array(
 			'legend' => true,
@@ -26,10 +54,20 @@ class PieChart extends Chart {
 		parent::__construct($width,$height);
 	}
 
+    /**
+     * @brief Render the chart
+     * 
+     * @return type 
+     */
 	public function render() {
 		return $this->render3D();
 	}
 	
+    /**
+     * @brief Render the chart in 3D
+     * 
+     * @return Canvas 
+     */
 	private function render3D() {
 
 		$c = new Canvas($this->width, $this->height, rgb($this->getProperty('background','#FFFFFF')));

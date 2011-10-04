@@ -24,6 +24,7 @@ class LunitRunner {
 
 	private $statuscb = null;
 	private $results = null;
+    private $dblog = null;
 
 	function setStatusCallback(ILunitStatusCallback $object) {
 		$this->statuscb = $object;
@@ -53,6 +54,7 @@ class LunitRunner {
 			$skip = false;
 			$meta = LunitUtil::parseDoc($r->getDocComment());
 			if (!isset($meta['description'])) $meta['description'] = $case;
+            $meta['casename'] = $case;
 			if (isset($meta['extensions'])) {
 				$extn = explode(' ',$meta['extensions']);
 				foreach($extn as $ext) {
@@ -63,7 +65,7 @@ class LunitRunner {
 			$casereport['meta'] = $meta;
 			// Callback if set
 			if ($this->statuscb) $this->statuscb->onCaseBegin($case,$meta);
-
+            if ($this->dblog) $this->dblog->onCaseBegin($case,$meta);
             try {
                 if (!$skip) $tc = new $case($this);
                 foreach($ml as $method) {
@@ -80,6 +82,7 @@ class LunitRunner {
                         $repeat = intval($tmeta['repeat']);
                         // Callback if set, then create timer
                         if ($this->statuscb) $this->statuscb->onTestBegin($methodname,$tmeta);
+                        if ($this->dblog) $this->dblog->onTestBegin($methodname,$meta);
                         $methodreport['skipped'] = false;
                         $tavg = null; $tmax = null; $tmin = null;
                         if (!$skip) {
@@ -107,28 +110,33 @@ class LunitRunner {
                                     console::write('%6.1fms ', $tmax);
                                 }
                                 if ($this->statuscb) $this->statuscb->onTestEnd(true,null);
+                                if ($this->dblog) $this->dblog->onTestEnd(true,null);
                             } catch (LunitAssertionFailure $f) {
                                 $tm->stop();
                                 $methodreport['passed'] = false;
                                 $methodreport['message'] = $f->getMessage();
                                 if ($this->statuscb) $this->statuscb->onTestEnd(false,$f->getMessage());
+                                if ($this->dblog) $this->dblog->onTestEnd(false,$f->getMessage());
                             } catch (LunitAssertionSkip $f) {
                                 $tm->stop();
                                 $methodreport['passed'] = false;
                                 $methodreport['skipped'] = true;
                                 $methodreport['message'] = 'Skipped';
                                 if ($this->statuscb) $this->statuscb->onTestEnd(null,$f->getMessage());
+                                if ($this->dblog) $this->dblog->onTestEnd(null,$f->getMessage());
                             } catch (Exception $e) {
                                 $tm->stop();
                                 $methodreport['passed'] = false;
                                 $methodreport['message'] = $e->getMessage();
                                 if ($this->statuscb) $this->statuscb->onTestEnd(false,$e->getMessage());
+                                if ($this->dblog) $this->dblog->onTestEnd(false,$f->getMessage());
                             }
                         } else {
                             $methodreport['passed'] = false;
                             $methodreport['skipped'] = true;
                             $methodreport['message'] = $skipmsg;
                             $this->statuscb->onTestEnd(null,$skipmsg);
+                            if ($this->dblog) $this->dblog->onTestEnd(null,$skipmsg);
                         }
                         $methodreport['elapsed'][] = $tm->getElapsed();
                         $methodreport['average'] = $tavg;
@@ -145,6 +153,7 @@ class LunitRunner {
 
 			// Callback if set
 			if ($this->statuscb) $this->statuscb->onCaseEnd();
+            if ($this->dblog) $this->dblog->onCaseEnd($casereport);
 
 		}
 		

@@ -92,7 +92,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         try {
             $query = $this->conn->exec($sql);
         } catch (PDOException $e) {
-            throw new DatabaseException($e->getMessage(),$e->getCode(),$e);
+            throw new DatabaseException($e->getMessage(),intval($e->getCode()),$e);
         }
     }
 
@@ -103,7 +103,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         try {
             $query = $this->conn->query($sql);
         } catch (PDOException $e) {
-            throw new DatabaseException($e->getMessage(),$e->getCode(),$e);
+            throw new DatabaseException($e->getMessage(),intval($e->getCode()),$e);
         }
         $qtt = $qt->stop();
         if (class_exists('OptimizationReport') && ($qtt>=config::get(RuntimeOptimization::KEY_DBQUERYTIME))) {
