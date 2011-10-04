@@ -34,7 +34,7 @@ class DatabaseAction extends Action {
             'alias' => 'initialize-db'
         ),
         'import' => array(
-            'arguments' => '[\g{tablename}]',
+            'arguments' => '[\b{REPLACE}|\b{INSERT}] [\g{tablename}]',
             'info' => 'Import one or more tables from the app/sql folder'
         ),
         'upgrade' => array(
@@ -51,57 +51,68 @@ class DatabaseAction extends Action {
             $args = array();
             foreach(glob(base::appPath().'/sql/*.sql') as $fn) $args[] = basename($fn,'.sql');
         }
+        $insmode = 'INSERT';
         foreach($args as $arg) {
-            console::write("  [app] %-30s ", $arg);
-            $sqlfile = base::appPath().'/sql/'.$arg.'.sql';
-            if (file_exists($sqlfile)) {
-                console::write("SQL ");
-                $db->exec(file_get_contents($sqlfile));
-            }
-
-            $csvfile = base::appPath().'/sql/'.$arg.'.csv';
-            if (file_exists($csvfile)) {
-                console::write("CSV ");
-                $fh = fopen($csvfile,'r');
-                $head = fgetcsv($fh,8192,';','"');
-                $sql = "INSERT INTO ".$arg." (".join(',',$head).") VALUES ";
-                $darr = array();
-                while (!feof($fh)) {
-                    $data = fgetcsv($fh,8192,';','"');
-                    if (count((array)$data)>=count($head)) {
-                        $dval = array();
-                        foreach($data as $v) $dval[] = "'".str_replace("'","\\'",$v)."'";
-                        $darr[] = '('.join(',',$dval).')';
+            try {
+                if (strtolower($arg) == 'replace') {
+                    $insmode = 'REPLACE';
+                } elseif (strtolower($arg) == 'insert') {
+                    $insmode = 'INSERT';
+                } else {
+                    console::write("  [app] %-30s ", $arg);
+                    $sqlfile = base::appPath().'/sql/'.$arg.'.sql';
+                    if (file_exists($sqlfile)) {
+                        console::write("SQL ");
+                        $db->exec(file_get_contents($sqlfile));
                     }
+
+                    $csvfile = base::appPath().'/sql/'.$arg.'.csv';
+                    if (file_exists($csvfile)) {
+                        console::write("CSV ");
+                        $fh = fopen($csvfile,'r');
+                        $head = fgetcsv($fh,8192,';','"');
+                        $sql = $insmode." INTO ".$arg." (".join(',',$head).") VALUES ";
+                        $darr = array();
+                        while (!feof($fh)) {
+                            $data = fgetcsv($fh,8192,';','"');
+                            if (count((array)$data)>=count($head)) {
+                                $dval = array();
+                                foreach($data as $v) $dval[] = "'".str_replace("'","\\'",$v)."'";
+                                $darr[] = '('.join(',',$dval).')';
+                            }
+                        }
+                        $sql.= join(',',$darr).";";
+                        $db->exec($sql);
+                        fclose($fh);
+                    }
+
+                    $recfile = base::appPath().'/sql/'.$arg.'.rec';
+                    if (file_exists($recfile)) {
+                        console::write("REC ");
+                        $fh = fopen($recfile,'r');
+                        $sql = $insmode." INTO ".$arg." (".join(',',$head).") VALUES ";
+                        $darr = array();
+                        while (!feof($fh)) {
+                            $data = trim(fgets($fh,8192));
+                            if (sub_str($data,strlen($data),1)) {
+                                printf("%s --", $data);
+                            }
+                            if (count((array)$data)>=count($head)) {
+                                $dval = array();
+                                foreach($data as $v) $dval[] = "'".str_replace("'","\\'",$v)."'";
+                                $darr[] = '('.join(',',$dval).')';
+                            }
+                        }
+                        $sql.= join(',',$darr).";";
+                        $db->exec($sql);
+                        fclose($fh);
+                    }
+                    console::writeLn();
                 }
-                $sql.= join(',',$darr).";";
-                $db->exec($sql);
-                fclose($fh);
+            } catch (PDOException $e) {
+                console::writeLn();
+                console::warn($e->getMessage());
             }
-
-            $recfile = base::appPath().'/sql/'.$arg.'.rec';
-            if (file_exists($recfile)) {
-                console::write("REC ");
-                $fh = fopen($recfile,'r');
-                $sql = "INSERT INTO ".$arg." (".join(',',$head).") VALUES ";
-                $darr = array();
-                while (!feof($fh)) {
-                    $data = trim(fgets($fh,8192));
-                    if (sub_str($data,strlen($data),1)) {
-                        printf("%s --", $data);
-                    }
-                    if (count((array)$data)>=count($head)) {
-                        $dval = array();
-                        foreach($data as $v) $dval[] = "'".str_replace("'","\\'",$v)."'";
-                        $darr[] = '('.join(',',$dval).')';
-                    }
-                }
-                $sql.= join(',',$darr).";";
-                $db->exec($sql);
-                fclose($fh);
-            }
-
-            console::writeLn();
         }
     }
     public function initialize($rootuser=null) {

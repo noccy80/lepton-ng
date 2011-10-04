@@ -824,7 +824,7 @@ class Console {
      */
     static function warn() {
         $args = func_get_args();
-        @call_user_func_array(array('logger', 'warn'), $args);
+        @call_user_func_array(array('logger', 'warning'), $args);
         @call_user_func_array(array('Console', 'debugEx'), array_merge(array(LOG_WARN, 'Warning'), array_slice($args, 0)));
     }
 
