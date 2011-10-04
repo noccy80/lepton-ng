@@ -305,3 +305,5 @@ class WowItem {
 	}
 
 }
+
+class WowException extends Exception { }

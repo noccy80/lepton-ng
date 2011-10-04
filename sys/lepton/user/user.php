@@ -59,7 +59,7 @@
 			// user::set
 		} elseif ($user) {
 			// Can suid
-			session::set('lepton.suid', array(
+			session::set(User::KEY_USER_SUID, array(
 				'issuid' => true,
 				'uid' => user::getActiveUser()->userid,
 				'suid' => $user->userid
