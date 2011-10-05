@@ -32,7 +32,7 @@ class LeptonSmtpBackend extends MailerBackend {
 		$smtpport = config::get('lepton.net.mail.smtpport',25);
 
         $from = $message->getFrom(MailMessage::FROM_ADDRONLY);
-		$rcpt = $message->getRecipients();
+		$rcpt = $message->getRecipients(MailMessage::ADDR_ALL);
 
 		$s = new SmtpConnection($smtphost,$smtpport);
 		$s->sendMessage($from, $rcpt, (string)$message);

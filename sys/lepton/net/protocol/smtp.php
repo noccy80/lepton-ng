@@ -67,7 +67,10 @@ class SmtpConnection {
 	}
 	
 	private function wait() {
-		$br = 0;
+
+        return true;
+        
+        $br = 0;
 		while ($br == 0) { $ret= $this->ssmtp->read(1024,$br); }
 		$ret = explode("\r\n", $ret);
 		foreach($ret as $rs) {

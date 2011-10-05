@@ -20,6 +20,12 @@ class MailMessage {
     const FROM_NAMEONLY = 2;
     const FROM_FULL = 3;
     
+    const ADDR_TO = 1;
+    const ADDR_CC = 2;
+    const ADDR_BCC = 4;
+    const ADDR_MIME = 3; // to + cc
+    const ADDR_ALL = 255; // to + cc + bcc
+    
     const NEW_LINE = "\n";
     private $recipients = array();
     private $recipientscc = array();
@@ -35,9 +41,36 @@ class MailMessage {
      * @param Mixed $body The message body as a string or a IMimeEntity class
      */
     public function __construct($recipients,$subject,IMimeEntity $body=null) {
-        $this->recipients = (array)$recipients;
+        $this->addRecipients($recipients);
         $this->subject = $subject;
         $this->body = $body;
+    }
+
+    public function addRecipients($recipients) {
+        if (!$recipients) return;
+        if (typeof($recipients) == 'array') {
+            $this->recipients = array_merge($this->recipientscc, $recipients);
+        } else {
+            $this->recipients[] = $recipients;
+        }
+    }
+    
+    public function addRecipientsCc($recipients) {
+        if (!$recipients) return;
+        if (typeof($recipients) == 'array') {
+            $this->recipientscc = array_merge($this->recipientscc, $recipients);
+        } else {
+            $this->recipientscc[] = $recipients;
+        }
+    }
+
+    public function addRecipientsBcc($recipients) {
+        if (!$recipients) return;
+        if (typeof($recipients) == 'array') {
+            $this->recipientsbcc = array_merge($this->recipientsbcc, $recipients);
+        } else {
+            $this->recipientsbcc[] = $recipients;
+        }
     }
     
     public function __toString() {
@@ -80,25 +113,49 @@ class MailMessage {
     	return $this->subject;
     }
     
-    public function getRecipients() {
-    	return $this->recipients;
+    public function getRecipients($addrs = self::ADDR_MIME) {
+        $rep = array();
+        
+        if ($addrs & self::ADDR_TO)
+            foreach($this->recipients as $v) {
+                $rep[] = $v;
+            }
+            
+        if ($addrs & self::ADDR_CC) 
+            foreach($this->recipientscc as $v) {
+                $rep[] = $v;
+            }
+
+        if ($addrs & self::ADDR_BCC)
+            foreach($this->recipientsbcc as $v) {
+                $rep[] = $v;
+            }
+            
+        return $rep;
     }
     
     /**
      *
      *
      */
-    private function buildRecipientList() {
+    private function buildRecipientList($addrs = self::ADDR_MIME) {
         $rep = array();
-        foreach($this->recipients as $v) {
-            $rep[] = sprintf("To: %s",$v);
-		}
-        foreach($this->recipientscc as $v) {
-            $rep[] = sprintf("Cc: %s",$v);
-		}
-        foreach($this->recipientsbcc as $v) {
-            $rep[] = sprintf("Bcc: %s",$v);
-		}
+        
+        if ($addrs & self::ADDR_TO)
+            foreach($this->recipients as $v) {
+                $rep[] = sprintf("To: %s",$v);
+            }
+            
+        if ($addrs & self::ADDR_CC) 
+            foreach($this->recipientscc as $v) {
+                $rep[] = sprintf("Cc: %s",$v);
+            }
+
+        if ($addrs & self::ADDR_BCC)
+            foreach($this->recipientsbcc as $v) {
+                $rep[] = sprintf("Bcc: %s",$v);
+            }
+            
         return $rep;
     }
     
@@ -122,7 +179,7 @@ class MailMessage {
         );
 
         $address = array(
-            'To' => $this->buildRecipientList()
+            'To' => $this->buildRecipientList(self::ADDR_MIME)
         );
         $headers = array_merge($headers,$address,$this->headers);
 
