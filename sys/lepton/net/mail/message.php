@@ -20,16 +20,20 @@ class MailMessage {
     const FROM_NAMEONLY = 2;
     const FROM_FULL = 3;
     
+    // These values are used with the getRecipients and getReceipientList
+    // methods.
     const ADDR_TO = 1;
     const ADDR_CC = 2;
     const ADDR_BCC = 4;
     const ADDR_MIME = 3; // to + cc
     const ADDR_ALL = 255; // to + cc + bcc
     
+    const RCPT_TO = 'to';
+    const RCPT_CC = 'cc';
+    const RCPT_BCC = 'bcc';
+    
     const NEW_LINE = "\n";
     private $recipients = array();
-    private $recipientscc = array();
-    private $recipientsbcc = array();
     private $subject = null;
     private $body = null;
     private $headers = array();
@@ -41,45 +45,42 @@ class MailMessage {
      * @param Mixed $body The message body as a string or a IMimeEntity class
      */
     public function __construct($recipients,$subject,IMimeEntity $body=null) {
+        $this->recipients = array(
+            'to' => array(),
+            'cc' => array(),
+            'bcc' => array()
+        );
         $this->addRecipients($recipients);
         $this->subject = $subject;
         $this->body = $body;
     }
 
-    public function addRecipients($recipients) {
+    public function addRecipients($recipients, $as = self::RCPT_TO) {
         if (!$recipients) return;
+        if (!$as) throw new BadArgumentException("Recipient scope must be one of RCPT_TO, RCPT_CC or RCPT_BCC!");
         if (typeof($recipients) == 'array') {
-            $this->recipients = array_merge($this->recipientscc, $recipients);
+            $this->recipients[$as] = array_merge((array)$this->recipients[$as], $recipients);
         } else {
-            $this->recipients[] = $recipients;
-        }
-    }
-    
-    public function addRecipientsCc($recipients) {
-        if (!$recipients) return;
-        if (typeof($recipients) == 'array') {
-            $this->recipientscc = array_merge($this->recipientscc, $recipients);
-        } else {
-            $this->recipientscc[] = $recipients;
+            $this->recipients[$as][] = $recipients;
         }
     }
 
-    public function addRecipientsBcc($recipients) {
-        if (!$recipients) return;
-        if (typeof($recipients) == 'array') {
-            $this->recipientsbcc = array_merge($this->recipientsbcc, $recipients);
-        } else {
-            $this->recipientsbcc[] = $recipients;
-        }
-    }
-    
+    /**
+     * @brief String cast using getMessage()
+     * 
+     * @return string The message
+     */
     public function __toString() {
     	return $this->getMessage();
     }
 
     /**
+     * @brief Turns the message into a string suitable for sending.
+     * 
+     * This will process all the message parts added, and recursively
+     * assemble the full message content.
      *
-     *
+     * @return string The message
      */
     public function getMessage() {
         $headers = $this->buildHeaders();
@@ -100,34 +101,67 @@ class MailMessage {
         return $headerstr.$message;
     }
     
+    /**
+     * @brief Adds a header to the message.
+     * 
+     * Note that in order to add two of the same header you will have to pass
+     * them as strings in a sub-array. This is nasty but unavoidable as two of
+     * the same would overwrite each other in PHP. When an array is found as
+     * the second parameter it will be joined as text, so make sure to include
+     * the actual header for each of the items in the array.
+     * 
+     * @param string $header The header to assign
+     * @param Mixed $value The value (or array)
+     */
     function addHeader($header,$value) {
         $this->headers[$header] = $value;
     }
     
+    /**
+     * @brief Returns the headers 
+     * 
+     * @return array The header collection
+     */
     function getHeaders() {
         return $this->headers;
     }
 
-    
+    /**
+     * @brief Return the subject
+     * 
+     * @return string The subject
+     */
     public function getSubject() {
     	return $this->subject;
     }
     
-    public function getRecipients($addrs = self::ADDR_MIME) {
+    /**
+     * @brief Returns a list of all the recipients of the message
+     * 
+     * The default scope for this recipient list is self::ADDR_ALL as this is
+     * what is to be handed off to the SMTP server in order to assure delivery
+     * even to BCC addresses. Per the RFC, all recipients should be included
+     * with no difference between them, as this is used for the routing and
+     * delivery information.
+     *
+     * @param int $addrs The Address scope to return
+     * @reutrn array Array of the recipients
+     */
+    public function getRecipients($addrs = self::ADDR_ALL) {
         $rep = array();
         
         if ($addrs & self::ADDR_TO)
-            foreach($this->recipients as $v) {
+            foreach((array)$this->recipients[self::RCPT_TO] as $v) {
                 $rep[] = $v;
             }
             
         if ($addrs & self::ADDR_CC) 
-            foreach($this->recipientscc as $v) {
+            foreach((array)$this->recipients[self::RCPT_CC] as $v) {
                 $rep[] = $v;
             }
 
         if ($addrs & self::ADDR_BCC)
-            foreach($this->recipientsbcc as $v) {
+            foreach((array)$this->recipients[self::RCPT_BCC] as $v) {
                 $rep[] = $v;
             }
             
@@ -135,24 +169,32 @@ class MailMessage {
     }
     
     /**
+     * @brief Builds the list of the recipients.
+     * 
+     * The default scope for this recipient list is self::ADDR_MIME and in all
+     * fairness nothing else should ever be needed. The BCC addresses should
+     * not be included in the headers, as this would kind of remove the whole
+     * "blind" idea from them. ADDR_MIME will return the TO and CC addresses
+     * only, neatly formatted to be used as headers.
      *
-     *
+     * @param int $addrs The Address scope to return
+     * @reutrn array Array of the headers
      */
     private function buildRecipientList($addrs = self::ADDR_MIME) {
         $rep = array();
         
         if ($addrs & self::ADDR_TO)
-            foreach($this->recipients as $v) {
+            foreach((array)$this->recipients[self::RCPT_TO] as $v) {
                 $rep[] = sprintf("To: %s",$v);
             }
             
         if ($addrs & self::ADDR_CC) 
-            foreach($this->recipientscc as $v) {
+            foreach((array)$this->recipients[self::RCPT_CC] as $v) {
                 $rep[] = sprintf("Cc: %s",$v);
             }
 
         if ($addrs & self::ADDR_BCC)
-            foreach($this->recipientsbcc as $v) {
+            foreach((array)$this->recipients[self::RCPT_BCC] as $v) {
                 $rep[] = sprintf("Bcc: %s",$v);
             }
             
@@ -186,6 +228,12 @@ class MailMessage {
         return $headers;
     }
     
+    /**
+     * @brief Get the from address
+     * 
+     * @param int $get The scope as one of FROM_FULL, FROM_ADDRONLY or FROM_NAMEONLY
+     * @return string The from address
+     */
     public function getFrom($get = self::FROM_FULL) {
         switch($get) {
             case self::FROM_ADDRONLY:
@@ -250,8 +298,13 @@ interface IMimeEntity {
 
 /**
  * @class MimeMultipartEntity
+ * @brief Defines a set of entities that are part of the message.
  *
- *
+ * The MimeMultipartEntity defines a message consisting of several parts, each
+ * which is an addition to the message. The MimeAlternativeEntity works in a
+ * similar way but it consist of the same message wrapped in different entitys,
+ * of which the recipients client will chose the best one it can handle.
+ * 
  * Compliant with RFC2046
  */
 class MimeMultipartEntity implements IMimeEntity {
@@ -297,6 +350,15 @@ class MimeMultipartEntity implements IMimeEntity {
     }
 }
 
+/**
+ * @class MimeAlternativeEntity
+ * @brief 
+ * 
+ * The MimeAlternativeEntity contains several different versions of the same
+ * message body of which the mail client will pick one to display based on
+ * the users' preferences and compatibility.
+ * 
+ */
 class MimeAlternativeEntity extends MimeMultipartEntity {
     function __construct() {
         // Create a unique boundary
