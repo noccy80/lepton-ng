@@ -280,6 +280,7 @@ class Request {
             "User-agent: ".$_SERVER['HTTP_USER_AGENT'],
             "Request URI: ".$_SERVER['REQUEST_URI'],
             "Request method: ".$_SERVER['REQUEST_METHOD'],
+            "Authenticated user: ".(user::isAuthenticated()?user::getActiveUser()->uuid:'n/a'),
             "Remote IP: ".$_SERVER['REMOTE_ADDR']." (".gethostbyaddr($_SERVER['REMOTE_ADDR']).")",
             "Hostname: ".$_SERVER['HTTP_HOST'],
             "Secure: ".$ssl,

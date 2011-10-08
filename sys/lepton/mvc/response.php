@@ -118,9 +118,9 @@
 /*
             if (request::hasHeader('range')) {
                 $range = request::getHeader('range');
-                if (strpos(',',$range) !== false) throw new HttpException("Multiple ranges not supported", HttpException::BAD_REQUEST);
+                if (strpos(',',$range) !== false) throw new HttpException("Multiple ranges not supported", HttpException::ERR_BAD_REQUEST);
                 $pos = explode('-',str_replace('bytes=','',strtolower($range)));
-                if ($pos[0] == '') throw new HttpException("Trailing ranges not supported", HttpException::BAD_REQUEST);
+                if ($pos[0] == '') throw new HttpException("Trailing ranges not supported", HttpException::ERR_BAD_REQUEST);
                 $seekto = $pos[1];
                 response::setHeader('content-range', $seekto.'-'.$filelen);
             } else {

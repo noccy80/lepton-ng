@@ -4,10 +4,13 @@ using('resource.resource');
 using('lepton.mvc.router');
 
 class HttpException extends BaseException {
-	const BAD_REQUEST = 400;
-	const UNAUTHORIZED = 401;
-	const METHOD_NOT_ALLOWED = 405;
-	const NOT_ACCEPTABLE = 406;
+	const ERR_BAD_REQUEST = 400;
+	const ERR_UNAUTHORIZED = 401;
+	const ERR_METHOD_NOT_ALLOWED = 405;
+	const ERR_NOT_ACCEPTABLE = 406;
+	const ERR_NOT_FOUND = 404;
+	const ERR_SERVER_ERROR = 500;
+	const ERR_BAD_REQUEST = 1;
 }
 
 class MvcExceptionHandler extends ExceptionHandler {

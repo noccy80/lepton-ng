@@ -2,12 +2,7 @@
 
 using('lepton.net.url');
 using('lepton.net.curl');
-
-class HttpException extends Exception {
-	const ERR_NOT_FOUND = 404;
-	const ERR_SERVER_ERROR = 500;
-	const ERR_BAD_REQUEST = 1;
-}
+using('lepton.web.exception');
 
 class HttpRequest {
 

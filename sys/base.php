@@ -1669,7 +1669,9 @@ class ModuleManager {
         if (!is_array(ModuleManager::$_modules)) {
             ModuleManager::$_modules = array();
         }
-        foreach (ModuleManager::$_modules as $mod => $meta) {
+        $modlist = ModuleManager::$_modules;
+        ksort($modlist);
+        foreach ($modlist as $mod => $meta) {
             // TODO: Show metadata
             $mi = "n/a";
             $ver = null;
