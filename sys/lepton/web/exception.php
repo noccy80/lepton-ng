@@ -3,6 +3,13 @@
 using('resource.resource');
 using('lepton.mvc.router');
 
+class HttpException extends BaseException {
+	const BAD_REQUEST = 400;
+	const UNAUTHORIZED = 401;
+	const METHOD_NOT_ALLOWED = 405;
+	const NOT_ACCEPTABLE = 406;
+}
+
 class MvcExceptionHandler extends ExceptionHandler {
 
     static $ico_error;
@@ -37,6 +44,12 @@ class MvcExceptionHandler extends ExceptionHandler {
 			response::setStatus(404);
 			header('HTTP/1.1 404 Not Found', true);
 			printf("<h1>404: Not Found</h1>");
+			return;
+		}
+		if ($et == 'HttpException') {
+			response::setStatus($e->getCode());
+			header('HTTP/1.1 '.$e->getCode().' '.$e->getMessage());
+			printf('<h1>'.$e->getCode().': '.$e->getMessage().'</h1>');
 			return;
 		}
 

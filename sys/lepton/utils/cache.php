@@ -7,6 +7,8 @@ using('lepton.utils.datetime');
 
 class CacheException extends Exception { }
 
+if (!class_exists('memcached')) throw new FunctionNotSupportedException("No Memcached support");
+
 /**
  * @class Cache
  * @brief Cache implementation based on memcached.

@@ -255,6 +255,16 @@ class Request {
 		}
 	}
 
+    static function hadHeader($header) {
+        if (arr::hasKey($_SERVER,'HTTP_'.strtoupper($header))) return true;
+        return false;
+    }
+
+    static function getHeader($header) {
+        if (arr::hasKey($_SERVER,'HTTP_'.strtoupper($header))) return $_SERVER['HTTP_'.strtoupper($header)];
+        return null;
+    }
+
     static function getDebugInformation() {
         if (($_SERVER['HTTPS'] != 'off') && ($_SERVER['HTTPS'] != null)) {
             $ssl = 'Yes ('.$_SERVER['SSL_TLS_SNI'].')';

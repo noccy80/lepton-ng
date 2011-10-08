@@ -115,12 +115,24 @@
         static function streamFile($file, $contenttype) {
 
             $filelen = filesize($file);
-
+/*
+            if (request::hasHeader('range')) {
+                $range = request::getHeader('range');
+                if (strpos(',',$range) !== false) throw new HttpException("Multiple ranges not supported", HttpException::BAD_REQUEST);
+                $pos = explode('-',str_replace('bytes=','',strtolower($range)));
+                if ($pos[0] == '') throw new HttpException("Trailing ranges not supported", HttpException::BAD_REQUEST);
+                $seekto = $pos[1];
+                response::setHeader('content-range', $seekto.'-'.$filelen);
+            } else {
+                $seekto = 0;
+            }
+*/
             // Stream entire file
             $contentlen = $filelen;
             response::contentType($contenttype);
             response::setHeader('content-length', $filelen);
             $fh = fopen($file,'rb');
+//            fseek($file,0,$seekto);
             while( !feof($fh) ) {
                 $fd = fgets($fh,4096);
                 echo $fd;
