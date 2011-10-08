@@ -10,7 +10,6 @@ class HttpException extends BaseException {
 	const ERR_NOT_ACCEPTABLE = 406;
 	const ERR_NOT_FOUND = 404;
 	const ERR_SERVER_ERROR = 500;
-	const ERR_BAD_REQUEST = 1;
 }
 
 class MvcExceptionHandler extends ExceptionHandler {
