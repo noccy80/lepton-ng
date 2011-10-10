@@ -2,6 +2,84 @@
 		'version' => '0.1.0'
 ));
 
+
+
+interface IPurchaseable {
+    function __toString();
+    function getUnitPrice();
+    function getItemId();
+    function getDescription();
+}
+
+abstract class Purchasable implements IPurchasable {
+
+    protected $_properties = array();
+    
+    function __toString() {
+        return $this->getDescription();
+    }
+    
+    function __construct($itemid=null,$description=null,$unitprice=null) {
+        $this->itemid = $itemid;
+        $this->description = $description;
+        $this->unitprice = $unitprice;
+    }
+    
+    function __get($key) {
+        if (arr::has($this->_properties, $key)) {
+            return $this->_properties[$key];
+        }
+        return null;
+    }
+    
+    function __set($key,$value) {
+        $this->_properties[$key] = $value;
+    }
+     
+    function getUnitPrice() {
+        if ($this->amount == null) {
+            return $this->unitprice;
+        }
+    }
+    
+    function getDescription() {
+        return $this->description;
+    }
+    
+    function getItemId() {
+        return $this->itemid;
+    }
+
+}
+
+// ex: new Billable('WORK','Work for Consulting',300,'Hours',399,'SEK');
+
+class Billable extends Purchasable {
+    
+    function __construct() {
+        
+    }
+    
+    function __toString() {
+        
+    }
+    
+    function getPrice() {
+        
+    }
+    
+    function getAmount() {
+        
+    }
+    
+    function getObjectId() { 
+        
+    }
+    
+}
+
+class Discount extends Purchasable { }
+
 /**
  * @class ProductCategory
  * @brief A product category
@@ -159,3 +237,5 @@ abstract class Products {
 	}
 
 }
+
+

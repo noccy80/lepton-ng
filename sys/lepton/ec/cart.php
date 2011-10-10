@@ -30,7 +30,7 @@ class Cart implements IteratorAggregate {
 
 	}
 
-	function addItem(Product $product, $amount = 1) {
+	function addItem(IPurchasable $product, $amount = 1) {
 
 		if (isset($this->products[$product->id])) {
 			$this->products[$product->id]->count += $amount;
