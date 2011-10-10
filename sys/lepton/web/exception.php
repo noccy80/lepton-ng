@@ -2,6 +2,7 @@
 
 using('resource.resource');
 using('lepton.mvc.router');
+using('lepton.mvc.request');
 
 class HttpException extends BaseException {
 	const ERR_BAD_REQUEST = 400;
