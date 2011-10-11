@@ -30,6 +30,8 @@ class EngageAuthentication extends AuthenticationProvider {
 
 	const KEY_APIKEY = 'lepton.user.engage.apikey';
 	const KEY_DEFAULT_FLAGS = 'lepton.user.engage.defaultflags';
+    const KEY_TOKEN_URL = 'lepton.user.engage.tokenurl';
+    const KEY_APP_NAME = 'lepton.user.engage.appname';
 	const KEY_ALLOW_CREATION = 'lepton.user.engage.allowcreation';
 	const DEFAULT_FLAGS = 'e';
 	const DEFAULT_ALLOW_CREATION = true;
@@ -168,5 +170,34 @@ class EngageAuthentication extends AuthenticationProvider {
 			response::redirect('/control/panel');
 		}
 	}
+    
+    static function header() {
+        $tokenurl = config::get(self::KEY_TOKEN_URL);
+        $appname = config::get(self::KEY_APP_NAME);
+        printf("<script type=\"text/javascript\">");
+        printf("(function() {");
+        printf("    if (typeof window.janrain !== 'object') window.janrain = {};");
+        printf("    window.janrain.settings = {};");
+        printf("    janrain.settings.tokenUrl = '%s';", $tokenurl);
+        printf("    function isReady() { janrain.ready = true; };");
+        printf("    if (document.addEventListener) {");
+        printf("        document.addEventListener(\"DOMContentLoaded\", isReady, false);");
+        printf("    } else {");
+        printf("        window.attachEvent('onload', isReady);");
+        printf("    }");
+        printf("    var e = document.createElement('script');");
+        printf("    e.type = 'text/javascript';");
+        printf("    e.id = 'janrainAuthWidget';");
+        printf("    if (document.location.protocol === 'https:') {");
+        printf("        e.src = 'https://rpxnow.com/js/lib/%s/engage.js';",$appname);
+        printf("    } else {");
+        printf("        e.src = 'http://widget-cdn.rpxnow.com/js/lib/%s/engage.js';",$appname);
+        printf("    }");
+        printf("    var s = document.getElementsByTagName('script')[0];");
+        printf("    s.parentNode.insertBefore(e, s);");
+        printf("})();");
+        printf("</script>");
+        
+    }
 
 }

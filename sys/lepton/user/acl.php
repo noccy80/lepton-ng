@@ -7,6 +7,7 @@
 interface IAclObject {
 	function getObjectUuid();
 	function getObjectRoles();
+    // function getDescription();
 }
 
 /**
@@ -16,6 +17,7 @@ interface IAclObject {
 interface IAclSubject {
 	function getSubjectUuid();
 	function getSubjectGroups();
+    // function getDescription();
 }
 
 /**
@@ -32,6 +34,16 @@ class AclconfSchema extends SqlTableSchema {
 		$this->addColumn('access', 'enum:Y,N,-');
 		$this->addIndex('access',array('object','role','subject'),self::KEY_UNIQUE);
 	}
+}
+
+class AclcacheSchema extends SqlTableSchema {
+    function define() {
+        $this->setName('aclcache');
+        $this->addColumn('id','int',self::COL_AUTO|self::KEY_PRIMARY);
+        $this->addColumn('uuid','char:37',self::COL_FIXED);
+        $this->addColumn('name','char:128');
+        $this->addIndex('uuid',array('uuid'),self::KEY_UNIQUE);
+    }
 }
 
 /**
