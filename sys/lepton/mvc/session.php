@@ -15,7 +15,7 @@
         const FLASH_EXPIRES = 1;
         const FLASH_EXPIRED = 0;
 
-        static $id = null;
+        private static $id = null;
         static $flashvars = array();
         static $stickyvars = array();
 
@@ -62,6 +62,8 @@
             $validity = (config::get(self::KEY_SESSION_VALIDITY));
             if (!$domain) $domain = request::getDomain();
             if (!$validity) $validity = 3600;
+            // Trim leading * off domain names
+            if (substr($domain,0,2) == '*.') $domain = substr($domain,1);
             ini_set("session.cookie_domain", $domain);
             // session_set_cookie_params($validity, '/', $domain);
         }
@@ -71,7 +73,11 @@
                 // self::setupSessionCookie();
     	        session_start();
     	    }
-            session::$id = session_id();
+            self::$id = session_id();
+        }
+        
+        static function getSessionId() {
+            return self::$id;
         }
 
         /**
