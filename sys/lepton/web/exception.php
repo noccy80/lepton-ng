@@ -22,7 +22,17 @@ class MvcExceptionHandler extends ExceptionHandler {
 
     static function saveFeedback($id) {
 
-	$ico_error = resource::get('warning.png');
+        $text = request::get('text');
+
+        $logfile = config::get('lepton.mvc.exception.logfile',"/tmp/".$_SERVER['HTTP_HOST']."-debug.log");
+        $log = "=== Event Feedback: ".$id." ===\n\n".$text."\n";
+        $lf = @fopen($logfile, "a+");
+        if ($lf) {
+            fputs($lf,$log);
+            fclose($lf);
+        }
+        
+        $ico_error = resource::get('warning.png');
         header('content-type: text/html; charset=utf-8');
         echo '<html><head><title>Thank you for your feedback</title>'.
             self::$css.
