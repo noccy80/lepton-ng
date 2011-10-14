@@ -2,8 +2,10 @@
 		'version' => '0.1.0'
 ));
 
-
-
+/**
+ * @brief Interface for objects that can be purchased
+ * @interface
+ */
 interface IPurchaseable {
     function __toString();
     function getUnitPrice();
@@ -11,6 +13,11 @@ interface IPurchaseable {
     function getDescription();
 }
 
+/**
+ * @brief Base class for objects that can be purcahsed
+ * 
+ * @author Christopher Vagnetoft
+ */
 abstract class Purchasable implements IPurchasable {
 
     protected $_properties = array();
@@ -56,8 +63,8 @@ abstract class Purchasable implements IPurchasable {
 
 class Billable extends Purchasable {
     
-    function __construct() {
-        
+    function __construct($itemid) {
+        parent::__construct($itemid);
     }
     
     function __toString() {
@@ -78,7 +85,9 @@ class Billable extends Purchasable {
     
 }
 
-class Discount extends Purchasable { }
+class Discount extends Purchasable {
+    
+}
 
 /**
  * @class ProductCategory

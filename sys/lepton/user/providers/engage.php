@@ -35,6 +35,7 @@ class EngageAuthentication extends AuthenticationProvider {
 	const KEY_ALLOW_CREATION = 'lepton.user.engage.allowcreation';
 	const DEFAULT_FLAGS = 'e';
 	const DEFAULT_ALLOW_CREATION = true;
+    const SESSIONKEY_USER_CREATED = 'lepton.user.engage.usercreated';
 
 	private $userid = null;
 
@@ -109,6 +110,7 @@ class EngageAuthentication extends AuthenticationProvider {
 					$u->lastname = $lastname;
 					$u->email = $email;
 					$cu = user::create($u);
+                    session::set(self::SESSIONKEY_USER_CREATED,true);
 				} else {
 					$cu = user::getActiveUser();
 				}

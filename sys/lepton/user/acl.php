@@ -90,6 +90,7 @@ class Acl {
 		$db = new DatabaseConnection();
 		$sm = $db->getSchemaManager();
 		if (!$sm->schemaExists('aclconf')) $sm->apply(new AclconfSchema());
+		if (!$sm->schemaExists('aclcache')) $sm->apply(new AclcacheSchema());
 	}
 
 	/**
