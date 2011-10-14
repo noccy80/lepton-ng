@@ -37,6 +37,10 @@ class DatabaseAction extends Action {
             'arguments' => '[\b{REPLACE}|\b{INSERT}] [\g{tablename}]',
             'info' => 'Import one or more tables from the app/sql folder'
         ),
+        'export' => array(
+            'arguments' => '[\b{DROP}] [\b{DATA}] \ŋ{tablename}]',
+            'info' => 'Export one or more tables to the app/sql folder'
+        ),
         'upgrade' => array(
             'arguments' => '',
             'info' => 'Apply upgrades from the dist/upgrades/*.sql',
@@ -115,6 +119,67 @@ class DatabaseAction extends Action {
             }
         }
     }
+    
+    public function export() {
+        console::writeLn(__astr('\b{Exporting tables and data}'));
+        $db = new DatabaseConnection();
+        $args = func_get_args();
+        if (count($args) == 0) {
+            $args[] = '%';
+        }
+        $drop = false;
+        $data = false;
+        
+        foreach($args as $arg) {
+            try {
+                if (strtolower($arg) == 'drop') {
+                    $drop = true;
+                } elseif (strtolower($arg) == 'data') {
+                    $data = true;
+                } else {
+                    $tbl = $db->getRows("SHOW TABLES LIKE %s", $arg);
+                    foreach($tbl as $tblc) {
+                        $c = $tblc[0];
+                        console::write("  [app] %-30s ", $c);
+                        // Get the create table syntax
+                        $crs = $db->getSingleRow("SHOW CREATE TABLE ". $c);
+                        $sqlcreate = $crs;
+                        // Get the data
+                        $fsql = fopen(expandpath('app:/sql/'.$c.'.sql'),'w');
+                        if ($drop) { fputs($fsql,"DROP TABLE IF EXISTS ".$c.";\n"); }
+                        fputs($fsql,$crs[1]."\n");
+                        fclose ($fsql);
+                        console::write("SQL ");
+                        if ($data) {
+                            // Export the data as well
+                            $drs = $db->getRows("SELECT * FROM ".$c);
+                            foreach($drs[0] as $k=>$v) {
+                                if (($k != '0') && (intval($k) == 0)) {
+                                    $hdr[] = $k;
+                                }
+                            }
+                            $fdat = fopen(expandpath('app:/sql/'.$c.'.csv'),'w');
+                            fputcsv($fdat,$hdr,";",'"');
+                            foreach($drs as $row) {
+                                $do = array();
+                                foreach($hdr as $h) {
+                                    $do[] = $row[$h];
+                                }
+                                fputcsv($fdat,$do,";",'"');
+                            }
+                            fclose($fdat);
+                            console::write("CSV ");
+                        }
+                        console::writeLn();
+                    }
+                }
+            } catch (DatabaseException $e) {
+                console::writeLn();
+                console::warn($e->getMessage());
+            }
+        }
+    }
+    
     public function initialize($rootuser=null) {
         console::writeLn(__astr('\b{Initializing database}'));
         $db = config::get('lepton.db.default');
