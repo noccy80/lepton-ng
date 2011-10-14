@@ -68,8 +68,9 @@
         }
 
         /**
+         * @brief Send an array formatted as Json
          *
-         *
+         * @param array $data The data to send
          */
         static function sendJson($data) {
             response::contentType('text/json');
@@ -77,8 +78,9 @@
         }
 
         /**
-         * Sends a file from the file system to the client. If the file is to
-         * be downloaded, response::contentType() should be called first
+         * @brief Sends a file from the file system to the client. 
+         * If the file is to be downloaded, response::contentType() should be 
+         * called first to define its filename.
          *
          * @see response::contentType
          * @param string $file The file on the server to send to the client.
@@ -100,6 +102,11 @@
             echo file_get_contents($file);
         }
 
+        /**
+         * @brief Set the status of the response.
+         * 
+         * @param integer $status The status, such as "200" or "404"
+         */
         static function setStatus($status = 200) {
             if (!headers_sent()) {
                 if (php_sapi_name() == 'php-fcgi') {
@@ -112,6 +119,15 @@
             }
         }
 
+        /**
+         * @brief Stream a file to the client.
+         * 
+         * This method is intended to be used with media etc, where seeking is
+         * implemented by requesting byte ranges.
+         * 
+         * @param type $file The file to stream
+         * @param type $contenttype The content type of the file
+         */
         static function streamFile($file, $contenttype) {
 
             $filelen = filesize($file);
@@ -257,8 +273,14 @@
         }
 
         /**
+         * @brief Start or stop buffering
+         * 
+         * If $state is true, buffering will be enabled. If it is false, the
+         * buffering will be stopped and the resulting buffer will be flushed.
+         * If you rather want to get the content of the buffer, use the
+         * getBuffer() method.
          *
-         *
+         * @param bool $state The state
          */
         static function buffer($state) {
 
@@ -283,8 +305,9 @@
         }
 
         /**
+         * @brief Retrieve and clear the buffer after buffer(true).
          *
-         *
+         * @return String The buffer content
          */
         static function getBuffer() {
 
@@ -295,7 +318,7 @@
         }
 
         /**
-         *
+         * @brief Clear the buffer.
          *
          */
         static function clear() {
@@ -305,7 +328,9 @@
         }
 
         /**
-         *
+         * @brief Flush the buffer to the client.
+         * 
+         * This method will not affect the state of buffering.
          *
          */
         static function flush() {
@@ -315,6 +340,11 @@
 
         }
 
+        /**
+         * @brief Do not use...
+         * 
+         * @internal
+         */
         static function end() {
             if (php_sapi_name() == 'php-fcgi') {
                 $header = 'Status:';
