@@ -64,10 +64,14 @@ class EngageAuthentication extends AuthenticationProvider {
 		// Get the status
 		$status = $domx->query('/rsp')->item(0)->getAttribute('stat');
 		if ($status == 'ok') {
+            
+            // Call on the successful callback method
 			event::invoke(EngageEvents::EVENT_SUCCESSFUL_CALLBACK, array(
 				'profile' => $dom,
 				'profiletext' => $ret->responseText()
 			));
+            
+            // Extract the values
 			$identifier = $domx->query('/rsp/profile/identifier')->item(0)->nodeValue;
 			$displayname = $domx->query('/rsp/profile/displayName')->item(0)->nodeValue;
 			$provider = $domx->query('/rsp/profile/providerName')->item(0)->nodeValue;
@@ -147,6 +151,13 @@ class EngageAuthentication extends AuthenticationProvider {
         throw new AuthenticationException("No user available to login()");
     }
 
+    /**
+     * @brief Unlink an identity based on its id.
+     *
+     * @param int $iid The identity ID
+     * @param int $userid The user ID that owns the identity
+     * @return boolean True on success
+     */
 	static function unlinkIdentity($iid,$userid=null) {
 
 		$db = new DatabaseConnection();
@@ -161,15 +172,14 @@ class EngageAuthentication extends AuthenticationProvider {
 			if (count($identities) > 1) {
 				if ($identity) {
 					$db->updateRow("DELETE FROM userengage WHERE userid=%d AND id=%d", user::getActiveUser()->userid, $iid);
-					response::redirect('/control/panel');
+					return true;
 				}
 			} else {
 				view::set('identity', $identity);
-				view::load('control/unlink_error.php');
-				return;
+				return false;
 			}
 		} else {
-			response::redirect('/control/panel');
+			return false;
 		}
 	}
     

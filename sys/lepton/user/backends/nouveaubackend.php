@@ -29,6 +29,8 @@ class NouveauAuthBackend extends AuthenticationBackend {
 	/**
 	 * @brief Separates a password hash into its components
 	 *
+     * Will return an array consisting of the algorithm, number of rounds,
+     * the salt and the hash. Throws an exception if things go wrong.
 	 *
 	 * @param String $hstr Hash string
 	 * @return Array The components as algo,rounds, salt and hash
@@ -52,7 +54,7 @@ class NouveauAuthBackend extends AuthenticationBackend {
 	 * @brief Return the best hashing algorithm that is supported
 	 * 
 	 * 
-	 * @return type 
+	 * @return string The best hashing algorithm supported 
 	 */
 	private function hashGetBestAlgorithm() {
 
@@ -70,6 +72,14 @@ class NouveauAuthBackend extends AuthenticationBackend {
 		throw new SecurityException("No supported hashes found!");
 	}
 
+    /**
+     * @brief Hash a password with the best algorithm available.
+     * 
+     * Returns a string formatted as "$algorithm:rounds$salt$hash$".
+     * 
+     * @param string $password The password to hash
+     * @return string The hashed password string
+     */
 	public function hashPassword($password) {
 
 		$algo = $this->hashGetBestAlgorithm();
@@ -178,6 +188,7 @@ class NouveauAuthBackend extends AuthenticationBackend {
 	}
 
 	/**
+     * @nrief Return the user ID that has been authenticated as.
 	 *
 	 * @return int The user id or null.
 	 */
