@@ -2,8 +2,12 @@
 
 
 
-    class UserException extends BaseException { }
-        class AuthenticationException extends UserException { }
+    class UserException extends BaseException { 
+        const ERR_NO_ACTIVE_USER = 1;
+        const ERR_USER_UNASSOCIATED = 2;
+        const ERR_USER_INACTIVE = 3;
+    }
+    class AuthenticationException extends UserException { }
 
     interface IAuthenticationBackend {
         function validateCredentials($username,$password);    
@@ -41,8 +45,8 @@
         protected function setUser($id) {
             // Check if the user is active
             $u = user::getUser($id);
-			if ($u == null) throw new UserException("Unassociated user id / Integrity failure", user::ERR_USER_UNASSOCIATED);
-            if (!$u->active) throw new UserException("User is not active, check audit log", user::ERR_USER_INACTIVE);
+			if ($u == null) throw new UserException("Unassociated user id / Integrity failure", UserException::ERR_USER_UNASSOCIATED);
+            if (!$u->active) throw new UserException("User is not active, check audit log", UserException::ERR_USER_INACTIVE);
             // TODO: Assign to session
             if (ModuleManager::has('lepton.mvc.session')) {
                 session::set(User::KEY_USER_AUTH,$id);

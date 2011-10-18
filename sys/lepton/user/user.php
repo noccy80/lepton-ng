@@ -10,8 +10,6 @@ abstract class User {
 
     const KEY_USER_AUTH = 'lepton.user.identity';
     const KEY_USER_SUID = 'lepton.user.suid';
-    const ERR_USER_UNASSOCIATED = 2;
-    const ERR_USER_INACTIVE = 1;
 
     /**
      * @brief Check if the user has a specific flag set
@@ -197,7 +195,7 @@ abstract class User {
             if ($uid) {
                 return user::getUser($uid);
             }
-            return null;
+            throw new UserException("No active user", UserException::ERR_NO_ACTIVE_USER);
         }
     }
 
