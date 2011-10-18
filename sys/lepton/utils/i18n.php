@@ -19,7 +19,7 @@ class intl {
 	 *
 	 *
 	 */
-	function str() {
+	static function str() {
 		$args = func_get_args();
 		if (self::getFullLanguage()) {
 			if (count($args)>0) {
@@ -33,8 +33,7 @@ class intl {
 					$str = $args[0];
 				}
 				if (count($args)>1) {
-
-					$str = call_user_func_array('sprintf', array_merge(array($str),array_slice($args,1)));
+					$str = call_user_func_array('sprintf', self::argreorder($str,array_slice($args,1)));
 				}
 			} else {
 				$str = $args[0];
@@ -43,7 +42,7 @@ class intl {
 			if (count($args) > 0) {
 				$str = $args[0];
 				if (count($args) > 1) {
-					$str = call_user_func_array('sprintf', array_merge(array($str),array_slice($args,1)));
+					$str = call_user_func_array('sprintf', self::argreorder($str,array_slice($args,1)));
 				}
 			} else {
 				$str = $args[0];
@@ -51,6 +50,24 @@ class intl {
 		}
 		return $str;
 	}
+    
+    /**
+     * @brief Reorder the arguments based on the string and return both.
+     * 
+     * This is using a syntax that is compatible with GNU Gettext, namely 
+     * adding the order followed by a $ in the middle of the declaration, for
+     * example: "%2$s" would reference the 2nd argument as a string. This
+     * would return an array consisting of "%s" and the 2nd option.
+     * 
+     * @param string $str The string containing the format
+     * @param array $arg The arguments as an array
+     * @return array The string and the arguments
+     */
+    private static function argreorder($str,$arg) {
+        
+        
+        return array_merge((array)$str,(array)$arg);
+    }
 
 	/**
 	 * @brief Register a new language

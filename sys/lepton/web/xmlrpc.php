@@ -152,6 +152,13 @@ class XmlrpcClient {
 	function __construct($url) {
 		$this->url = $url;
 	}
+    
+    function __call($name, $arguments) {
+        $newname = str_replace('_','.',$name);
+        logger::debug("Relaying XmlrpcClient request for %s to %s", $name, $newname);
+        if (count($arguments) == 0) $arguments = null;
+        return $this->call($newname,$arguments);
+    }
 
 	/**
 	 * Call a method on the server. The result is returned decoded as
@@ -163,7 +170,9 @@ class XmlrpcClient {
 	 */
 	function call($method,$args=null) {
 
-		$req = xmlrpc_encode_request($method, $args);
+        logger::debug("Sending XmlrpcRequest to %s ...", $method);
+        $req = xmlrpc_encode_request($method, $args);
+        logger::debug('%s',$req);
 		$ret = new HttpRequest($this->url, array(
 			'method' => 'post',
 			'parameters' => $req,
