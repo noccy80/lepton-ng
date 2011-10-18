@@ -47,6 +47,20 @@ abstract class User {
 
     }
 
+    /**
+     * @brief Suid to another user.
+     * 
+     * The aim of this function is to allow the user to become another user,
+     * for testing or administrative purposes. It is similar to the sudo and
+     * su commands in the *nix world.
+     * 
+     * A user can only suid ONCE, and is only allowed to switch back to the
+     * previous (original) user by passing NULL as the user record.
+     * 
+     * @todo Thorougly test
+     * @param UserRecord $user The user to suid to or null to revert
+     * @return boolean True on success
+     */
     static function suid(UserRecord $user = null) {
 
         $suid = (array)session::get(User::KEY_USER_SUID,null);
@@ -56,6 +70,7 @@ abstract class User {
             session::set(User::KEY_USER_AUTH, $uid);
             session::clr(User::KEY_USER_SUID);
             // user::set
+            return true;
         } elseif ($user) {
             // Can suid
             session::set(User::KEY_USER_SUID, array(
@@ -64,7 +79,7 @@ abstract class User {
                 'suid' => $user->userid
             ));
             session::set(User::KEY_USER_AUTH, $user->userid);
-            response::redirect('/');
+            return true;
         } else {
             throw new SecurityException("Invalid suid attempt");
         }
