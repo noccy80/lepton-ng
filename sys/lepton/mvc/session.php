@@ -58,9 +58,9 @@
         }
 
         static function setupSessionCookie() {
-            $domain = (config::get(self::KEY_SESSION_DOMAIN));
+            $domain = (config::get(self::KEY_SESSION_DOMAIN, null));
             // $validity = (config::get(self::KEY_SESSION_VALIDITY));
-            if (!$domain) $domain = request::getDomain();
+            if (!$domain) return;
             // if (!$validity) $validity = 3600;
             // Trim leading * off domain names
             if (substr($domain,0,2) == '*.') $domain = substr($domain,1);
@@ -70,7 +70,7 @@
 
         static function begin() {
             if (!headers_sent()) {
-                self::setupSessionCookie();
+                //self::setupSessionCookie();
     	        session_start();
     	    }
             self::$id = session_id();
