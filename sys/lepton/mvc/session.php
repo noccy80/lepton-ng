@@ -70,7 +70,7 @@
 
         static function begin() {
             if (!headers_sent()) {
-                //self::setupSessionCookie();
+                self::setupSessionCookie();
     	        session_start();
     	    }
             self::$id = session_id();
