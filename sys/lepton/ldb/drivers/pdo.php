@@ -87,7 +87,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         return $str;
     }
 
-    function execute($sql) {
+    function execute($sql,$attr) {
         Console::debugEx(LOG_DEBUG2,__CLASS__,"SQL Exec: %s", $sql);
         try {
             $query = $this->conn->exec($sql);
@@ -96,7 +96,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         }
     }
 
-    function query($sql) {
+    function query($sql,$attr) {
         Console::debugEx(LOG_DEBUG2,__CLASS__,"SQL Query: %s", $sql);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $qt = new Timer(true);
@@ -113,8 +113,16 @@ class PdoDatabaseDriver extends DatabaseDriver {
         if ($query) {
             if ($query->rowCount() > 0) {
                 try {
+                    $fetchmode = MYSQLI_BOTH;
+                    if ( $attr & QueryAttributes::QATTR_GET_ASSOC ) {
+                        $data = $query->fetchAll(MYSQLI_ASSOC);
+                    } elseif ( $attr & QueryAttributes::QATTR_GET_NUMERIC ) {
+                        $data = $query->fetchAll(MYSQLI_NUM);
+                    } else {
+                        $data = $query->fetchAll();
+                    }
                     $ret = array(
-                        'data' => $query->fetchAll(),
+                        'data' => $data,
                         'count' => $query->rowCount(),
                         'columns' => $query->columnCount(),
                         'error' => false

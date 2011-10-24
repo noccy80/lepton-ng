@@ -17,10 +17,12 @@ class Xmlrpc {
 	 * Create and return a new XmlrpcClient object.
 	 *
 	 * @param string $url The API url
+     * @param string $username The username to authenticate as (optional)
+     * @param string $password The password to authenticate with (optional)
 	 * @return XmlrpcClient The client instance
 	 */
-	function createClient($url) {
-		return new XmlrpcClient($url);
+	function createClient($url,$username=null,$password=null) {
+		return new XmlrpcClient($url,$username,$password);
 	}
 
 	/**
@@ -141,6 +143,9 @@ class XmlrpcServer {
 class XmlrpcClient {
 
 	private $url = null;
+    private $username = null;
+    private $password = null;
+    private $httpopts = null;
 
 	/**
 	 * Constructor, creates an instance of the XmlrpcClient class bound
@@ -148,9 +153,15 @@ class XmlrpcClient {
 	 *
 	 * @todo Handle username/password through arguments
 	 * @param string $url The URL to query
+     * @param string $username
+     * @param string $password
+     * @param array $httpopts Options for http request
 	 */
-	function __construct($url) {
+	function __construct($url,$username=null,$password=null,array $httpopts=null) {
 		$this->url = $url;
+        $this->username = $username;
+        $this->password = $password;
+        $this->httpopts = (array)$httpopts;
 	}
     
     function __call($name, $arguments) {
@@ -173,11 +184,18 @@ class XmlrpcClient {
         logger::debug("Sending XmlrpcRequest to %s ...", $method);
         $req = xmlrpc_encode_request($method, $args);
         logger::debug('%s',$req);
-		$ret = new HttpRequest($this->url, array(
+        $opts = array(
 			'method' => 'post',
 			'parameters' => $req,
 			'content-type' => 'text/xml'
-		));
+		);
+        if ($this->username) {
+            $opts['username'] = $this->username;
+            $opts['password'] = $this->password;
+        }
+        $opts = array_merge($opts,$this->httpopts);
+		$ret = new HttpRequest($this->url, $opts);
+        logger::debug('Response: %s',$ret->responseText());
 		$mtd = null;
 		$dec = xmlrpc_decode_request($ret->responseText(),$mtd);
 		return $dec;

@@ -1808,18 +1808,18 @@ class FileLoggerFactory extends LoggerFactory {
 	);
 
 	function __construct($filename) {
-		$this->filename = filename;
+		$this->filename = $filename;
 	}
 
 	function __logMessage($prio,$msg) {
 		$ts = @date("M-d H:i:s", time());
 		$lines = explode("\n", $msg);
-		$fh = fopen($this->filename,'w+');
+		$fh = fopen($this->filename,'a+');
 		foreach ($lines as $line) {
 			fprintf($fh, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
 			//fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
 		}
-		fclose($this->file);
+		fclose($fh);
 	}
 
 }

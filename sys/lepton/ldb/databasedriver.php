@@ -5,8 +5,8 @@
  */
 interface IDatabaseDriver {
 
-	function execute($query);
-	function query($query);
+	function execute($query,$attr);
+	function query($query,$attr);
 	function transactionBegin();
 	function transactionEnd();
 	function quote($string);

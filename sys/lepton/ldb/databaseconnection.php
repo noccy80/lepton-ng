@@ -5,10 +5,17 @@ class DatabaseException extends Exception { }
 using('lepton.ldb.databaseconnectionpool');
 using('lepton.ldb.drivers.*');
 
+abstract class QueryAttributes {
+    const QATTR_GET_ASSOC = 0x0001;
+    const QATTR_GET_NUMERIC = 0x0002;
+    
+}
+
 class DatabaseConnection {
 
 	private $conn = null;
 	private $driver = null;
+    private $attribs = null;
 
     /**
      *
@@ -35,6 +42,10 @@ class DatabaseConnection {
 		$this->conn = DatabaseConnectionPool::getPooledConnection($config);
 		
 	}
+    
+    public function setQueryAttributes($attribs = null) {
+        $this->attribs = $attribs;
+    }
 
     /**
      *
@@ -50,8 +61,7 @@ class DatabaseConnection {
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetRows: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
-        $queryresult = $this->conn->query($sql);
-
+        $queryresult = $this->conn->query($sql,$this->attribs);
         return (array)$queryresult['data'];
 
     }
@@ -70,7 +80,7 @@ class DatabaseConnection {
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleRow: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
-        $queryresult = $this->conn->query($sql);
+        $queryresult = $this->conn->query($sql,$this->attribs);
 
         // Only return first item
         if ($queryresult != null) {
@@ -98,7 +108,7 @@ class DatabaseConnection {
         Console::debugEx(LOG_DEBUG1,__CLASS__,"GetSingleValue: %s", $sql);
         Database::$counter++;
         Database::$queries['QUERYING']++;
-        $queryresult = $this->conn->query($sql);
+        $queryresult = $this->conn->query($sql,$this->attribs);
 
         // Only return first column of first item
         if ($queryresult['count'] > 0) {
@@ -123,7 +133,7 @@ class DatabaseConnection {
         Console::debugEx(LOG_DEBUG1,__CLASS__,"InsertRow: %s", $sql);
         Database::$counter++;
         Database::$queries['UPDATING']++;
-        $queryresult = $this->conn->query($sql);
+        $queryresult = $this->conn->query($sql,$this->attribs);
 
         return $this->conn->autonumber;
 
@@ -143,7 +153,7 @@ class DatabaseConnection {
         Console::debugEx(LOG_DEBUG1,__CLASS__,"UpdateRow: %s", $sql);
         Database::$counter++;
         Database::$queries['UPDATING']++;
-        $queryresult = $this->conn->query($sql);
+        $queryresult = $this->conn->query($sql,$this->attribs);
         $affected = $queryresult['count'];
 
         return $affected;
@@ -164,7 +174,7 @@ class DatabaseConnection {
         Console::debugEx(LOG_DEBUG1,__CLASS__,"Execute: %s", $sql);
         Database::$counter++;
         Database::$queries['EXECUTING']++;
-        $queryresult = $this->conn->execute($sql);
+        $queryresult = $this->conn->execute($sql,$this->attribs);
 
         return null;
 
