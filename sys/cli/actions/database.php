@@ -161,11 +161,11 @@ class DatabaseAction extends Action {
                             $fdat = fopen(expandpath('app:/sql/'.$c.'.csv'),'w');
                             fputcsv($fdat,$hdr,";",'"');
                             foreach($drs as $row) {
-                                $do = array();
-                                foreach($hdr as $i=>$h) {
-                                    if (($i != '0') && (intval($i) == 0)) $do[] = $row[$h];
+                                $dout = array();
+                                foreach($row as $i=>$h) {
+                                    if (($i != '0') && (intval($i) == 0)) $dout[] = $h;
                                 }
-                                fputcsv($fdat,$do,";",'"');
+                                fputcsv($fdat,$dout,";");
                             }
                             fclose($fdat);
                             console::write("CSV ");
