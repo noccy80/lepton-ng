@@ -23,6 +23,17 @@ final class HttpAuthentication extends AuthenticationProvider {
         $this->username = $_SERVER['PHP_AUTH_USER'];
         $this->password = $_SERVER['PHP_AUTH_PW'];
     }
+    
+    public function __get($field) {
+        switch($field) {
+            case 'username':
+                return $this->username;
+            case 'password':
+                return $this->password;
+            default:
+                throw new BadPropertyException(__CLASS__, $field);
+        }
+    }
 
     /**
     * @brief Check if the token used for authentication is valid
