@@ -162,8 +162,8 @@ class DatabaseAction extends Action {
                             fputcsv($fdat,$hdr,";",'"');
                             foreach($drs as $row) {
                                 $do = array();
-                                foreach($hdr as $h) {
-                                    $do[] = $row[$h];
+                                foreach($hdr as $i=>$h) {
+                                    if (($i != '0') && (intval($i) == 0)) $do[] = $row[$h];
                                 }
                                 fputcsv($fdat,$do,";",'"');
                             }
