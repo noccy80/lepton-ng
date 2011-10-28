@@ -24,7 +24,8 @@ class BBCodeMarkupParser extends MarkupParser {
             'https',
             'ftp'
         ),
-        self::OPT_OUTPUT_XHTML => false
+        self::OPT_OUTPUT_XHTML => false,
+        markup::OPT_CONDENSE_LINES => true
     );
 
     /**
@@ -40,7 +41,7 @@ class BBCodeMarkupParser extends MarkupParser {
         $res = preg_replace('/\[i\](.*)\[\/i\]/i', '<font style="font-style:italic;">$1</font>', $res);
 
         // Split on double newlines
-        $res = explode("\n\n", $res);
+        $res = explode((($this->getOption(markup::OPT_CONDENSE_LINES,true))?"\n\n":"\n"), $res);
         $out = array();
         // Replace the remaining newlines
         foreach($res as $resrow) {

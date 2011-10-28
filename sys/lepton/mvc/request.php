@@ -209,6 +209,12 @@ class Request {
         return new RequestString($def);
     }
 
+    /**
+     * @brief Return true if a key is present in the request as get, post or file
+     * 
+     * @param string $key The key to query
+     * @return bool True if the key is present
+     */
     static function has($key) {
         return (
             arr::hasKey($_REQUEST,$key) || 
@@ -217,10 +223,22 @@ class Request {
         );
     }
 
+    /**
+     * @brief Return true if a key is present in the get collection
+     * 
+     * @param string $key The key to query
+     * @return bool True if the key is present
+     */
     static function hasGet($key) {
         return (arr::hasKey($_REQUEST,$key));
     }
 
+    /**
+     * @brief Return true if a key is present in the post collection
+     * 
+     * @param string $key The key to query
+     * @return bool True if the key is present
+     */
     static function hasPost($key) {
         return (
             arr::hasKey($_POST,$key) || 
@@ -255,13 +273,35 @@ class Request {
 		}
 	}
 
-    static function hadHeader($header) {
-        if (arr::hasKey($_SERVER,'HTTP_'.strtoupper($header))) return true;
+    static function hasHeader($header) {
+        $header = 'HTTP_'.strtoupper(str_replace('-','_',$header));
+        if (arr::hasKey($_SERVER,$header)) return true;
         return false;
     }
 
     static function getHeader($header) {
-        if (arr::hasKey($_SERVER,'HTTP_'.strtoupper($header))) return $_SERVER['HTTP_'.strtoupper($header)];
+        $header = 'HTTP_'.strtoupper(str_replace('-','_',$header));
+        if (arr::hasKey($_SERVER,$header)) return $_SERVER[$header];
+        return null;
+    }
+    
+    static function getAcceptLanguage() {
+        if (request::hasHeader('accept-language')) {
+            $langs = request::getHeader('accept-language');
+            if (strpos($langs,',') !== false) {
+                $tarrlangs = explode(',',$langs);
+                $arrlangs = array();
+                foreach($tarrlangs as $lang) {
+                    if (strpos($lang,';') !== false) {
+                        $lang = reset(explode(';',$lang));
+                    }
+                    $arrlangs[] = $lang;
+                }
+            } else {
+                $arrlangs = array($langs);
+            }
+            return $arrlangs;
+        }
         return null;
     }
 

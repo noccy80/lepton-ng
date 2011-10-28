@@ -121,6 +121,8 @@ abstract class MarkupParser implements IMarkupParser {
 
 abstract class Markup {
 
+    const OPT_CONDENSE_LINES = 'condenselines';
+    
     /**
      * @brief Factory method to create a parser and feed it relevant data.
      *
