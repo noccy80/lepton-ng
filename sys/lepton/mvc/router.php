@@ -92,23 +92,10 @@ abstract class Router implements IRouter {
 			array_shift($_GET); array_shift($_GET);
 		}
 
-        if (arr::hasKey($_SERVER,'HTTPS')) {
-            if ($_SERVER['https'] == 1) /* Apache */ {
-                $secure = true;
-            } elseif ($_SERVER['https'] == 'on') /* IIS */ {
-                $secure = true;
-            } elseif ($_SERVER['SERVER_PORT'] == 443) /* others */ {
-                $secure = true;
-            } else {
-                $secure = false; /* just using http */
-            }
-        } else {
-            $secure = false;
-        }
         // Assign the URI and start parsing
         $this->_uri = $uri;
         $this->_domain = $domain;
-        $this->_secure = $secure;
+        $this->_secure = request::isSecure();
         foreach(explode('/',$this->_uri) as $segment) {
             if ($segment != '') $this->_urisegments[] = $segment;
         }

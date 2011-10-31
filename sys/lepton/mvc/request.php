@@ -336,6 +336,24 @@ class Request {
         }
         return null;
     }
+    
+    static function isSecure() {
+
+        if (arr::hasKey($_SERVER,'HTTPS')) {
+            if ($_SERVER['https'] == 1) /* Apache */ {
+                return true;
+            } elseif ($_SERVER['https'] == 'on') /* IIS */ {
+                return true;
+            } elseif ($_SERVER['SERVER_PORT'] == 443) /* others */ {
+                return true;
+            } else {
+                return false; /* just using http */
+            }
+        } else {
+            return false;
+        }
+        
+    }
 
     static function getDebugInformation() {
         if (($_SERVER['HTTPS'] != 'off') && ($_SERVER['HTTPS'] != null)) {
@@ -535,7 +553,7 @@ class Request {
      */
     static function getURL() {
         if (isset($_SERVER['HTTP_HOST'])) {
-            if ($_SERVER['HTTPS']) {
+            if (request::isSecure()) {
                 $proto = 'https://';
                 $port = (intval($_SERVER['SERVER_PORT'])!=443)?':'.$_SERVER['SERVER_PORT']:'';
             } else {

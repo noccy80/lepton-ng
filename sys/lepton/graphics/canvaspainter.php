@@ -4,7 +4,7 @@ class CanvasPainter {
 
 	private $himage;
 	private $canvas;
-
+    
 	function __construct(Canvas $canvas) {
 		$this->himage = $canvas->getImage();
 		$this->canvas = $canvas;
@@ -47,7 +47,7 @@ class CanvasPainter {
         $h = imageSY($this->himage);
         imagealphablending($this->himage,false);
         imagefilledrectangle($this->himage, 0, 0, $w, $h, $fillcolor->getColor($this->himage,true));
-        imagealphablending($this->himage,$this->alphablend);
+        imagealphablending($this->himage,$this->canvas->alphablending);
 
     }
 
