@@ -420,8 +420,10 @@ class Request {
      * @return string The query string
      */
     static function getRawQueryString() {
-        $data = $_SERVER['QUERY_STRING'];
-        return $data;
+        if (arr::hasKey($_SERVER,'QUERY_STRING')) {
+            return $_SERVER['QUERY_STRING'];
+        }
+        return '';
     }
 
     /**
@@ -560,11 +562,7 @@ class Request {
                 $proto = 'http://';
                 $port = (intval($_SERVER['SERVER_PORT'])!=80)?':'.$_SERVER['SERVER_PORT']:'';
             }
-            if ($_SERVER['QUERY_STRING']!='?') {
-                $querystring = $_SERVER['QUERYSTRING'];
-            } else {
-                $querystring = '';
-            }
+            $querystring = request::getRawQueryString();
             return $proto . $_SERVER['HTTP_HOST'] . $port . $_SERVER['REQUEST_URI'] . $querystring;
         } else {
             return null;
