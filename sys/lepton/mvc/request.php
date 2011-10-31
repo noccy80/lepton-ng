@@ -300,6 +300,24 @@ class Request {
         if (arr::hasKey($_SERVER,$header)) return $_SERVER[$header];
         return null;
     }
+
+    /**
+     * @brief Transforms $_SERVER HTTP headers into a nice associative array. 
+     * 
+     * From php.net
+     * 
+     * @author dtomasiewicz at gmail dot com (php.net)
+     * @return array The header collection
+     */
+    static function getAllHeaders() {
+        $headers = array();
+        foreach($_SERVER as $key => $value) {
+            if(strpos($key, 'HTTP_') === 0) {
+                $headers[str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))))] = $value;
+            }
+        }
+        return $headers;        
+    }
     
     /**
      * @brief Returns the redirect status for handling error pages.
