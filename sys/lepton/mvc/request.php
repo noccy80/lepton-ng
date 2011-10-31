@@ -273,16 +273,48 @@ class Request {
 		}
 	}
 
+    /**
+     * @brief Check if the HTTP header is present.
+     *
+     * @param string $header The header to retrieve
+     * @return bool True if the header is set.
+     */
     static function hasHeader($header) {
         $header = 'HTTP_'.strtoupper(str_replace('-','_',$header));
         if (arr::hasKey($_SERVER,$header)) return true;
         return false;
     }
 
+    /**
+     * @brief Return the HTTP header if set.
+     * 
+     * Will return null if the header is not set. More HTTP like names are used
+     * in contrast with the PHP $_SERVER global. For example, to retrieve the
+     * HTTP Accept-Language header, you can provide "accept-language". 
+     * 
+     * @param string $header The header to retrieve
+     * @return string The header contents or null if not set
+     */
     static function getHeader($header) {
         $header = 'HTTP_'.strtoupper(str_replace('-','_',$header));
         if (arr::hasKey($_SERVER,$header)) return $_SERVER[$header];
         return null;
+    }
+    
+    /**
+     * @brief Returns the redirect status for handling error pages.
+     * 
+     * If you are using errorpage in your htaccess file, the error code leading
+     * to the redirect will be returned by this method.
+     *
+     * @return int The redirect status (or null)
+     */
+    static function getRedirectStatus() {
+        if (request::hasHeader('redirect-status')) {
+            return (request::getHeader('redirect-status'));
+        } else {
+            return null;
+        }
     }
     
     static function getAcceptLanguage() {
@@ -334,6 +366,11 @@ class Request {
         
     }
     
+    /**
+     * @brief Get the domain
+     * 
+     * @return string The domain
+     */
     static function getDomain() {
         if (arr::hasKey($_SERVER,'HTTP_HOST')) {
             return strtolower($_SERVER['HTTP_HOST']);
@@ -350,10 +387,20 @@ class Request {
     	return $data;
     }
 
+    /**
+     * @brief Find information on the user agent.
+     * 
+     * @return RequestUserAgent The user agent object for the request
+     */
     static function getUserAgent() {
         return new RequestUserAgent();
     }
 
+    /**
+     * @brief Return the raw query string
+     * 
+     * @return string The query string
+     */
     static function getRawQueryString() {
         $data = $_SERVER['QUERY_STRING'];
         return $data;
@@ -481,6 +528,11 @@ class Request {
         return self::getRemoteIp();
     }
 
+    /**
+     * @brief Get the full query URL
+     * 
+     * @return string The full query URL
+     */
     static function getURL() {
         if (isset($_SERVER['HTTP_HOST'])) {
             if ($_SERVER['HTTPS']) {
