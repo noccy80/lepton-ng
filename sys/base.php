@@ -1183,7 +1183,7 @@ class Lepton {
         }
     }
 
-    static function handleError($errno,$errstr,$errfile,$errline,$errcontext) {
+    static function handleError($errno,$errstr,$errfile,$errline,$errcontext=null) {
         $args = func_get_args();
         if (self::$__errorhandler) {
             return (call_user_func_array(self::$__errorhandler,$args) == true);
