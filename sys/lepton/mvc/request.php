@@ -374,7 +374,7 @@ class Request {
     }
 
     static function getDebugInformation() {
-        if (($_SERVER['HTTPS'] != 'off') && ($_SERVER['HTTPS'] != null)) {
+        if (self::isSecure()) {
             $ssl = 'Yes ('.$_SERVER['SSL_TLS_SNI'].')';
         } else {
             $ssl = 'No';
