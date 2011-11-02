@@ -24,7 +24,7 @@ class CsvReader {
     private $timer = null;
     
     function __construct($filename,array $options=null, array $headermap=null) {
-        $this->options = arr::defaults($options, array(
+        $this->options = arr::defaults((array)$options, array(
             'delimiter' => ',',
             'enclosure' => '"',
             'escape' => "\\",
@@ -39,6 +39,10 @@ class CsvReader {
     
     function __destruct() {
         if ($this->fh) fclose($this->fh);
+    }
+    
+    function eof() {
+        return (feof($this->fh));
     }
     
     function read() {
@@ -75,16 +79,20 @@ class CsvReader {
         // Return rows read, and estimated number of rows remaining based on
         // file pointer and average length of record.
         $bread = ftell($this->fh);
-        $avgsize = $bread / $this->read;
-        // Find out how many bytes are left
-        $bleft = $this->filesize - $bread;
-        // Remaining rows
-        $rleft = round($bleft / $avgsize);
-        $etime = $this->timer->getElapsed();
-        // Get the time elapsed per record
-        $trecord = $etime / $this->read;
-        // And multiply it by the number of remaining records
-        $rtime = $rem * $trecord;
+        if ($this->read > 0) {
+            $avgsize = $bread / $this->read;
+            // Find out how many bytes are left
+            $bleft = $this->filesize - $bread;
+            // Remaining rows
+            $rleft = round($bleft / $avgsize);
+            $etime = $this->timer->getElapsed();
+            // Get the time elapsed per record
+            $trecord = $etime / $this->read;
+            // And multiply it by the number of remaining records
+            $rtime = $rleft * $trecord;
+        } else {
+            $rleft = 0; $etime = 0; $rtime = 0;
+        }
         
         return array($this->read, $rleft, $etime, $rtime);
     }
