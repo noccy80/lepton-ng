@@ -302,15 +302,13 @@
     class TestModel extends AbstractModel {
         var $model = 'TestModel';
         var $fields = array(
-            'name' => 'string required default "untitled user"',
-            'age' => 'int default 0',
-            'active' => 'bool default false'
+            'name'      => 'string required default "untitled user"',
+            'age'       => 'int default 0',
+            'active'    => 'bool default false'
         );
     }
 
     $tm = new TestModel(array(
-        'age' => 30,
-        'name' => 'bob'
+        'age'           => 30,
+        'name'          => 'bob'
     ));
-
-?>
