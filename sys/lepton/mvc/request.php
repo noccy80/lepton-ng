@@ -343,7 +343,8 @@ class Request {
                 $arrlangs = array();
                 foreach($tarrlangs as $lang) {
                     if (strpos($lang,';') !== false) {
-                        $lang = reset(explode(';',$lang));
+                        $langstr = explode(';',$lang);
+                        $lang = reset($langstr);
                     }
                     $arrlangs[] = $lang;
                 }
