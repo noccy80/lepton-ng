@@ -1438,6 +1438,14 @@ abstract class arr {
         return in_array($key, $arr);
     }
 
+    static function head(Array $arr, $num = 1) {
+        return $arr[0];
+    }
+
+    static function tail(Array $arr, $num = 1) {
+        return $arr[count($arr)-1];
+    }
+
 }
 
 class vartype {
