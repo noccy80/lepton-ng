@@ -346,7 +346,7 @@ class Request {
                         $langstr = explode(';',$lang);
                         $lang = reset($langstr);
                     }
-                    $arrlangs[] = $lang;
+                    $arrlangs[] = strtolower($lang);
                 }
             } else {
                 $arrlangs = array($langs);
