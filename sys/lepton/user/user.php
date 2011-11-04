@@ -184,7 +184,7 @@ abstract class User {
 
         $db = new DatabaseConnection();
         $record = $db->getSingleRow(
-            "SELECT a.*,u.*,a.id AS userid FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.username=%s",
+            "SELECT a.*,u.*,a.id AS userid FROM users a LEFT JOIN userdata u ON a.id=u.id WHERE a.username=%s",
             $username
         );
         if ($record) {
@@ -224,7 +224,7 @@ abstract class User {
 
         $db = new DatabaseConnection();
         $record = $db->getSingleRow(
-            "SELECT a.*,u.*,a.id AS userid FROM ".LEPTON_DB_PREFIX."users a LEFT JOIN ".LEPTON_DB_PREFIX."userdata u ON a.id=u.id WHERE a.id=%d",
+            "SELECT a.*,u.*,a.id AS userid FROM users a LEFT JOIN userdata u ON a.id=u.id WHERE a.id=%d",
             $userid
         );
         if ($record) {
@@ -249,7 +249,7 @@ abstract class User {
 
         $db = new DatabaseConnection();
         $record = $db->getSingleRow(
-            "SELECT * FROM ".LEPTON_DB_PREFIX."users WHERE username=%s",
+            "SELECT * FROM users WHERE username=%s",
             $username
         );
         return (($record) == null);
