@@ -51,11 +51,12 @@ class Cookies {
         $httponly = ($flags & self::COOKIE_HTTPONLY);
         if (headers_sent()) {
             // If headers already sent, put them into the cookie jar
-            self::$jar[] = array($name,$value,$expire,null,null,$secure,$httponly);
+            self::$jar[] = array($name,$value,time()+$expire,null,null,$secure,$httponly);
             session::set('__cookiejar',self::$jar);
         } else {
             // Otherwise set the cookie
-            setcookie($name, $value, $expire, null, null, $secure, $httponly);
+            debug("Cookie set to expire in ".$expire." seconds");
+            setcookie($name, $value, time()+$expire, null, null, $secure, $httponly);
         }
     }
     
