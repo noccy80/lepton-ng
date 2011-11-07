@@ -39,7 +39,12 @@ class BBCodeMarkupParser extends MarkupParser {
         $res = preg_replace('/\[b\](.*)\[\/b\]/i', '<font style="font-weight:bold;">$1</font>', $res);
         $res = preg_replace('/\[u\](.*)\[\/u\]/i', '<font style="text-decoration:underline;">$1</font>', $res);
         $res = preg_replace('/\[i\](.*)\[\/i\]/i', '<font style="font-style:italic;">$1</font>', $res);
+        $res = preg_replace('/\[list\](.*?)\[\/list\]/is', '<ul>$1</ul>',$res);
+        $res = preg_replace('/\[\*\](.*)/i', '<li>$1</li>',$res);
 
+        $res = str_replace("</li>\n","</li>", $res);
+        $res = str_replace("<ul>\n", "<ul>", $res);
+        
         // Split on double newlines
         $res = explode((($this->getOption(markup::OPT_CONDENSE_LINES,true))?"\n\n":"\n"), $res);
         $out = array();
@@ -48,6 +53,23 @@ class BBCodeMarkupParser extends MarkupParser {
             $out[] = str_replace("\n","", $resrow);
         }
         $res = '<p>'.join('</p><p>',$out).'</p>';
+        return $res;
+    }
+    
+    function strip($data) {
+        $res = $data;
+        $res = preg_replace('/\[b\](.*)\[\/b\]/i', '$1', $res);
+        $res = preg_replace('/\[u\](.*)\[\/u\]/i', '$1', $res);
+        $res = preg_replace('/\[i\](.*)\[\/i\]/i', '$1', $res);
+
+        // Split on double newlines
+        $res = explode((($this->getOption(markup::OPT_CONDENSE_LINES,true))?"\n\n":"\n"), $res);
+        $out = array();
+        // Replace the remaining newlines
+        foreach($res as $resrow) {
+            $out[] = str_replace("\n","", $resrow);
+        }
+        $res = join("\n\n",$out);
         return $res;
     }
 }

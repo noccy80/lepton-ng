@@ -16,8 +16,15 @@ interface IMarkupParser {
     /**
      * @brief Parse the data and return the output
      * @param string $data The data to parse
+     * @return string The data with HTML markup
      */
     function parse($data);
+    /**
+     * @brief Strip the markup from the data and return plain text
+     * @param string $data The data to parse
+     * @return string The data as plain text without markup
+     */
+    function strip($data);
 }
 
 /**
@@ -95,6 +102,10 @@ abstract class MarkupParser implements IMarkupParser {
      */
     function getParsed() {
         return $this->parsed;
+    }
+    
+    function getStripped() {
+        return $this->strip($this->data);
     }
 
     /**

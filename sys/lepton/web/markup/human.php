@@ -76,5 +76,8 @@ class HumanMarkupParser extends MarkupParser {
 		return $str;
 		
 	}
+    
+    function strip($data) { return null; }
+    
 }
 

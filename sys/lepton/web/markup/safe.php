@@ -50,7 +50,8 @@ class SafehtmlMarkupParser extends MarkupParser {
         $ret->replace('/([^\n]\n)(?=[^\n])/', '\1<br />');
 		return "<p>".$ret->get()."</p>";
 	}
+
+    function strip($data) { return null; }
+    
 }
 
-
-?>
