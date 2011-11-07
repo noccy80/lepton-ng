@@ -61,6 +61,10 @@ class BBCodeMarkupParser extends MarkupParser {
         $res = preg_replace('/\[b\](.*)\[\/b\]/i', '$1', $res);
         $res = preg_replace('/\[u\](.*)\[\/u\]/i', '$1', $res);
         $res = preg_replace('/\[i\](.*)\[\/i\]/i', '$1', $res);
+        $res = preg_replace('/\[\*\](.*)/i', ' * $1',$res);
+
+        $res = str_replace("[list]","", $res);
+        $res = str_replace("[/list]", "", $res);
 
         // Split on double newlines
         $res = explode((($this->getOption(markup::OPT_CONDENSE_LINES,true))?"\n\n":"\n"), $res);
