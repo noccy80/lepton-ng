@@ -82,6 +82,41 @@ if (!function_exists('sys_getloadavg')) {
     }
 }
 
+// @author sleek (php.net)
+if (!function_exists('substr_compare')) {
+    function substr_compare($main_str, $str, $offset, $length = NULL, $case_insensitivity = false) {
+        $offset = (int) $offset;
+
+        // Throw a warning because the offset is invalid
+        if ($offset >= strlen($main_str)) {
+            trigger_error('The start position cannot exceed initial string length.', E_USER_WARNING);
+            return false;
+        }
+
+        // We are comparing the first n-characters of each string, so let's use the PHP function to do it
+        if ($offset == 0 && is_int($length) && $case_insensitivity === true) {
+            return strncasecmp($main_str, $str, $length);
+        }
+
+        // Get the substring that we are comparing
+        if (is_int($length)) {
+            $main_substr = substr($main_str, $offset, $length);
+            $str_substr = substr($str, 0, $length);
+        } else {
+            $main_substr = substr($main_str, $offset);
+            $str_substr = $str;
+        }
+
+        // Return a case-insensitive comparison of the two strings
+        if ($case_insensitivity === true) {
+            return strcasecmp($main_substr, $str_substr);
+        }
+
+        // Return a case-sensitive comparison of the two strings
+        return strcmp($main_substr, $str_substr);
+    }
+}
+
 
 ///// Path Resolution ////////////////////////////////////////////////////////
 
@@ -1981,12 +2016,16 @@ class EventHandler {
      * @param Array $data The data being passed to the event
      */
     public function dispatch($event, Array $data) {
-        if (is_string($this->_class)) {
-            $ci = new $this->_class;
+        if ($this->_class) {
+            if (is_string($this->_class)) {
+                $ci = new $this->_class;
+            } else {
+                $ci = $this->_class;
+            }
+            return (call_user_func_array(array($ci, $this->_method), array($event, $data)) == true);
         } else {
-            $ci = $this->_class;
+            return (call_user_func_array($this->_method, array($event, $data)) == true);
         }
-        return (call_user_func_array(array($ci, $this->_method), array($event, $data)) == true);
     }
 
     /**

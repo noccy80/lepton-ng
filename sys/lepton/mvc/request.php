@@ -440,7 +440,12 @@ class Request {
      */
     static function getRawQueryString() {
         if (arr::hasKey($_SERVER,'QUERY_STRING')) {
-            return $_SERVER['QUERY_STRING'];
+            $qs = $_SERVER['QUERY_STRING'];
+            $head = '/index.php&/';
+            if (substr_compare($qs,$head,0)==0) {
+                $qs = substr($qs, strlen($head));
+            }
+            return $qs;
         }
         return '';
     }
@@ -581,8 +586,14 @@ class Request {
                 $proto = 'http://';
                 $port = (intval($_SERVER['SERVER_PORT'])!=80)?':'.$_SERVER['SERVER_PORT']:'';
             }
-            $querystring = request::getRawQueryString();
-            return $proto . $_SERVER['HTTP_HOST'] . $port . $_SERVER['REQUEST_URI'] . $querystring;
+            if (arr::hasKey($_SERVER,'REQUEST_URI')) {
+                $uri = $_SERVER['REQUEST_URI'];
+            } else if (arr::hasKey($_SERVER,'REQUEST_URL')) {
+                $uri = $_SERVER['REQUEST_URL'];
+                $querystring = request::getRawQueryString();
+                $uri .= $querystring;
+            }
+            return $proto . $_SERVER['HTTP_HOST'] . $port . $uri;
         } else {
             return null;
         }

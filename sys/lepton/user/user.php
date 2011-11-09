@@ -1,5 +1,11 @@
 <?php module("Authentication Provider Base Classes");
 
+abstract class UserEvents {
+    const EVENT_USER_REGISTER = 'lepton.user.authentication.register';
+    const EVENT_USER_LOGIN = 'lepton.user.authentication.login';
+    const EVENT_USER_LOGOUT = 'lepton.user.authentication.logout';
+}
+
 /**
  * @class User
  * @example authentication.php

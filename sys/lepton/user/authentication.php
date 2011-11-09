@@ -8,6 +8,7 @@ class UserException extends BaseException {
     const ERR_USER_UNASSOCIATED = 2;
     const ERR_USER_INACTIVE = 3;
 }
+
 /**
  * @brief Authentication related exceptions
  */
@@ -83,6 +84,11 @@ abstract class AuthenticationProvider implements IAuthenticationProvider {
         if (class_exists('request')) {
             $db = new DatabaseConnection();
             $db->updateRow("UPDATE users SET lastlogin=NOW(), lastip=%s WHERE id=%d", request::getRemoteIp(), $id);
+        }
+        if (class_exists('UserEvents')) {
+            event::invoke(UserEvents::EVENT_USER_LOGIN, array(
+                'id' => $id
+            ));
         }
     }
 
