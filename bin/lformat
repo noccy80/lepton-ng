@@ -7,14 +7,14 @@ class LformatApp extends ConsoleApplication {
 	const SPACE_TO_TAB = 2;
 	const NO_CONVERT = 0;
 
-	protected $scription = "Lepton Source Formatter";
+	protected $description = "Lepton Source Formatter";
 	protected $arguments = array(
 		array('h','help','Help'),
 		array('v','verbose','Verbose'),
 		array('t:','tab-size','Size of tabs in spaces (default: 4)'),
 		array('a','tab-to-space','Convert tabs to spaces (default)'),
 		array('b','space-to-tab','Convert spaces to tabs'),
-		array('n','no-convert','Don't covert tabs or spaces'),
+		array('n','no-convert','Don\'t covert tabs or spaces'),
 		array('c','compact','Compact whitespace between functions and blocks')
 	);
 	private $tabsize = 4;
