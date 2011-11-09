@@ -2,9 +2,9 @@
 
 class LdwpManager {
 
-	function request($event,$data) {
-		return false;
-	}
+    function request($event,$data) {
+        return false;
+    }
 
 }
 

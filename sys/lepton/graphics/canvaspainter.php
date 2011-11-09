@@ -2,15 +2,15 @@
 
 class CanvasPainter {
 
-	private $himage;
-	private $canvas;
+    private $himage;
+    private $canvas;
     
-	function __construct(Canvas $canvas) {
-		$this->himage = $canvas->getImage();
-		$this->canvas = $canvas;
-	}
+    function __construct(Canvas $canvas) {
+        $this->himage = $canvas->getImage();
+        $this->canvas = $canvas;
+    }
 
-	/**
+    /**
      * Set a pixel in the image
      *
      * @param int $x The X offset of the pixel to set
@@ -36,7 +36,7 @@ class CanvasPainter {
 
     }
 
-	    /**
+        /**
      * Fill the canvas with the specified colosaver.
      *
      * @param Color $fillcolor The Color() to fill with.
@@ -97,7 +97,7 @@ class CanvasPainter {
      */
     function drawFilledRect($x1, $y1, $x2, $y2, Color $color, Color $fill) {
 
-		imagefilledrectangle($this->himage,$x1,$y1,$x2,$y2,$fill->getColor($this->himage));
+        imagefilledrectangle($this->himage,$x1,$y1,$x2,$y2,$fill->getColor($this->himage));
         imagerectangle($this->himage,$x1,$y1,$x2,$y2,$color->getColor($this->himage));
 
     }
@@ -190,7 +190,7 @@ class CanvasPainter {
 
         imagefilledarc($this->himage, $x, $y, $radius * 2, $radius * 2, 0, 360, $cf, IMG_ARC_PIE);
         if ($linecolor) {
-	    $cl = $linecolor->getColor($this->himage);
+        $cl = $linecolor->getColor($this->himage);
             imagefilledarc($this->himage, $x, $y, $radius * 2, $radius * 2, 0, 360, $cl, IMG_ARC_PIE | IMG_ARC_NOFILL);
         }
 

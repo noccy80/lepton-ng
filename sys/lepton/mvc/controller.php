@@ -34,14 +34,14 @@ abstract class Controller implements IController {
      * @return int Exit code
      */
     static function invoke($controller=null,$method=null,Array $arguments=null) {
-		if (strpos($controller,'/') !== false) {
-			$cfull = explode('/',$controller);
-			$cpath = join('/',array_slice($cfull,0,count($cfull)-1)).'/controllers';
-			$controller = $cfull[count($cfull)-1];
-		} else {
-			$cpath = 'controllers';
-		}
-		
+        if (strpos($controller,'/') !== false) {
+            $cfull = explode('/',$controller);
+            $cpath = join('/',array_slice($cfull,0,count($cfull)-1)).'/controllers';
+            $controller = $cfull[count($cfull)-1];
+        } else {
+            $cpath = 'controllers';
+        }
+        
         if (!$controller) $controller = 'default'; // config
         if (!$method) $method = 'index'; // config
         if (config::get(controller::KEY_TRANSLATE,false)==true) $method = str_replace('-','_',$method);
@@ -99,11 +99,11 @@ abstract class Controller implements IController {
         if (method_exists($this,$method)) {
             call_user_func_array(array($this,$method),$arguments);
         } else {
-			if (method_exists($this,'__unknown')) {
-				call_user_func_array(array($this,'__unknown'),array_merge(array($method),$arguments));
-			} else {
-				throw new BaseException("Could not find controller method ".$method);
-			}
+            if (method_exists($this,'__unknown')) {
+                call_user_func_array(array($this,'__unknown'),array_merge(array($method),$arguments));
+            } else {
+                throw new BaseException("Could not find controller method ".$method);
+            }
         }
     }
 
@@ -171,7 +171,7 @@ abstract class Controller implements IController {
     }
     
     protected function import($lib) {
-    	$this->loadLibrary($lib,$lib);
+        $this->loadLibrary($lib,$lib);
     }
 
 }

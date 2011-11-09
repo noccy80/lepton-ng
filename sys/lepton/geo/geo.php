@@ -3,7 +3,7 @@
 config::def(GeoLocation::KEY_RESOLVER,'GeopluginResolver');
 
 interface IGeoResolver {
-	static function getInformationFromIp($ip);
+    static function getInformationFromIp($ip);
 }
 
 abstract class GeoResolver implements IGeoResolver {
@@ -34,100 +34,100 @@ using('lepton.geo.resolvers.*');
  */
 class GeoLocation {
 
-	const API_QUERY_URL = 'http://www.geoplugin.net/php.gp?ip=%s';
-	const KEY_RESOLVER = 'lepton.geo.defaultresolver';
+    const API_QUERY_URL = 'http://www.geoplugin.net/php.gp?ip=%s';
+    const KEY_RESOLVER = 'lepton.geo.defaultresolver';
 
-	static function getPositionFromIp($ip) {
+    static function getPositionFromIp($ip) {
 
-		$geodata = self::getInformationFromIp($ip);
-		if ($geodata) {
-			$pos = new GeoPosition(
-				$geodata['geo:latitude'],
-				$geodata['geo:longitude']
-			);
-			return $pos;
-		}
-		return null;
+        $geodata = self::getInformationFromIp($ip);
+        if ($geodata) {
+            $pos = new GeoPosition(
+                $geodata['geo:latitude'],
+                $geodata['geo:longitude']
+            );
+            return $pos;
+        }
+        return null;
 
-	}
+    }
 
-	static function getInformationFromIp($ip) {
+    static function getInformationFromIp($ip) {
 
-		if (!$ip) throw new BadArgumentException("Must specify an IP");
-		return call_user_func_array(array(config(self::KEY_RESOLVER),'getInformationFromIp'), array($ip));
+        if (!$ip) throw new BadArgumentException("Must specify an IP");
+        return call_user_func_array(array(config(self::KEY_RESOLVER),'getInformationFromIp'), array($ip));
 
-	}
+    }
 
 }
 
 class GeoPosition {
 
-	function __construct($lat,$lon) {
-		$this->lat = floatval($lat);
-		$this->lon = floatval($lon);
-	}
+    function __construct($lat,$lon) {
+        $this->lat = floatval($lat);
+        $this->lon = floatval($lon);
+    }
 
-	function getDistance(GeoPosition $target) {
-		return GeoUtil::getDistance($this,$target);
-	}
+    function getDistance(GeoPosition $target) {
+        return GeoUtil::getDistance($this,$target);
+    }
 
-	public function __get($key) {
-		switch($key) {
-			case 'lat':
-			case 'latitude':
-				return $this->lat;
-				break;
-			case 'lon':
-			case 'longitude':
-				return $this->lon;
-				break;
-			default:
-				throw new BadPropertyException("No such property ".$key." in ".__CLASS__);
-		}
-	}
+    public function __get($key) {
+        switch($key) {
+            case 'lat':
+            case 'latitude':
+                return $this->lat;
+                break;
+            case 'lon':
+            case 'longitude':
+                return $this->lon;
+                break;
+            default:
+                throw new BadPropertyException("No such property ".$key." in ".__CLASS__);
+        }
+    }
 
-	public function __set($key,$value) {
-		switch($key) {
-			case 'lat':
-			case 'latitude':
-				$this->lat = floatval($value);
-				break;
-			case 'lon':
-			case 'longitude':
-				$this->lon = floatval($value);
-				break;
-			default:
-				throw new BadPropertyException("No such property ".$key." in ".__CLASS__);
-		}
-	}
+    public function __set($key,$value) {
+        switch($key) {
+            case 'lat':
+            case 'latitude':
+                $this->lat = floatval($value);
+                break;
+            case 'lon':
+            case 'longitude':
+                $this->lon = floatval($value);
+                break;
+            default:
+                throw new BadPropertyException("No such property ".$key." in ".__CLASS__);
+        }
+    }
 
-	public function __toString() {
-		return sprintf('lat: %.5f, lon: %.5f', $this->lat, $this->lon);
-	}
+    public function __toString() {
+        return sprintf('lat: %.5f, lon: %.5f', $this->lat, $this->lon);
+    }
 
 }
 
 class GeoUtil {
 
-	const EARTH_RADIUS_METER = 6378100; // radius of earth in meters
+    const EARTH_RADIUS_METER = 6378100; // radius of earth in meters
 
-	static function getDistance(GeoPosition $pos1, GeoPosition $pos2) {
+    static function getDistance(GeoPosition $pos1, GeoPosition $pos2) {
 
-		$latDist = $pos1->lat - $pos2->lat;
-		$lngDist = $pos1->lon - $pos2->lon;
-		$latDistRad = deg2rad($latDist);
-		$lngDistRad = deg2rad($lngDist);
-		$sinLatD = sin($latDistRad);
-		$sinLngD = sin($lngDistRad);
-		$cosLat1 = cos(deg2rad($pos1->lat));
-		$cosLat2 = cos(deg2rad($pos2->lat));
-		$a = $sinLatD*$sinLatD + $cosLat1*$cosLat2*$sinLngD*$sinLngD*$sinLngD;
-		if($a<0) $a = -1*$a;
-		$c = 2*atan2(sqrt($a), sqrt(1-$a));
-		$distance = self::EARTH_RADIUS_METER * $c;
+        $latDist = $pos1->lat - $pos2->lat;
+        $lngDist = $pos1->lon - $pos2->lon;
+        $latDistRad = deg2rad($latDist);
+        $lngDistRad = deg2rad($lngDist);
+        $sinLatD = sin($latDistRad);
+        $sinLngD = sin($lngDistRad);
+        $cosLat1 = cos(deg2rad($pos1->lat));
+        $cosLat2 = cos(deg2rad($pos2->lat));
+        $a = $sinLatD*$sinLatD + $cosLat1*$cosLat2*$sinLngD*$sinLngD*$sinLngD;
+        if($a<0) $a = -1*$a;
+        $c = 2*atan2(sqrt($a), sqrt(1-$a));
+        $distance = self::EARTH_RADIUS_METER * $c;
 
-		return $distance;
+        return $distance;
 
-	}
+    }
 
 }

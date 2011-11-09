@@ -7,42 +7,42 @@ using('lunit.*');
  */
 class LeptonDelegatesTests extends LunitCase {
 
-	private $delegate = null;
-	private $results = array();
+    private $delegate = null;
+    private $results = array();
 
-	function __construct() {
-		using('lepton.system.delegates');
-	}
+    function __construct() {
+        using('lepton.system.delegates');
+    }
 
-	function _dlgcb($word) {
-		$this->results[] = $word;
-	}
+    function _dlgcb($word) {
+        $this->results[] = $word;
+    }
 
-	/**
-	 * @description Creating delegate chain
-	 */
-	function delegatecreate() {
-		$this->delegate = new Delegate();
-		$this->assertNotNull($this->delegate);
-	}
+    /**
+     * @description Creating delegate chain
+     */
+    function delegatecreate() {
+        $this->delegate = new Delegate();
+        $this->assertNotNull($this->delegate);
+    }
 
-	/**
-	 * @description Attaching delegates to chain
-	 */
-	function delegateattach() {
-		$this->delegate->addDelegate(array(&$this,'_dlgcb'));
-		$this->delegate->addDelegate(array(&$this,'_dlgcb'));
-	}
+    /**
+     * @description Attaching delegates to chain
+     */
+    function delegateattach() {
+        $this->delegate->addDelegate(array(&$this,'_dlgcb'));
+        $this->delegate->addDelegate(array(&$this,'_dlgcb'));
+    }
 
-	/**
-	 * @description Calling delegate
-	 */
-	function delegatecall() {
-		$this->delegate->call("foo");
-		$this->assertTrue(count($this->results) == 2);
-		$this->assertEquals($this->results[0], "foo");
-		$this->assertEquals($this->results[0], $this->results[1]);
-	}
+    /**
+     * @description Calling delegate
+     */
+    function delegatecall() {
+        $this->delegate->call("foo");
+        $this->assertTrue(count($this->results) == 2);
+        $this->assertEquals($this->results[0], "foo");
+        $this->assertEquals($this->results[0], $this->results[1]);
+    }
 
 }
 

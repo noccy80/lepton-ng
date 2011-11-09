@@ -361,9 +361,9 @@ class UserAction extends Action {
 }
 
 actions::register(
-	new UserAction(),
-	'user',
-	'Add, remove and manage users',
-	UserAction::$commands
+    new UserAction(),
+    'user',
+    'Add, remove and manage users',
+    UserAction::$commands
 );
 

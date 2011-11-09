@@ -44,16 +44,16 @@
 
         static function clr($key) {
 
-			$a = func_get_args();
-			if (is_array($key)) {
-				foreach($key as $k) session::clr($k);
-			} elseif (count($a) > 1) {
-				foreach($a as $k) session::clr($k);
-			} else {
-	            if (isset($_SESSION[$key])) {
-	                unset($_SESSION[$key]);
-	            }
-	        }
+            $a = func_get_args();
+            if (is_array($key)) {
+                foreach($key as $k) session::clr($k);
+            } elseif (count($a) > 1) {
+                foreach($a as $k) session::clr($k);
+            } else {
+                if (isset($_SESSION[$key])) {
+                    unset($_SESSION[$key]);
+                }
+            }
 
         }
 
@@ -71,8 +71,8 @@
         static function begin() {
             if (!headers_sent()) {
                 self::setupSessionCookie();
-    	        session_start();
-    	    }
+                session_start();
+            }
             self::$id = session_id();
         }
         
@@ -127,12 +127,12 @@
 
         }
 
-		/**
-		 * @brief Inspect the state of the request
-		 */
-		static function inspect() {
-		    debug::inspect($_SESSION);
-		}
+        /**
+         * @brief Inspect the state of the request
+         */
+        static function inspect() {
+            debug::inspect($_SESSION);
+        }
 
     }
 

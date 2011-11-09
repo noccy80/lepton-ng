@@ -12,9 +12,9 @@ abstract class LpfScene implements ILpfScene {
 
 class Scene extends LpfScene {
 
-	private $width = 0;
-	private $height = 0;
-	private $frame = 0;
+    private $width = 0;
+    private $height = 0;
+    private $frame = 0;
 
     private $_scenegraph = null;
 

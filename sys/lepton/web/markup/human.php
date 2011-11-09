@@ -36,46 +36,46 @@ class HumanMarkupParser extends MarkupParser {
      * @param string $data The data to parse
      * @return string The parsed data
      */
-	public function parse($content) {
-	    $str = $content;
-	
-		$str = string::rereplace($str,'/</', '&lt;');
+    public function parse($content) {
+        $str = $content;
+    
+        $str = string::rereplace($str,'/</', '&lt;');
         $str = string::rereplace($str,'/>/', '&gt;');
         $str = string::rereplace($str,'/\\\"/', '&quot;');
-		// First chunk everything into paragraphs...
-		$str = string::rereplace($str,'/(.+)/', '<p>\1</p>');
-		// Then take care of multiple newlines
-		$str = string::rereplace($str,'/(\r|\n){2}/', '<br>');
+        // First chunk everything into paragraphs...
+        $str = string::rereplace($str,'/(.+)/', '<p>\1</p>');
+        // Then take care of multiple newlines
+        $str = string::rereplace($str,'/(\r|\n){2}/', '<br>');
 
-		// The usual, bold, italics, etc...
-		$str = string::rereplace($str,'/\/(.*?)\//', '<em>\1</em>');
-		$str = string::rereplace($str,'/\*(.*?)\*/', '<strong>\1</strong>');
-		$str = string::rereplace($str,'/_(.*?)_/', '<u>\1</u>');
+        // The usual, bold, italics, etc...
+        $str = string::rereplace($str,'/\/(.*?)\//', '<em>\1</em>');
+        $str = string::rereplace($str,'/\*(.*?)\*/', '<strong>\1</strong>');
+        $str = string::rereplace($str,'/_(.*?)_/', '<u>\1</u>');
 
-		$tag_re = '/\#([a-zA-Z0-9]+)/s';
-		$group_re = '/\!([a-zA-Z0-9]+)/s';
+        $tag_re = '/\#([a-zA-Z0-9]+)/s';
+        $group_re = '/\!([a-zA-Z0-9]+)/s';
 
         /*
-		preg_match_all($tag_re, $content, $tags);
-		preg_match_all($group_re, $content, $groups);
+        preg_match_all($tag_re, $content, $tags);
+        preg_match_all($group_re, $content, $groups);
 
-		$this->setMeta(MarkupParser::META_TAGS, $tags[1]);
-		$this->setMeta(MarkupParser::META_GROUPS, $groups[1]);
-		*/
+        $this->setMeta(MarkupParser::META_TAGS, $tags[1]);
+        $this->setMeta(MarkupParser::META_GROUPS, $groups[1]);
+        */
 
-		$str = string::rereplace($str,$tag_re,'<a href="/tags/\1">#\1</a>');
-		$str = string::rereplace($str,$group_re,'<a href="/groups/\1">!\1</a>');
-		$str = string::rereplace($str,'/\@([a-zA-Z0-9]+)/s','<a href="/user/\1">@\1</a>');
+        $str = string::rereplace($str,$tag_re,'<a href="/tags/\1">#\1</a>');
+        $str = string::rereplace($str,$group_re,'<a href="/groups/\1">!\1</a>');
+        $str = string::rereplace($str,'/\@([a-zA-Z0-9]+)/s','<a href="/user/\1">@\1</a>');
 
-		// A bit of a hack...but it works... let me know if you have a regex that fixes this :p
-		$str = string::rereplace($str,'/<strong><\/strong>/', '**');
-		$str = string::rereplace($str,'/<em><\/em>/', '//');
-		$str = string::rereplace($str,'/<u><\/u>/', '__');
+        // A bit of a hack...but it works... let me know if you have a regex that fixes this :p
+        $str = string::rereplace($str,'/<strong><\/strong>/', '**');
+        $str = string::rereplace($str,'/<em><\/em>/', '//');
+        $str = string::rereplace($str,'/<u><\/u>/', '__');
 
-		$str = string::rereplace($str,'/(https?:\/\/\S+)/', '<a href="\1" rel="nofollow">\1</a>');
-		return $str;
-		
-	}
+        $str = string::rereplace($str,'/(https?:\/\/\S+)/', '<a href="\1" rel="nofollow">\1</a>');
+        return $str;
+        
+    }
     
     function strip($data) { return null; }
     

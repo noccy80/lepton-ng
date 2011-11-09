@@ -25,16 +25,16 @@ using('lepton.geo.geo');
  */
 class GeopluginResolver {
 
-	const API_QUERY_URL = 'http://www.geoplugin.net/php.gp?ip=%s';
+    const API_QUERY_URL = 'http://www.geoplugin.net/php.gp?ip=%s';
 
-	static function getInformationFromIp($ip) {
+    static function getInformationFromIp($ip) {
 
-		$data = unserialize(file_get_contents(sprintf(self::API_QUERY_URL, $ip)));
-		foreach($data as $k=>$v) {
-			$ret[str_replace('geoplugin_','geo:',strtolower($k))] = $v;
-		}
-		return $ret;
+        $data = unserialize(file_get_contents(sprintf(self::API_QUERY_URL, $ip)));
+        foreach($data as $k=>$v) {
+            $ret[str_replace('geoplugin_','geo:',strtolower($k))] = $v;
+        }
+        return $ret;
 
-	}
+    }
 
 }

@@ -128,13 +128,13 @@ class WebForm {
                                 break;
                             }
                             /*
-							$netpart = explode('/',$net);
-							$ip = sprintf("%032b",ip2long($data)); 
-							$subnet = sprintf("%032b",ip2long($netpart[0])); 
-							if (substr_compare($ip,$subnet,0,$netpart[1]) === 0) {
-								$valid = true;
-								break;
-							}
+                            $netpart = explode('/',$net);
+                            $ip = sprintf("%032b",ip2long($data)); 
+                            $subnet = sprintf("%032b",ip2long($netpart[0])); 
+                            if (substr_compare($ip,$subnet,0,$netpart[1]) === 0) {
+                                $valid = true;
+                                break;
+                            }
                             */
                         }
                         break;
@@ -206,14 +206,14 @@ class WebForm {
         return (isset($this->collected[$field]));
     }
 
-	/**
-	 * Return the form data in an array
-	 *
-	 * @return Array The form data
-	 */
-	public function getData() {
-		return $this->parsed;
-	}
+    /**
+     * Return the form data in an array
+     *
+     * @return Array The form data
+     */
+    public function getData() {
+        return $this->parsed;
+    }
 
 }
 

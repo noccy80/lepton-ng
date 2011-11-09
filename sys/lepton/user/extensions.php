@@ -5,10 +5,10 @@ interface IUserExtension {
 
 abstract class UserExtension implements IUserExtension { 
 
-	protected $user;
+    protected $user;
 
-	public function __construct($user) {
-		$this->user = $user;
-	}
+    public function __construct($user) {
+        $this->user = $user;
+    }
 
 }

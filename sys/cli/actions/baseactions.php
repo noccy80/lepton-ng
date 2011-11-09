@@ -65,7 +65,7 @@ class BaseAction extends Action {
         } else {
             Console::writeLn(__astr("\b{set}: set a configuration value for the session."));
             Console::writeLn(__astr("    set \u{key} \u{value}"));
-			Console::writeLn(__astr("To make the change persistent, please use the configuration file."));
+            Console::writeLn(__astr("To make the change persistent, please use the configuration file."));
         }
     }
 
@@ -191,8 +191,8 @@ class BaseAction extends Action {
 }
 
 actions::register(
-	new BaseAction(),
-	'base',
-	'Base management functions',
-	BaseAction::$commands
+    new BaseAction(),
+    'base',
+    'Base management functions',
+    BaseAction::$commands
 );

@@ -4,40 +4,40 @@ class StringsAction extends Action {
 
     private $db = null;
 
-	public static $commands = array(
-		'initialize' => array(
-			'arguments' => '\g{lang}',
-			'info' => 'Initialize the database with language'
-		),
-		'update' => array(
-			'arguments' => '[\g{path}|all]',
-			'info' => 'Update the strings from source files'
-		),
-		'compile' => array(
-			'arguments' => '[\g{lang}[,\g{lang},..]|all]',
-			'info' => 'Recompile the translations from database'
-		),
-		'purge' => array(
-			'arguments' => '[\g{lang}[,\g{lang},..]|all]',
-			'info' => 'Purge strings from database'
-		),
-		'translate' => array(
-			'arguments' => '\g{tolang} \g{service}',
-			'info' => 'Translate using service'
-		),
-		'spell' => array(
-			'arguments' => '[\g{lang}]',
-			'info' => 'Spell check language'
-		),
-		'display' => array(
-			'arguments' => '[\g{lang}]',
-			'info' => 'Display a language'
-		),
-		'languages' => array(
-			'arguments' => '',
-			'info' => 'List languages'
-		)
-	);
+    public static $commands = array(
+        'initialize' => array(
+            'arguments' => '\g{lang}',
+            'info' => 'Initialize the database with language'
+        ),
+        'update' => array(
+            'arguments' => '[\g{path}|all]',
+            'info' => 'Update the strings from source files'
+        ),
+        'compile' => array(
+            'arguments' => '[\g{lang}[,\g{lang},..]|all]',
+            'info' => 'Recompile the translations from database'
+        ),
+        'purge' => array(
+            'arguments' => '[\g{lang}[,\g{lang},..]|all]',
+            'info' => 'Purge strings from database'
+        ),
+        'translate' => array(
+            'arguments' => '\g{tolang} \g{service}',
+            'info' => 'Translate using service'
+        ),
+        'spell' => array(
+            'arguments' => '[\g{lang}]',
+            'info' => 'Spell check language'
+        ),
+        'display' => array(
+            'arguments' => '[\g{lang}]',
+            'info' => 'Display a language'
+        ),
+        'languages' => array(
+            'arguments' => '',
+            'info' => 'List languages'
+        )
+    );
 
     private function openDatabase() {
         $dbpath = base::appPath().'languages/strings.dat';
@@ -50,17 +50,17 @@ class StringsAction extends Action {
     }
 
 
-	public function initialize($lang=null) { 
-		if (!$lang) {
-			console::writeLn("Missing language code for strings initialize");
-		} else {
-			console::writeLn("Initializing database...");
+    public function initialize($lang=null) { 
+        if (!$lang) {
+            console::writeLn("Missing language code for strings initialize");
+        } else {
+            console::writeLn("Initializing database...");
             $this->db = array();
             $this->db['db:defaultlang'] = $lang;
             $this->saveDatabase();
             $this->update();
-		}
-	}
+        }
+    }
 
     public function update($path=null) {
 
@@ -128,31 +128,31 @@ class StringsAction extends Action {
     public function translate($tolang=null) {
 
         if (!$tolang) throw new BadArgumentException("Translate requires a language!");
-		using('lepton.google.translate');
+        using('lepton.google.translate');
 
         $this->openDatabase();
 
         $fromlang = $this->db['db:defaultlang'];
 
-		$to = new GoogleTranslate($fromlang,$tolang);
-		$tstra = array();
+        $to = new GoogleTranslate($fromlang,$tolang);
+        $tstra = array();
 
-	$err = 0;
-	$tstra = $this->db['lang:'.$tolang];
+    $err = 0;
+    $tstra = $this->db['lang:'.$tolang];
         foreach($this->db['lang:'.$fromlang] as $key=>$str) {
-        	if (!arr::hasKey($tstra,$key)) {
-			$tstr = $to->translate($str);
-			if ($tstr) {
-		        	$tstra[$key] = $tstr;
-			} else {
-				$err++;
-			}
-	                console::writeLn(__astr("\g{%s}: %s"), $key, $tstr);
-			usleep(1000000);
-		}
+            if (!arr::hasKey($tstra,$key)) {
+            $tstr = $to->translate($str);
+            if ($tstr) {
+                    $tstra[$key] = $tstr;
+            } else {
+                $err++;
+            }
+                    console::writeLn(__astr("\g{%s}: %s"), $key, $tstr);
+            usleep(1000000);
+        }
         }
 
-	if ($err > 0) { console::writeLn(__astr("\c{red %d strings could not be translated.}\nYou should run the script again."), $err); }
+    if ($err > 0) { console::writeLn(__astr("\c{red %d strings could not be translated.}\nYou should run the script again."), $err); }
 
         $this->db['lang:'.$tolang] = $tstra;
         $this->saveDatabase();
@@ -195,19 +195,19 @@ class StringsAction extends Action {
         $this->openDatabase();
         foreach($this->db as $key=>$val) {
             if (string::like('lang:*',$key)) {
-            	$out = '';
+                $out = '';
                 $keyparts = explode(':',$key);
                 $lang = $keyparts[1];
                 $out = sprintf("<?php\n// Do not edit! Automatically generated by 'lepton strings'\n\n");
                 $out.= sprintf("intl::registerLanguage('%s',array(\n", $lang);
                 foreach($val as $src=>$str) {
-                	$out.= sprintf("   '%s' => '%s'", str_replace('\'','\\\'',$src), str_replace('\'','\\\'',$str));
-                	if ($str != end($val)) $out.=',';
-                	$out.="\n";
+                    $out.= sprintf("   '%s' => '%s'", str_replace('\'','\\\'',$src), str_replace('\'','\\\'',$str));
+                    if ($str != end($val)) $out.=',';
+                    $out.="\n";
                 }
                 $out.= sprintf("));");
-		        console::writeLn(__astr("\g{Generated:} %s"),$lang);
-		        file_put_contents(base::appPath().'languages/'.$lang.'.php',$out);
+                console::writeLn(__astr("\g{Generated:} %s"),$lang);
+                file_put_contents(base::appPath().'languages/'.$lang.'.php',$out);
             }
         }
         
@@ -216,8 +216,8 @@ class StringsAction extends Action {
 }
 
 actions::register(
-	new StringsAction(),
-	'strings',
-	'Manages internationalization and translation of strings',
-	StringsAction::$commands
+    new StringsAction(),
+    'strings',
+    'Manages internationalization and translation of strings',
+    StringsAction::$commands
 );

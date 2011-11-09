@@ -1,5 +1,5 @@
 <?php module("Lepton EC: Shopping cart", array(
-		'version' => '0.1.0'
+        'version' => '0.1.0'
 ));
 
 /**
@@ -8,67 +8,67 @@
  */
 class Cart implements IteratorAggregate {
 
-	private $products = array();
+    private $products = array();
 
-	function __construct($cartid = null) {
-		if (null == $cartid) {
-			$cartid = 0;
-		}
-		$this->products = (array)session::get('lepton.ec.cart.'.$cartid);
-		$this->cartid = $cartid;
-	}
+    function __construct($cartid = null) {
+        if (null == $cartid) {
+            $cartid = 0;
+        }
+        $this->products = (array)session::get('lepton.ec.cart.'.$cartid);
+        $this->cartid = $cartid;
+    }
 
-	function __destruct() {
+    function __destruct() {
 
-		session::set('lepton.ec.cart.'.$this->cartid,$this->products);
+        session::set('lepton.ec.cart.'.$this->cartid,$this->products);
 
-	}
+    }
 
-	function getIterator() {
+    function getIterator() {
 
-		return new ArrayIterator($products);
+        return new ArrayIterator($products);
 
-	}
+    }
 
-	function addItem(IPurchasable $product, $amount = 1) {
+    function addItem(IPurchasable $product, $amount = 1) {
 
-		if (isset($this->products[$product->id])) {
-			$this->products[$product->id]->count += $amount;
-		} else {
-			$this->products[$product->id] = new CartEntry($product,$amount);
-		}
+        if (isset($this->products[$product->id])) {
+            $this->products[$product->id]->count += $amount;
+        } else {
+            $this->products[$product->id] = new CartEntry($product,$amount);
+        }
 
-	}
+    }
 
-	function updateItem($index, $amount) {
+    function updateItem($index, $amount) {
 
-		$this->products[$index] = new CartEntry($product,$amount);
+        $this->products[$index] = new CartEntry($product,$amount);
 
-	}
+    }
 
-	function removeItem($index) {
+    function removeItem($index) {
 
-		unset($this->products[$index]);
-		array_sort($this->products);
+        unset($this->products[$index]);
+        array_sort($this->products);
 
-	}
+    }
 
-	function getProducts() {
+    function getProducts() {
 
-		return $this->products;
+        return $this->products;
 
-	}
+    }
 
 }
 
 class CartEntry {
 
-	public $product;
-	public $count = 0;
+    public $product;
+    public $count = 0;
 
-	function __construct($product,$count) {
-		$this->product = $product;
-		$this->count = $count;
-	}
+    function __construct($product,$count) {
+        $this->product = $product;
+        $this->count = $count;
+    }
 
 }

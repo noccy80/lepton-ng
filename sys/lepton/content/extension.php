@@ -1,11 +1,11 @@
 <?php
 
 interface IContentExtension {
-	function getHandle();
+    function getHandle();
 }
 
 abstract class ContentExtension implements IContentExtension {
-	
-	
-	
+    
+    
+    
 }

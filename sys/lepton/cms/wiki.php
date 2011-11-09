@@ -20,7 +20,7 @@
             $this->database->checkSchema('wiki');
             */
             //DBX::getInstance(DBX)->getSchemaManager()->checkSchema('wiki');
-			// DatabaseConnection::getSchemaManager()
+            // DatabaseConnection::getSchemaManager()
         }
 
         /**

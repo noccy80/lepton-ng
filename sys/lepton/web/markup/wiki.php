@@ -36,28 +36,28 @@ class WikiMarkupParser extends MarkupParser {
      * @param string $data The data to parse
      * @return string The parsed data
      */
-	public function parse($content) {
-		$str = $content;
-		
-		$str = string::rereplace($str,"/^(.*?)[\r{2}]?$/m",'<p>$1</p>');
-		$str = string::rereplace($str,"/'''(.*?)'''/",'<b>$1</b>');
-		$str = string::rereplace($str,"/''(.*?)''/",'<i>$1</i>');
-		$str = string::rereplace($str,"/<p>==== (.*?) ====<\/p>/",$this->getTag('h',4));
-		$str = string::rereplace($str,"/<p>=== (.*?) ===<\/p>/",$this->getTag('h',3));
-		$str = string::rereplace($str,"/<p>== (.*?) ==<\/p>/",$this->getTag('h',2));
-		$str = string::rereplace($str,"/<p>= (.*?) =<\/p>/",$this->getTag('h',1));
-		$str = string::rereplace($str,"/\[mailto:(.*?)\s(.*?)\]/",'<a class="mailto-link" href="mailto:$1">$2</a>');
-		$str = string::rereplace($str,"/\[([http:\/\/|https:\/\/]?)(.*?)\s(.*?)\]/",'<a class="external-link" href="$1$2">$3</a>');
-		$str = string::rereplace($str,"/\[\/(.*?)\s(.*?)\]/",'<a href="/$1">$2</a>');
+    public function parse($content) {
+        $str = $content;
+        
+        $str = string::rereplace($str,"/^(.*?)[\r{2}]?$/m",'<p>$1</p>');
+        $str = string::rereplace($str,"/'''(.*?)'''/",'<b>$1</b>');
+        $str = string::rereplace($str,"/''(.*?)''/",'<i>$1</i>');
+        $str = string::rereplace($str,"/<p>==== (.*?) ====<\/p>/",$this->getTag('h',4));
+        $str = string::rereplace($str,"/<p>=== (.*?) ===<\/p>/",$this->getTag('h',3));
+        $str = string::rereplace($str,"/<p>== (.*?) ==<\/p>/",$this->getTag('h',2));
+        $str = string::rereplace($str,"/<p>= (.*?) =<\/p>/",$this->getTag('h',1));
+        $str = string::rereplace($str,"/\[mailto:(.*?)\s(.*?)\]/",'<a class="mailto-link" href="mailto:$1">$2</a>');
+        $str = string::rereplace($str,"/\[([http:\/\/|https:\/\/]?)(.*?)\s(.*?)\]/",'<a class="external-link" href="$1$2">$3</a>');
+        $str = string::rereplace($str,"/\[\/(.*?)\s(.*?)\]/",'<a href="/$1">$2</a>');
         /*
-		$str = string::rereplace($str,"/\[\[embed:(.*?)\]\]/i", new Callback(MarkupUtil,'embed'));
-		$str = string::rereplace($str,"/\[\[video:(.*?)\]\]/i", new Callback(MarkupUtil,'video'));
-		*/
+        $str = string::rereplace($str,"/\[\[embed:(.*?)\]\]/i", new Callback(MarkupUtil,'embed'));
+        $str = string::rereplace($str,"/\[\[video:(.*?)\]\]/i", new Callback(MarkupUtil,'video'));
+        */
         $str = string::rereplace($str,"/\[\[image:(.*?)\]\]/i",'<img src="$1"></img>');
         $str = string::rereplace($str,"/<nowiki>(.*)<\/nowiki>/",'$1');
-		
-		return $str;
-	}
+        
+        return $str;
+    }
 
     function strip($data) { return null; }
     

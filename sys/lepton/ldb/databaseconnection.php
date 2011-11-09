@@ -13,35 +13,35 @@ abstract class QueryAttributes {
 
 class DatabaseConnection {
 
-	private $conn = null;
-	private $driver = null;
+    private $conn = null;
+    private $driver = null;
     private $attribs = null;
 
     /**
      *
      * @param string $group The database group to connect to or the config array
      */
-	public function __construct($connectionstring=null) {
+    public function __construct($connectionstring=null) {
 
-		if ($connectionstring == null) {
-			$connectionstring = 'default';
-		}
-		if (is_a($connectionstring, 'DatabaseDriver')) {
-			$this->conn = $connectionstring;
-			logger::debug('%s: Reusing connection...', __CLASS__);
-			return;
-		}
-		if (is_array($connectionstring)) {
-			$config = $connectionstring;
-	        logger::debug("%s: Initializing connection with %s.", __CLASS__, $connectionstring['driver']);
-		} else {
-			$config = config::get('lepton.db.'.$connectionstring);
-	        Console::debugEx("%s: Initializing connection for %s.", __CLASS__, $connectionstring);
-		}
-	
-		$this->conn = DatabaseConnectionPool::getPooledConnection($config);
-		
-	}
+        if ($connectionstring == null) {
+            $connectionstring = 'default';
+        }
+        if (is_a($connectionstring, 'DatabaseDriver')) {
+            $this->conn = $connectionstring;
+            logger::debug('%s: Reusing connection...', __CLASS__);
+            return;
+        }
+        if (is_array($connectionstring)) {
+            $config = $connectionstring;
+            logger::debug("%s: Initializing connection with %s.", __CLASS__, $connectionstring['driver']);
+        } else {
+            $config = config::get('lepton.db.'.$connectionstring);
+            Console::debugEx("%s: Initializing connection for %s.", __CLASS__, $connectionstring);
+        }
+    
+        $this->conn = DatabaseConnectionPool::getPooledConnection($config);
+        
+    }
     
     public function setQueryAttributes($attribs = null) {
         $this->attribs = $attribs;
@@ -232,7 +232,7 @@ class DatabaseConnection {
      * @return Array Statistics for QUERYING, UPDATING and EXECUTING queries.
      */
     function getStatistics() {
-    	return Database::$queries;
+        return Database::$queries;
     }
     
     /**
@@ -242,7 +242,7 @@ class DatabaseConnection {
      * @return SqlSchemaManager The schema manager
      */
     function getSchemaManager() {
-    	return $this->conn->getSchemaManager();
+        return $this->conn->getSchemaManager();
     }
 
 }

@@ -3,9 +3,9 @@
 using('lunit.*');
 
 class TestContainer extends BasicContainer {
-	protected $properties = array(
-		'foo' => true
-	);
+    protected $properties = array(
+        'foo' => true
+    );
 }
 class IncompleteTestContainer extends BasicContainer {
 }
@@ -15,39 +15,39 @@ class IncompleteTestContainer extends BasicContainer {
  */
 class LeptonContainersTest extends LunitCase {
 
-	/**
-	 * @description Testing BasicContainer
-	 */
-	function basiccontainer() {
+    /**
+     * @description Testing BasicContainer
+     */
+    function basiccontainer() {
 
-		$c1 = new TestContainer();
-		$this->assertNotNull($c1);
-		$c1->foo = 'bar';
-		try {
-			$c1->bar = 'baz';
-		} catch(Exception $e) {
-			$this->assertTrue(true);
-			return;
-		}
-		$this->assertTrue(false);
+        $c1 = new TestContainer();
+        $this->assertNotNull($c1);
+        $c1->foo = 'bar';
+        try {
+            $c1->bar = 'baz';
+        } catch(Exception $e) {
+            $this->assertTrue(true);
+            return;
+        }
+        $this->assertTrue(false);
 
-	}
+    }
 
-	/**
-	 * @description Testing incomplete BasicContainer
-	 */
-	function ibasiccontainer() {
+    /**
+     * @description Testing incomplete BasicContainer
+     */
+    function ibasiccontainer() {
 
-		try {
-			$c1 = new IncompleteTestContainer();
-			$this->assertTrue(false);
-		} catch(Exception $e) {
-			$this->assertTrue(true);
-			return;
-		}
-		$this->assertTrue(false);
+        try {
+            $c1 = new IncompleteTestContainer();
+            $this->assertTrue(false);
+        } catch(Exception $e) {
+            $this->assertTrue(true);
+            return;
+        }
+        $this->assertTrue(false);
 
-	}
+    }
 
 }
 

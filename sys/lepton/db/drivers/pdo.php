@@ -4,7 +4,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
 
     private $conn;
 
-	private $driver;
+    private $driver;
     private $host;
     private $db;
     private $user;
@@ -12,47 +12,47 @@ class PdoDatabaseDriver extends DatabaseDriver {
     private $dsn;
     public $autonumber;
 
-	static function parseConnectionString($connstr) {
-		// Example connection strings:
-		// mysql: user:pass@host/database
-		// sqlite: filemname.db
-		$c = array();
-		$tokens = explode(':', $connstr);
-		$connectioninfo = $tokens[3];
-		$c['driver'] = $tokens[2];
-		switch($tokens[2]) {
-			case 'mysql':
-				$c['database'] = $tokens[6];
-				$c['username'] = $tokens[4];
-				$c['password'] = $tokens[5];
-				if (substr(0,1,$tokens[7]) == '$') {
-					$c['socket'] = substr($tokens[7],1);
-				} else {
-					$c['hostname'] = $tokens[7];
-				}
-				break;
-			case 'sqlite':
-				$c['filename'] =  $tokens[3];
-				break;
-		}
-		return $c;
-	}
+    static function parseConnectionString($connstr) {
+        // Example connection strings:
+        // mysql: user:pass@host/database
+        // sqlite: filemname.db
+        $c = array();
+        $tokens = explode(':', $connstr);
+        $connectioninfo = $tokens[3];
+        $c['driver'] = $tokens[2];
+        switch($tokens[2]) {
+            case 'mysql':
+                $c['database'] = $tokens[6];
+                $c['username'] = $tokens[4];
+                $c['password'] = $tokens[5];
+                if (substr(0,1,$tokens[7]) == '$') {
+                    $c['socket'] = substr($tokens[7],1);
+                } else {
+                    $c['hostname'] = $tokens[7];
+                }
+                break;
+            case 'sqlite':
+                $c['filename'] =  $tokens[3];
+                break;
+        }
+        return $c;
+    }
 
     function __construct($cfg) {
-		if (is_array($cfg)) {
-	        $driver = explode('/',$cfg['driver']);
-	        $drv = $driver[1];
-	    } else {
-	    	$cfg =  self::parseConnectionString($cfg);
-	    	$drv = $cfg['driver'];
-	    }
+        if (is_array($cfg)) {
+            $driver = explode('/',$cfg['driver']);
+            $drv = $driver[1];
+        } else {
+            $cfg =  self::parseConnectionString($cfg);
+            $drv = $cfg['driver'];
+        }
 
         switch($drv) {
             case 'sqlite':
                 $this->dsn = 'sqlite:'.$cfg['filename'];
                 $this->user = null;
                 $this->pass = null;
-				$this->driver = 'sqlite';
+                $this->driver = 'sqlite';
                 break;
             case 'mysql':
                 $this->dsn = 'mysql:';
@@ -66,7 +66,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
                     // $port = $cfg['port'];
                     $this->dsn.='host='.$this->host.';dbname='.$this->db;
                 }
-				$this->driver = 'mysql';
+                $this->driver = 'mysql';
                 break;
                 
         }
@@ -79,9 +79,9 @@ class PdoDatabaseDriver extends DatabaseDriver {
             $cs = str_replace('utf-','utf',$cs); // 'utf8';
             // $this->exec("CHARSET ".$cs);
             if ($this->driver == 'mysql') {
-		        $this->exec("SET NAMES '".$cs."'");
-		        $this->exec("SET character_set_results='".$cs."'");
-			}
+                $this->exec("SET NAMES '".$cs."'");
+                $this->exec("SET character_set_results='".$cs."'");
+            }
         } catch (PDOException $e) {
             throw new BaseException("Could not connect to database type '".$cfg['driver']."'. ".$e->getMessage());
         }

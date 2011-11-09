@@ -25,11 +25,11 @@ class WebDebugProvider implements IDebugProvider {
             if (is_array($value) || is_a($value, 'StdClass')) {
                 $ret.= self::inspectArray((array)$value);
             } else {
-				if ($value === null) {
-					$ret.= '<img src="data:image/gif;base64,R0lGODdhEwAHAKECAAAAAPj4/////////ywAAAAAEwAHAAACHYSPmWIB/KKBkznIKI0iTwlKXuR8B9aUXdYprlsAADs=">';
-				} else {
-					$ret.= htmlentities($value);
-				}
+                if ($value === null) {
+                    $ret.= '<img src="data:image/gif;base64,R0lGODdhEwAHAKECAAAAAPj4/////////ywAAAAAEwAHAAACHYSPmWIB/KKBkznIKI0iTwlKXuR8B9aUXdYprlsAADs=">';
+                } else {
+                    $ret.= htmlentities($value);
+                }
             }
             $ret.='</td></tr>';
         }
@@ -58,11 +58,11 @@ class WebDebugProvider implements IDebugProvider {
                 if (is_array($value)) {
                     $ret.= '<td>'.debug::inspectTableArray($value).'</td>';
                 } else {
-					if ($value === null) {
-						$ret.= '<td><img src="data:image/gif;base64,R0lGODdhEwAHAKECAAAAAPj4/////////ywAAAAAEwAHAAACHYSPmWIB/KKBkznIKI0iTwlKXuR8B9aUXdYprlsAADs="></td>';
-					} else {
-						$ret.= '<td>'.htmlentities($value).'</td>';
-					}
+                    if ($value === null) {
+                        $ret.= '<td><img src="data:image/gif;base64,R0lGODdhEwAHAKECAAAAAPj4/////////ywAAAAAEwAHAAACHYSPmWIB/KKBkznIKI0iTwlKXuR8B9aUXdYprlsAADs="></td>';
+                    } else {
+                        $ret.= '<td>'.htmlentities($value).'</td>';
+                    }
                 }
             }
             $ret.='</tr>';

@@ -61,7 +61,7 @@ abstract class Router implements IRouter {
          }
         $secure = true;
         // Parse query string
-		if (strpos($uri,'?')) {
+        if (strpos($uri,'?')) {
             $base = substr($uri,0,strpos($uri,'?'));
             $rest = substr($uri,strpos($uri,'?') + 1);
             // Apache mod_rewrite workaround for existing folders - requests
@@ -85,12 +85,12 @@ abstract class Router implements IRouter {
                 $uri = $base;
             }
         }
-		
-		// Quick fix for first index being '/index_php' when invoked via
-		// apache - hopefully sorts bug with php oauth.
-		if (arr::hasKey($_GET,'/index_php')) {
-			array_shift($_GET); array_shift($_GET);
-		}
+        
+        // Quick fix for first index being '/index_php' when invoked via
+        // apache - hopefully sorts bug with php oauth.
+        if (arr::hasKey($_GET,'/index_php')) {
+            array_shift($_GET); array_shift($_GET);
+        }
 
         // Assign the URI and start parsing
         $this->_uri = $uri;
@@ -111,16 +111,16 @@ abstract class Router implements IRouter {
      */
     public function route() {
 
-		Console::debugEx(LOG_VERBOSE,__CLASS__,'Looking for event handlers before routing');
-		// Invoke events first to see if anything is registered
-		if (event::invoke(MvcEvent::EVENT_BEFORE_ROUTING,array(
-			'uri' => $this->_uri,
-			'segments' => $this->_urisegments,
-			'domain' => $this->_domain,
-			'secure' => $this->_secure
-		)) == true) return 0;
+        Console::debugEx(LOG_VERBOSE,__CLASS__,'Looking for event handlers before routing');
+        // Invoke events first to see if anything is registered
+        if (event::invoke(MvcEvent::EVENT_BEFORE_ROUTING,array(
+            'uri' => $this->_uri,
+            'segments' => $this->_urisegments,
+            'domain' => $this->_domain,
+            'secure' => $this->_secure
+        )) == true) return 0;
 
-		Console::debugEx(LOG_VERBOSE,__CLASS__,'Examining static routes');
+        Console::debugEx(LOG_VERBOSE,__CLASS__,'Examining static routes');
         // Determine if this is a hooked uri
         foreach(Router::$_staticroutes as $sr) {
             if (@preg_match('/'.$sr['match'].'/', $this->_uri, $ret)) {
@@ -129,7 +129,7 @@ abstract class Router implements IRouter {
             }
         }
 
-		Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking the router');
+        Console::debugEx(LOG_VERBOSE,__CLASS__,'Invoking the router');
 
         // Invoke the router
         return $this->routeRequest($this->_uri);
@@ -198,21 +198,21 @@ abstract class Router implements IRouter {
         return null;
     }
 
-	/**
-	 * Return the topmost sgment from the query and remove it from the segment
-	 * stack.
-	 *
-	 * @return Mixed The segment, null if not set
-	 */
-	protected function popSegment() {
-		if (count($this->_urisegments) > 0) {
-			$seg = $this->_urisegments[0];
-			$this->_urisegments = array_slice($this->_urisegments,1);
-			return $seg;
-		} else {
-			return null;
-		}
-	}
+    /**
+     * Return the topmost sgment from the query and remove it from the segment
+     * stack.
+     *
+     * @return Mixed The segment, null if not set
+     */
+    protected function popSegment() {
+        if (count($this->_urisegments) > 0) {
+            $seg = $this->_urisegments[0];
+            $this->_urisegments = array_slice($this->_urisegments,1);
+            return $seg;
+        } else {
+            return null;
+        }
+    }
 
     /**
      * @brief Get a slice of the URI
@@ -241,13 +241,13 @@ abstract class Router implements IRouter {
      * The domain "foo.test.com" would return an array consisting of "com",
      * "test" and "foo".
      *
-	 * @param $normal bool Return in normal order (not reverse)
+     * @param $normal bool Return in normal order (not reverse)
      * @return array The domain components in reverse order
      */
     protected function getDomainComponents($normal=false) {
-		$comp = explode('.',strtolower($this->_domain));
+        $comp = explode('.',strtolower($this->_domain));
         if (!$normal) return array_reverse($comp);
-		return $comp;
+        return $comp;
     }
 
     /**
@@ -290,6 +290,6 @@ abstract class Router implements IRouter {
 }
 
 abstract class MvcEvent {
-	const EVENT_BEFORE_ROUTING = 'lepton.mvc.routing.pre';
-	const EVENT_AFTER_ROUTING = 'lepton.mvc.routing.post';
+    const EVENT_BEFORE_ROUTING = 'lepton.mvc.routing.pre';
+    const EVENT_AFTER_ROUTING = 'lepton.mvc.routing.post';
 }

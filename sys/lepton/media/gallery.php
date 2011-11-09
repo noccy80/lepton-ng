@@ -8,20 +8,20 @@ using('lepton.graphics.canvas');
 using('lepton.utils.pagination');
 
 class GalleryItemsTable extends SqlTableSchema {
-	function define() {
-		// Only to be used during testing!
-		$this->dropOnCreate();
-		// Table name
-		$this->setName('galleryitems');
-		// Table columns
-		$this->addColumn('id', 'int', self::COL_AUTO | self::KEY_PRIMARY);
-		$this->addColumn('name', 'varchar:160');
-		$this->addColumn('uuid', 'char:37', self::COL_FIXED);
-		$this->addColumn('src','varchar:200');
-		// Indexes
-		$this->addIndex('uuidkey', array('uuid'), self::KEY_UNIQUE);
-		$this->addIndex('srckey', array('src'), self::KEY_UNIQUE);
-	}
+    function define() {
+        // Only to be used during testing!
+        $this->dropOnCreate();
+        // Table name
+        $this->setName('galleryitems');
+        // Table columns
+        $this->addColumn('id', 'int', self::COL_AUTO | self::KEY_PRIMARY);
+        $this->addColumn('name', 'varchar:160');
+        $this->addColumn('uuid', 'char:37', self::COL_FIXED);
+        $this->addColumn('src','varchar:200');
+        // Indexes
+        $this->addIndex('uuidkey', array('uuid'), self::KEY_UNIQUE);
+        $this->addIndex('srckey', array('src'), self::KEY_UNIQUE);
+    }
 }
 SqlTableSchema::apply(new GalleryItemsTable());
 
@@ -33,18 +33,18 @@ SqlTableSchema::apply(new GalleryItemsTable());
  */
 class Gallery {
 
-	static function get($selection, $paginator=null) {
-		return new GalleryCollection($selection,$paginator);
-	}
-	
-	static function getTagStatus() {
-	    // Return a lsit of all the tags applied
-	}
-	
-	static function getCollectionStatus() {
-	    // Return a list of all the categories applied
-	}
-	
+    static function get($selection, $paginator=null) {
+        return new GalleryCollection($selection,$paginator);
+    }
+    
+    static function getTagStatus() {
+        // Return a lsit of all the tags applied
+    }
+    
+    static function getCollectionStatus() {
+        // Return a list of all the categories applied
+    }
+    
 }
 
 class GalleryCollection {

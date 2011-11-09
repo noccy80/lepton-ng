@@ -16,69 +16,69 @@ using('lepton.graphics.canvas');
  * @todo Implement a fallback on the imagick binaries if extension not found
  */
 class SvgRasterizer extends Canvas {
-	
-	private $svg = null;
-	private $imh = null;
-	
-	function __construct($svgfile) {
-		
-		$this->svg = file_get_contents($svgfile);
+    
+    private $svg = null;
+    private $imh = null;
+    
+    function __construct($svgfile) {
+        
+        $this->svg = file_get_contents($svgfile);
 
-		$this->svgToImage();
-		// $im->writeImage('/path/to/colored/us-map.png');/*(or .jpg)*/
+        $this->svgToImage();
+        // $im->writeImage('/path/to/colored/us-map.png');/*(or .jpg)*/
 
-	}
-	
-	/**
-	 * @brief Transform the XML of the SVG image using a function.
-	 * 
-	 * The function will be invoked with one parameter being the XML of the
-	 * SVG image, and is expected to return the transformed XML. Not returning
-	 * anything will leave the canvas intact and return false.
-	 * 
-	 * @param Function $transformfunction A function to do the transformation
-	 * @return Bool True if the operation was successful
-	 */
-	public function transformSvg($transformfunction) {
-		$xml = $this->svg;
-		$xml = call_user_func_array($transformfunction,array($xml));
-		if (!$xml) return false;
-		$this->svg = $xml;
-		// Update the image
-		$this->svgToImage();
-		return true;
-	}
-	
-	private function svgToImage() {
+    }
+    
+    /**
+     * @brief Transform the XML of the SVG image using a function.
+     * 
+     * The function will be invoked with one parameter being the XML of the
+     * SVG image, and is expected to return the transformed XML. Not returning
+     * anything will leave the canvas intact and return false.
+     * 
+     * @param Function $transformfunction A function to do the transformation
+     * @return Bool True if the operation was successful
+     */
+    public function transformSvg($transformfunction) {
+        $xml = $this->svg;
+        $xml = call_user_func_array($transformfunction,array($xml));
+        if (!$xml) return false;
+        $this->svg = $xml;
+        // Update the image
+        $this->svgToImage();
+        return true;
+    }
+    
+    private function svgToImage() {
 
-		$this->imh = new Imagick();
-		$this->imh->setBackgroundColor(new ImagickPixel('transparent'));
-		$this->imh->readImageBlob($this->svg);
+        $this->imh = new Imagick();
+        $this->imh->setBackgroundColor(new ImagickPixel('transparent'));
+        $this->imh->readImageBlob($this->svg);
 
-		$this->imh->setImageFormat("png32");
-		/*
-		if ($height && $width) {
-			$this->imh->resizeImage($width, $height, imagick::FILTER_LANCZOS, 1);
-			$im->adaptiveResizeImage($width, $height);
-		}
-		*/
+        $this->imh->setImageFormat("png32");
+        /*
+        if ($height && $width) {
+            $this->imh->resizeImage($width, $height, imagick::FILTER_LANCZOS, 1);
+            $im->adaptiveResizeImage($width, $height);
+        }
+        */
 
-		$img = @imagecreatefromstring((string)$this->imh);
-		if ($img) {
-			$this->setImage($img);
-			$this->gotimage = true;
-		} else {
-			throw new GraphicsException("Failed to load the image.", GraphicsException::ERR_LOAD_FAILURE);
-		}
-		
-	}
-	
-	function __destruct() {
-		$this->imh->clear();
-		$this->imh->destroy();		
-		unset($this->imh);
-		
-		parent::__destruct();
-	}
-	
+        $img = @imagecreatefromstring((string)$this->imh);
+        if ($img) {
+            $this->setImage($img);
+            $this->gotimage = true;
+        } else {
+            throw new GraphicsException("Failed to load the image.", GraphicsException::ERR_LOAD_FAILURE);
+        }
+        
+    }
+    
+    function __destruct() {
+        $this->imh->clear();
+        $this->imh->destroy();		
+        unset($this->imh);
+        
+        parent::__destruct();
+    }
+    
 }

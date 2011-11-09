@@ -37,19 +37,19 @@ class SafehtmlMarkupParser extends MarkupParser {
      * @param string $data The data to parse
      * @return string The parsed data
      */
-	public function parse($content) {
-		$ret = new StringParser($content);
-		$ret->replace(array('/\r\n?/' => '\n', '/&/' => '&amp;', '/</' => '&lt;', '/>/' => '&gt;' ));
-		$ret->replace('/\n?&lt;blockquote&gt;\n*(.+?)\n*&lt;\/blockquote&gt;/',
-					  '<blockquote>$1</blockquote>');
-		$ret->replaceEach(array('b','i','em','strong','u'),
-						  '/&lt;($ITEM$)&gt;(.+?)&lt;\/($ITEM$)&gt;/','<$1>$2</$1>');
-		$ret->replace('/&lt;a.+?href\s*=\s*[\'"](.+?)["\'].*?&gt;(.+?)&lt;\/a&gt;/',
-					  '<a href="$1">$2</a>');
-		$ret->replace('/\n\n+/', "</p>\n\n<p>");
+    public function parse($content) {
+        $ret = new StringParser($content);
+        $ret->replace(array('/\r\n?/' => '\n', '/&/' => '&amp;', '/</' => '&lt;', '/>/' => '&gt;' ));
+        $ret->replace('/\n?&lt;blockquote&gt;\n*(.+?)\n*&lt;\/blockquote&gt;/',
+                      '<blockquote>$1</blockquote>');
+        $ret->replaceEach(array('b','i','em','strong','u'),
+                          '/&lt;($ITEM$)&gt;(.+?)&lt;\/($ITEM$)&gt;/','<$1>$2</$1>');
+        $ret->replace('/&lt;a.+?href\s*=\s*[\'"](.+?)["\'].*?&gt;(.+?)&lt;\/a&gt;/',
+                      '<a href="$1">$2</a>');
+        $ret->replace('/\n\n+/', "</p>\n\n<p>");
         $ret->replace('/([^\n]\n)(?=[^\n])/', '\1<br />');
-		return "<p>".$ret->get()."</p>";
-	}
+        return "<p>".$ret->get()."</p>";
+    }
 
     function strip($data) { return null; }
     

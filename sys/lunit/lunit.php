@@ -4,67 +4,67 @@ using('lunit.lunitcase');
 using('lepton.math');
 
 interface ILunitStatusCallback {
-	function onCaseBegin($name,$meta);
-	function onCaseEnd();
-	function onTestBegin($name,$meta);
-	function onTestEnd($status,$message);
+    function onCaseBegin($name,$meta);
+    function onCaseEnd();
+    function onTestBegin($name,$meta);
+    function onTestEnd($status,$message);
 }
 
 abstract class Lunit {
-	private static $cases = array();
-	public static function register($case) {
-		self::$cases[] = $case;
-	}
-	public static function getCases() {
-		return self::$cases;
-	}
+    private static $cases = array();
+    public static function register($case) {
+        self::$cases[] = $case;
+    }
+    public static function getCases() {
+        return self::$cases;
+    }
 }
 
 class LunitRunner {
 
-	private $statuscb = null;
-	private $results = null;
+    private $statuscb = null;
+    private $results = null;
     private $dblog = null;
 
-	function setStatusCallback(ILunitStatusCallback $object) {
-		$this->statuscb = $object;
-	}
+    function setStatusCallback(ILunitStatusCallback $object) {
+        $this->statuscb = $object;
+    }
 
-	function setDatabaseLogger(LunitDatabaseLogger $logger) {
-		$this->dblog = $logger;
-	}
+    function setDatabaseLogger(LunitDatabaseLogger $logger) {
+        $this->dblog = $logger;
+    }
 
-	function getResults() {
+    function getResults() {
 
-		return $this->results;
+        return $this->results;
 
-	}
+    }
 
-	function run() {
+    function run() {
 
-		$cases = Lunit::getCases();
-		$casedata = array();
-		// Enumerate the cases
-		foreach($cases as $case) {
-			// Setup report structure
-			$casereport = array();
-			// Reflect the class to find methods and metadata
-			$r = new ReflectionClass($case);
-			$ml = $r->getMethods();
-			$skip = false;
-			$meta = LunitUtil::parseDoc($r->getDocComment());
-			if (!isset($meta['description'])) $meta['description'] = $case;
+        $cases = Lunit::getCases();
+        $casedata = array();
+        // Enumerate the cases
+        foreach($cases as $case) {
+            // Setup report structure
+            $casereport = array();
+            // Reflect the class to find methods and metadata
+            $r = new ReflectionClass($case);
+            $ml = $r->getMethods();
+            $skip = false;
+            $meta = LunitUtil::parseDoc($r->getDocComment());
+            if (!isset($meta['description'])) $meta['description'] = $case;
             $meta['casename'] = $case;
-			if (isset($meta['extensions'])) {
-				$extn = explode(' ',$meta['extensions']);
-				foreach($extn as $ext) {
-					if (!extension_loaded($ext)) { $skip = true; $skipmsg = "Need extension: ".$ext; }
-				}
-			}
+            if (isset($meta['extensions'])) {
+                $extn = explode(' ',$meta['extensions']);
+                foreach($extn as $ext) {
+                    if (!extension_loaded($ext)) { $skip = true; $skipmsg = "Need extension: ".$ext; }
+                }
+            }
 
-			$casereport['meta'] = $meta;
-			// Callback if set
-			if ($this->statuscb) $this->statuscb->onCaseBegin($case,$meta);
+            $casereport['meta'] = $meta;
+            // Callback if set
+            if ($this->statuscb) $this->statuscb->onCaseBegin($case,$meta);
             if ($this->dblog) $this->dblog->onCaseBegin($case,$meta);
             try {
                 if (!$skip) $tc = new $case($this);
@@ -148,37 +148,37 @@ class LunitRunner {
             } catch(Exception $e) {
                 console::writeLn("Skipped due to exception: %s", $e->getMessage());
             }
-			
-			$casedata[$case] = $casereport;
+            
+            $casedata[$case] = $casereport;
 
-			// Callback if set
-			if ($this->statuscb) $this->statuscb->onCaseEnd();
+            // Callback if set
+            if ($this->statuscb) $this->statuscb->onCaseEnd();
             if ($this->dblog) $this->dblog->onCaseEnd($casereport);
 
-		}
-		
-		$this->results = $casedata;
-		
-	}
-	
+        }
+        
+        $this->results = $casedata;
+        
+    }
+    
 }
 
 class LunitUtil {
-	function parseDoc($str) {
-		$se = explode("\n",$str);
-		$se = array_slice($se,1,count($se)-2);
-		$cur = null;
-		$ret = array();
-		foreach($se as $row) {
-			$lnclear = trim(substr(trim($row),1));
-			if ($lnclear[0] == '@') {
-				$cur = substr($lnclear,1,strpos($lnclear,' ')-1);
-				$data = substr($lnclear,strpos($lnclear,' ')+1);
-				$ret[$cur] = $data;
-			} else {
-				$ret[$cur].= $lnclear;
-			}
-		}
-		return $ret;
-	}
+    function parseDoc($str) {
+        $se = explode("\n",$str);
+        $se = array_slice($se,1,count($se)-2);
+        $cur = null;
+        $ret = array();
+        foreach($se as $row) {
+            $lnclear = trim(substr(trim($row),1));
+            if ($lnclear[0] == '@') {
+                $cur = substr($lnclear,1,strpos($lnclear,' ')-1);
+                $data = substr($lnclear,strpos($lnclear,' ')+1);
+                $ret[$cur] = $data;
+            } else {
+                $ret[$cur].= $lnclear;
+            }
+        }
+        return $ret;
+    }
 }

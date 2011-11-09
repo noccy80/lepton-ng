@@ -58,27 +58,27 @@ class UserRecord implements IAclSubject {
         }
         $extn = getDescendants('UserExtension');
         foreach($extn as $extnclass) { 
-        	$xc = new $extnclass($this);
-			$xr = new ReflectionClass($xc);
-        	$xm = $xr->getMethods();
-        	$this->extensions[] = array(
-				'name' => $extnclass,
-        		'instance' => $xc,
-        		'methods' => $xm
-        	);
+            $xc = new $extnclass($this);
+        $xr = new ReflectionClass($xc);
+            $xm = $xr->getMethods();
+            $this->extensions[] = array(
+                'name' => $extnclass,
+                'instance' => $xc,
+                'methods' => $xm
+            );
         }
     }
 
-	function __call($method,$args) {
-		foreach($this->extensions as $extension) {
-			foreach($extension['methods'] as $cm) {
-				if (strtolower($cm->name) == strtolower($method)) {
-					return call_user_func_array(array($extension['instance'],$method), $args);
-				}
-			}
-		}
-		throw new BadArgumentException("No method ".$method." on UserRecord");
-	}
+    function __call($method,$args) {
+        foreach($this->extensions as $extension) {
+            foreach($extension['methods'] as $cm) {
+                if (strtolower($cm->name) == strtolower($method)) {
+                    return call_user_func_array(array($extension['instance'],$method), $args);
+                }
+            }
+        }
+        throw new BadArgumentException("No method ".$method." on UserRecord");
+    }
 
     /**
      * @brief Destructor, saves the modified attributes if any.
@@ -132,7 +132,7 @@ class UserRecord implements IAclSubject {
     }
     
     function __toString() {
-    	return sprintf('%s (#%d)', $this->username, $this->userid);
+        return sprintf('%s (#%d)', $this->username, $this->userid);
     }
 
     public function hasFlag($flag) {
@@ -182,7 +182,7 @@ class UserRecord implements IAclSubject {
                         throw new BadArgumentException("Unknown field modified: {$mod}");
                 }
             }
-			$this->modified = array();
+            $this->modified = array();
             
             if (!$this->userid) {
                 // Check to see if the username already exists
@@ -308,7 +308,7 @@ class UserRecord implements IAclSubject {
                 break;
             default:
                 $this->ambient[$key] = $value;
-				$key = 'ambient'; // All ambient properties are, well, ambient.
+                $key = 'ambient'; // All ambient properties are, well, ambient.
                 break;
         }
         if (!in_array($key, $this->modified)) {
@@ -342,9 +342,9 @@ class UserRecord implements IAclSubject {
                 return $this->lastlogin;
             case 'lastip':
                 return $this->lastip;
-			case 'displayname':
-				if (strlen($this->displayname) == 0) return $this->username;
-				return $this->displayname;
+            case 'displayname':
+                if (strlen($this->displayname) == 0) return $this->username;
+                return $this->displayname;
             case 'password':
                 if ($this->password == null) {
                     throw new UserException("Can't access protected property {$key}");
@@ -361,12 +361,12 @@ class UserRecord implements IAclSubject {
         }
     }
 
-	function getSubjectUuid() {
-		return $this->uuid;
-	}
-	
-	function getSubjectGroups() {
-		return array(new UserGroup());
-	}
+    function getSubjectUuid() {
+        return $this->uuid;
+    }
+    
+    function getSubjectGroups() {
+        return array(new UserGroup());
+    }
 
 }

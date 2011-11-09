@@ -71,7 +71,7 @@ class MailMessage {
      * @return string The message
      */
     public function __toString() {
-    	return $this->getMessage();
+        return $this->getMessage();
     }
 
     /**
@@ -132,7 +132,7 @@ class MailMessage {
      * @return string The subject
      */
     public function getSubject() {
-    	return $this->subject;
+        return $this->subject;
     }
     
     /**
@@ -337,7 +337,7 @@ class MimeMultipartEntity implements IMimeEntity {
             $body.= (string)$part;
         }
         $body.= "--".$this->boundary."--\r\n";
-	    return $head.$body;
+        return $head.$body;
     }
 
     /**
@@ -431,14 +431,14 @@ class MimeAttachment implements IMimeEntity {
      */
     function __toString() {
     
-    	// Resolve the content disposition as per RFC 2183
-    	if (arr::hasKey($this->options,'inline') && ($this->options['inline'] == true)) {
-    		$disposition = 'inline';
-    	} else {
-    		$disposition = 'attachment; filename="'.basename($this->filename).'"';
-    	}
-    	
-    	// Assemble the headers
+        // Resolve the content disposition as per RFC 2183
+        if (arr::hasKey($this->options,'inline') && ($this->options['inline'] == true)) {
+            $disposition = 'inline';
+        } else {
+            $disposition = 'attachment; filename="'.basename($this->filename).'"';
+        }
+        
+        // Assemble the headers
         $headers = array(
             'Content-Type' => response::contentTypeFromFile($this->filename),
             'Content-Transfer-Encoding' => 'base64',

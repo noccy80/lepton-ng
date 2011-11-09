@@ -39,7 +39,7 @@ class SmartyViewHandler extends ViewHandler {
         }
     }
     function display() {
-		if (!headers_sent()) header('HTTP/1.1 200 Content Follows', true);
+        if (!headers_sent()) header('HTTP/1.1 200 Content Follows', true);
         $this->smarty->display($this->template);
     }
 }

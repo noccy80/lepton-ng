@@ -89,8 +89,8 @@
                 if (!isset($ls[$name])) break;
                 usleep(100000);
                 if ($t->getElapsed() > ($timeoutms / 1000)) {
-                	$this->exitCriticalSection();
-	                throw new MutexException("Timed out waiting for lock");
+                    $this->exitCriticalSection();
+                    throw new MutexException("Timed out waiting for lock");
                 }
             }
             Console::debug("Acquiring lock %s", $this->_lockname);
@@ -129,4 +129,4 @@
 
     }
 
-	class MutexException extends Exception { }
+    class MutexException extends Exception { }

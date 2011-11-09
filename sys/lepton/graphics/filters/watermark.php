@@ -13,57 +13,57 @@ ModuleManager::load('lepton.graphics.filter');
  * @author Christopher Vagnetoft <noccy@chillat.net>
  */
 class WatermarkImageFilter extends ImageFilter {
-	
-	const POS_RELATIVE = 0;
-	const POS_ABSOLUTE = 1;
-	const POS_CENTERED = 2;
+    
+    const POS_RELATIVE = 0;
+    const POS_ABSOLUTE = 1;
+    const POS_CENTERED = 2;
 
-	private $hwatermark;
-	private $placement;
-	private $width;
-	private $height;
-	private $x;
-	private $y;
+    private $hwatermark;
+    private $placement;
+    private $width;
+    private $height;
+    private $x;
+    private $y;
 
-	/**
-	 * @param int $x The X offset (positive values from left, negative from right)
-	 * @param int $y The Y offset (positive valeus from top, negative from bottom)
-	 * @param string $watermark The watermark image to apply
-	 * @param int $placement The placement method to use
-	 */
-	function __construct($x,$y,$watermark,$placement=WatermarkImageFilter::POS_RELATIVE) {
-		$this->hwatermark = imagecreatefromstring(file_get_contents($watermark));
-		$this->x = $x; $this->y = $y;
-		$this->placement = $placement;
-		$this->width = imageSX($this->hwatermark);
-		$this->height = imageSY($this->hwatermark);
-	}
+    /**
+     * @param int $x The X offset (positive values from left, negative from right)
+     * @param int $y The Y offset (positive valeus from top, negative from bottom)
+     * @param string $watermark The watermark image to apply
+     * @param int $placement The placement method to use
+     */
+    function __construct($x,$y,$watermark,$placement=WatermarkImageFilter::POS_RELATIVE) {
+        $this->hwatermark = imagecreatefromstring(file_get_contents($watermark));
+        $this->x = $x; $this->y = $y;
+        $this->placement = $placement;
+        $this->width = imageSX($this->hwatermark);
+        $this->height = imageSY($this->hwatermark);
+    }
 
-	function __destruct() {
-		imagedestroy($this->hwatermark);
-	}
+    function __destruct() {
+        imagedestroy($this->hwatermark);
+    }
 
-	function applyFilter(Canvas $canvas) {
+    function applyFilter(Canvas $canvas) {
 
-		$himage = $canvas->getImage();
+        $himage = $canvas->getImage();
 
-		$iw = imagesx($himage);
-		$ih = imagesy($himage);
-		switch($this->placement) {
-			case WatermarkImageFilter::POS_RELATIVE:
-				$dx = ($this->x >= 0)?($this->x):($iw - $this->width + $this->x + 1);
-				$dy = ($this->y >= 0)?($this->y):($ih - $this->height + $this->y + 1);
-				break;
-			case WatermarkImageFilter::POS_ABSOLUTE:
-				$dx = $this->x;
-				$dy = $this->y;
-				break;
-			case WatermarkImageFilter::POS_CENTERED;
-				$dx = ($iw/2) + $this->x;
-				$dy = ($ih/2) + $this->y;
-				break;
-		}
-		imagecopymerge_alpha($himage, $this->hwatermark, $dx, $dy, 0, 0, $this->width, $this->height, 0);
-	}
-	
+        $iw = imagesx($himage);
+        $ih = imagesy($himage);
+        switch($this->placement) {
+            case WatermarkImageFilter::POS_RELATIVE:
+                $dx = ($this->x >= 0)?($this->x):($iw - $this->width + $this->x + 1);
+                $dy = ($this->y >= 0)?($this->y):($ih - $this->height + $this->y + 1);
+                break;
+            case WatermarkImageFilter::POS_ABSOLUTE:
+                $dx = $this->x;
+                $dy = $this->y;
+                break;
+            case WatermarkImageFilter::POS_CENTERED;
+                $dx = ($iw/2) + $this->x;
+                $dy = ($ih/2) + $this->y;
+                break;
+        }
+        imagecopymerge_alpha($himage, $this->hwatermark, $dx, $dy, 0, 0, $this->width, $this->height, 0);
+    }
+    
 }

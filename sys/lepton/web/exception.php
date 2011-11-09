@@ -6,12 +6,12 @@ using('lepton.mvc.request');
 using('lepton.mvc.response');
 
 class HttpException extends BaseException {
-	const ERR_BAD_REQUEST = 400;
-	const ERR_UNAUTHORIZED = 401;
-	const ERR_METHOD_NOT_ALLOWED = 405;
-	const ERR_NOT_ACCEPTABLE = 406;
-	const ERR_NOT_FOUND = 404;
-	const ERR_SERVER_ERROR = 500;
+    const ERR_BAD_REQUEST = 400;
+    const ERR_UNAUTHORIZED = 401;
+    const ERR_METHOD_NOT_ALLOWED = 405;
+    const ERR_NOT_ACCEPTABLE = 406;
+    const ERR_NOT_FOUND = 404;
+    const ERR_SERVER_ERROR = 500;
 }
 
 class MvcExceptionHandler extends ExceptionHandler {
@@ -52,20 +52,20 @@ class MvcExceptionHandler extends ExceptionHandler {
     function exception(Exception $e) {
 
         @ob_end_clean();
-		
-		$et = typeOf($e);
-		if (($et == 'FileNotFoundException') || ($et == 'NavigationException')) {
-			response::setStatus(404);
-			header('HTTP/1.1 404 Not Found', true);
-			printf("<h1>404: Not Found</h1>");
-			return;
-		}
-		if ($et == 'HttpException') {
-			response::setStatus($e->getCode());
-			header('HTTP/1.1 '.$e->getCode().' '.$e->getMessage());
-			printf('<h1>'.$e->getCode().': '.$e->getMessage().'</h1>');
-			return;
-		}
+        
+        $et = typeOf($e);
+        if (($et == 'FileNotFoundException') || ($et == 'NavigationException')) {
+            response::setStatus(404);
+            header('HTTP/1.1 404 Not Found', true);
+            printf("<h1>404: Not Found</h1>");
+            return;
+        }
+        if ($et == 'HttpException') {
+            response::setStatus($e->getCode());
+            header('HTTP/1.1 '.$e->getCode().' '.$e->getMessage());
+            printf('<h1>'.$e->getCode().': '.$e->getMessage().'</h1>');
+            return;
+        }
 
         response::setStatus(500);
         logger::emerg("Unhandled exception: (%s) %s in %s:%d", get_class($e), $e->getMessage(), str_replace(BASE_PATH,'',$e->getFile()), $e->getLine());
@@ -94,7 +94,7 @@ class MvcExceptionHandler extends ExceptionHandler {
             }
         }
 
-	$ico_error = resource::get('warning.png');
+    $ico_error = resource::get('warning.png');
         header('content-type: text/html; charset=utf-8');
         echo '<html><head><title>Unhandled Exception</title>'.
             self::$css.

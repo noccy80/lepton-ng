@@ -9,11 +9,11 @@
  * automatically implemented by the abstract base class RequestObject
  */
 interface IRequestObject {
-	function __construct($data);
-	function getType();
-	function sanitize($options);
-	function validate($options);
-	function __toString();
+    function __construct($data);
+    function getType();
+    function sanitize($options);
+    function validate($options);
+    function __toString();
 }
 
 /**
@@ -26,16 +26,16 @@ abstract class RequestObject implements IRequestObject {
      * 
      * @return string The type of request object
      */
-	function getType() { return typeOf($this); }
+    function getType() { return typeOf($this); }
     
     /**
      * @brief Explicitly cast the object value to a string and return it
      * 
      * @return string The string casted object value
      */
-	function toString() {
-		return $this->__toString();
-	}
+    function toString() {
+        return $this->__toString();
+    }
     
     /**
      * @brief Explicitly cast the object value to a int and return it
@@ -61,11 +61,11 @@ abstract class RequestObject implements IRequestObject {
  * @brief Stores a string value
  */
 class RequestString extends RequestObject {
-	private $data = null;
-	function __construct($data) { $this->data = $data; }
-	function __toString() { return sprintf('%s',(string)$this->data); }
-	function sanitize($options) { }
-	function validate($options) { }
+    private $data = null;
+    function __construct($data) { $this->data = $data; }
+    function __toString() { return sprintf('%s',(string)$this->data); }
+    function sanitize($options) { }
+    function validate($options) { }
 }
 
 /**
@@ -73,15 +73,15 @@ class RequestString extends RequestObject {
  * @brief Stores a POSTed file
  */
 class RequestFile extends RequestObject {
-	private $key = null;
+    private $key = null;
     private $index = null;
-	private $name = null;
-	private $type = null;
-	private $tempname = null;
-	private $size = null;
-	private $md5 = null;
-	function __construct($key,$index = null) {
-		$this->key = $key;
+    private $name = null;
+    private $type = null;
+    private $tempname = null;
+    private $size = null;
+    private $md5 = null;
+    function __construct($key,$index = null) {
+        $this->key = $key;
         $this->index = $index;
         if ($index !== null) {
             $this->name = $_FILES[$key]['name'][$index];
@@ -96,61 +96,61 @@ class RequestFile extends RequestObject {
             $this->error = $_FILES[$key]['error'];
             $this->tempname = $_FILES[$key]['tmp_name'];
         }
-		if ($this->error == UPLOAD_ERR_OK) {
-			if (function_exists('mime_content_type')) {
-				$this->type = @mime_content_type($this->tempname);
-			} else {
-				if (function_exists('finfo_open')) {
-					$finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
-    				$this->type = finfo_file($finfo, $this->tempname);
-					finfo_close($finfo);
-				}
-			}
-			$this->md5 = md5_file($this->tempname);
-		}
-	}
-	function sanitize($options) { }
-	function validate($options) { }
-	function save($dest) {
-		if (is_writable(dirname($dest))) {
-			return (move_uploaded_file($this->tempname, $dest));
-		} else {
-			throw new SecurityException("Can not write to destination file ".$dest." during upload");
-		}
-	}
-	function getContents() {
-		return file_get_contents($this->tempname);
-	}
-	function __toString() {
-		$size = $this->size; $unit='b';
-		if ($size>1024) { $size=$size/1024; $unit='Kb'; }
-		if ($size>1024) { $size=$size/1024; $unit='Mb'; }
-		return sprintf('%s (%s) %.1f%s, %s', $this->name, $this->type, $size, $unit, $this->getErrorString());
-	}
-	function getSize() { return $this->size; }
-	function getName() { return $this->name; }
-	function getMimeType() { return $this->type; }
-	function isError() { return ($this->error != UPLOAD_ERR_OK); }
-	function getError() { return $this->error; }
-	function getErrorString() {
-		switch($this->error) {
-			case UPLOAD_ERR_OK:
-				return 'Success';
-			case UPLOAD_ERR_INI_SIZE:
-			case UPLOAD_ERR_FORM_SIZE:
-				return 'Maximum size of upload exceeded.';
-			case UPLOAD_ERR_PARTIAL:
-				return 'The uploaded file was only partially uploaded.';
-			case UPLOAD_ERR_NO_FILE:
-				return 'No file was uploaded.';
-			case UPLOAD_ERR_NO_TMP_DIR:
-				return 'Missing a temporary folder.';
-			case UPLOAD_ERR_CANT_WRITE:
-				return 'Failed to write file to disk.';
-			case UPLOAD_ERR_EXTENSION:
-				return 'The upload was blocked by an extension.';
-		}
-	}
+        if ($this->error == UPLOAD_ERR_OK) {
+            if (function_exists('mime_content_type')) {
+                $this->type = @mime_content_type($this->tempname);
+            } else {
+                if (function_exists('finfo_open')) {
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+                    $this->type = finfo_file($finfo, $this->tempname);
+                    finfo_close($finfo);
+                }
+            }
+            $this->md5 = md5_file($this->tempname);
+        }
+    }
+    function sanitize($options) { }
+    function validate($options) { }
+    function save($dest) {
+        if (is_writable(dirname($dest))) {
+            return (move_uploaded_file($this->tempname, $dest));
+        } else {
+            throw new SecurityException("Can not write to destination file ".$dest." during upload");
+        }
+    }
+    function getContents() {
+        return file_get_contents($this->tempname);
+    }
+    function __toString() {
+        $size = $this->size; $unit='b';
+        if ($size>1024) { $size=$size/1024; $unit='Kb'; }
+        if ($size>1024) { $size=$size/1024; $unit='Mb'; }
+        return sprintf('%s (%s) %.1f%s, %s', $this->name, $this->type, $size, $unit, $this->getErrorString());
+    }
+    function getSize() { return $this->size; }
+    function getName() { return $this->name; }
+    function getMimeType() { return $this->type; }
+    function isError() { return ($this->error != UPLOAD_ERR_OK); }
+    function getError() { return $this->error; }
+    function getErrorString() {
+        switch($this->error) {
+            case UPLOAD_ERR_OK:
+                return 'Success';
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                return 'Maximum size of upload exceeded.';
+            case UPLOAD_ERR_PARTIAL:
+                return 'The uploaded file was only partially uploaded.';
+            case UPLOAD_ERR_NO_FILE:
+                return 'No file was uploaded.';
+            case UPLOAD_ERR_NO_TMP_DIR:
+                return 'Missing a temporary folder.';
+            case UPLOAD_ERR_CANT_WRITE:
+                return 'Failed to write file to disk.';
+            case UPLOAD_ERR_EXTENSION:
+                return 'The upload was blocked by an extension.';
+        }
+    }
 }
 
 class RequestUserAgent {
@@ -247,7 +247,7 @@ class Request {
     }
     
     static function post($key, $def = null) {
-    	// Check if the request field is a file
+        // Check if the request field is a file
         if (arr::hasKey($_FILES,$key)) {
             if (count($_FILES[$key]['name']) > 0) {
                 $ret = array();
@@ -263,15 +263,15 @@ class Request {
         return new RequestString($def);
     }
 
-	static function useSts() {
-		$use_sts = config::get('lepton.security.sts');
-		if ($use_sts && isset($_SERVER['HTTPS'])) {
-		  header('Strict-Transport-Security: max-age=500');
-		} elseif ($use_sts && !isset($_SERVER['HTTPS'])) {
-		  header('Status-Code: 301');
-		  header('Location: https://'.$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI']);
-		}
-	}
+    static function useSts() {
+        $use_sts = config::get('lepton.security.sts');
+        if ($use_sts && isset($_SERVER['HTTPS'])) {
+          header('Strict-Transport-Security: max-age=500');
+        } elseif ($use_sts && !isset($_SERVER['HTTPS'])) {
+          header('Status-Code: 301');
+          header('Location: https://'.$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI']);
+        }
+    }
 
     /**
      * @brief Check if the HTTP header is present.
@@ -411,17 +411,17 @@ class Request {
     static function getDomain() {
         if (arr::hasKey($_SERVER,'HTTP_HOST')) {
             return strtolower($_SERVER['HTTP_HOST']);
-	} else {
+    } else {
             return 'localhost';
         }
     }
 
     static function getQueryString() {
-    	$data = $_GET;
-    	if (isset($data['/index_php'])) {
-    		$data = array_slice($data,2);
-    	}
-    	return $data;
+        $data = $_GET;
+        if (isset($data['/index_php'])) {
+            $data = array_slice($data,2);
+        }
+        return $data;
     }
 
     /**
@@ -524,21 +524,21 @@ class Request {
      */
     static function getRequestMethod() {
         if (!isset($_SERVER['REQUEST_METHOD'])) {
-        	if (count($_POST)>0) { 
-				$method = 'POST';        	
-        	} elseif (count($_GET)>0) {
-        		$method = 'GET';
-        	} else {
-        		$method = null;
-        	}
+            if (count($_POST)>0) { 
+                $method = 'POST';        	
+            } elseif (count($_GET)>0) {
+                $method = 'GET';
+            } else {
+                $method = null;
+            }
         } else {
-        	if (arr::hasKey($_SERVER,'REQUEST_METHOD')) {
-        		$method = strToUpper($_SERVER['REQUEST_METHOD']);
-        	} else {
-        		$method = null;
-        	}
+            if (arr::hasKey($_SERVER,'REQUEST_METHOD')) {
+                $method = strToUpper($_SERVER['REQUEST_METHOD']);
+            } else {
+                $method = null;
+            }
         }
-    	return $method;
+        return $method;
     }
 
     /**

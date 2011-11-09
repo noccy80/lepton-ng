@@ -55,19 +55,19 @@
     // activated before being allowed to log in.
     config::set('lepton.user.disabledbydefault', false);
     // Defaults for new user backend
-	config::set('lepton.user.hashing.rounds', 4);
-	config::set('lepton.user.hashing.saltlen', 16);
-	config::set('lepton.user.hashing.algorithms', array(
-		'sha512',
-		'sha256',
-		'snefru256',
-		'ripemd256',
-		'sha224',
-		'whirlpool',
-		'ripemd160',
-		'sha1',
-		'md5'
-	));
+    config::set('lepton.user.hashing.rounds', 4);
+    config::set('lepton.user.hashing.saltlen', 16);
+    config::set('lepton.user.hashing.algorithms', array(
+        'sha512',
+        'sha256',
+        'snefru256',
+        'ripemd256',
+        'sha224',
+        'whirlpool',
+        'ripemd160',
+        'sha1',
+        'md5'
+    ));
 
     // What class should be responsible for showing the available payment options?
     config::set('lepton.ec.paymentselector', 'DefaultPaymentSelector');

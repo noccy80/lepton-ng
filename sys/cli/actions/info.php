@@ -1,22 +1,22 @@
 <?php
 
 /*
-	This file is part of Lepton Framework.
-	Copyright (C) 2001-2010  Noccy Labs
+    This file is part of Lepton Framework.
+    Copyright (C) 2001-2010  Noccy Labs
 
-	Lepton Framework is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    Lepton Framework is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	Lepton Framework is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-	GNU General Public License for more details.
+    Lepton Framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with the software; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    You should have received a copy of the GNU General Public License
+    along with the software; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
 module("CLI System Information", array(
@@ -80,7 +80,7 @@ class InfoAction extends Action {
             'base::basePath()' => base::basePath(),
             'base::appPath()' => base::appPath(),
             'base::sysPath()' => base::sysPath(),
-			'TMP_PATH' => TMP_PATH
+            'TMP_PATH' => TMP_PATH
         );
         Console::writeLn(__astr("\b{Lepton Overview:}"));
         foreach($opts as $key=>$val) {
@@ -138,23 +138,23 @@ class InfoAction extends Action {
         Console::writeLn();
     }
 
-	function extensions() {
-		$cb = 0;
-		Console::writeLn(__astr("\b{Loaded extensions:}"));
-		$ext = get_loaded_extensions();
-		foreach($ext as $val) {
-			Console::write('  %-18s', $val);
-			$cb++;
-			if ($cb > 3) { Console::writeLn(); $cb = 0; }
-		}
-		Console::writeLn();
-	}
+    function extensions() {
+        $cb = 0;
+        Console::writeLn(__astr("\b{Loaded extensions:}"));
+        $ext = get_loaded_extensions();
+        foreach($ext as $val) {
+            Console::write('  %-18s', $val);
+            $cb++;
+            if ($cb > 3) { Console::writeLn(); $cb = 0; }
+        }
+        Console::writeLn();
+    }
 
 }
 
 actions::register(
-	new InfoAction(),
-	'info',
-	'Show various pieces of information',
-	InfoAction::$commands
+    new InfoAction(),
+    'info',
+    'Show various pieces of information',
+    InfoAction::$commands
 );

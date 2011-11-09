@@ -7,19 +7,19 @@ using('lunit.*');
  */
 class LeptonCssTests extends LunitCase {
 
-	private $stylesheet = null;
+    private $stylesheet = null;
 
-	function __construct() {
-		using('lepton.web.css');
-	}
+    function __construct() {
+        using('lepton.web.css');
+    }
 
-	/**
-	 * @description Creating a stylesheet
-	 */
-	function testgenerate() {
-		$this->stylesheet = new CssStylesheet();
-		$this->assertNotNull($this->stylesheet);
-	}
+    /**
+     * @description Creating a stylesheet
+     */
+    function testgenerate() {
+        $this->stylesheet = new CssStylesheet();
+        $this->assertNotNull($this->stylesheet);
+    }
     
     /**
      * @description Adding rules

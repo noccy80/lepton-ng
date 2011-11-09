@@ -9,18 +9,18 @@ using('lepton.graphics.filter');
 
 class BlurImageFilter extends ImageFilter {
 
-	function applyFilter(Canvas $canvas) {
+    function applyFilter(Canvas $canvas) {
 
-		$himage = $canvas->getImage();
+        $himage = $canvas->getImage();
 
-		$m = array(
-			array(1.0, 2.0, 1.0),
-			array(2.0, 4.0, 2.0),
-			array(1.0, 2.0, 1.0)
-		);
-		$div = 16;
-		$offs = 0;
-		ImageUtils::imageconvolution($himage, $m, $div, $offs);
-	}
-	
+        $m = array(
+            array(1.0, 2.0, 1.0),
+            array(2.0, 4.0, 2.0),
+            array(1.0, 2.0, 1.0)
+        );
+        $div = 16;
+        $offs = 0;
+        ImageUtils::imageconvolution($himage, $m, $div, $offs);
+    }
+    
 }

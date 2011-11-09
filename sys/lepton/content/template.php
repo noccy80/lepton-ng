@@ -2,41 +2,41 @@
 
 class TemplateParser {
 
-	private $_template = null;
-	private $_vars = array();
-	private $_parsed = null;
+    private $_template = null;
+    private $_vars = array();
+    private $_parsed = null;
 
-	function __construct($template) {
-		$this->_template = $template;
-	}
+    function __construct($template) {
+        $this->_template = $template;
+    }
 
-	function __toString() {
-		return $this->parse();
-	}
+    function __toString() {
+        return $this->parse();
+    }
 
-	function parse() {
-		$this->_parsed = $this->_template;
-		$this->_parsed = preg_replace_callback('/\$\{(.+?)\}/', array($this,'parsefield'), $this->_parsed);
-		return $this->_parsed;
-	}
+    function parse() {
+        $this->_parsed = $this->_template;
+        $this->_parsed = preg_replace_callback('/\$\{(.+?)\}/', array($this,'parsefield'), $this->_parsed);
+        return $this->_parsed;
+    }
 
-	function addField($field,$value) {
-		$this->_vars[$field] = $value;
-	}
+    function addField($field,$value) {
+        $this->_vars[$field] = $value;
+    }
 
-	function setFields(array $fields) {
-		$this->_vars = $fields;
-	}
+    function setFields(array $fields) {
+        $this->_vars = $fields;
+    }
 
-	function parsefield($data) {
-		$str = $data[1];
-		$strx = explode(' ',$str);
-		$svar = $strx[0];
-		if (arr::hasKey($this->_vars,$svar)) {
-			$rval = $this->_vars[$svar];
-		} else {
-			$rval = "[".$svar."]";
-		}
+    function parsefield($data) {
+        $str = $data[1];
+        $strx = explode(' ',$str);
+        $svar = $strx[0];
+        if (arr::hasKey($this->_vars,$svar)) {
+            $rval = $this->_vars[$svar];
+        } else {
+            $rval = "[".$svar."]";
+        }
         $indent = 0;
         $wrap = 0;
         foreach(array_slice($strx,1) as $strs) {
@@ -75,6 +75,6 @@ class TemplateParser {
         }
 
         return join("\n", $rvals);
-	}
+    }
 
 }

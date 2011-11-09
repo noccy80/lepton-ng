@@ -104,11 +104,11 @@ class Captcha {
                 ($wid*($n+1)), 8, substr($str,$n,1));
         }
 
-		if ($saveto) {
-			$c->save($saveto);
-		} else {
-	        $c->output();
-	    }
+        if ($saveto) {
+            $c->save($saveto);
+        } else {
+            $c->output();
+        }
     }
 
     /**

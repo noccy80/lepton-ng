@@ -23,14 +23,14 @@ interface ISocket {
 class SocketException extends BaseException { }
 
 abstract class Socket implements ISocket {
-	const STATE_CLOSED = 0;
-	const STATE_CONNECTING = 1;
-	const STATE_CONNECTED = 2;
-	const STATE_ERROR = 3;
+    const STATE_CLOSED = 0;
+    const STATE_CONNECTING = 1;
+    const STATE_CONNECTED = 2;
+    const STATE_ERROR = 3;
 
-	const PROTO_TCP = 1;
-	const PROTO_UDP = 2;
-	const PROTO_NONE = 0;
+    const PROTO_TCP = 1;
+    const PROTO_UDP = 2;
+    const PROTO_NONE = 0;
 }
 
 class TcpSocket extends Socket {
@@ -45,7 +45,7 @@ class TcpSocket extends Socket {
     private $fsh = null;
     
     public function __destruct() {
-	    logger::debug('Destroying socket');
+        logger::debug('Destroying socket');
         if ($this->fsh) $this->close();
     }
 
@@ -57,16 +57,16 @@ class TcpSocket extends Socket {
         $this->state = SOCKSTATE_CONNECTING;
         $this->fsh = fsockopen($ip,$port,$errno,$errstr);
         if ($errno) {
-	        logger::warning("Socket error: %d %s (%s:%d)", $errno, $errstr, $ip, $port);
+            logger::warning("Socket error: %d %s (%s:%d)", $errno, $errstr, $ip, $port);
             $this->state = SOCKSTATE_ERROR;
             return false;
         } else {
-        	if (!$this->fsh) {
-        		$this->state = SOCKSTATE_ERROR;
-        		logger::warning("No socket handle returned but no error indicated");
-        		return false;
-        	}
-	        logger::debug("Socket connected to %s:%d", $ip, $port);
+            if (!$this->fsh) {
+                $this->state = SOCKSTATE_ERROR;
+                logger::warning("No socket handle returned but no error indicated");
+                return false;
+            }
+            logger::debug("Socket connected to %s:%d", $ip, $port);
             stream_set_timeout($this->fsh,0,200);
             $this->state = SOCKSTATE_CONNECTED;
             return true;
@@ -93,7 +93,7 @@ class TcpSocket extends Socket {
             $this->state = SOCKSTATE_LISTENING;
             return true;
         } else {
-	        logger::warn('Could not bind to address'); 
+            logger::warn('Could not bind to address'); 
             $this->state = SOCKSTATE_ERROR;
             return false;
         }
@@ -116,36 +116,36 @@ class TcpSocket extends Socket {
     }
     
     public function __set($key,$val) {
-    	switch($key) {
-    		case 'blocking':
-    			$val = ($val == true);
-    			logger::debug('Socket->%s set to %s', $key, $val);
-    			stream_set_blocking($this->fsh,$val);
-    			break;
-    		default:
-    			throw new BadPropertyException(__CLASS__,$key);
-    	}
+        switch($key) {
+            case 'blocking':
+                $val = ($val == true);
+                logger::debug('Socket->%s set to %s', $key, $val);
+                stream_set_blocking($this->fsh,$val);
+                break;
+            default:
+                throw new BadPropertyException(__CLASS__,$key);
+        }
     }
 
     public function __get($key) {
-    	switch($key) {
-    		case 'blocking':
-    			return $this->blocking;
-    			break;
-    		default:
-    			throw new BadPropertyException(__CLASS__,$key);
-    	}
+        switch($key) {
+            case 'blocking':
+                return $this->blocking;
+                break;
+            default:
+                throw new BadPropertyException(__CLASS__,$key);
+        }
     }
 
     public function write($data) {
         if ($this->state == SOCKSTATE_CONNECTED) {
             if (fwrite($this->fsh,$data) === false) {
-				$errno = socket_last_error($this->fsh);
-				$errstr = socket_strerror($errno);
-				throw new SocketException(sprintf("Error while writing to socket: %s (%d)", $errstr, $errno));
+                $errno = socket_last_error($this->fsh);
+                $errstr = socket_strerror($errno);
+                throw new SocketException(sprintf("Error while writing to socket: %s (%d)", $errstr, $errno));
             }
         } else {
-        	throw new SocketException(sprintf("Writing to unavailable socket! (state:%d)", $this->state));
+            throw new SocketException(sprintf("Writing to unavailable socket! (state:%d)", $this->state));
         }
     }
 
@@ -155,7 +155,7 @@ class TcpSocket extends Socket {
             $read = strlen($data);
             return $data;
         } else {
-        	throw new SocketException(sprintf("Reading from unavailable socket! (state:%d)", $this->state));
+            throw new SocketException(sprintf("Reading from unavailable socket! (state:%d)", $this->state));
         }
     }
 }

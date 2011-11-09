@@ -14,41 +14,41 @@ using('ldwp.job');
  */
 class DownloadJob extends LdwpJob {
 
-	private $url = null;
-	private $destination = null;
+    private $url = null;
+    private $destination = null;
 
-	/**
-	 * Constructor, accepts the URL and the destination as the only parameters.
-	 *
-	 * @param String $url The URL to download
-	 * @param String $destination The destination where the file is to be saved
-	 */
-	function __construct($url,$destination) {
-		$this->url = $url;
-		$this->destination = $destination;
-		parent::__construct();
-	}
+    /**
+     * Constructor, accepts the URL and the destination as the only parameters.
+     *
+     * @param String $url The URL to download
+     * @param String $destination The destination where the file is to be saved
+     */
+    function __construct($url,$destination) {
+        $this->url = $url;
+        $this->destination = $destination;
+        parent::__construct();
+    }
 
-	function onDownloadProgress($current,$max) {
-		if ($max) {
-			if (duration::since($lastupdate) > 5) { // only update every 5 secs
-				$this->setState(LdwpJob::STATE_RUNNING,$current,$max);
-			}
-		}
-	}
+    function onDownloadProgress($current,$max) {
+        if ($max) {
+            if (duration::since($lastupdate) > 5) { // only update every 5 secs
+                $this->setState(LdwpJob::STATE_RUNNING,$current,$max);
+            }
+        }
+    }
 
-	/**
-	 * Magic Start method. When this method is invoked the job is to pick up
-	 * where it left off and resume or start the processing of the job.
-	 */
-	function start() {
-		$this->setState(LdwpJob::STATE_RUNNING,0,1,"Downloading ".$this->url);
-		using('lepton.net.httprequest');
-		$dl = new HttpRequest($this->url,array(
-			'saveto' => $this->destination,
-			'onprogress' => new Callback($this,'onDownloadProgress')
-		));
-		$this->setState(LdwpJob::STATE_COMPLETED,1,1,"Saved ".$this->url);
-	}
+    /**
+     * Magic Start method. When this method is invoked the job is to pick up
+     * where it left off and resume or start the processing of the job.
+     */
+    function start() {
+        $this->setState(LdwpJob::STATE_RUNNING,0,1,"Downloading ".$this->url);
+        using('lepton.net.httprequest');
+        $dl = new HttpRequest($this->url,array(
+            'saveto' => $this->destination,
+            'onprogress' => new Callback($this,'onDownloadProgress')
+        ));
+        $this->setState(LdwpJob::STATE_COMPLETED,1,1,"Saved ".$this->url);
+    }
 
 }

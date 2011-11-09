@@ -4,25 +4,25 @@ using('lunit.*');
 
 class LeptonVartypeTest extends LunitCase {
 
-	function stringtest() {
+    function stringtest() {
 
-		$s = vartype::string()
-			->required()
-			->defaultvalue('foo');
-		$this->assertTrue($s->getRequired());
-		$this->assertEquals($s->getDefault(),'foo');
+        $s = vartype::string()
+            ->required()
+            ->defaultvalue('foo');
+        $this->assertTrue($s->getRequired());
+        $this->assertEquals($s->getDefault(),'foo');
 
-	}
+    }
 
-	function floattest() {
+    function floattest() {
 
-		$s = vartype::float()
-			->nullable()
-			->defaultvalue('foo');
-		$this->assertFalse($s->getRequired());
-		$this->assertEquals($s->getDefault(),'foo');
+        $s = vartype::float()
+            ->nullable()
+            ->defaultvalue('foo');
+        $this->assertFalse($s->getRequired());
+        $this->assertEquals($s->getDefault(),'foo');
 
-	}
+    }
 
 }
 

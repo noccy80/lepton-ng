@@ -16,21 +16,21 @@ using('xsnp.core');
 
 class XsnpStsHandler extends XsnpHandler {
 
-	function identify(XsnpRequest $request) {
+    function identify(XsnpRequest $request) {
 
-		if ($request->destination == xsnp::hostname()) {
-			// This is a server-to-server message
-			return true;
-		}
+        if ($request->destination == xsnp::hostname()) {
+            // This is a server-to-server message
+            return true;
+        }
 
-		// Pass it on to the next handler
-		return false;
+        // Pass it on to the next handler
+        return false;
 
-	}
+    }
 
-	function handleRequest(XsnpRequest $request) {
-		
-	}
+    function handleRequest(XsnpRequest $request) {
+        
+    }
 
 }
 

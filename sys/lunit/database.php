@@ -5,18 +5,18 @@ class LunitDatabaseLogger {
     private $db = null;
     private $sessionid = null;
     
-	function __construct($table) {
+    function __construct($table) {
 
-		$dbs = config::get('lunit.database', null);
-		if ($dbs) {
-			$db = new DatabaseConnection($dbs);
-		} else {
-			$db = new DatabaseConnection();
-		}
-		$this->db = $db;
+        $dbs = config::get('lunit.database', null);
+        if ($dbs) {
+            $db = new DatabaseConnection($dbs);
+        } else {
+            $db = new DatabaseConnection();
+        }
+        $this->db = $db;
         $this->sessionid = $this->db->insertRow("INSERT INTO lunitsessions (completed) VALUES (NOW())");
 
-	}
+    }
     
     function onCaseBegin($name,$meta) { }
     function onTestBegin($name,$meta) { }

@@ -96,7 +96,7 @@ abstract class ViewHandler implements IViewHandler {
     }
     
     static function register($class,$pattern) {
-		View::$_handlers[$class] = $pattern;
+        View::$_handlers[$class] = $pattern;
     }
     
 
@@ -123,9 +123,9 @@ class View {
      */
     static function load($view,$ctl=null) {
 
-		if (!headers_sent()) {
-			response::contentType("text/html; charset=utf-8");
-		}
+        if (!headers_sent()) {
+            response::contentType("text/html; charset=utf-8");
+        }
 
         if (!self::$_primaryview) {
             if (config::get(self::KEY_EMBED_EXCEPTION,false) == true) ob_start();
@@ -136,7 +136,7 @@ class View {
 
             if (preg_match('%'.$match.'%',$view)) {
 
-				$vc = new $handler();
+                $vc = new $handler();
                 // If controller is specified, get its state
                 if (($ctl) && count($ctl->getState()) > 0) {
                     $vc->setViewData($ctl->getState());
@@ -161,7 +161,7 @@ class View {
     static function embed($view,$data=null) {
         $vp = base::expand($view,'/views/');
         if (file_exists($vp)) {
-			if (is_array($data)) View::set($data);
+            if (is_array($data)) View::set($data);
             View::load($view);
         } else {
             if (config::get(self::KEY_EMBED_EXCEPTION,false) == true) {
@@ -181,8 +181,8 @@ class View {
         if (is_array($key)) {
             // Set the contents of the array
             view::$_viewdata = array_merge(
-            	view::$_viewdata, 
-            	$key
+                view::$_viewdata, 
+                $key
             );
         } else {
             view::$_viewdata[$key] = $value;

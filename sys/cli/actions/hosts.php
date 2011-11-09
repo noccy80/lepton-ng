@@ -10,11 +10,11 @@ class HostsAction extends Action {
         'enable' => array(
             'arguments' => '[\g{groupname}]',
             'info' => 'Enable a group'
-	),
+    ),
         'disable' => array(
             'arguments' => '[\g{groupname}]',
             'info' => 'Disable a group'
-	)
+    )
     );
 
     function match($pattern='*') {
@@ -49,7 +49,7 @@ class HostsAction extends Action {
                     $c = explode(' ',trim($h));
                     $hosts = array_merge($hosts,array_slice($c,1));
                     $targets[] = $c[0];
-		}
+        }
             }
         }
     }
@@ -163,8 +163,8 @@ class HostsAction extends Action {
 }
 
 actions::register(
-	new HostsAction(),
-	'hosts',
-	'Manage hosts file groups for local development',
-	HostsAction::$actions
+    new HostsAction(),
+    'hosts',
+    'Manage hosts file groups for local development',
+    HostsAction::$actions
 );

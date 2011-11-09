@@ -12,7 +12,7 @@ class DatabaseException extends BaseException { }
  */
 abstract class DatabaseManager {
 
-	private static $pool = array();
+    private static $pool = array();
 
     /**
      *
@@ -36,22 +36,22 @@ abstract class DatabaseManager {
      */
     static function poolConnectGroup($group) {
 
-		$tokens = explode(':',$group);
-		if (count($tokens) > 1) {
-			$driver = $tokens[0];
-	        $class = $driver.'DatabaseDriver';
-			return new $class($group);
-		} else {
-		    $cfg = config::get('lepton.db.'.$group);
-		    $driver = explode('/',$cfg['driver']);
-		    if ($driver[0] != '') {
-		        $class = $driver[0].'DatabaseDriver';
-		        Console::debugEx(LOG_DEBUG1,__CLASS__,"Base DBM driver: %s (%s) - %s", $class, $driver[0], $cfg['driver']);
-		        return new $class($cfg);
-		    } else {
-		        throw new DatabaseException("No database driver configured");
-		    }
-		}
+        $tokens = explode(':',$group);
+        if (count($tokens) > 1) {
+            $driver = $tokens[0];
+            $class = $driver.'DatabaseDriver';
+            return new $class($group);
+        } else {
+            $cfg = config::get('lepton.db.'.$group);
+            $driver = explode('/',$cfg['driver']);
+            if ($driver[0] != '') {
+                $class = $driver[0].'DatabaseDriver';
+                Console::debugEx(LOG_DEBUG1,__CLASS__,"Base DBM driver: %s (%s) - %s", $class, $driver[0], $cfg['driver']);
+                return new $class($cfg);
+            } else {
+                throw new DatabaseException("No database driver configured");
+            }
+        }
 
     }
 
@@ -275,7 +275,7 @@ final class DatabaseConnection {
      * @return Array Statistics for QUERYING, UPDATING and EXECUTING queries.
      */
     function getStatistics() {
-    	return Database::$queries;
+        return Database::$queries;
     }
 
 }

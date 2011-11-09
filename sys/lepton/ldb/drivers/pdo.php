@@ -25,7 +25,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
                 $this->dsn = 'sqlite:'.$cfg['filename'];
                 $this->user = null;
                 $this->pass = null;
-				$this->driver = 'sqlite';
+                $this->driver = 'sqlite';
                 break;
             case 'mysql':
                 $this->dsn = 'mysql:';
@@ -161,122 +161,122 @@ class PdoDatabaseDriver extends DatabaseDriver {
     function transactionEnd() { }
 
     function getSchemaManager() {
-		switch($this->driver) {
-			case 'mysql':
-				return new MysqlSchemaManager(new DatabaseConnection($this));
-				break;
-			case 'sqlite':
-				return new SqliteSchemaManager(new DatabaseConnection($this));
-				break;
-		}
+        switch($this->driver) {
+            case 'mysql':
+                return new MysqlSchemaManager(new DatabaseConnection($this));
+                break;
+            case 'sqlite':
+                return new SqliteSchemaManager(new DatabaseConnection($this));
+                break;
+        }
     }
 
 }
 
 class MysqlSchemaManager extends SqlTableSchemaManager { 
-	function schemaExists($tablename) {
+    function schemaExists($tablename) {
 
-	    $res = $this->conn->getSingleRow("SELECT DATABASE()");
-	    $database = $res[0];
-		$res = $this->conn->getSingleRow(
-			'SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema=%s AND table_name=%s',
-			$database, $tablename
-		);
-		return ($res[0] == 1);
+        $res = $this->conn->getSingleRow("SELECT DATABASE()");
+        $database = $res[0];
+        $res = $this->conn->getSingleRow(
+            'SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema=%s AND table_name=%s',
+            $database, $tablename
+        );
+        return ($res[0] == 1);
 
-	}
-	function apply(SqlTableSchema $schema) {
-		$sdef = $schema->getDefinition();
-		$tname = $sdef['name'];
-		$tdrop = $sdef['drop'];
-		$tcols = $sdef['columns'];
-		$tkeys = $sdef['keys'];
-		// Create table
-		$sql = 'CREATE TABLE '.$tname." (";
-		foreach($tcols as $col) {
-			$sql.= $col['name'].' '.$this->getColType($col['type'],$col['opts']);
-			if ($col['default']!=null) $sql.= 'DEFAULT '.$col['default'];
-			if ($col != end($tcols)) $sql.= ', ';
-		}
-		foreach($tkeys as $key) {
-			switch($key['type']) {
-				case SqlTableSchema::KEY_PRIMARY:
-					$keystr = ', PRIMARY KEY '; break;
-				case SqlTableSchema::KEY_UNIQUE:
-					$keystr = ', UNIQUE KEY '; break;
-				case SqlTableSchema::KEY_FULLTEXT:
-					$keystr = ', FULLTEXT INDEX '; break;
-				case SqlTableSchema::KEY_INDEX:
-					$keystr = ', KEY '; break;
-			}
-			$keystr.=sprintf('%s(%s)',$key['name'],join(',',$key['cols']));
-			$sql.=$keystr;			
-		}
-		
-		$sql.= ')';
-		if ($tdrop) $this->conn->exec('DROP TABLE IF EXISTS '.$tname);
-		$this->conn->exec($sql);
-	}
-	private function getColType($type,$flags) {
-		list($type,$constrain) = explode(':',$type.':');
-		switch(strtolower($type)) {
-			case 'int':
-				if ($constrain) {
-					$otype = sprintf('INT(%d)',$constrain);
-				} else {
-					$otype = 'int';
-				}
-				if ($flags & SqlTableSchema::COL_AUTO) {
-					$otype.= ' AUTO_INCREMENT';
-				}
-				break;
-			case 'char':
-			case 'varchar':
-			case 'text':
-				if ($constrain) {
-					if ($flags & SqlTableSchema::COL_FIXED) {
-						$otype = sprintf('CHAR(%d)',$constrain);
-					} else {
-						$otype = sprintf('VARCHAR(%d)',$constrain);
-					}
-				} else {
-					if ($flags & SqlTableSchema::COL_BINARY) {
-						$otype = sprintf('BLOB');
-					} else {
-						$otype = sprintf('TEXT');
-					}
-				}
-				break;
-			case 'enum':
-				$cl = explode(',',$constrain);
-				$cls = '';
-				foreach($cl as $c) {
-					if (strlen($cls)>0) $cls.=',';
-					$cls.="'".$c."'";
-				}
-				$otype = 'ENUM('.$cls.')';
-				break;
-			default:
-				logger::warning("Unhandled field type: %s", $type);
-				$otype = '';
-		}
-		// Check nullable state
-		if ($flags & SqlTableSchema::COL_NULLABLE) {
-			$otype.= ' NULL';
-		} else {
-			$otype.= ' NOT NULL';
-		}
-		// Keys
-		if ($flags & SqlTableSchema::KEY_PRIMARY) {
-			$otype.= ' PRIMARY KEY';
-		}
-		if ($flags & SqlTableSchema::KEY_UNIQUE) {
-			$otype.= ' UNIQUE KEY';
-		}
-		return $otype;
-	}
+    }
+    function apply(SqlTableSchema $schema) {
+        $sdef = $schema->getDefinition();
+        $tname = $sdef['name'];
+        $tdrop = $sdef['drop'];
+        $tcols = $sdef['columns'];
+        $tkeys = $sdef['keys'];
+        // Create table
+        $sql = 'CREATE TABLE '.$tname." (";
+        foreach($tcols as $col) {
+            $sql.= $col['name'].' '.$this->getColType($col['type'],$col['opts']);
+            if ($col['default']!=null) $sql.= 'DEFAULT '.$col['default'];
+            if ($col != end($tcols)) $sql.= ', ';
+        }
+        foreach($tkeys as $key) {
+            switch($key['type']) {
+                case SqlTableSchema::KEY_PRIMARY:
+                    $keystr = ', PRIMARY KEY '; break;
+                case SqlTableSchema::KEY_UNIQUE:
+                    $keystr = ', UNIQUE KEY '; break;
+                case SqlTableSchema::KEY_FULLTEXT:
+                    $keystr = ', FULLTEXT INDEX '; break;
+                case SqlTableSchema::KEY_INDEX:
+                    $keystr = ', KEY '; break;
+            }
+            $keystr.=sprintf('%s(%s)',$key['name'],join(',',$key['cols']));
+            $sql.=$keystr;			
+        }
+        
+        $sql.= ')';
+        if ($tdrop) $this->conn->exec('DROP TABLE IF EXISTS '.$tname);
+        $this->conn->exec($sql);
+    }
+    private function getColType($type,$flags) {
+        list($type,$constrain) = explode(':',$type.':');
+        switch(strtolower($type)) {
+            case 'int':
+                if ($constrain) {
+                    $otype = sprintf('INT(%d)',$constrain);
+                } else {
+                    $otype = 'int';
+                }
+                if ($flags & SqlTableSchema::COL_AUTO) {
+                    $otype.= ' AUTO_INCREMENT';
+                }
+                break;
+            case 'char':
+            case 'varchar':
+            case 'text':
+                if ($constrain) {
+                    if ($flags & SqlTableSchema::COL_FIXED) {
+                        $otype = sprintf('CHAR(%d)',$constrain);
+                    } else {
+                        $otype = sprintf('VARCHAR(%d)',$constrain);
+                    }
+                } else {
+                    if ($flags & SqlTableSchema::COL_BINARY) {
+                        $otype = sprintf('BLOB');
+                    } else {
+                        $otype = sprintf('TEXT');
+                    }
+                }
+                break;
+            case 'enum':
+                $cl = explode(',',$constrain);
+                $cls = '';
+                foreach($cl as $c) {
+                    if (strlen($cls)>0) $cls.=',';
+                    $cls.="'".$c."'";
+                }
+                $otype = 'ENUM('.$cls.')';
+                break;
+            default:
+                logger::warning("Unhandled field type: %s", $type);
+                $otype = '';
+        }
+        // Check nullable state
+        if ($flags & SqlTableSchema::COL_NULLABLE) {
+            $otype.= ' NULL';
+        } else {
+            $otype.= ' NOT NULL';
+        }
+        // Keys
+        if ($flags & SqlTableSchema::KEY_PRIMARY) {
+            $otype.= ' PRIMARY KEY';
+        }
+        if ($flags & SqlTableSchema::KEY_UNIQUE) {
+            $otype.= ' UNIQUE KEY';
+        }
+        return $otype;
+    }
 }
 class SqliteSchemaManager extends SqlTableSchemaManager {
-	function apply(SqlTableSchema $schema) { }
+    function apply(SqlTableSchema $schema) { }
 }
 

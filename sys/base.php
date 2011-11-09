@@ -64,12 +64,12 @@ if (PHP_VERSION_ID < 50207) {
 ///// Compensate for missing/unavailable functions ///////////////////////////
 
 if (!function_exists('fnmatch')) {
-	function fnmatch($pattern, $string) {
-		return @preg_match(
-			'/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
-				array('*' => '.*', '?' => '.?')) . '$/i', $string
-		);
-	}
+    function fnmatch($pattern, $string) {
+        return @preg_match(
+            '/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
+                array('*' => '.*', '?' => '.?')) . '$/i', $string
+        );
+    }
 }
 
 if (!function_exists('sys_getloadavg')) {
@@ -195,10 +195,10 @@ if (getenv("DEBUG") >= 1) {
 }
 
 if (php_sapi_name() == 'cli') {
-	define('LEPTON_CONSOLE', true);
-	if (base::logLevel() == 0) base::logLevel(LOG_INFO);
+    define('LEPTON_CONSOLE', true);
+    if (base::logLevel() == 0) base::logLevel(LOG_INFO);
 } else {
-	define('LEPTON_CONSOLE', false);
+    define('LEPTON_CONSOLE', false);
 }
 if (getenv("LOGFILE")) {
     define("LOGFILE", fopen(getenv("LOGFILE"), 'a+'));
@@ -222,23 +222,23 @@ abstract class base {
     private static $_syspath = null;
     private static $_loglevel = 0;
 
-	static function expand($pathstr,$prefix=null) {
-		if (substr($pathstr,0,1) == '/') {
-			$path = base::appPath().'/'.$prefix.'/'.substr($pathstr,1);
-		} elseif (strtolower(substr($pathstr,0,4)) == 'app:') {
-			$path = base::appPath().'/'.substr($pathstr,4);
-		} elseif (strtolower(substr($pathstr,0,5)) == 'base:') {
-			$path = base::basePath().'/'.substr($pathstr,5);
-		} elseif (strtolower(substr($pathstr,0,4)) == 'sys:') {
-			$path = base::sysPath().'/'.substr($pathstr,4);
+    static function expand($pathstr,$prefix=null) {
+        if (substr($pathstr,0,1) == '/') {
+            $path = base::appPath().'/'.$prefix.'/'.substr($pathstr,1);
+        } elseif (strtolower(substr($pathstr,0,4)) == 'app:') {
+            $path = base::appPath().'/'.substr($pathstr,4);
+        } elseif (strtolower(substr($pathstr,0,5)) == 'base:') {
+            $path = base::basePath().'/'.substr($pathstr,5);
+        } elseif (strtolower(substr($pathstr,0,4)) == 'sys:') {
+            $path = base::sysPath().'/'.substr($pathstr,4);
         } elseif (strtolower(substr($pathstr,0,4)) == 'tmp:') {
             $path = base::tmpPath().'/'.substr($pathstr,4);
-		} else {
-			$path = base::appPath().'/'.$prefix.'/'.$pathstr;
-		}		
-		while (strpos($path,'//')) $path = str_replace('//','/',$path);
-		return $path;
-	}
+        } else {
+            $path = base::appPath().'/'.$prefix.'/'.$pathstr;
+        }		
+        while (strpos($path,'//')) $path = str_replace('//','/',$path);
+        return $path;
+    }
 
     static function basePath($newpath=null) {
         $ret = (self::$_basepath) ? self::$_basepath : BASE_PATH;
@@ -329,7 +329,7 @@ abstract class DataProvider implements IDataProvider {
 ////// Utility Functions and Aliases //////////////////////////////////////////
 
 function __fileinfo($strinfo, $vars=null) {
-	module($strinfo, $vars);
+    module($strinfo, $vars);
 }
 function module($strinfo, $vars=null) {
     if (count(ModuleManager::$_order) > 0) {
@@ -370,19 +370,19 @@ function provides($functionality) { }
  */
 function getDescendants($baseclass) {
 
-	$descendants = array();
-	$cl = get_declared_classes();
-	foreach($cl as $class) {
-		$rc = new ReflectionClass($class);
-		$pc = $rc->getParentClass();
-		if ($pc) {
-			$pcn = $pc->getName();
-			if ($pcn == $baseclass) {
-				$descendants[] = $rc->getName();
-			}
-		}
-	}
-	return $descendants;
+    $descendants = array();
+    $cl = get_declared_classes();
+    foreach($cl as $class) {
+        $rc = new ReflectionClass($class);
+        $pc = $rc->getParentClass();
+        if ($pc) {
+            $pcn = $pc->getName();
+            if ($pcn == $baseclass) {
+                $descendants[] = $rc->getName();
+            }
+        }
+    }
+    return $descendants;
 
 }
 
@@ -401,7 +401,7 @@ function typeof($obj) {
 }
 
 function __fmt($args=null) {
-	$args = (array)$args;
+    $args = (array)$args;
     if (count($args) == 0) {
         return "";
     } else if (count($args) == 1) {
@@ -506,16 +506,16 @@ function __printable($var) {
 
 function file_find($dir,$match) {
 
-	$pattern = str_replace('//','/',$dir.'/*/'.$match);
-	try {
-		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
-		foreach ($iterator as $path) {
-		    if (fnmatch($pattern,$path)) return $path;
-		}
-		return null;
-	} catch(Exception $e) {
-		return null;
-	}
+    $pattern = str_replace('//','/',$dir.'/*/'.$match);
+    try {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+        foreach ($iterator as $path) {
+            if (fnmatch($pattern,$path)) return $path;
+        }
+        return null;
+    } catch(Exception $e) {
+        return null;
+    }
 }
 
 
@@ -529,9 +529,9 @@ class ModuleException extends BaseException { }
 class NavigationException extends BaseException { }
 class FilesystemException extends BaseException { }
 class FileNotFoundException extends FilesystemException { 
-	function __construct($msg,$filename=null) {
-		parent::__construct(sprintf("%s (%s)", $msg, __printable($filename)));
-	}
+    function __construct($msg,$filename=null) {
+        parent::__construct(sprintf("%s (%s)", $msg, __printable($filename)));
+    }
 }
 class FileAccessException extends FilesystemException { }
 class UnsupportedPlatformException extends BaseException { }
@@ -539,23 +539,23 @@ class FunctionNotSupportedException extends BaseException { }
 class SystemException extends BaseException { }
 class ClassNotFoundException extends BaseException { }
 class BadPropertyException extends BaseException { 
-	function __construct($cname,$pname=null) {
-		if (!$pname) { $this->message = $cname; return; }
-		$this->message = sprintf("Property %s->%s does not exist", $cname, $pname);
-	}
+    function __construct($cname,$pname=null) {
+        if (!$pname) { $this->message = $cname; return; }
+        $this->message = sprintf("Property %s->%s does not exist", $cname, $pname);
+    }
 }
 class ProtectedPropertyException extends BaseException { 
-	function __construct($cname,$pname=null) {
-		if (!$pname) { $this->message = $cname; return; }
-		$this->message = sprintf("Property %s->%s is protected", $cname, $pname);
-	}
+    function __construct($cname,$pname=null) {
+        if (!$pname) { $this->message = $cname; return; }
+        $this->message = sprintf("Property %s->%s is protected", $cname, $pname);
+    }
 }
 class BadArgumentException extends BaseException { }
 class CriticalException extends BaseException { }
 class SecurityException extends CriticalException { 
-	const ERR_ACCESS_DENIED = 1;
-	const ERR_SESSION_INVALID = 2;
-	const ERR_POLICY_BREACH = 3;
+    const ERR_ACCESS_DENIED = 1;
+    const ERR_SESSION_INVALID = 2;
+    const ERR_POLICY_BREACH = 3;
 }
 
 class AssertionException extends CriticalException {
@@ -775,39 +775,39 @@ class BasicContainer {
     }
     
     function getData() {
-    	return $this->propertyvalues;
+        return $this->propertyvalues;
     }
     
     function setData($data) {
-    	arr::apply($this->propertyvalues, $data);
+        arr::apply($this->propertyvalues, $data);
     }
 
 }
 
 abstract class Globals {
-	
-	private static $globals = array();
-	
-	private function __construct() { }
-	
-	static function get($key) {
-		if (!self::$globals) return null;
-		if (arr::hasKey(self::$globals,$key)) return self::$globals[$key];
-		return null;
-	}
-	
-	static function set($key,$value) {
-		self::$globals[$key] = $value;
-	}
-	
-	static function has($key) {
-		return (arr::hasKey(self::$globals,$key));
-	}
-	
-	static function clr($key) {
-		unset(self::$globals[$key]);
-	}
-	
+    
+    private static $globals = array();
+    
+    private function __construct() { }
+    
+    static function get($key) {
+        if (!self::$globals) return null;
+        if (arr::hasKey(self::$globals,$key)) return self::$globals[$key];
+        return null;
+    }
+    
+    static function set($key,$value) {
+        self::$globals[$key] = $value;
+    }
+    
+    static function has($key) {
+        return (arr::hasKey(self::$globals,$key));
+    }
+    
+    static function clr($key) {
+        unset(self::$globals[$key]);
+    }
+    
 }
 
 ////// Console ////////////////////////////////////////////////////////////////
@@ -1101,7 +1101,7 @@ class Timer {
  */
 class Lepton {
 
-	const EVT_SHUTDOWN = 'lepton.core.shutdown';
+    const EVT_SHUTDOWN = 'lepton.core.shutdown';
 
     private static $__exceptionhandler = null;
     private static $__errorhandler = null;
@@ -1134,11 +1134,11 @@ class Lepton {
                 $instance = new $class();
                 Console::debugEx(LOG_BASIC, __CLASS__, "Invoking application instance from %s.", $class);
                 $apptimer->start();
-		if (is_callable(array($instance, 'run'))) {
-	                $rv = call_user_func_array(array($instance, 'run'), $args);
-		} else {
-			console::writeLn("Requested application class %s is not runnable.", $class);
-		}
+        if (is_callable(array($instance, 'run'))) {
+                    $rv = call_user_func_array(array($instance, 'run'), $args);
+        } else {
+            console::writeLn("Requested application class %s is not runnable.", $class);
+        }
                 $apptimer->stop();
                 unset($instance);
                 Console::debugEx(LOG_BASIC, __CLASS__, "Main method exited with code %d after %.2f seconds.", $rv, $apptimer->getElapsed());
@@ -1228,7 +1228,7 @@ class Lepton {
             case E_STRICT:
                     logger::debug('Warning: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
                     break;
-	    case E_DEPRECATED:
+        case E_DEPRECATED:
                     logger::warning('Deprecated: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
                     break;
             default:
@@ -1246,7 +1246,7 @@ class Lepton {
         $error = error_get_last();
         if (($error['type'] == 1) && LEPTON_CONSOLE) {
             $f = file($error['file']);
-			//printf('<pre>Error: %s',$error['message']);
+            //printf('<pre>Error: %s',$error['message']);
             foreach ($f as $i => $line) {
                 $mark = (($i + 1) == $error['line']) ? '=> ' : '   ';
                 $f[$i] = sprintf('  %05d. %s', $i + 1, $mark) . $f[$i];
@@ -1260,7 +1260,7 @@ class Lepton {
                 $last = count($f) - 1;
             $source = join("\n", array_slice($f, $first, $last - $first));
             echo "\n" . $source . "\n";
-			//echo '</pre>';
+            //echo '</pre>';
             die();
         } elseif ($error['type'] == 1) {
             echo '<h1>Fatal error</h1><p>A fatal error occured processing your request</p>';
@@ -1290,18 +1290,18 @@ abstract class ExceptionHandler implements IExceptionHandler {
 
 class System {
 
-	function getLoadAverage() {
-		if (IS_LINUX) {
-			$la = sys_getloadavg();
-			return $la[0];
-		} else {
-			return 0.0;
-		}
-	}
+    function getLoadAverage() {
+        if (IS_LINUX) {
+            $la = sys_getloadavg();
+            return $la[0];
+        } else {
+            return 0.0;
+        }
+    }
 
-	function getTempDir() {
-		return sys_get_temp_dir();
-	}
+    function getTempDir() {
+        return sys_get_temp_dir();
+    }
 
 }
 
@@ -1333,15 +1333,15 @@ abstract class string {
         return $out;
     }
 
-	function dequote($str) {
-		$str = trim($str);
-		$qt = $str[0];
-		if (($qt == '"') || ($qt == "'" )) {
-			if ($str[strlen($str) - 1] == $qt) {
-				return substr($str, 1, strlen($str) - 2);
-			}
-		}
-	}
+    function dequote($str) {
+        $str = trim($str);
+        $qt = $str[0];
+        if (($qt == '"') || ($qt == "'" )) {
+            if ($str[strlen($str) - 1] == $qt) {
+                return substr($str, 1, strlen($str) - 2);
+            }
+        }
+    }
 
     static function replace($str, $find, $replace) {
         return str_replace($find, $replace, $str);
@@ -1371,18 +1371,18 @@ abstract class string {
         return strval($var);
     }
 
-	static function htmlencode($str) {
-		return htmlentities($str,ENT_COMPAT,config::get(self::KEY_CHARSET, 'utf-8'));
-	}
+    static function htmlencode($str) {
+        return htmlentities($str,ENT_COMPAT,config::get(self::KEY_CHARSET, 'utf-8'));
+    }
 
-	static function parseUri($str,$defaultns=null) {
-		if (strpos(NS_SEPARATOR, $str) > 0) {
-			$segments = explode(NS_SEPARATOR, $str);
-			return array($segments[0], $segments[1]);
-		} else {
-			return array($defaultns,$str);
-		}
-	}
+    static function parseUri($str,$defaultns=null) {
+        if (strpos(NS_SEPARATOR, $str) > 0) {
+            $segments = explode(NS_SEPARATOR, $str);
+            return array($segments[0], $segments[1]);
+        } else {
+            return array($defaultns,$str);
+        }
+    }
 
     public static function toLowerCase($string) {
         return strToLower($string);
@@ -1393,7 +1393,7 @@ abstract class string {
     }
     
     public static function toProperCase($string) {
-    	return ucwords($string);
+        return ucwords($string);
     }
     
     public static function length($string) {
@@ -1441,7 +1441,7 @@ abstract class arr {
         }
         return $dest;
     }
-	
+    
     static function defaults(array $array,$defaults) {
         foreach($defaults as $key=>$val) {
             if (!arr::hasKey($array,$key)) $array[$key] = $val;
@@ -1484,49 +1484,49 @@ abstract class arr {
 }
 
 class vartype {
-	private $vartype = null;
-	private $optional = true;
-	private $length = null;
-	private $precision = null;
-	private $defaultvalue = null;
-	static function string($length=null) {
-		$vt = new vartype('string');
-		$vt->length($length);
-		return $vt;
-	}
-	static function float($length=null,$precision=null) {
-		$vt = new vartype('float');
-		$vt->length($length);
-		$vt->precision($precision);
-		return $vt;
-	}
-	function __construct($vartype) {
-		$this->vartype = $vartype;
-	}
-	function length($length=null) {
-		$this->length = $length;
-		return $this;
-	}
-	function precision($precision = null) {
-		$this->precision = $precision;
-		return $this;
-	}
-	function nullable() {
-		$this->optional = true;
-		return $this;
-	}
-	function required() {
-		$this->optional = false;
-		return $this;
-	}
-	function defaultvalue($default) {
-		$this->defaultvalue = $default;	
-		return $this;
-	}
-	function getVartype() { return $this->vartype; }
-	function getRequired() { return !$this->optional; }
-	function getLength() { return $this->length; }
-	function getDefault() { return $this->defaultvalue; }
+    private $vartype = null;
+    private $optional = true;
+    private $length = null;
+    private $precision = null;
+    private $defaultvalue = null;
+    static function string($length=null) {
+        $vt = new vartype('string');
+        $vt->length($length);
+        return $vt;
+    }
+    static function float($length=null,$precision=null) {
+        $vt = new vartype('float');
+        $vt->length($length);
+        $vt->precision($precision);
+        return $vt;
+    }
+    function __construct($vartype) {
+        $this->vartype = $vartype;
+    }
+    function length($length=null) {
+        $this->length = $length;
+        return $this;
+    }
+    function precision($precision = null) {
+        $this->precision = $precision;
+        return $this;
+    }
+    function nullable() {
+        $this->optional = true;
+        return $this;
+    }
+    function required() {
+        $this->optional = false;
+        return $this;
+    }
+    function defaultvalue($default) {
+        $this->defaultvalue = $default;	
+        return $this;
+    }
+    function getVartype() { return $this->vartype; }
+    function getRequired() { return !$this->optional; }
+    function getLength() { return $this->length; }
+    function getDefault() { return $this->defaultvalue; }
 }
 
 ////// ModuleManager //////////////////////////////////////////////////////////
@@ -1816,54 +1816,54 @@ class DatabaseLoggerFactory extends LoggerFactory {
 
 class EventLoggerFactory extends LoggerFactory {
 
-	function __logMessage($prio, $msg) {
-		event::invoke(debug::EVT_DEBUG, array($prio,$msg));
-	}
+    function __logMessage($prio, $msg) {
+        event::invoke(debug::EVT_DEBUG, array($prio,$msg));
+    }
 
 }
 
 class ConsoleLoggerFactory extends LoggerFactory {
 
-	private static $level = array(
-		'Base','Emerge','Alert','Critical','Warning','Notice','Info','Debug'
-	);
+    private static $level = array(
+        'Base','Emerge','Alert','Critical','Warning','Notice','Info','Debug'
+    );
 
-	function __logMessage($prio,$msg) {
-		$ts = @date("M-d H:i:s", time());
-		$lines = explode("\n", $msg);
-		foreach ($lines as $line) {
+    function __logMessage($prio,$msg) {
+        $ts = @date("M-d H:i:s", time());
+        $lines = explode("\n", $msg);
+        foreach ($lines as $line) {
             if (defined('STDERR'))
                 fprintf(STDERR, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
             else
                 printf("%s %-20s %s\n", $ts, self::$level[$prio], $line);
-			//fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
-		}
-	}
+            //fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
+        }
+    }
 
 }
 
 class FileLoggerFactory extends LoggerFactory {
 
-	private $filename = null;
+    private $filename = null;
 
-	private static $level = array(
-		'BASE','EMERG','ALERT','CRIT','WARN','NOTICE','INFO','DEBUG'
-	);
+    private static $level = array(
+        'BASE','EMERG','ALERT','CRIT','WARN','NOTICE','INFO','DEBUG'
+    );
 
-	function __construct($filename) {
-		$this->filename = $filename;
-	}
+    function __construct($filename) {
+        $this->filename = $filename;
+    }
 
-	function __logMessage($prio,$msg) {
-		$ts = @date("M-d H:i:s", time());
-		$lines = explode("\n", $msg);
-		$fh = fopen($this->filename,'a+');
-		foreach ($lines as $line) {
-			fprintf($fh, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
-			//fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
-		}
-		fclose($fh);
-	}
+    function __logMessage($prio,$msg) {
+        $ts = @date("M-d H:i:s", time());
+        $lines = explode("\n", $msg);
+        $fh = fopen($this->filename,'a+');
+        foreach ($lines as $line) {
+            fprintf($fh, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
+            //fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
+        }
+        fclose($fh);
+    }
 
 }
 
@@ -1928,23 +1928,23 @@ abstract class Logger {
     }
 
     private static function __log($prio, $msg) {
-		if ($prio <= base::logLevel()) {
-			foreach (self::$_loggers as $logger) {
-				$logger->__logMessage($prio, $msg);
-			}
-		}
-	}
+        if ($prio <= base::logLevel()) {
+            foreach (self::$_loggers as $logger) {
+                $logger->__logMessage($prio, $msg);
+            }
+        }
+    }
 
-	public static function logEx($prio,$msg) {
-		self::__log($prio,$msg);
-	}
+    public static function logEx($prio,$msg) {
+        self::__log($prio,$msg);
+    }
 
 }
 
 ////// Debugging Foundation ///////////////////////////////////////////////////
 
 interface IDebugProvider {
-	function inspect($data,$table=false);
+    function inspect($data,$table=false);
 }
 
 /**
@@ -1953,8 +1953,8 @@ interface IDebugProvider {
  */
 class Debug {
 
-	const EVT_DEBUG = 'lepton.debug.message';
-	const EVT_OPTIMIZATION = 'lepton.debug.optimizationhint';
+    const EVT_DEBUG = 'lepton.debug.message';
+    const EVT_OPTIMIZATION = 'lepton.debug.optimizationhint';
 
     private static $provider = null;
 
@@ -2089,11 +2089,11 @@ abstract class CoreEvents implements IEventList {
  */
 class Callback {
     private $cbarray = null;
-	private $cbfixed = null;
+    private $cbfixed = null;
     function __construct(&$object,$method) {
         $this->cbarray = array($object,$method);
-		$args = func_get_args();
-		if (count($args)>2) { $this->cbfixed = array_slice($args,2); }
+        $args = func_get_args();
+        if (count($args)>2) { $this->cbfixed = array_slice($args,2); }
     }
     function call() {
         $args = func_get_args();
@@ -2101,14 +2101,14 @@ class Callback {
     }
 }
 function cb(callback $cb = null) {
-	$args = func_get_args();
-	if ($cb) call_user_func_array(array($cb,'call'),array_slice($args,1));
+    $args = func_get_args();
+    if ($cb) call_user_func_array(array($cb,'call'),array_slice($args,1));
 }
 // Semantic prettification method
 function callback(&$object,$method) { 
     // return array($o,$m);
-	$args = func_get_args();
-	return new Callback($object,array_slice($args,1));
+    $args = func_get_args();
+    return new Callback($object,array_slice($args,1));
 }
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
 
