@@ -1,0 +1,72 @@
+#!/usr/bin/php
+<?php require('lepton-ng');
+
+class LformatApp extends ConsoleApplication {
+
+	const TAB_TO_SPACE = 1;
+	const SPACE_TO_TAB = 2;
+	const NO_CONVERT = 0;
+
+	protected $scription = "Lepton Source Formatter";
+	protected $arguments = array(
+		array('h','help','Help'),
+		array('v','verbose','Verbose'),
+		array('t:','tab-size','Size of tabs in spaces (default: 4)'),
+		array('a','tab-to-space','Convert tabs to spaces (default)'),
+		array('b','space-to-tab','Convert spaces to tabs'),
+		array('n','no-convert','Don't covert tabs or spaces'),
+		array('c','compact','Compact whitespace between functions and blocks')
+	);
+	private $tabsize = 4;
+	private $tabconv = self::TAB_TO_SPACE;
+
+	function main($argc,$argv) {
+
+		if ($this->getParameterCount() == 0) {
+			$this->usage();
+			return 1;
+		}
+		foreach($this->getParameters() as $param) {
+			$this->parsepath($param);
+		}
+
+	}
+
+	function parsepath($path) {
+		$iter = new RecursiveDirectoryIterator($path);
+		$files = array();
+		console::write("%s ... ", $path);
+		foreach(new RecursiveIteratorIterator($iter) as $p) {
+			$rfp = $p->getRealpath();
+			if (strpos($rfp,'/.')) $rfp = null;
+			if (fnmatch('*.php',$rfp)) {
+				$files[] = $rfp;
+			}
+		}
+		console::writeLn("%d files", count($files));
+		foreach($files as $file) {
+			$fc = file_get_contents($file);
+			$fci = explode("\n",$fc);
+			$fco = array();
+			console::writeLn("Formatting file: %s", $file);
+			foreach($fci as $line) {
+				$lineo = '';
+				for($n = 0; $n < strlen($line); $n++) {
+					if ($line[$n] == "\t") {
+						$lineo.= str_repeat(" ",4);
+					} elseif ($line[$n] == " ") {
+						$lineo.= " ";
+					} else {
+						$lineo.= substr($line,$n);
+						break;
+					}
+				}
+				$fco[] = $lineo;
+			}
+			file_put_contents($file,join("\n",$fco));
+		}
+	}
+
+}
+
+lepton::run('LformatApp');
