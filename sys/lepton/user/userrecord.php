@@ -368,5 +368,9 @@ class UserRecord implements IAclSubject {
     function getSubjectGroups() {
         return array(new UserGroup());
     }
+    
+    function getSubjectDescription() {
+        return sprintf("%s [user:%d]", $this->username, $this->userid);
+    }
 
 }

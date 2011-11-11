@@ -17,7 +17,7 @@ interface IAclObject {
 interface IAclSubject {
     function getSubjectUuid();
     function getSubjectGroups();
-    // function getDescription();
+    function getSubjectDescription();
 }
 
 /**

@@ -14,11 +14,17 @@ using('lepton.user.acl');
  */
 class UserGroup implements IAclSubject {
 
+    private $groupname = null;
+    private $groupid = null;
     private $uuid = null;
     private $groups = array();
 
     public function getSubjectUuid() {
         return $this->uuid;
+    }
+    
+    public function getSubjectDescription() {
+        return sprintf("%s [group:%d]", $this->groupname, $this->groupid);
     }
 
     /**
