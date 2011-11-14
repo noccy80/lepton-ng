@@ -27,6 +27,15 @@ CREATE TABLE geonames_hierarchy (
     htype VARCHAR(32)
 );
 
+DROP TABLE IF EXISTS geonames_featurecodes;
+CREATE TABLE geonames_featurecodes (
+	featurecode VARCHAR(10) NOT NULL,
+	lang VARCHAR(2) NOT NULL,
+	featurename VARCHAR(64),
+	description VARCHAR(256),
+	UNIQUE INDEX fclang(featurecode,lang)
+);
+
 DROP TABLE IF EXISTS geonames;
 CREATE TABLE geonames (
 	geoid INT NOT NULL PRIMARY KEY,
