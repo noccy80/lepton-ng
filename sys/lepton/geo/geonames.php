@@ -179,6 +179,36 @@ abstract class GeoNames {
 
     }
 
+    public static function updateFeatureCodes($lang, callback $callback = null) {
+    
+        $db = new DatabaseConnection();
+        $cache = base::expand('app:/cache/geonames/');
+        
+        cb($callback,'Downloading featurecodes',0,1);
+        $url = self::getUrl('featureCodes_'.strtolower($lang).'.txt');
+        $req = new HttpRequest($url);
+
+        $lstr = strtolower($lang);
+        $reqs = explode("\n", $req->getResponse());
+        $rows = 0; $ltime = 0;
+        foreach($reqs as $reql) {
+            $rd = explode("\t",trim($reql)."\t");
+            if (count($rd)>1) {
+                $db->updateRow(
+                    "REPLACE INTO geonames_featurecodes ".
+                    "(featurecode,lang,featurename,description) VALUES (%s,%s,%s,%s)",
+                    $rd[0],$lstr,$rd[1],$rd[2]);
+                if (microtime(true) > $ltime+1) {
+                    cb($callback,'Importing featurecodes ... '.$rows." records imported", 1);
+                    $ltime = microtime(true);
+                }
+                $rows++;
+            }
+        }
+        cb($callback,"Imported featurecodes (".$rows." rows)");
+    
+    }
+
     public static function updateActiveCountries(callback $callback = null) {
 
         self::updateCache($callback);
