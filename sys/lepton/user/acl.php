@@ -20,6 +20,8 @@ interface IAclSubject {
     function getSubjectDescription();
 }
 
+if (class_exists('SqlTableSchema')):
+
 /**
  * @class AclconfSchema
  * @brief The schema that is used to define the ACL permissions
@@ -291,3 +293,5 @@ class Acl {
 
 // Initialize the ACL subsystem
 acl::initialize();
+
+endif;
