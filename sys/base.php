@@ -1353,7 +1353,10 @@ abstract class string {
 
     static function truncate($string, $maxlen, $append='...') {
         if (strlen($string) > $maxlen) {
-            return substr($string, 0, $maxlen) . $append;
+            // Find end of last word before maxlen
+            $space = strrpos($string,' ',-(strlen($string) - $maxlen));
+            if ($space <= 0) $space = $maxlen;
+            return substr($string, 0, $space) . $append;
         }
         return $string;
     }
