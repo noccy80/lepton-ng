@@ -73,6 +73,18 @@ class ViewState {
         $this->state[$key] = $value;
         if ($this->stateid==null) self::$pstate[$key]=$value;
     }
+    
+    /**
+     * @brief Push a value onto a key, making it an array.
+     * 
+     * @param String $key The key to push to
+     * @param Mixed $value The value to push onto the key
+     */
+    function push($key,$value) {
+        $arr = (array)$this->state[$key];
+        $arr[] = $value;
+        $this->set($key,$arr);
+    }
 
     /**
      * @brief Save the viewstate and return the assigned id.

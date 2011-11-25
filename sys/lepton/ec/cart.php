@@ -6,10 +6,11 @@
  * @brief Shopping cart implementation.
  * Automatically saved and loaded from the session as needed.
  */
-class Cart implements IteratorAggregate {
+class Cart implements IteratorAggregate, Countable, ArrayAccess {
 
     private $products = array();
 
+    /* Constructor / Destructor */
     function __construct($cartid = null) {
         if (null == $cartid) {
             $cartid = 0;
@@ -19,17 +20,26 @@ class Cart implements IteratorAggregate {
     }
 
     function __destruct() {
-
         session::set('lepton.ec.cart.'.$this->cartid,$this->products);
-
     }
 
+    /* IteratorAggregate */
     function getIterator() {
-
         return new ArrayIterator($products);
-
     }
+    
+    /* Countable */
+    public function count() {
+        return count($products);
+    }
+    
+    /* ArrayAccess*/
+    public function offsetExists( $offset) { }
+    public function offsetGet($offset) { }
+    public function offsetSet($offset, $value) { }
+    public function offsetUnset($offset) { }
 
+    /* Class methods */
     function addItem(IPurchasable $product, $amount = 1) {
 
         if (isset($this->products[$product->id])) {
