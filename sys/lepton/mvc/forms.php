@@ -21,6 +21,7 @@ class WebForm {
     private $fieldvalid = array();
     private $fields = null;
     private $formvalid = true;
+    private $formcomplete = false;
 
     public function __construct($data = null) {
         if ($data) $this->validateForm($data);
@@ -59,11 +60,12 @@ class WebForm {
         $this->valid = true;
         // Go over each of the expected form fields
         foreach((array)$data as $field => $attr) {
-            if (isset($_REQUEST[$field])) {
-                $this->raw[$field] = $_REQUEST[$field];
+            if (request::has($field)) {
+                $this->raw[$field] = (string)request::get($field);
             } else {
                 $this->raw[$field] = null;
             }
+
             $valid = true;
             $data = $this->raw[$field];
 
@@ -168,20 +170,21 @@ class WebForm {
      *
      * @param string $field The field to query. If null, returns the state of
      *   the form.
+     * @param bool $nullisvalid If true, an empty string (or null) will be valid
      * @return bool True if set
      */
     public function isValid($field = null) {
         if ($field == null) {
             return $this->formvalid;
         } else {
-            if (isset($this->fieldvalid[$field])) {
+            if (arr::hasKey($this->fieldvalid,$field)) {
                 return $this->fieldvalid[$field];
             } else {
                 return null;
             }
         }
     }
-
+    
     /**
      * Retrieve a form field
      *
