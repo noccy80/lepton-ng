@@ -170,7 +170,6 @@ class WebForm {
      *
      * @param string $field The field to query. If null, returns the state of
      *   the form.
-     * @param bool $nullisvalid If true, an empty string (or null) will be valid
      * @return bool True if set
      */
     public function isValid($field = null) {
