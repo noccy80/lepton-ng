@@ -58,7 +58,7 @@ class InfoAction extends Action {
     }
 
     public function pdo() {
-        Console::writeLn(__astr("\b{info pdo}: Installed PDO drivers:"));
+        Console::writeLn(__astr("\b{Installed PDO drivers:}"));
         foreach(PDO::getAvailableDrivers() as $driver) {
             Console::writeLn("  %s", $driver);
         }
@@ -66,7 +66,6 @@ class InfoAction extends Action {
     }
 
     public function php() {
-        Console::writeLn(__astr("\b{info php}: PHP Compatibility Info"));
         $info = array(
             'php_uname()' => php_uname('a'),
             'phpversion()' => phpversion(),
