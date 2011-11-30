@@ -28,6 +28,10 @@ module("CLI System Information", array(
 class InfoAction extends Action {
     private $extn;
     public static $commands = array(
+        'all' => array(
+            'arguments' => '',
+            'info' => 'Show all system information'
+        ),
         'php' => array(
             'arguments' => '',
             'info' => 'Show information about the PHP platform in use'
@@ -45,12 +49,20 @@ class InfoAction extends Action {
             'info' => 'Show the available stream protocols'
         )
     );
+    
+    public function all() {
+        $this->php();
+        $this->pdo();
+        $this->extensions();
+        $this->streams();
+    }
 
     public function pdo() {
         Console::writeLn(__astr("\b{info pdo}: Installed PDO drivers:"));
         foreach(PDO::getAvailableDrivers() as $driver) {
             Console::writeLn("  %s", $driver);
         }
+        Console::writeLn();
     }
 
     public function php() {
@@ -86,14 +98,17 @@ class InfoAction extends Action {
         foreach($opts as $key=>$val) {
             Console::writeLn("  %-25s : %s", $key, $val);
         }
+        Console::writeLn();
         Console::writeLn(__astr("\b{PHP Overview:}"));
         foreach($info as $key=>$val) {
             Console::writeLn("  %-25s : %s", $key, $val);
         }
+        Console::writeLn();
         Console::writeLn(__astr("\b{Compatibility layer overview:}"));
         foreach($comp as $key=>$val) {
             Console::writeLn("  %-25s : %s", $key, $val);
         }
+        Console::writeLn();
     }
 
     private function checkExt($mod,$last=false,$lastp=false,$use='') {
