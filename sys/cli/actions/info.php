@@ -124,6 +124,7 @@ class InfoAction extends Action {
         $sw = stream_get_wrappers();
         $sf = stream_get_filters();
 
+        /*
         Console::writeLn("Stream Management");
         Console::writeLn(" |- Registered wrappers");
         for($n=0; $n<count($sw); $n++) {
@@ -134,20 +135,41 @@ class InfoAction extends Action {
         for($n=0; $n<count($sf); $n++) {
             $this->treenode( $sf[$n] , !(($n+1)<count($sf)), true );
         }
+        */
 
-        Console::writeLn();
+        $cb = 0;
+        Console::writeLn(__astr("\b{Registered Wrappers:}"));
+        sort($sw);
+        foreach($sw as $val) {
+            Console::write('  %-18s', $val);
+            $cb++;
+            if (($cb > 3) && ($val!=end($sw))) { Console::writeLn(); $cb = 0; }
+        }
+        Console::writeLn(); Console::writeLn();
+
+        $cb = 0;
+        Console::writeLn(__astr("\b{Registered Filters:}"));
+        sort($sf);
+        foreach($sf as $val) {
+            Console::write('  %-18s', $val);
+            $cb++;
+            if (($cb > 3) && ($val!=end($sf))) { Console::writeLn(); $cb = 0; }
+        }
+        Console::writeLn(); Console::writeLn();
+        
     }
 
     function extensions() {
         $cb = 0;
         Console::writeLn(__astr("\b{Loaded extensions:}"));
         $ext = get_loaded_extensions();
+        sort($ext);
         foreach($ext as $val) {
             Console::write('  %-18s', $val);
             $cb++;
-            if ($cb > 3) { Console::writeLn(); $cb = 0; }
+            if (($cb > 3) && ($val != end($ext))) { Console::writeLn(); $cb = 0; }
         }
-        Console::writeLn();
+        Console::writeLn(); Console::writeLn();
     }
 
 }
