@@ -246,6 +246,16 @@ class Request {
         );
     }
     
+    /**
+     * @brief Return a POST field
+     * 
+     * The values returned will be one of the RequestString or RequestFile
+     * classes, and as such need to be string casted to be used.
+     * 
+     * @param String $key
+     * @param Mixed $def Default value (or null)
+     * @return Mixed Returns a RequestFile or RequestString item
+     */
     static function post($key, $def = null) {
         // Check if the request field is a file
         if (arr::hasKey($_FILES,$key)) {
@@ -262,7 +272,22 @@ class Request {
         if (arr::hasKey($_POST,$key)) return(new RequestString($_POST[$key]));
         return new RequestString($def);
     }
+    
+    /**
+     * @brief Retrieve all query arguments from both GET and POST
+     * 
+     * @return Array The query arguments
+     */
+    static function getAll() {
+        $args = array_merge($_GET, $_POST);
+        return $args;
+    }
 
+    /**
+     * @brief Enable Strict Transport Security (STS)
+     * 
+     * @todo This function need a bit of work and is not functional yet
+     */
     static function useSts() {
         $use_sts = config::get('lepton.security.sts');
         if ($use_sts && isset($_SERVER['HTTPS'])) {
