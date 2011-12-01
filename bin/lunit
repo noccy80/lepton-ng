@@ -77,7 +77,7 @@ class LunitApplication extends ConsoleApplication implements ILunitStatusCallbac
 	}
 
 	function onTestBegin($name,$meta) {
-		console::write(__astr('   \g{%-20s} %-50s '), $name, $meta['description']);
+		console::write(__astr('          \g{%-20s} %-50s ').str_repeat("\x08",100).'  ', $name, $meta['description']);
 	}
 
 	function onTestEnd($status,$message) {
@@ -87,7 +87,7 @@ class LunitApplication extends ConsoleApplication implements ILunitStatusCallbac
 			console::writeLn(__astr('[\c{yellow SKIP}]'));
 		} else {
 			console::writeLn(__astr('[\c{red FAIL}]'));
-			console::writeLn(__astr('     (\g{%s})'), $message);
+			console::writeLn(__astr('            - \g{%s}'), $message);
 		}
 	}
 
