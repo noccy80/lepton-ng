@@ -21,7 +21,7 @@ class LeptonCaptchaTests extends LunitCase {
      * @description Generating a new captcha
      */
     function testgenerate() {
-        config('lepton.captcha.font','arial.ttf');
+        config('lepton.captcha.font','FreeSans.ttf');
         $this->captchaid = captcha::generate();
         $this->assertNotNull($this->captchaid);
         $this->captchatext = captcha::getstring($this->captchaid);
