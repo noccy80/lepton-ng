@@ -35,6 +35,11 @@ class Guestbook implements IAclObject {
 		return $this->roles;
 	}
 
+	function getDescription() {
+		// return the descriptive name for the object
+		return sprintf("Forum %s", $this->uuid);
+	}
+
 	function __construct($guestbookid) {
 		// Assuming that the guestbook is opened with its UUID
 		$this->uuid = $guestbookid;
