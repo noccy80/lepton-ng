@@ -1132,13 +1132,17 @@ class Lepton {
             $apptimer = new Timer();
             try {
                 $instance = new $class();
+                if (!($instance instanceOf IApplication)) {
+                    console::warn("FATAL: Application is not instance of IApplication");
+                    return RETURN_ERROR;
+                }
                 Console::debugEx(LOG_BASIC, __CLASS__, "Invoking application instance from %s.", $class);
                 $apptimer->start();
-        if (is_callable(array($instance, 'run'))) {
+                if (is_callable(array($instance, 'run'))) {
                     $rv = call_user_func_array(array($instance, 'run'), $args);
-        } else {
-            console::writeLn("Requested application class %s is not runnable.", $class);
-        }
+                } else {
+                    console::writeLn("Requested application class %s is not runnable.", $class);
+                }
                 $apptimer->stop();
                 unset($instance);
                 Console::debugEx(LOG_BASIC, __CLASS__, "Main method exited with code %d after %.2f seconds.", $rv, $apptimer->getElapsed());
@@ -1277,13 +1281,8 @@ set_exception_handler(array('Lepton', 'handleException'));
 register_shutdown_function(array('Lepton', 'handleShutdown'));
 
 
-interface IExceptionHandler {
-
-    function exception(Exception $e);
-}
-
-abstract class ExceptionHandler implements IExceptionHandler {
-
+abstract class ExceptionHandler {
+    abstract function exception(Exception $e);
 }
 
 ////// System /////////////////////////////////////////////////////////////////
