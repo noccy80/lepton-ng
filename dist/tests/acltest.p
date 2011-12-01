@@ -58,7 +58,7 @@ class AclUtil extends ConsoleApplication {
 					if ($suuid && $ouuid) {
 						$this->showAccess($ouuid,$suuid);
 					} else {
-						console::error("show-matrix requires both object and subject uuid");
+						console::error("show requires both object and subject uuid");
 					}
 					break;
 				default:
