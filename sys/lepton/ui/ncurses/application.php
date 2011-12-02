@@ -1,6 +1,10 @@
 <?php
 
-abstract class NcursesObject { }
+
+
+interface INcursesObject {
+	function setHandler($event=null,Callback $callback=null);
+}
 
 abstract class NcursesDrawable {
 	abstract public function draw();
@@ -14,7 +18,7 @@ class NcursesDesktop extends NcursesDrawable {
 	}
 }
 
-abstract class NcursesApplication extends ConsoleApplication {
+abstract class NcursesApplication extends ConsoleApplication implements INcursesObject {
 
 	static $instance = null;
 	static $handlers = array();
@@ -41,7 +45,7 @@ abstract class NcursesApplication extends ConsoleApplication {
 		ncurses_end();
 	}
 
-	static function setHandler(NcursesObject $object=null,$event=null,Callback $callback=null) {
+	static function setHandler($event=null,Callback $callback=null) {
 		self::$handlers[] = $callback;
 	}
 

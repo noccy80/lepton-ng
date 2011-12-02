@@ -11,6 +11,8 @@
  * @license GNU GPL Version 3
  */
 
+define('SYSTEM_INITIAL_MEMORY_USE',(memory_get_usage(true)));
+
 // Version definitions
 foreach (array(
     'LEPTON_MAJOR_VERSION'      => 1,
@@ -2154,7 +2156,7 @@ if (config::has('lepton.db.tableprefix')) {
 
 class LeptonInstanceScopeWatcher {
     function __destruct() {
-        Console::debugEx(LOG_BASIC, '(destructor)', "Memory allocated at shutdown: %0.3f KB (Total used: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
+        Console::debugEx(LOG_BASIC, '(destructor)', "Memory allocated at shutdown: %0.3f KB (Total used: %0.3f KB, By code: %0.3f KB)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024), ((memory_get_usage(true) - SYSTEM_INITIAL_MEMORY_USE) / 1024 / 1024));
     }
 }
 $__leptoninstancescope = new LeptonInstanceScopeWatcher();
