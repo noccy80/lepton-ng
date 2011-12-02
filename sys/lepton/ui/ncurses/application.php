@@ -45,7 +45,11 @@ abstract class NcursesApplication extends ConsoleApplication implements INcurses
 		ncurses_end();
 	}
 
-	static function setHandler($event=null,Callback $callback=null) {
+	static function application() {
+		return self::$instance;
+	}
+
+	public function setHandler($event=null,Callback $callback=null) {
 		self::$handlers[] = $callback;
 	}
 
