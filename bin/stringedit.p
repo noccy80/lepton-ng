@@ -10,7 +10,7 @@ class StringEditor extends NcursesApplication {
 	}
 
 	function main($argv,$argc) {
-		$this->setHandler('onClick',new Callback($this,'onClick'));
+		$this->application()->setHandler('onClick',new Callback($this,'onClick'));
 		self::loop();
 	}
 
