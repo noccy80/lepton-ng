@@ -81,7 +81,11 @@ class ViewState {
      * @param Mixed $value The value to push onto the key
      */
     function push($key,$value) {
-        $arr = (array)$this->state[$key];
+        if (arr::hasKey($this->state,$key)) {
+            $arr = (array)$this->state[$key];
+        } else {
+            $arr = array();
+        }
         $arr[] = $value;
         $this->set($key,$arr);
     }

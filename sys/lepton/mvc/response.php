@@ -72,7 +72,7 @@ class response {
      * @param array $data The data to send
      */
     static function sendJson($data) {
-        response::contentType('text/json');
+        response::contentType('application/json');
         echo json_encode($data);
     }
 
