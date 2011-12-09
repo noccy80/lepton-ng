@@ -95,8 +95,9 @@ class CanvasPainter {
      *
      *
      */
-    function drawFilledRect($x1, $y1, $x2, $y2, Color $color, Color $fill) {
+    function drawFilledRect($x1, $y1, $x2, $y2, Color $color, Color $fill = null) {
 
+        if (!$fill) $fill = $color;
         imagefilledrectangle($this->himage,$x1,$y1,$x2,$y2,$fill->getColor($this->himage));
         imagerectangle($this->himage,$x1,$y1,$x2,$y2,$color->getColor($this->himage));
 
