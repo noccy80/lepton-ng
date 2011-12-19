@@ -715,37 +715,36 @@ class BasicList implements IteratorAggregate, ArrayAccess {
     private $type = null;
 
     /**
-     *
-     * @param type $typeconst 
+     * @brief Constructor, assigns type constraint if any
+     * 
+     * @param string $typeconst The type constraint to use
      */
     public function __construct($typeconst=null) {
         $this->type = $typeconst;
     }
 
     /**
-     *
-     * @return ArrayIterator 
+     * @brief Returns an iterator (for the foreach operator)
+     * 
+     * @return ArrayIterator The iterator to go over the list
      */
     public function getIterator() {
         return new ArrayIterator((array) $this->list);
     }
 
     /**
-     *
-     * @param type $item 
+     * @brief Adds an item, alias of push()
+     * 
+     * @param Mixed $item Add the specific item to the list
      */
     public function add($item) {
-        if ($this->type) {
-            if (!is_a($item, $this->type)) {
-                throw new BaseException("Error; Pushing invalid type with add(). " . $item . " is not a " . $this->type);
-            }
-        }
-        $this->list[] = $item;
+        $this->push($item);
     }
 
     /**
+     * @brief Adds an item to the list.
      *
-     * @param type $item 
+     * @param Mixed $item Add the specific item to the list
      */
     public function push($item) {
         if ($this->type) {
@@ -757,8 +756,11 @@ class BasicList implements IteratorAggregate, ArrayAccess {
     }
     
     /**
-     *
-     * @return type 
+     * @brief Pops the last item off the list.
+     * 
+     * The item is removed from the list after popping it.
+     * 
+     * @return Mixed The last item
      */
     public function pop() {
         if (count($this->list) > 0) {
@@ -769,18 +771,20 @@ class BasicList implements IteratorAggregate, ArrayAccess {
     }
 
     /**
-     *
-     * @param type $index
-     * @return type 
+     * @brief Return the item with the specified index.
+     * 
+     * @param Int $index The index to query.
+     * @return Mixed The item.
      */
     public function item($index) {
         return $this->list[$index];
     }
 
     /**
-     *
-     * @param type $item
-     * @return type 
+     * @brief Return true if the item is found in the list.
+     * 
+     * @param Mixed $item The item to match
+     * @return Bool True if the item was found.
      */
     public function find($item) {
         return (in_array($item, $this->list));
