@@ -49,6 +49,17 @@ class LeptonContainersTest extends LunitCase {
 
     }
 
+    function basiclist() {
+
+        $l = new BasicList();
+        $l->push('Hello World');
+        $l['foo'] = 'Bar';
+        $this->assertEquals($l['foo'],'Bar');
+        $this->assertEquals($l->pop(),'Bar');
+        $this->assertEquals($l->pop(),'Hello World');
+        $this->assertEquals($l->pop(),null);
+    }
+
 }
 
 Lunit::register('LeptonContainersTest');

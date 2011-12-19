@@ -697,19 +697,43 @@ function config($key,$value=null) {
 
 ////// Structures /////////////////////////////////////////////////////////////
 
-class BasicList implements IteratorAggregate {
+/**
+ * @brief Contains a handy list object.
+ * 
+ * When constructed with an argument, the type will be "locked" to the type
+ * specified to the constructor. So, in order to create a list of only Widgets,
+ * you can just pass "widget" to the constructor.
+ * 
+ * It supports all the modern facilities such as push, pop, array access, and
+ * can also be iterated.
+ * 
+ * @author Christopher Vagnetoft
+ */
+class BasicList implements IteratorAggregate, ArrayAccess {
 
     private $list;
     private $type = null;
 
+    /**
+     *
+     * @param type $typeconst 
+     */
     public function __construct($typeconst=null) {
         $this->type = $typeconst;
     }
 
+    /**
+     *
+     * @return ArrayIterator 
+     */
     public function getIterator() {
         return new ArrayIterator((array) $this->list);
     }
 
+    /**
+     *
+     * @param type $item 
+     */
     public function add($item) {
         if ($this->type) {
             if (!is_a($item, $this->type)) {
@@ -719,16 +743,102 @@ class BasicList implements IteratorAggregate {
         $this->list[] = $item;
     }
 
+    /**
+     *
+     * @param type $item 
+     */
+    public function push($item) {
+        if ($this->type) {
+            if (!is_a($item, $this->type)) {
+                throw new BaseException("Error; Pushing invalid type with add(). " . $item . " is not a " . $this->type);
+            }
+        }
+        $this->list[] = $item;
+    }
+    
+    /**
+     *
+     * @return type 
+     */
+    public function pop() {
+        if (count($this->list) > 0) {
+            $item = array_pop($this->list);
+            return $item;
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param type $index
+     * @return type 
+     */
     public function item($index) {
         return $this->list[$index];
     }
 
+    /**
+     *
+     * @param type $item
+     * @return type 
+     */
     public function find($item) {
         return (in_array($item, $this->list));
     }
 
+    /**
+     *
+     * @return type 
+     */
     public function count() {
         return count($this->list);
+    }
+    
+    /**
+     * 
+     */
+    public function sort() {
+        sort($this->list);
+    }
+    
+    /**
+     *
+     * @param type $offset
+     * @return type 
+     */
+    public function offsetExists($offset) {
+        return (arr::hasKey($this->list,$offset));
+    }
+    
+    /**
+     *
+     * @param type $offset
+     * @return type 
+     */
+    public function offsetGet($offset) {
+        return ($this->list[$offset]);
+    }
+    
+    /**
+     *
+     * @param type $offset
+     * @param type $item 
+     */
+    public function offsetSet($offset, $item) {
+        if ($this->type) {
+            if (!is_a($item, $this->type)) {
+                throw new BaseException("Error; Pushing invalid type with add(). " . $item . " is not a " . $this->type);
+            }
+        }
+        $this->list[$offset] = $item;
+    }
+    
+    /**
+     *
+     * @param type $offset 
+     */
+    public function offsetUnset($offset) {
+        unset($this->list[$offset]);
     }
 
 }
