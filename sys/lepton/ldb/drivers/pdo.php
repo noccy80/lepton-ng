@@ -87,7 +87,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         return $str;
     }
 
-    function execute($sql,$attr) {
+    function execute($sql,$attr=null) {
         Console::debugEx(LOG_DEBUG2,__CLASS__,"SQL Exec: %s", $sql);
         try {
             $query = $this->conn->exec($sql);
@@ -96,7 +96,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
         }
     }
 
-    function query($sql,$attr) {
+    function query($sql,$attr=null) {
         Console::debugEx(LOG_DEBUG2,__CLASS__,"SQL Query: %s", $sql);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $qt = new Timer(true);
