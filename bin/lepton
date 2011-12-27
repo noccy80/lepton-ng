@@ -7,6 +7,7 @@ using('lepton.utils.tokenizer');
 using('lepton.cli.readline');
 using('lepton.cli.action');
 using('cli.actions.*');
+using('app.cli.actions.*');
 
 class LeptonUtil extends ConsoleApplication {
 	static $verbose;
