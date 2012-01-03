@@ -1521,6 +1521,118 @@ abstract class string {
     public static function like($pattern,$string) {
         return fnmatch($pattern,$string,FNM_CASEFOLD);
     }
+    
+		function encode($str=null) {
+			if ($str==null) $str=$this->string;
+			return htmlentities($str);
+		}
+
+		public function in(Array $list,$str=null) {
+			if ($str==null) $str=$this->string;
+			foreach($list as $item) {
+				if (preg_match('/'.$item.'/',$str)) return true;
+			}
+			return false;
+		}
+
+		public function find($needle,$haystack,$offset=0,$ignorecase=true) {
+			if ($ignorecase) {
+				$pos = stripos($haystack,$needle,$offset);
+			} else {
+				$pos = strpos($haystack,$needle,$offset);
+			}
+			if ($pos === false) return null;
+			return $pos;
+		}
+
+
+		public function likein(Array $list,$string) {
+			foreach($list as $item) {
+				if (fnmatch($item,$string)) return true;
+			}
+			return false;
+		}
+
+		public function getFrom($what,$after=true,$str=null) {
+			if ($str==null) $str=$this->string;
+			$pos = String::find($what,$str);
+			if ($pos != String::NOTHING) {
+				if ($after) $pos += String::len($what);
+				return String::part(++$pos,String::len($str),$str);
+			} else {
+				return '';
+			}
+		}
+
+		public function getTo($what,$before=true,$str=null) {
+			if ($str==null) $str=$this->string;
+			$pos = String::find($what,$str);
+			if ($pos != String::NOTHING) {
+				if ($before) $pos -= String::len($what);
+				return String::part(1,$pos,$str);
+			} else {
+				return '';
+			}
+		}
+
+		public function getNewline($what) {
+			if (String::find("\r\n",$what) != String::NOTHING) return "\r\n";
+			if (String::find("\r",$what) != String::NOTHING) return "\r";
+			return "\n";
+		}
+
+		public function has($key,$str=null) {
+			if ($str==null) $str=$this->string;
+			$str = ' '.$str.' ';
+			$pos = String::find(String::toUpperCase($key),
+								String::toUpperCase($str));
+			return ($pos != String::NOTHING);
+		}
+
+		public function stripquotes($str) {
+			$quotes = String::left(1,$str).String::right(1,$str);
+			if ($quotes == '\'\'') {
+				return String::part(2,String::len($str)-2,$str);
+			} elseif ($quotes == '""') {
+				return String::part(2,String::len($str)-2,$str);
+			}
+			return $str;
+		}
+
+		public function ifEmpty($str,$alt) {
+			if ($str == '') return $alt;
+			return $str;
+		}
+
+		public function getNamespace($default,$str=null) {
+			if ($str==null) $str=$this->string;
+			if (String::find(':',$str) >= 0) {
+				$ns = explode(':',$str);
+				return (string)$ns[0];
+			} else {
+				return $default;
+			}
+		}
+
+		public function getLocation($str=null) {
+			if ($str==null) $str=$this->string;
+			if (String::find(':',$str) >= 0) {
+				$ns = explode(':',$str);
+				return $ns[1];
+			} else {
+				return $str;
+			}
+		}
+
+		public function match($pattern,$str=null) {
+			if ($str==null) $str=$this->string;
+			return (bool)(preg_match($pattern,$str));
+		}
+
+		static function pad($string,$length,$padchar=' ',$padtype=STR_PAD_RIGHT) {
+			return str_pad($string,$length,$padchar,$padtype);
+		}    
+    
 }
 
 abstract class integer {

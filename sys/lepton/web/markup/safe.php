@@ -4,6 +4,8 @@
     )
 ));
 
+using('lepton.utils.strings');
+
 /**
  * Wiki Markup parser/renderer for Lepton/PHP
  *
