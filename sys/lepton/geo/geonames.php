@@ -193,7 +193,7 @@ abstract class GeoNames {
         $rows = 0; $ltime = 0;
         foreach($reqs as $reql) {
             $rd = explode("\t",trim($reql)."\t");
-            if (count($rd)>1) {
+            if (count($rd)>3) {
                 $db->updateRow(
                     "REPLACE INTO geonames_featurecodes ".
                     "(featurecode,lang,featurename,description) VALUES (%s,%s,%s,%s)",
