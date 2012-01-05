@@ -282,6 +282,10 @@ abstract class base {
     
 }
 
+function getpath($path) {
+    return base::expand($path);
+}
+
 function expandpath($path) {
     return base::expand($path);
 }

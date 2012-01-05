@@ -33,6 +33,9 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
 
     /**
      * @brief Show usage information on the command.
+     * 
+     * If -h is specified as a valid argument, it will invoke the usage()
+     * method. Data displayed from this method is hosted in the application.
      *
      */
     function usage() {
@@ -299,11 +302,17 @@ interface IConsoleService {
 
 /**
  * @class ConsoleService
+ * @brief Wrap the functionality of a service, including forking.
  *
  *
  */
 abstract class ConsoleService extends ConsoleApplication implements IConsoleService {
 
+    private $_last_pid = null;
+    
+    /**
+     * @brief Constructor.
+     */
     public function __construct() {
         Console::debug("Constructing service instance");
         // register_shutdown_function(array(&$this, 'fatal'));
@@ -312,10 +321,20 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
         register_tick_function(array($this,'checkstate'));
     }
 
+    /**
+     * @brief Attaches a handler to a signal.
+     * 
+     * 
+     * @todo Add the ability to specify a custom handler.
+     * @param int $signal The signal to attach
+     */
     protected function attachSignal($signal) {
         pcntl_signal($signal, array($this,'signal'));
     }
 
+    /**
+     * @brief Destructor.
+     */
     public function __destruct() {
         // Console::debug("Destructing service instance");
         gc_collect_cycles();
@@ -325,6 +344,11 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
         // TODO: Time this better
     }
 
+    /**
+     * @brief Static signal handler
+     * 
+     * @param type $signal 
+     */
     static function signal($signal) {
         echo "\n";
         Console::debug("Caught signal %d", $signal);
@@ -333,15 +357,37 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
         }
     }
 
+    /**
+     * @brief Fork the process, sending it to the background.
+     * 
+     * Remember to check the return value in order to figure out if the fork
+     * was successful, and exit your application gracefully if true. This
+     * method does NOT return the new pid. Use getLastPid() to retrieve the
+     * pid of the new child process.
+     * 
+     * @return boolean True in the forked code, false in code calling fork.
+     */
     protected function fork() {
         $pid = pcntl_fork();
         if ($pid == -1) {
-            Console::warn("Could not fork process!");
+            throw new CriticalException("pcntl_fork() failed!");
         } elseif ($pid == 0) {
             $this->servicemain();
+            return true;
         } else {
+            $this->_last_pid = $pid;
             Console::writeLn("Forked to new pid %d", $pid);
+            return false;
         }
+    }
+    
+    /**
+     * @brief Return the pid of the last forked child process.
+     * 
+     * @return int The pid of the child process.
+     */
+    protected function getLastPid() {
+        return $this->_last_pid;
     }
 
 }
