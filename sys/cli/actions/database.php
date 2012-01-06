@@ -38,7 +38,7 @@ class DatabaseAction extends Action {
             'info' => 'Import one or more tables from the app/sql folder'
         ),
         'export' => array(
-            'arguments' => '[\b{DROP}] [\b{DATA}] \ŋ{tablename}]',
+            'arguments' => '[\b{DROP}] [\b{DATA}] [\g{tablename}]',
             'info' => 'Export one or more tables to the app/sql folder'
         ),
         'upgrade' => array(

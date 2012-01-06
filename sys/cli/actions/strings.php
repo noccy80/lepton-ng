@@ -129,12 +129,14 @@ class StringsAction extends Action {
 
         if (!$tolang) throw new BadArgumentException("Translate requires a language!");
         using('lepton.google.translate');
+        using('app.manualtranslate');
 
         $this->openDatabase();
 
         $fromlang = $this->db['db:defaultlang'];
 
-        $to = new GoogleTranslate($fromlang,$tolang);
+        // $to = new GoogleTranslate($fromlang,$tolang);
+        $to = new ManualTranslate($fromlang,$tolang);
         $tstra = array();
 
     $err = 0;
