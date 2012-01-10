@@ -490,7 +490,7 @@
             }
             return $rv;
         }
-
+        
     }
 
     /**
@@ -585,4 +585,3 @@
         const ERR_UNHANDLED_TYPE = 5;
     }
 
-?>

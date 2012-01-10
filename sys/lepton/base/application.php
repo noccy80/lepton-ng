@@ -365,9 +365,10 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
      * method does NOT return the new pid. Use getLastPid() to retrieve the
      * pid of the new child process.
      * 
+     * @param boolean $quiet If false, the fork status will be displayed
      * @return boolean True in the forked code, false in code calling fork.
      */
-    protected function fork() {
+    protected function fork($quiet=true) {
         $pid = pcntl_fork();
         if ($pid == -1) {
             throw new CriticalException("pcntl_fork() failed!");
@@ -376,7 +377,7 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
             return true;
         } else {
             $this->_last_pid = $pid;
-            Console::writeLn("Forked to new pid %d", $pid);
+            if (!$quiet) Console::writeLn("Forked to new pid %d", $pid);
             return false;
         }
     }

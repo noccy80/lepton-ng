@@ -86,5 +86,3 @@
         const ERR_GENERIC = 0;
         const ERR_NOLIMIT = 1;
     }
-
-?>
