@@ -15,6 +15,36 @@ using('lepton.cli.ansi');
 
 logger::registerFactory(new ConsoleLoggerFactory());
 
+class Argument {
+	const ARG_NONE = 0;
+	const ARG_SINGLE = 1;
+	const ARG_MULTI = 2;
+	private $shortopt = null;
+	private $longopt = null;
+	private $helpstr = null;
+	private $paramtype = self::ARG_NONE;
+	private $options = null;
+	function __construct($shortopt,$longopt = null,$helpstr = null,$paramtype = Argument::ARG_NONE,$options=null) {
+		$this->shortopt = $shortopt;
+		$this->longopt = $longopt;
+		$this->helpstr = $helpstr;
+		$this->paramtype = $paramtype;
+		$this->options = (array)$options;
+	}
+	function get() {
+		if ($this->paramtype == self::ARG_NONE) {
+			$as = $this->shortopt;
+		} elseif ($this->paramtype == self::ARG_SINGLE) {
+			$as = $this->shortopt.':';
+		} elseif ($this->paramtype == self::ARG_MULTI) {
+			$as = $this->shortopt.'::';
+		}
+		$al = $this->longopt;
+		$help = $this->helpstr;
+		return array($as,$al,$help);
+	}
+}
+
 /**
  * @class ConsoleApplication
  * @brief Abstract base class for console applications
@@ -26,6 +56,16 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
     protected $_args;
     protected $_params;
     protected $_pidfile;
+    protected $description = "Application";
+    protected $arguments;
+
+    protected function application($description,$options=null) {
+        $this->description = $description;
+    }
+
+    protected function addArgument(Argument $arg) {
+        $this->arguments[] = $arg->get();
+    }
 
     const PROCESS_RUNNING = 0;
     const PROCESS_CLEAR = 1;
@@ -40,7 +80,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
      */
     function usage() {
 
-        Console::writeLn("%s - %s", $this->getName(), isset($this->description)?$this->description:"Application [\$description undefined]");
+        Console::writeLn("%s - %s", $this->getName(), $this->description);
         Console::writeLn("");
         Console::writeLn("Usage:");
         Console::writeLn("    %s [-arguments] [parameters]", $this->getName());

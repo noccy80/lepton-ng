@@ -173,6 +173,8 @@ class url {
             } else {
                 $host = $this->host;
             }
+        } else {
+        	$host = null;
         }
         if ($this->user != null) {
             if ($ths->password != null) {
@@ -216,6 +218,47 @@ class url {
         } else {
             return url();
         }
+    }
+
+    public function apply($url) {
+        $url = (string)$url;
+        $qurl = url($url);
+
+        // If we got a scheme, we return the URL straight away
+        if ($qurl->scheme != null) {
+            return $qurl;
+        }
+
+        $ret = url((string)$this);
+
+        // If the url begins with a / we ditch the old path, otherwise we have
+        // to process the path to create a new url.
+        if (substr($url,0,1) == '/') {
+            $ret->path = $url;
+        } else {
+            $retpath = explode('/',$ret->path);
+            $newpath = explode('/',$url);
+
+            // If the last item in the list is not empty, we need to strip it
+            if ($retpath[count($retpath)-1] != '') {
+                $retpath = array_slice($retpath,0,count($retpath)-1);
+            }
+            $retpath = array_merge($retpath,$newpath);
+
+            // Go over the path and strip out any backlinks (..)
+            $outpath = array('');
+            for($i = 0; $i < count($retpath); $i++) {
+                if ($i < count($retpath) - 1) {
+                    if ($retpath[$i+1] == '..') { $i++; } else { $outpath[] = $retpath[$i]; }
+                } else {
+                    $outpath[] = $retpath[$i];
+                }
+            }
+
+            $path = join('/',$outpath);
+            $ret->path = $path;
+        }
+        return $ret;
     }
 
 }

@@ -3,6 +3,10 @@
 class LdwpManager {
 
     function request($event,$data) {
+    	if (url($event)->like('/^ldwp-webxml\/')) {
+			echo "Ohai";
+			return true;    	
+    	}
         return false;
     }
 

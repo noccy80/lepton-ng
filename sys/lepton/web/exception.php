@@ -12,6 +12,9 @@ class HttpException extends BaseException {
     const ERR_NOT_ACCEPTABLE = 406;
     const ERR_NOT_FOUND = 404;
     const ERR_SERVER_ERROR = 500;
+	const UNSUPPORTED_MEDIA_TYPE = 415;
+	const REQUEST_RANGE_NOT_SATISFIABLE = 416;
+	const IM_A_TEAPOT = 418;
 }
 
 class MvcExceptionHandler extends ExceptionHandler {

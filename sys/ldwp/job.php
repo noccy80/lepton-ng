@@ -11,7 +11,7 @@ interface ILdwpJob {
  *
  *
  */
-abstract class LdwpJob {
+abstract class LdwpJob implements ILdwpJob {
 
     const STATE_NULL = null; ///< @var Newly created job, not queued yet
     const STATE_QUEUED = 0; ///< @var Job queued in DB
