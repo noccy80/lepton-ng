@@ -1,5 +1,7 @@
 <?php
 
+using('net.lepton.url');
+
 class LdwpManager {
 
     function request($event,$data) {
