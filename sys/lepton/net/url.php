@@ -4,15 +4,15 @@
 
         private $url;
 
-        function __construct($url='') {
+        public function __construct($url='') {
             $this->setURL($url);
         }
 
-        function __toString() {
+        public function __toString() {
             return $this->getUrl();
         }
 
-        function getUrl() {
+        public function getUrl() {
             $ret = $this->url['scheme'].'://';
             $ret .= (($this->url['user']!='')?($this->url['user']).(($this->url['pass']!='')?':'.($this->url['pass']):'').'@':'');
             $ret .= $this->url['host'];
@@ -22,65 +22,69 @@
             $ret .= (($this->url['fragment']!='')?('#'.$this->url['fragment']):'');
             return $ret;
         }
-        function setUrl($url) {
+        public function setUrl($url) {
             $this->url = parse_url($url);
         }
 
-        function getScheme() {
+        public function getScheme() {
             return $this->url['scheme'];
         }
-        function getHost() {
+        public function getHost() {
             return $this->url['host'];
         }
-        function getPort() {
+        public function getPort() {
             return $this->url['port'];
         }
-        function getUser() {
+        public function getUser() {
             return $this->url['user'];
         }
-        function getPass() {
+        public function getPass() {
             return $this->url['pass'];
         }
-        function getPath() {
+        public function getPath() {
             return $this->url['path'];
         }
-        function getQuery() {
+        public function getQuery() {
             return $this->url['query'];
         }
-        function getFragment() {
+        public function getFragment() {
             return $this->url['fragment'];
         }
 
-        function setScheme($scheme) {
+        public function setScheme($scheme) {
             $this->url['scheme'] = $scheme;
         }
-        function setHost($host) {
+        public function setHost($host) {
             $this->url['host'] = $host;
         }
-        function setPort($port) {
+        public function setPort($port) {
             $this->url['port'] = $port;
         }
-        function setUser($user) {
+        public function setUser($user) {
             $this->url['user'] = $user;
         }
-        function setPass($pass) {
+        public function setPass($pass) {
             $this->url['pass'] = $pass;
         }
-        function setPath($path) {
+        public function setPath($path) {
             if (($path != '') && (String::part(1,1,$path) != '/')) {
                 $this->url['path'] = '/'.$path;
             } else {
                 $this->url['path'] = $path;
             }
         }
-        function setQuery($query) {
+        public function setQuery($query) {
             $this->url['query'] = $query;
         }
-        function setQueryArray($query) {
+        public function setQueryArray($query) {
             $this->url['query'] = http_build_query($query);
         }
-        function setFragment($fragment) {
+        public function setFragment($fragment) {
             $this->url['fragment'] = $fragment;
+        }
+        
+        public function like($expression) {
+            return preg_match($expression,(string)$this);
         }
 
     }
