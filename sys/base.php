@@ -1523,7 +1523,14 @@ abstract class string {
     }
 
     public static function like($pattern,$string) {
-        return fnmatch($pattern,$string,FNM_CASEFOLD);
+        if (typeOf($pattern) == 'array') {
+            foreach($pattern as $pat) {
+                if (fnmatch($pat,$string,FNM_CASEFOLD)) return true;
+            }
+            return false;
+        } else {
+            return fnmatch($pattern,$string,FNM_CASEFOLD);
+        }
     }
     
 		function encode($str=null) {
