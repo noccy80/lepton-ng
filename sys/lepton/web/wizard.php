@@ -207,12 +207,19 @@ class WizardForm implements IWizardForm {
     }
 }
 
+/**
+ * @brief Interface for a step in the wizard manager
+ *  
+ */
 interface IWizardStep {
     public function validate();
     public function addItem(IWizardControl $item);
     public function render(Array $meta = null);
 }
 
+/**
+ * @brief Base class for a step in the wizard manager. 
+ */
 class WizardStep implements IWizardStep {
     protected $controls = array(); ///< @var Controls in the step
     public function initialize() { }
@@ -244,12 +251,17 @@ class WizardStep implements IWizardStep {
    
 }
 
+/**
+ * @brief Interface for a Control in the Wizard manager 
+ * 
+ */
 interface IWizardControl {
     public function render(Array $meta = null);
 }
 
 /**
- * @brief Control component. 
+ * @brief Base class for A Control in the Wizard Manager
+ * 
  */
 abstract class WizardControl implements IWizardControl {
     protected $isvisible = false;
