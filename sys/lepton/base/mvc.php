@@ -20,7 +20,7 @@ using('lepton.mvc.content');
 using('lepton.mvc.secpolicy');
 using('lepton.mvc.viewstate');
 // Web libraries
-using('lepton.web.*');
+// using('lepton.web.*');
 
 class MvcApplication extends Application {
     const KEY_MVC_ROUTER = 'lepton.mvc.router';
