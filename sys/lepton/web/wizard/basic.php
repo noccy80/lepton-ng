@@ -3,6 +3,39 @@
 using('lepton.web.wizard');
 using('lepton.web.url');
 
+
+/**
+ * @brief
+ *  
+ * @author Christopher Vagnetoft
+ */
+class WizardHidden extends WizardControl {
+    
+    private $key = null;
+    private $value = null;
+    
+    public function __construct($key, $value) {
+        
+        // Save the main settings
+        $this->key = $key;
+        $this->value = $value;
+        
+        // Call the parent constructor with the whole lot
+        parent::__construct();
+    }
+    
+    public function render(array $meta = null) {
+        $attrs = '';
+        return sprintf('<input type="hidden" name="%s" value="%s">', $this->key, $this->value);
+    }    
+}
+
+
+/**
+ * @brief
+ *  
+ * @author Christopher Vagnetoft
+ */
 class WizardTextbox extends WizardControl {
     
     private $label = null;
@@ -27,6 +60,12 @@ class WizardTextbox extends WizardControl {
     
 }
 
+
+/**
+ * @brief
+ *  
+ * @author Christopher Vagnetoft
+ */
 class WizardButton extends WizardControl {
     
     const BUTTON_NORMAL = 0;
@@ -53,6 +92,12 @@ class WizardButton extends WizardControl {
     
 }
 
+
+/**
+ * @brief
+ *  
+ * @author Christopher Vagnetoft
+ */
 class WizardLabel extends WizardControl {
 
     private $text = null;
@@ -71,6 +116,12 @@ class WizardLabel extends WizardControl {
     
 }
 
+
+/**
+ * @brief
+ *  
+ * @author Christopher Vagnetoft
+ */
 class WizardIframe extends WizardControl {
 
     private $src = null;
@@ -91,6 +142,19 @@ class WizardIframe extends WizardControl {
     
 }
 
+
+/**
+ * @brief Drop-down combo box for Wizard.
+ * 
+ * This class encapsulates a select form element complete with one ore more
+ * option values, passed through the $items constructor argument or populated
+ * with the addComboItem() method.
+ * 
+ * Style options are: style, labelstyle, combostyle
+ * Class options are: class, labelclass, comboclass
+ * 
+ * @author Christopher Vagnetoft
+ */
 class WizardCombo extends WizardControl {
     
     private $label = null;
@@ -135,44 +199,4 @@ class WizardCombo extends WizardControl {
         return $out;
         
     }
-}
-
-/**
- * @brief Horizontal display of items for toolbars etc.
- */
-class WizardHPanel extends WizardLayoutControl {
-
-    private $_items = array();
-    private $_err = null;
-/*
-    function __construct(WizardError $err = null) {
-        $this->_err = $err;
-    }
-*/
-    /**
-     * @brief Add an item to the HPanel
-     * 
-     * @param IWizardControl $item
-     * @param array $options 
-     */
-    function addItem(IWizardControl $item, array $options = null) {
-        $this->_items[] = $item;
-    }
-
-    function render(Array $options = null) {
-        echo sprintf('<div style="overflow:hidden;">');
-        if ($this->_err) {
-            $err = $this->_err;
-            $this->_err = null;
-            $err->render($this);
-        } else {
-            foreach ($this->_items as $item) {
-                echo sprintf('<div style="float:left; display:block">');
-                    $item->render();
-                echo sprintf('</div>');
-            }
-            echo sprintf('</div>');
-        }
-    }
-
 }

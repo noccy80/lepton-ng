@@ -293,7 +293,22 @@ abstract class WizardControl implements IWizardControl {
     public function getVisibility() {
         return $this->isvisible;
     }
-    
+
+    /**
+     * @brief Get an option value
+     * 
+     * @param string $key The key to query
+     * @param mixed $default Default value if not set (defaults to null)
+     * @return mixed The option (or $default)
+     */
+    protected function getOption($key,$default=null) {
+        if (arr::hasKey($this->options,$key)) {
+            return $this->options[$key];
+        } else {
+            return $default;
+        }
+    }
+
     /**
      * @brief Set the visiblity of the control
      * @param bool $visibility The new visibility state
@@ -316,3 +331,4 @@ abstract class WizardLayoutControl extends WizardControl {
 }
 
 using('lepton.web.wizard.basic');
+using('lepton.web.wizard.layout');
