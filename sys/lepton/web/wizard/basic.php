@@ -150,6 +150,10 @@ class WizardIframe extends WizardControl {
  * option values, passed through the $items constructor argument or populated
  * with the addComboItem() method.
  * 
+ * The constructor can handle arrays of arrays, i.e. record sets from a database
+ * query. When passing data like this, the first column will become the value
+ * and the second column will be the text. The rest will be discarded.
+ * 
  * Style options are: style, labelstyle, combostyle
  * Class options are: class, labelclass, comboclass
  * 
@@ -163,7 +167,24 @@ class WizardCombo extends WizardControl {
     public function __construct($label, Array $items = null, Array $options = null) {
         
         $this->label = $label;
-        $this->items = $items;
+        // Here we will do a little check to see if the array we are passed is
+        // indexed with a key ( $k => $v ), or if it's simply an array of arrays
+        // i.e. a recordset from a database query. If this is the case, we will
+        // go over the list and massage it to be indexed with a key.
+
+        if (count($items)>0) {
+            if (typeOf($items[0]) == 'array') {
+                $newarr = array();
+                // Repopulate the list with keys properly assigned
+                foreach($items as $item) {
+                    $newarr[$item[0]] = $item[1];
+                }
+                // And update the item list with our newly populated one
+                $items = $newarr;
+            }
+            // Now we update the main list
+            $this->items = $items;
+        }
         $this->options = arr::defaults($options, array(
             'class' => 'wf-row'
         ));
@@ -191,8 +212,11 @@ class WizardCombo extends WizardControl {
 
         // Render the control
         $out = sprintf('<div%s><label%s>%s</label><select%s>', $attrs, $lattrs, $this->label, $sattrs);
+        $current = $this->getOption('current',null);
         foreach($this->items as $value=>$text) {
-            $out.= sprintf('<option value="%s">%s</option>', $value, $text);
+            $attrs = '';
+            if ($current == $value) $attrs.=' selected="selected"';
+            $out.= sprintf('<option%s value="%s">%s</option>', $attrs, $value, $text);
         }
         $out.= sprintf('</select></div>');
         

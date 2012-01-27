@@ -93,7 +93,7 @@ class WizardForm implements IWizardForm {
      * what form it belongs to. 
      */
     public function receive() {
-        
+
         // Find the current step
         $step = $this->getOption('step',-1);
         if ($step >= 0) {
@@ -101,6 +101,9 @@ class WizardForm implements IWizardForm {
 
             // We call on the validate method to have the form do it's magic.
             // $ts['step']->validate();
+            
+            $step = $step + 1;
+            $this->options['step'] = $step;
         }
     }
 
@@ -212,6 +215,18 @@ class WizardForm implements IWizardForm {
             $ret[] = $v['key'];
         }
         return $ret;
+    }
+    
+    public function debug() {
+        $debug = array(
+            'Current step' => $this->getCurrentStepKey(),
+            'Step keys' => $this->getStepKeys(),
+            'Current step index' => $this->getCurrentStepIndex(),
+            'Form was submitted' => ($this->getFormSubmitted()?'True':'False'),
+            'Form was completed' => ($this->getFormCompleted()?'True':'False'),
+            'Form token' => $this->getFormToken()
+        );
+        debug::inspect($debug,false);
     }
 }
 
