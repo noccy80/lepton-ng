@@ -231,9 +231,10 @@ interface IWizardStep {
  */
 class WizardStep implements IWizardStep {
     protected $controls = array(); ///< @var Controls in the step
+    protected $token = null; ///< @var The form token
     
     public function initialize($token) {
-        printf("TOKEN = %s", $token);
+        $this->token = $token;
     }
     
     public function validate() { }

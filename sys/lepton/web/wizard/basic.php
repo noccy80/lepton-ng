@@ -32,6 +32,7 @@ class WizardButton extends WizardControl {
     const BUTTON_NORMAL = 0;
     const BUTTON_NEXT = 1;
     const BUTTON_BACK = 2;
+    const BUTTON_CANCEL = 3;
     
     private $type = self::BUTTON_NORMAL;
     private $text = null;
@@ -88,6 +89,52 @@ class WizardIframe extends WizardControl {
         return sprintf('<iframe src="%s" %s></iframe>', (string)$url, $attrs);
     }
     
+}
+
+class WizardCombo extends WizardControl {
+    
+    private $label = null;
+    private $items = array();
+    
+    public function __construct($label, Array $items = null, Array $options = null) {
+        
+        $this->label = $label;
+        $this->items = $items;
+        $this->options = arr::defaults($options, array(
+            'class' => 'wf-row'
+        ));
+        
+    }
+    
+    public function addComboItem($key,$value) {
+        
+        $this->items[$key] = $value;
+        
+    }
+    
+    public function render(array $meta = null) {
+        
+        // Attribute sets
+        $lattrs = ''; $attrs = ''; $sattrs = '';
+        
+        // Check the options for the various styles and classes
+        if (arr::hasKey($this->options,'class')) $attrs.=sprintf(' class="%s"', $this->options['class']);
+        if (arr::hasKey($this->options,'style')) $attrs.=sprintf(' style="%s"', $this->options['style']);
+        if (arr::hasKey($this->options,'labelclass')) $lattrs.=sprintf(' class="%s"', $this->options['class']);
+        if (arr::hasKey($this->options,'labelstyle')) $lattrs.=sprintf(' style="%s"', $this->options['style']);
+        if (arr::hasKey($this->options,'comboclass')) $sattrs.=sprintf(' class="%s"', $this->options['class']);
+        if (arr::hasKey($this->options,'combostyle')) $sattrs.=sprintf(' style="%s"', $this->options['style']);
+
+        // Render the control
+        $out = sprintf('<div%s><label%s>%s</label><select%s>', $attrs, $lattrs, $this->label, $sattrs);
+        foreach($this->items as $value=>$text) {
+            $out.= sprintf('<option value="%s">%s</option>', $value, $text);
+        }
+        $out.= sprintf('</select></div>');
+        
+        return $out;
+        
+    }
 }
 
 /**
