@@ -68,7 +68,8 @@ class WizardForm implements IWizardForm {
         $stepobj = $stepinfo['step']; 
         
         $meta = array(
-            'step' => $step
+            'step' => $step,
+            'token' => $this->getFormToken()
         );
         
         $action = $this->getOption('action',null);
@@ -116,6 +117,13 @@ class WizardForm implements IWizardForm {
         } else {
             return $default;
         }
+    }
+    
+    public function createStep($key, $name, Array $options = null) {
+        
+        $ws = new WizardStep();
+        $this->addStep($ws, $name, $options);
+        return $ws;
     }
     
     /**

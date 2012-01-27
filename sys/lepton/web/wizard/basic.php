@@ -1,15 +1,16 @@
 <?
 
 using('lepton.web.wizard');
+using('lepton.web.url');
 
 class WizardTextbox extends WizardControl {
     
-    private $text = null;
+    private $label = null;
     
-    public function __construct($text,$id,array $options=null) {
+    public function __construct($label,$id,array $options=null) {
         
         // Save the main settings
-        $this->text = $text;
+        $this->label = $label;
         
         // Populate some settings
         if (!$options) $options = array();
@@ -20,7 +21,8 @@ class WizardTextbox extends WizardControl {
     }
     
     public function render(array $meta = null) {
-        return sprintf('<input type="text">');
+        $attrs = '';
+        return sprintf('<div%s><label>%s</label><input type="text"></div>', $attrs, $this->label);
     }
     
 }
@@ -43,7 +45,47 @@ class WizardButton extends WizardControl {
         switch($this->type) {
             case self::BUTTON_NEXT:
                 return sprintf('<input type="submit" value="%s">', $this->text);
+            case self::BUTTON_BACK:
+                return sprintf('<input type="button" onclick="history.go(-1);" value="%s">', $this->text);
         }
+    }
+    
+}
+
+class WizardLabel extends WizardControl {
+
+    private $text = null;
+    
+    public function __construct($text, Array $options = null) {
+        $this->text = $text;
+        $this->options = $options;
+    }
+    
+    public function render(array $meta = null) {
+        $attrs = '';
+        if (arr::hasKey($this->options,'style')) $attrs.=sprintf(' style="%s"', $this->options['style']);
+        if (arr::hasKey($this->options,'class')) $attrs.=sprintf(' class="%s"', $this->options['class']);
+        return sprintf('<div%s>%s</div>', $attrs, $this->text);
+    }
+    
+}
+
+class WizardIframe extends WizardControl {
+
+    private $src = null;
+    
+    public function __construct($src, Array $options = null) {
+        $this->src = $src;
+        $this->options = $options;
+    }
+    
+    public function render(array $meta = null) {
+        $attrs = '';
+        $url = url($this->src);
+        $url->setParameter('token', $meta['token']);
+        if (arr::hasKey($this->options,'class')) $attrs.=sprintf(' class="%s"', $this->options['class']);
+        if (arr::hasKey($this->options,'style')) $attrs.=sprintf(' style="%s"', $this->options['style']);
+        return sprintf('<iframe src="%s" %s></iframe>', (string)$url, $attrs);
     }
     
 }
