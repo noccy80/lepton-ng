@@ -36,7 +36,7 @@ class WizardForm implements IWizardForm {
             if (request::has('wf_formtoken')) {
                 $token = request::get('wf_formtoken')->toString();                
             } else {
-                $token = uniqid ('form',true);
+                $token = uniqid ('form',false);
             }
         }
             
@@ -156,7 +156,7 @@ class WizardForm implements IWizardForm {
  
      */
     public function getFormToken() {
-        return ("magictoken");
+        return ($this->getOption('token'));
     }
     
     /**
@@ -215,6 +215,7 @@ interface IWizardStep {
     public function validate();
     public function addItem(IWizardControl $item);
     public function render(Array $meta = null);
+    public function initialize($token);
 }
 
 /**
@@ -222,7 +223,11 @@ interface IWizardStep {
  */
 class WizardStep implements IWizardStep {
     protected $controls = array(); ///< @var Controls in the step
-    public function initialize() { }
+    
+    public function initialize($token) {
+        printf("TOKEN = %s", $token);
+    }
+    
     public function validate() { }
 
     /**

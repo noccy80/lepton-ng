@@ -51,7 +51,7 @@ class WizardButton extends WizardControl {
 /**
  * @brief Horizontal display of items for toolbars etc.
  */
-class WizardHPanel extends IWizardLayoutControl {
+class WizardHPanel extends WizardLayoutControl {
 
     private $_items = array();
     private $_err = null;
