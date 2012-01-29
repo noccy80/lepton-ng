@@ -120,10 +120,22 @@ class MessageEnvelope implements IteratorAggregate {
 
     private $data = null;
     private $type = null;
+    private $ttl = null;
+
+    const DEFAULT_TTL=32;
 
     function __construct($msgtype,array $msgdata) {
         $this->data = $msgdata;
         $this->type = $msgtype;
+        $this->ttl = self::DEFAULT_TTL;
+    }
+
+    public function refresh() {
+        $this->ttl--;
+    }
+
+    function getTimeToLive() {
+        return $this->ttl;
     }
 
     function getMessageType() {
