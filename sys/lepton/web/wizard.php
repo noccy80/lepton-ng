@@ -124,9 +124,9 @@ class WizardForm implements IWizardForm {
     }
     
     public function createStep($key, $name, Array $options = null) {
-        
+       
         $ws = new WizardStep();
-        $this->addStep($ws, $name, $options);
+        $this->addStep($ws, $key, $name, $options);
         return $ws;
     }
     
@@ -145,7 +145,7 @@ class WizardForm implements IWizardForm {
             'title' => $name, // The title of the step
             'novalidate' => false, // If true the form will not be validated
         );
-        
+
         // Apply the defaults to the options
         $options = arr::defaults($options, $defaults);
         // And add the step with the new options attached

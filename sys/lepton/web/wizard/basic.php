@@ -5,7 +5,9 @@ using('lepton.web.url');
 
 
 /**
- * @brief
+ * @brief Encapsulates a input type=hidden form field.
+ * 
+ * This type is not visible and thus does not support any styling.
  *  
  * @author Christopher Vagnetoft
  */
@@ -14,6 +16,12 @@ class WizardHidden extends WizardControl {
     private $key = null;
     private $value = null;
     
+    /**
+     * @brief Constructor.
+     * 
+     * @param string $key The name of the input field
+     * @param string $value The value
+     */
     public function __construct($key, $value) {
         
         // Save the main settings
@@ -24,6 +32,12 @@ class WizardHidden extends WizardControl {
         parent::__construct();
     }
     
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
     public function render(array $meta = null) {
         $attrs = '';
         return sprintf('<input type="hidden" name="%s" value="%s">', $this->key, $this->value);
@@ -32,8 +46,9 @@ class WizardHidden extends WizardControl {
 
 
 /**
- * @brief
- *  
+ * @brief Encapsulates a one-line text box (input type=text)
+ * 
+ * 
  * @author Christopher Vagnetoft
  */
 class WizardTextbox extends WizardControl {
@@ -53,6 +68,12 @@ class WizardTextbox extends WizardControl {
         parent::__construct($options);
     }
     
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
     public function render(array $meta = null) {
         if ($this->getOption('password',false) == true) {
             $type = 'password';
@@ -70,7 +91,7 @@ class WizardTextbox extends WizardControl {
 }
 
 /**
- * @brief
+ * @brief Encapsulates a multi line text area (textarea)
  *  
  * @author Christopher Vagnetoft
  */
@@ -91,6 +112,12 @@ class WizardTextArea extends WizardControl {
         parent::__construct($options);
     }
     
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
     public function render(array $meta = null) {
         $attrs = '';
         if ($this->getOption('autoselect',true) == true) {
@@ -110,7 +137,7 @@ class WizardTextArea extends WizardControl {
 
 
 /**
- * @brief
+ * @brief Encapsulates a button (input type=button/submit/cancel)
  *  
  * @author Christopher Vagnetoft
  */
@@ -130,6 +157,12 @@ class WizardButton extends WizardControl {
         parent::__construct($options);
     }
     
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
     public function render(array $meta = null) {
         if ($this->getOption('enabled',true) != true) {
             $disabled = ' disabled="disabled"';
@@ -149,6 +182,10 @@ class WizardButton extends WizardControl {
     
 }
 
+/**
+ * @brief Encapsulates a toolbar consisting of buttons
+ *  
+ */
 class WizardButtonBar extends WizardControl {
 
     private $_buttons = array();
@@ -172,6 +209,12 @@ class WizardButtonBar extends WizardControl {
         
     }
 
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
     function render(Array $meta = null) {
 
         $ret = '<div style="overflow:hidden;">';
@@ -198,7 +241,9 @@ class WizardButtonBar extends WizardControl {
 }
 
 /**
- * @brief
+ * @brief Encapsulates a textual label.
+ * 
+ * This control has got nothing to do with the html label element.
  *  
  * @author Christopher Vagnetoft
  */
@@ -211,6 +256,12 @@ class WizardLabel extends WizardControl {
         $this->options = $options;
     }
     
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
     public function render(array $meta = null) {
         $attrs = '';
         $cssclass = 'fp -label';
@@ -227,7 +278,12 @@ class WizardLabel extends WizardControl {
 
 
 /**
- * @brief
+ * @brief Encapsulates an iframe. 
+ * 
+ * The form token will be added to the request URL of the iframe as the query
+ * string argument "token".
+ * 
+ * The control can be styled with the "class" and "style" options.
  *  
  * @author Christopher Vagnetoft
  */
@@ -240,6 +296,12 @@ class WizardIframe extends WizardControl {
         $this->options = $options;
     }
     
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
     public function render(array $meta = null) {
         $attrs = '';
         $url = url($this->src);
@@ -306,17 +368,29 @@ class WizardCombo extends WizardControl {
         
     }
     
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
     public function render(array $meta = null) {
         
         // Attribute sets
         $lattrs = ''; $attrs = ''; $sattrs = '';
+        $cssclass = null; $dcssclass = null;
         
         // Check the options for the various styles and classes
-        if (arr::hasKey($this->options,'class')) $attrs.=sprintf(' class="%s"', $this->options['class']);
         if (arr::hasKey($this->options,'style')) $attrs.=sprintf(' style="%s"', $this->options['style']);
-        if (arr::hasKey($this->options,'labelclass')) $lattrs.=sprintf(' class="%s"', $this->options['class']);
-        if (arr::hasKey($this->options,'labelstyle')) $lattrs.=sprintf(' style="%s"', $this->options['style']);
-        if (arr::hasKey($this->options,'comboclass')) $sattrs.=sprintf(' class="%s"', $this->options['class']);
+        $dcssclass = $this->getOption('class',null);
+        $attrs.=sprintf(' class="%s"', 'fp -formrow'.($dcssclass?' '.$dcssclass:''));
+
+        $lcssclass = $this->getOption('labelclass',null);
+        $lattrs.=sprintf(' class="%s"', 'fp'.($lcssclass?' '.$lcssclass:''));
+
+        if (arr::hasKey($this->options,'labelstyle')) $lattrs.=sprintf(' style="%s"', $this->options['labelstyle']);
+        if (arr::hasKey($this->options,'comboclass')) $cssclass = $this->getOption('class');
+        $sattrs.=sprintf(' class="%s"', 'fp -dropdown'.($cssclass?' '.$cssclass:''));
         if (arr::hasKey($this->options,'combostyle')) $sattrs.=sprintf(' style="%s"', $this->options['style']);
 
         // Render the control
@@ -332,4 +406,52 @@ class WizardCombo extends WizardControl {
         return $out;
         
     }
+}
+
+class WizardVisualSteps extends WizardControl {
+    
+    private $src = null;
+    
+    public function __construct(Array $options = null) {
+        parent::__construct($options);
+    }
+    
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
+    public function render(array $meta = null) {
+
+        $stepsarr = array();
+        if (arr::hasKey($meta,'steps')) {
+            foreach($meta['steps'] as $step) {
+                $stepname = $step['name'];
+                $stepsarr[] = $stepname;
+            }
+        }
+        
+        $idx = 0;
+        $step = $meta['step'];
+        foreach($stepsarr as $key=>$val) {
+            $sc1 = '1';
+            $sc2 = '1';
+            if ($idx == $step - 1) { $sc2 = '2'; }
+            if ($idx == $step) { $sc1 = '2'; }
+            // Last step, should have nothing right
+            if ($idx == count($this->_array) - 1) { $sc2 = '0'; $sc1 = '0'; }
+            $stepcode = '-wizardstep-'.$sc1.$sc2;
+            if ($key == $this->_current) {
+                $buttons.= sprintf('<div class="current %s">%s</div>', $stepcode, $val);
+            } else {
+                $buttons.= sprintf('<div class="%s">%s</div>', $stepcode, $val);
+            }
+            $idx++;
+        }
+
+        return sprintf('<div class="wizard-steps" style="background-color:#F0F0F0; padding:3px;">%s</div>', $buttons);        
+        
+    }
+    
 }
