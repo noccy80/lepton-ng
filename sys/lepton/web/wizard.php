@@ -273,7 +273,8 @@ class WizardStep implements IWizardStep {
             $ret.= sprintf('<input type="hidden" name="wf_step" value="%d">', $step);
         }
         foreach($this->controls as $k=>$ctl) {
-            $ret.= $ctl['control']->render($meta);
+            if ($ctl['control']->getVisibility())
+                $ret.= $ctl['control']->render($meta);
         }
         return $ret;
     }
@@ -293,12 +294,12 @@ interface IWizardControl {
  * 
  */
 abstract class WizardControl implements IWizardControl {
-    protected $isvisible = false;
+    protected $isvisible = true;
     protected $options = array();
     protected $defaults = array();
     
     public function __construct(Array $options = null) {
-        $this->options = arr::defaults($options, $this->defaults);
+        $this->options = (array)$options;
     }
     
     /**
@@ -342,7 +343,6 @@ abstract class WizardControl implements IWizardControl {
  * @brief Layout component. 
  */
 abstract class WizardLayoutControl extends WizardControl {
-    
 }
 
 using('lepton.web.wizard.basic');

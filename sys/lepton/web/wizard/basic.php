@@ -54,8 +54,17 @@ class WizardTextbox extends WizardControl {
     }
     
     public function render(array $meta = null) {
+        if ($this->getOption('password',false) == true) {
+            $type = 'password';
+        } else {
+            $type = 'text';
+        }
         $attrs = '';
-        return sprintf('<div%s><label>%s</label><input type="text"></div>', $attrs, $this->label);
+        if ($this->getOption('autoselect',true) == true) {
+            $attrs.= ' onmouseup="this.focus(); this.select();"';
+        }
+        $dattrs = ' class="fp -formrow"';
+        return sprintf('<div%s><label class="fp">%s</label><input class="fp" type="%s"%s></div>', $dattrs, $this->label, $type, $attrs);
     }
     
 }
@@ -79,14 +88,23 @@ class WizardButton extends WizardControl {
     public function __construct($text, $type = self::BUTTON_NORMAL, Array $options = null) {
         $this->type = (int)$type;
         $this->text = $text;
+        parent::__construct($options);
     }
     
     public function render(array $meta = null) {
+        if ($this->getOption('enabled',true) != true) {
+            $disabled = ' disabled="disabled"';
+        } else {
+            $disabled = '';
+        }
+        $attrs = ''.$disabled;
         switch($this->type) {
             case self::BUTTON_NEXT:
-                return sprintf('<input type="submit" value="%s">', $this->text);
+                return sprintf('<input class="fp" type="submit" value="%s"%s>', $this->text, $attrs);
             case self::BUTTON_BACK:
-                return sprintf('<input type="button" onclick="history.go(-1);" value="%s">', $this->text);
+                return sprintf('<input class="fp" type="button" onclick="history.go(-1);" value="%s"%s>', $this->text, $attrs);
+            case self::BUTTON_NORMAL:
+                return sprintf('<input class="fp" type="button" value="%s"%s>', $this->text, $attrs);
         }
     }
     
@@ -109,8 +127,13 @@ class WizardLabel extends WizardControl {
     
     public function render(array $meta = null) {
         $attrs = '';
+        $cssclass = 'fp -label';
         if (arr::hasKey($this->options,'style')) $attrs.=sprintf(' style="%s"', $this->options['style']);
-        if (arr::hasKey($this->options,'class')) $attrs.=sprintf(' class="%s"', $this->options['class']);
+        if (arr::hasKey($this->options,'class')) {
+            $attrs.=sprintf(' class="%s %s"', $cssclass, $this->options['class']);
+        } else {
+            $attrs.=sprintf(' class="%s"', $cssclass);
+        }
         return sprintf('<div%s>%s</div>', $attrs, $this->text);
     }
     
