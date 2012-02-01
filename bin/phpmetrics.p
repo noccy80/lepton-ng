@@ -9,7 +9,8 @@ class MetricsApp extends ConsoleApplication {
 		array('v','verbose','Verbose operation'),
 		array('q','quiet','Quiet operation'),
 		array('p:','path','Path to scan'),
-		array('h','help','Show help')
+		array('h','help','Show help'),
+		array('c','csv','CSV Output')
 	);
 	public $commands = array(
 		array("scan", "Scan the source code and generate statistics")
@@ -32,6 +33,8 @@ class MetricsApp extends ConsoleApplication {
 
 		$this->verbose = $this->hasArgument('v');
 		$this->quiet = $this->hasArgument('q');
+
+		if ($this->hasArgument('c')) { $this->quiet = true; $this->verbose = false; }
 
 		if (!$this->quiet) console::writeLn("Scanning source tree...");
 
@@ -68,11 +71,15 @@ class MetricsApp extends ConsoleApplication {
 			$tblanks+= $blanks;
 			$tcomments+= $comments;
 		}
-		console::writeLn("Total lines:      %d", $tlines);
-		console::writeLn("Total characters: %d", $tbytes);
-		console::writeLn("Comment lines:    %d", $tcomments);
-		console::writeLn("Empty lines:      %d", $tblanks);
-		console::writeLn("Avg. line length: %.1f", $tbytes/($tlines-$tblanks));
+		if ($this->hasArgument('c')) {
+			printf("%s\t%d\t%d\t%d\t%.1f\n", date("Y-m-d"), $tlines, $tbytes, $tcomments, $tblanks);
+		} else {
+			console::writeLn("Total lines:      %d", $tlines);
+			console::writeLn("Total characters: %d", $tbytes);
+			console::writeLn("Comment lines:    %d", $tcomments);
+			console::writeLn("Empty lines:      %d", $tblanks);
+			console::writeLn("Avg. line length: %.1f", $tbytes/($tlines-$tblanks));
+		}
 
 	}
 
