@@ -11,11 +11,10 @@ class WizardHPanel extends WizardLayoutControl {
 
     private $_items = array();
     private $_err = null;
-/*
-    function __construct(WizardError $err = null) {
-        $this->_err = $err;
+
+    function __construct(Array $options=null) {
+        parent::__construct($options);
     }
-*/
     /**
      * @brief Add an item to the HPanel
      * 
@@ -27,19 +26,22 @@ class WizardHPanel extends WizardLayoutControl {
     }
 
     function render(Array $options = null) {
-        echo sprintf('<div style="overflow:hidden;">');
-        if ($this->_err) {
-            $err = $this->_err;
-            $this->_err = null;
-            $err->render($this);
-        } else {
-            foreach ($this->_items as $item) {
-                echo sprintf('<div style="float:left; display:block">');
-                    $item->render();
-                echo sprintf('</div>');
-            }
-            echo sprintf('</div>');
+
+        $attrs = '';
+        $cssclass = $this->getOption('class',null);
+        $cssclass = 'fp -vpanel'.($cssclass?' '.$cssclass:'');
+        $cssstyle = $this->getOption('style',null);
+        $attrs.=sprintf(' class="%s"', $cssclass);
+        if ($cssstyle) $attrs.=sprintf(' style="%s"', $cssstyle);
+        $ret = sprintf('<div %s>',$attrs);
+        foreach ($this->_items as $item) {
+            $ret.= sprintf('<div style="float:left; display:block">');
+            $ret.= $item->render($meta);
+            $ret.= sprintf('</div>');
         }
+        $ret.=sprintf('</div>');
+        return $ret;
+        
     }
 
 }
@@ -57,7 +59,7 @@ class WizardVPanel extends WizardLayoutControl {
     }
     
     /**
-     * @brief Add an item to the HPanel
+     * @brief Add an item to the VPanel
      * 
      * @param IWizardControl $item
      * @param array $options 
