@@ -69,6 +69,45 @@ class WizardTextbox extends WizardControl {
     
 }
 
+/**
+ * @brief
+ *  
+ * @author Christopher Vagnetoft
+ */
+class WizardTextArea extends WizardControl {
+    
+    private $label = null;
+    
+    public function __construct($label,$id,array $options=null) {
+        
+        // Save the main settings
+        $this->label = $label;
+        
+        // Populate some settings
+        if (!$options) $options = array();
+        $options['key'] = $id;
+        
+        // Call the parent constructor with the whole lot
+        parent::__construct($options);
+    }
+    
+    public function render(array $meta = null) {
+        $attrs = '';
+        if ($this->getOption('autoselect',true) == true) {
+            $attrs.= ' onmouseup="this.focus(); this.select();"';
+        }
+        $dattrs = ' class="fp -formrow"';
+        $attrs = '';
+        $cssclass = $this->getOption('class',null);
+        $cssclass = 'fp'.($cssclass?' '.$cssclass:'');
+        $cssstyle = $this->getOption('style',null);
+        $attrs.=sprintf(' class="%s"', $cssclass);
+        if ($cssstyle) $attrs.=sprintf(' style="%s"', $cssstyle);
+        return sprintf('<div%s><label class="fp">%s</label><textarea class="fp"%s></textarea></div>', $dattrs, $this->label, $attrs);
+    }
+    
+}
+
 
 /**
  * @brief
@@ -110,6 +149,53 @@ class WizardButton extends WizardControl {
     
 }
 
+class WizardButtonBar extends WizardControl {
+
+    private $_buttons = array();
+    private $_name = null;
+
+    function __construct($name) {
+
+        $this->_name = $name;
+    }
+
+    function addButton($name, $label, $type='button', $style='', $onclick=null) {
+
+        if ($type=='button') { $btype = WizardButton::BUTTON_NORMAL; }
+        if ($type=='submit') { $btype = WizardButton::BUTTON_NEXT; }
+        $this->_buttons[] = new WizardButton($label, $btype, array(
+                'onclick' => $onclick,
+                'style' => $style,
+                'name' => $name,
+                'onclick' => $onclick
+        ));
+        
+    }
+
+    function render(Array $meta = null) {
+
+        $ret = '<div style="overflow:hidden;">';
+        foreach ($this->_buttons as $button) {
+            $ret.= sprintf('<div style="float:left; display:block">');
+            $ret.= $button->render($meta);
+            $ret.= sprintf('</div>');
+        }
+        $ret.=sprintf('</div>');
+        return $ret;
+        
+        echo sprintf('<p class="wizard-buttonbar">');
+        foreach ($this->_buttons as $button) {
+            if ($button['onclick']) {
+                $onclick = sprintf('onclick="%s"', $button['onclick']);
+            } else {
+                $onclick = '';
+            }
+            echo sprintf('<input type="%s" name="%s" id="wb-%s" value="%s" style="%s" %s>', $button['type'], $button['name'], $button['name'], $button['label'], $button['style'], $onclick);
+        }
+        echo sprintf('</p>');
+    }
+
+}
 
 /**
  * @brief

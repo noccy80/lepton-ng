@@ -29,7 +29,7 @@ class WizardHPanel extends WizardLayoutControl {
 
         $attrs = '';
         $cssclass = $this->getOption('class',null);
-        $cssclass = 'fp -vpanel'.($cssclass?' '.$cssclass:'');
+        $cssclass = 'fp -hpanel'.($cssclass?' '.$cssclass:'');
         $cssstyle = $this->getOption('style',null);
         $attrs.=sprintf(' class="%s"', $cssclass);
         if ($cssstyle) $attrs.=sprintf(' style="%s"', $cssstyle);

@@ -69,7 +69,8 @@ class WizardForm implements IWizardForm {
         
         $meta = array(
             'step' => $step,
-            'token' => $this->getFormToken()
+            'token' => $this->getFormToken(),
+            'steps' => $this->steps
         );
         
         $action = $this->getOption('action',null);
