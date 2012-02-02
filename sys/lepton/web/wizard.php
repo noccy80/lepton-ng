@@ -67,10 +67,18 @@ class WizardForm implements IWizardForm {
         $stepinfo = $this->steps[$step];
         $stepobj = $stepinfo['step']; 
         
+        if (!session::has('fp')) session::set('fp',array());
+        $fpdata = session::get('fp');
+        if (!arr::hasKey($fpdata,$this->getFormToken())) {
+            $fpdata[$this->getFormToken()] = array();
+        }
+        $formdata = $fpdata[$this->getFormToken()];
+
         $meta = array(
             'step' => $step,
             'token' => $this->getFormToken(),
-            'steps' => $this->steps
+            'steps' => $this->steps,
+            'formdata' => $formdata
         );
         
         $action = $this->getOption('action',null);
@@ -82,6 +90,8 @@ class WizardForm implements IWizardForm {
         $form.= sprintf('<input type="hidden" name="wf_formtoken" value="%s">', $this->getFormToken());
         $form.= $stepobj->render($meta);
         $form.= sprintf('</form>');
+
+        debug::inspect($fpdata);
         
         return $form;
         
@@ -95,17 +105,33 @@ class WizardForm implements IWizardForm {
      */
     public function receive() {
 
+        if (!session::has('fp')) session::set('fp',array());
+        $fpdata = session::get('fp');
+        if (!arr::hasKey($fpdata,$this->getFormToken())) {
+            $fpdata[$this->getFormToken()] = array();
+        }
+        $formdata = $fpdata[$this->getFormToken()];
+        
         // Find the current step
         $step = $this->getOption('step',-1);
         if ($step >= 0) {
+            $meta = array(
+                'step' => $step,
+                'token' => $this->getFormToken(),
+                'steps' => $this->steps,
+                'formdata' => $formdata
+            );
             $ts = $this->steps[$step];
 
             // We call on the validate method to have the form do it's magic.
-            $ts['step']->validate();
+            $formdata = $ts['step']->validate($meta);
+            $fp[$this->getFormToken()] = $formdata;
+            session::set('fp', $fp);
             
             $step = $step + 1;
             $this->options['step'] = $step;
         }
+
     }
 
     /**
@@ -236,7 +262,7 @@ class WizardForm implements IWizardForm {
  *  
  */
 interface IWizardStep {
-    public function validate();
+    public function validate(array $meta);
     public function addItem(IWizardControl $item);
     public function render(Array $meta = null);
     public function initialize($token);
@@ -253,17 +279,21 @@ class WizardStep implements IWizardStep {
         $this->token = $token;
     }
     
-    public function validate() {
-        if (!session::has('fp')) session::set('fp', array());
-        $fpdata = session::get('fp');
-        if (!arr::hasKey($fpdata,$this->token)) $fpdata[$this->token];
-        $formdata = session::get($fpdata[$this->token]);
-
+    public function validate(array $meta) {
+        
+        $formdata = $meta['formdata'];
+        
         foreach($this->controls as $ctl) {
             $ci = $ctl['control'];
-            printf('<pre>'); echo $ci->getKey(); printf('</pre>');
-        }
+            if ($ci instanceOf WizardLayoutControl) {
+                $formdata = $ci->validate($meta);
+            } else {
+                $key = $ci->getKey();
+                // $formdata[$key] = $ci->doValidation();
+            }
+        }    
         
+        return($formdata);
     }
 
     /**
@@ -309,11 +339,19 @@ abstract class WizardControl implements IWizardControl {
     protected $isvisible = true;
     protected $options = array();
     protected $defaults = array();
-    protected $key = null;
+    public $key = null;
+
+    public function getKey() {
+        return $this->key;
+    }
     
-    public function __construct(Array $options = null) {
-        $this->options = (array)$options;
-        if (arr::hasKey($options,'key')) $this->setKey($options['key']);
+    public function setKey($key) {
+        $this->key = $key;
+    }    
+
+    public function __construct(Array $opts = null) {
+        $this->options = (array)$opts;
+        if (arr::hasKey($opts,'key')) $this->setKey($opts['key']);
     }
     
     /**
@@ -347,20 +385,43 @@ abstract class WizardControl implements IWizardControl {
         $this->isvisible = (bool)$visibility;
     }
     
-    public function getKey() {
-        printf('<pre>%s</pre>', print_r($this->options));
-        return $this->getOption('key',$this->key);
-    }
-    
-    protected function setKey($key) {
-        $this->options['key'] = $key;
-    }
 }
 
 /**
  * @brief Layout component. 
  */
 abstract class WizardLayoutControl extends WizardControl {
+
+    protected $_items = array();
+
+    public function validate(array $meta) {
+
+        $formdata = $meta['formdata'];
+        foreach($this->_items as $ci) {
+            if (is_a($ci, WizardLayoutControl)) {
+                $ci->validate($meta);
+            } else {
+                $key = $ci->getKey();
+                // Do the validation here
+                if (arr::hasKey($formdata,$key) && 
+                    ($formdata[$key]['value'] == (string)request::get($key))) {
+                    // Not changed, so query previous state of validation
+                    if ($formdata[$key]['valid'] != true) {
+                        // Do validation
+                    }
+                } else {
+                    // Insert into array
+                    $formdata[$key] = array(
+                        'value' => (string)request::get($key),
+                        'valid' => $formdata[$key]['valid']
+                    );
+                }
+            }
+        }
+        return($formdata);
+        
+    }    
+    
 }
 
 using('lepton.web.wizard.basic');

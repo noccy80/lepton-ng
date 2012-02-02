@@ -13,7 +13,6 @@ using('lepton.web.url');
  */
 class WizardHidden extends WizardControl {
     
-    protected $key = null;
     private $value = null;
     
     /**
@@ -62,10 +61,10 @@ class WizardTextbox extends WizardControl {
         
         // Populate some settings
         if (!$options) $options = array();
-        $options['key'] = $id;
+        $this->setKey($id);
         
         // Call the parent constructor with the whole lot
-        parent::__construct($options);
+        $this->options = $options;
     }
     
     /**
@@ -75,6 +74,9 @@ class WizardTextbox extends WizardControl {
      * @return string The rendered control
      */
     public function render(array $meta = null) {
+        if (arr::hasKey($meta['formdata'],$this->getKey())) {
+            printf("I am in there!"); die();
+        }
         if ($this->getOption('password',false) == true) {
             $type = 'password';
         } else {
@@ -91,8 +93,8 @@ class WizardTextbox extends WizardControl {
         $cssstyle = $this->getOption('style',null);
         $attrs.=sprintf(' class="%s"', $cssclass);
         if ($cssstyle) $attrs.=sprintf(' style="%s"', $cssstyle);
-        
-        return sprintf('<div%s><label class="fp">%s</label><input class="fp" type="%s"%s></div>', $dattrs, $this->label, $type, $attrs);
+        $key = $this->getKey();
+        return sprintf('<div%s><label for="%s" class="fp">%s</label><input id="%s" name="%s" class="fp" type="%s"%s></div>', $dattrs, $key, $this->label, $key, $key, $type, $attrs);
     }
     
 }

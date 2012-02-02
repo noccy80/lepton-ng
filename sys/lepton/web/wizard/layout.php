@@ -9,7 +9,6 @@ using('lepton.web.url');
  */
 class WizardHPanel extends WizardLayoutControl {
 
-    private $_items = array();
     private $_err = null;
 
     function __construct(Array $options=null) {
@@ -51,7 +50,6 @@ class WizardHPanel extends WizardLayoutControl {
  */
 class WizardVPanel extends WizardLayoutControl {
 
-    private $_items = array();
     private $_err = null;
     
     function __construct(Array $options=null) {
