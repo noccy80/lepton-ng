@@ -19,6 +19,7 @@ using('lepton.mvc.forms');
 using('lepton.mvc.content');
 using('lepton.mvc.secpolicy');
 using('lepton.mvc.viewstate');
+using('lepton.web.debug');
 // Web libraries
 // using('lepton.web.*');
 

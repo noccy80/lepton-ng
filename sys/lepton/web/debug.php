@@ -70,7 +70,17 @@ class WebDebugProvider implements IDebugProvider {
         $ret.= '</table>';
         return $ret;
     }
-
+   
+    public function inspectReflection($obj) {
+        
+        $rc = new ReflectionClass($obj);
+        
+        var_dump($rc);
+        
+        die();
+        
+    }
+    
 }
 
 debug::setDebugProvider(new webDebugProvider());

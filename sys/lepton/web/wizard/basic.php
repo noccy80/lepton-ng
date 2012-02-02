@@ -13,7 +13,7 @@ using('lepton.web.url');
  */
 class WizardHidden extends WizardControl {
     
-    private $key = null;
+    protected $key = null;
     private $value = null;
     
     /**
@@ -85,6 +85,13 @@ class WizardTextbox extends WizardControl {
             $attrs.= ' onmouseup="this.focus(); this.select();"';
         }
         $dattrs = ' class="fp -formrow"';
+        $attrs = '';
+        $cssclass = $this->getOption('class',null);
+        $cssclass = 'fp'.($cssclass?' '.$cssclass:'');
+        $cssstyle = $this->getOption('style',null);
+        $attrs.=sprintf(' class="%s"', $cssclass);
+        if ($cssstyle) $attrs.=sprintf(' style="%s"', $cssstyle);
+        
         return sprintf('<div%s><label class="fp">%s</label><input class="fp" type="%s"%s></div>', $dattrs, $this->label, $type, $attrs);
     }
     
@@ -199,6 +206,8 @@ class WizardButtonBar extends WizardControl {
     function addButton($name, $label, $type='button', $style='', $onclick=null) {
 
         if ($type=='button') { $btype = WizardButton::BUTTON_NORMAL; }
+        if ($type=='back') { $btype = WizardButton::BUTTON_BACK; }
+        if ($type=='next') { $btype = WizardButton::BUTTON_NEXT; }
         if ($type=='submit') { $btype = WizardButton::BUTTON_NEXT; }
         $this->_buttons[] = new WizardButton($label, $btype, array(
                 'onclick' => $onclick,

@@ -101,7 +101,7 @@ class WizardForm implements IWizardForm {
             $ts = $this->steps[$step];
 
             // We call on the validate method to have the form do it's magic.
-            // $ts['step']->validate();
+            $ts['step']->validate();
             
             $step = $step + 1;
             $this->options['step'] = $step;
@@ -253,7 +253,18 @@ class WizardStep implements IWizardStep {
         $this->token = $token;
     }
     
-    public function validate() { }
+    public function validate() {
+        if (!session::has('fp')) session::set('fp', array());
+        $fpdata = session::get('fp');
+        if (!arr::hasKey($fpdata,$this->token)) $fpdata[$this->token];
+        $formdata = session::get($fpdata[$this->token]);
+
+        foreach($this->controls as $ctl) {
+            $ci = $ctl['control'];
+            printf('<pre>'); echo $ci->getKey(); printf('</pre>');
+        }
+        
+    }
 
     /**
      * @brief Add an item to the step
@@ -298,9 +309,11 @@ abstract class WizardControl implements IWizardControl {
     protected $isvisible = true;
     protected $options = array();
     protected $defaults = array();
+    protected $key = null;
     
     public function __construct(Array $options = null) {
         $this->options = (array)$options;
+        if (arr::hasKey($options,'key')) $this->setKey($options['key']);
     }
     
     /**
@@ -335,9 +348,13 @@ abstract class WizardControl implements IWizardControl {
     }
     
     public function getKey() {
-        return ($this->options['key']);
+        printf('<pre>%s</pre>', print_r($this->options));
+        return $this->getOption('key',$this->key);
     }
     
+    protected function setKey($key) {
+        $this->options['key'] = $key;
+    }
 }
 
 /**
