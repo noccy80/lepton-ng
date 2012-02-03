@@ -474,3 +474,52 @@ class WizardVisualSteps extends WizardControl {
     }
     
 }
+
+class WizardCaptcha extends WizardControl {
+    
+    private $captchaid = null;
+    
+    function __construct($label,$key,array $options = null) {
+        using('lepton.web.captcha');
+        $this->setKey($key);
+        $this->label = $label;
+        parent::__construct($options);
+        $this->captchaid = Captcha::generate();
+    }
+    
+    function render(array $meta = null) {
+        
+        
+        $attrs = '';
+        if ($this->getOption('autoselect',true) == true) {
+            $attrs.= ' onmouseup="this.focus(); this.select();"';
+        }
+        $dattrs = ' class="fp -formrow"';
+        $attrs = '';
+        $cssclass = $this->getOption('class',null);
+        $cssclass = 'fp'.($cssclass?' '.$cssclass:'');
+        $cssstyle = $this->getOption('style','width:80px;');
+        $attrs.=sprintf(' class="%s"', $cssclass);
+        if ($cssstyle) $attrs.=sprintf(' style="%s"', $cssstyle);
+        $key = $this->getKey();
+        $formtoken = $meta['token'];
+        $curform = $meta['formdata'];
+        $curform = $curform[$formtoken];
+        if (arr::hasKey($meta['formdata'],$formtoken)) {
+            $value = $meta['formdata'][$formtoken][$this->getKey()]['value'];
+        } else {
+            $value = null;
+        }
+        $captchaurl = $this->getOption('captchaurl','/meta/captcha').'?cid='.$this->captchaid;
+
+        $str = sprintf('<div%s>', $dattrs);
+        $str.= sprintf('<label for="%s" class="fp">%s</label>', $key, $this->label);
+        $str.= sprintf('<img src="%s"><br>', $captchaurl);
+        $str.= sprintf('<input id="%s_cid" name="%s_cid" class="fp" type="hidden" value="%s">', $key, $key, $this->captchaid);
+        $str.= sprintf('<input id="%s" name="%s" class="fp" type="text" %s>', $key, $key, $attrs);
+        $str.= sprintf('</div>');
+        return $str;
+        
+    }
+    
+}
