@@ -62,6 +62,12 @@ class WizardForm implements IWizardForm {
      */
     public function render() {
         
+        if ($this->getOption('injectscripts',true)) {
+            printf('<script type="text/javascript">');
+            printf('function fpGoPreviousStep() { $(\'wf_control\').value=\'-1\'; $(\''.$this->getFormToken().'\').submit(); }');
+            printf('</script>');
+        }
+        
         // Find the current step
         $step = $this->getOption('step',0);
         $stepinfo = $this->steps[$step];
@@ -72,13 +78,12 @@ class WizardForm implements IWizardForm {
         if (!arr::hasKey($fpdata,$this->getFormToken())) {
             $fpdata[$this->getFormToken()] = array();
         }
-        $formdata = $fpdata[$this->getFormToken()];
 
         $meta = array(
             'step' => $step,
             'token' => $this->getFormToken(),
             'steps' => $this->steps,
-            'formdata' => $formdata
+            'formdata' => $fpdata
         );
         
         $action = $this->getOption('action',null);
@@ -86,12 +91,13 @@ class WizardForm implements IWizardForm {
         $method = $this->getOption('method',null);
         $method = sprintf(' method="%s"', $method);
 
-        $form = sprintf('<form%s>', $action.$method);
+        $form = sprintf('<form id="%s"%s>', $this->getFormToken(), $action.$method);
         $form.= sprintf('<input type="hidden" name="wf_formtoken" value="%s">', $this->getFormToken());
+        $form.= sprintf('<input type="hidden" id="wf_control" name="wf_control" value="1">');
         $form.= $stepobj->render($meta);
         $form.= sprintf('</form>');
 
-        debug::inspect($fpdata);
+        //debug::inspect($fpdata, false);
         
         return $form;
         
@@ -128,7 +134,12 @@ class WizardForm implements IWizardForm {
             $fp[$this->getFormToken()] = $formdata;
             session::set('fp', $fp);
             
-            $step = $step + 1;
+            $meta = request::get('wf_control',1)->toInt();
+            if ($meta == 1) {
+                $step = $step + 1;
+            } else {
+                $step = $step - 1;
+            }
             $this->options['step'] = $step;
         }
 
@@ -289,7 +300,20 @@ class WizardStep implements IWizardStep {
                 $formdata = $ci->validate($meta);
             } else {
                 $key = $ci->getKey();
-                // $formdata[$key] = $ci->doValidation();
+                // Do the validation here
+                if (arr::hasKey($formdata,$key) && 
+                    ($formdata[$key]['value'] == (string)request::get($key))) {
+                    // Not changed, so query previous state of validation
+                    if ($formdata[$key]['valid'] != true) {
+                        // Do validation
+                    }
+                } else {
+                    // Insert into array
+                    $formdata[$key] = array(
+                        'value' => (string)request::get($key),
+                        'valid' => $formdata[$key]['valid']
+                    );
+                }
             }
         }    
         
@@ -351,7 +375,7 @@ abstract class WizardControl implements IWizardControl {
 
     public function __construct(Array $opts = null) {
         $this->options = (array)$opts;
-        if (arr::hasKey($opts,'key')) $this->setKey($opts['key']);
+        if (arr::hasKey($this->options,'key')) $this->setKey($this->options['key']);
     }
     
     /**

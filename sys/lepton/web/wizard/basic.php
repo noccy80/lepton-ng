@@ -94,7 +94,15 @@ class WizardTextbox extends WizardControl {
         $attrs.=sprintf(' class="%s"', $cssclass);
         if ($cssstyle) $attrs.=sprintf(' style="%s"', $cssstyle);
         $key = $this->getKey();
-        return sprintf('<div%s><label for="%s" class="fp">%s</label><input id="%s" name="%s" class="fp" type="%s"%s></div>', $dattrs, $key, $this->label, $key, $key, $type, $attrs);
+        $formtoken = $meta['token'];
+        $curform = $meta['formdata'];
+        $curform = $curform[$formtoken];
+        if (arr::hasKey($meta['formdata'],$formtoken)) {
+            $value = $meta['formdata'][$formtoken][$this->getKey()]['value'];
+        } else {
+            $value = null;
+        }
+        return sprintf('<div%s><label for="%s" class="fp">%s</label><input id="%s" name="%s" class="fp" type="%s" value="%s"%s></div>', $dattrs, $key, $this->label, $key, $key, $type, $value, $attrs);
     }
     
 }
@@ -183,7 +191,7 @@ class WizardButton extends WizardControl {
             case self::BUTTON_NEXT:
                 return sprintf('<input class="fp" type="submit" value="%s"%s>', $this->text, $attrs);
             case self::BUTTON_BACK:
-                return sprintf('<input class="fp" type="button" onclick="history.go(-1);" value="%s"%s>', $this->text, $attrs);
+                return sprintf('<input class="fp" type="button" onclick="fpGoPreviousStep();" value="%s"%s>', $this->text, $attrs);
             case self::BUTTON_NORMAL:
                 return sprintf('<input class="fp" type="button" value="%s"%s>', $this->text, $attrs);
         }
@@ -200,7 +208,7 @@ class WizardButtonBar extends WizardControl {
     private $_buttons = array();
     private $_name = null;
 
-    function __construct($name) {
+    function __construct($name=null) {
 
         $this->_name = $name;
     }
@@ -453,7 +461,7 @@ class WizardVisualSteps extends WizardControl {
             // Last step, should have nothing right
             if ($idx == count($this->_array) - 1) { $sc2 = '0'; $sc1 = '0'; }
             $stepcode = '-wizardstep-'.$sc1.$sc2;
-            if ($key == $this->_current) {
+            if ($key == $step) {
                 $buttons.= sprintf('<div class="current %s">%s</div>', $stepcode, $val);
             } else {
                 $buttons.= sprintf('<div class="%s">%s</div>', $stepcode, $val);
