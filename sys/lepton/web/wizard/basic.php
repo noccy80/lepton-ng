@@ -510,7 +510,8 @@ class WizardCaptcha extends WizardControl {
         } else {
             $value = null;
         }
-        $captchaurl = $this->getOption('captchaurl','/meta/captcha').'?cid='.$this->captchaid;
+        $captchaurl = $this->getOption('captchaurl','/meta/captcha?cid={cid}');
+        $captchaurl = str_replace('{cid}',$this->captchaid, $captchaurl);
 
         $str = sprintf('<div%s>', $dattrs);
         $str.= sprintf('<label for="%s" class="fp">%s</label>', $key, $this->label);

@@ -22,6 +22,9 @@ class WebDebugProvider implements IDebugProvider {
         $ret = '<table>';
         foreach ($data as $key => $value) {
             $ret.='<tr><th>' . htmlentities($key) . ' <br><em style="font-size:10px; font-weight:normal">'.typeOf($value).'</em></th><td>';
+            if (typeOf($value) == 'boolean') {
+                $value = ($value)?'True':'False';
+            }
             if (is_array($value) || is_a($value, 'StdClass')) {
                 $ret.= self::inspectArray((array)$value);
             } else {
