@@ -23,15 +23,20 @@ class WebDebugProvider implements IDebugProvider {
         foreach ($data as $key => $value) {
             $ret.='<tr><th>' . htmlentities($key) . ' <br><em style="font-size:10px; font-weight:normal">'.typeOf($value).'</em></th><td>';
             if (typeOf($value) == 'boolean') {
-                $value = ($value)?'True':'False';
-            }
-            if (is_array($value) || is_a($value, 'StdClass')) {
-                $ret.= self::inspectArray((array)$value);
-            } else {
-                if ($value === null) {
-                    $ret.= '<img src="data:image/gif;base64,R0lGODdhEwAHAKECAAAAAPj4/////////ywAAAAAEwAHAAACHYSPmWIB/KKBkznIKI0iTwlKXuR8B9aUXdYprlsAADs=">';
+                if ($value) {
+                    $ret.= '<img src="data:image/gif;base64,R0lGODlhEwAHAIABAAAAAP///yH5BAEKAAEALAAAAAATAAcAAAIajI+ZwMFgoHMt2imhPNn2x0XVt1zZuSkqUgAAOw==" alt="true">';
                 } else {
-                    $ret.= htmlentities($value);
+                    $ret.= '<img src="data:image/gif;base64,R0lGODlhFwAHAIABAAAAAP///yH5BAEKAAEALAAAAAAXAAcAAAIejI+pB20eAGqSPnblxczp2nmQFlkkdpJfWY3QAi8FADs=" alt="false">';
+                }
+            } else {
+                if (is_array($value) || is_a($value, 'StdClass')) {
+                    $ret.= self::inspectArray((array)$value);
+                } else {
+                    if ($value === null) {
+                        $ret.= '<img src="data:image/gif;base64,R0lGODdhEwAHAKECAAAAAPj4/////////ywAAAAAEwAHAAACHYSPmWIB/KKBkznIKI0iTwlKXuR8B9aUXdYprlsAADs=" alt="null">';
+                    } else {
+                        $ret.= htmlentities($value);
+                    }
                 }
             }
             $ret.='</td></tr>';

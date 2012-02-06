@@ -62,23 +62,21 @@ class WizardForm implements IWizardForm {
      */
     public function render() {
         
-        if ($this->getOption('injectscripts',true)) {
-            printf('<script type="text/javascript">');
-            printf('function fpGoPreviousStep() { $(\'wf_control\').value=\'-1\'; $(\''.$this->getFormToken().'\').submit(); }');
-            printf('</script>');
-        }
-        
+      
         // Find the current step
         $step = $this->getOption('step',0);
         $stepinfo = $this->steps[$step];
         $stepobj = $stepinfo['step']; 
         
+        // Make sure that the formplus dataset is present in the session
         if (!session::has('fp')) session::set('fp',array());
         $fpdata = session::get('fp');
+        // Check if the specific form is present
         if (!arr::hasKey($fpdata,$this->getFormToken())) {
             $fpdata[$this->getFormToken()] = array();
         }
 
+        // Assign the metadata to pass to the rendering chain.
         $meta = array(
             'step' => $step,
             'token' => $this->getFormToken(),
@@ -86,12 +84,21 @@ class WizardForm implements IWizardForm {
             'formdata' => $fpdata
         );
         
+        // Output the form
         $action = $this->getOption('action',null);
         if ($action) $action = sprintf(' action="%s"', $action);
         $method = $this->getOption('method',null);
         $method = sprintf(' method="%s"', $method);
 
-        $form = sprintf('<form id="%s"%s>', $this->getFormToken(), $action.$method);
+        $form = "";
+        
+        if ($this->getOption('injectscripts',true)) {
+            $form.= sprintf('<script type="text/javascript">');
+            $form.= sprintf('function fpGoPreviousStep() { $(\'wf_control\').value=\'-1\'; $(\''.$this->getFormToken().'\').submit(); }');
+            $form.= sprintf('</script>');
+        }
+
+        $form.= sprintf('<form id="%s"%s>', $this->getFormToken(), $action.$method);
         $form.= sprintf('<input type="hidden" name="wf_formtoken" value="%s">', $this->getFormToken());
         $form.= sprintf('<input type="hidden" id="wf_control" name="wf_control" value="1">');
         $form.= $stepobj->render($meta);
@@ -132,9 +139,10 @@ class WizardForm implements IWizardForm {
             // We call on the validate method to have the form do it's magic.
             $formdata = $ts['step']->validate($meta);
             $fp[$this->getFormToken()] = $formdata;
-            debug::inspect($fp, false);
             session::set('fp', $fp);
-            
+
+            debug::inspect($fp, false);
+
             $meta = request::get('wf_control',1)->toInt();
             if ($meta == 1) {
                 $step = $step + 1;
@@ -301,25 +309,36 @@ class WizardStep implements IWizardStep {
                 $formdata = $ci->validate($meta);
             } else {
                 $key = $ci->getKey();
-                // Flag to detect changes 
-                $formdata[$key]['changed'] = true;
-                // Do the validation here
-                if (arr::hasKey($formdata,$key) && 
-                    (request::has($key)) &&
-                    ($formdata[$key]['value'] == (string)request::get($key))) {
+                if ($key) {
+                    // Flag to detect changes. Defaults to true and is reset.
+                    $formdata[$key]['changed'] = true;
                     
-                    // Not changed, so query previous state of validation
-                    $formdata[$key]['changed'] = false;
-                    if ($formdata[$key]['valid'] != true) {
-                        // Do validation
+                    // Do the validation here
+                    if (arr::hasKey($formdata,$key) && 
+                        (request::has($key)) &&
+                        ($formdata[$key]['value'] == (string)request::get($key))) {
+                        printf("<p>Field not changed: %s</p>", $key);
+                        // Not changed, so query previous state of validation
+                        $formdata[$key]['changed'] = false;
+                        $formdata[$key]['valid'] = false;
+                        if ($formdata[$key]['valid'] != true) {
+                            // Do validation
+                            if (is_callable(array($ci,'isValid'))) {
+                                printf("<p>Validating field %s</p>", $key);
+                                $formdata[$key]['valid'] = (bool)$ci->isValid($formdata[$key]['value']);
+                            } else {
+                                printf("<p>No validation for %s</p>", $key);
+                                $formdata[$key]['valid'] = true;
+                            }
+                        }
+                    } else {
+                        // Insert into array
+                        $formdata[$key] = array(
+                            'value' => (string)request::get($key),
+                            'valid' => $formdata[$key]['valid'],
+                            'changed' => true
+                        );
                     }
-                } else {
-                    // Insert into array
-                    $formdata[$key] = array(
-                        'value' => (string)request::get($key),
-                        'valid' => $formdata[$key]['valid'],
-                        'changed' => true
-                    );
                 }
             }
         }    
@@ -442,116 +461,103 @@ abstract class WizardControl implements IWizardControl {
      * @param string $data The field definition data
      * @return bool True if the form is valid
      */
-    public function validate($data) {
+    static function validateField($data,$rules) {
         $toks = 'validate:1 between:1 and:1 above:1 below:1 netmask:1 '.
             'match:1 as:1 minlength:1 maxlength:1 required:0 default:1';
-        $this->fields = $data;
-        $this->valid = true;
+        $fields = $data;
+        $valid = true;
         // Go over each of the expected form fields
-        foreach((array)$data as $field => $attr) {
-            if (request::has($field)) {
-                $this->raw[$field] = (string)request::get($field);
-            } else {
-                $this->raw[$field] = null;
-            }
 
-            $valid = true;
-            $data = $this->raw[$field];
-
-            $t = new Tokenizer($toks,$attr);
-            $ta = $t->getTokens();
-            foreach($t as $tok=>$arg) {
-                switch($tok) {
-                    case 'validate':
-                        switch($arg) {
-                            case 'email':
-                                $valid = (filter_var($data, FILTER_VALIDATE_EMAIL));
-                                break;
-                            case 'ip':
-                                $valid = (filter_var($data, FILTER_VALIDATE_IP));
-                                break;
-                            case 'int':
-                                $valid = (filter_var($data, FILTER_VALIDATE_INT));
-                                break;
-                            case 'bool':
-                            case 'boolean':
-                                $valid = (filter_var($data, FILTER_VALIDATE_BOOL));
-                                break;
-                            case 'float':
-                                $valid = (filter_var($data, FILTER_VALIDATE_FLOAT));
-                                break;
-                            case 'file':
-                            // is a file?
-                                break;
-                            default:
-                                throw new BaseException('Invalid validation type: '.$arg);
+        $t = new Tokenizer($toks,$rules);
+        $ta = $t->getTokens();
+        foreach($t as $tok=>$arg) {
+            switch($tok) {
+                case 'validate':
+                    switch($arg) {
+                        case 'email':
+                            $valid = (filter_var($data, FILTER_VALIDATE_EMAIL));
+                            break;
+                        case 'ip':
+                            $valid = (filter_var($data, FILTER_VALIDATE_IP));
+                            break;
+                        case 'int':
+                            $valid = (filter_var($data, FILTER_VALIDATE_INT));
+                            break;
+                        case 'bool':
+                        case 'boolean':
+                            $valid = (filter_var($data, FILTER_VALIDATE_BOOL));
+                            break;
+                        case 'float':
+                            $valid = (filter_var($data, FILTER_VALIDATE_FLOAT));
+                            break;
+                        case 'file':
+                        // is a file?
+                            break;
+                        default:
+                            throw new BaseException('Invalid validation type: '.$arg);
+                    }
+                    break;
+                case 'between':
+                // check if between $arg and ['and']
+                    $min = $arg;
+                    if (!isset($ta['and'])) {
+                        throw new BaseException('Form field definition using "between" without "and"');
+                    }
+                    $max = $ta['and'];
+                    if (($data < $min) || ($data > $max)) $valid = false;
+                    break;
+                case 'minlength':
+                    if (strlen($data) < $arg) $valid = false;
+                    break;
+                case 'maxlength':
+                    if (strlen($data) > $arg) $valid = false;
+                    break;
+                case 'above':
+                    if ($data < $arg) $valid = false;
+                    break;
+                case 'below':
+                    if ($data > $arg) $valid = false;
+                    break;
+                case 'netmask':
+                    $s = explode(';',$arg);
+                    // Match subnet x.x.x.x/xxx
+                    $valid = false;
+                    foreach($s as $net) {
+                        list ($net, $mask) = explode ('/', $net);
+                        if ((ip2long($data) & ~((1 << (32 - $mask)) - 1) ) == (ip2long($net) & ~((1 << (32 - $mask)) - 1))) {
+                            $valid = true;
+                            break;
                         }
-                        break;
-                    case 'between':
-                    // check if between $arg and ['and']
-                        $min = $arg;
-                        if (!isset($ta['and'])) {
-                            throw new BaseException('Form field definition using "between" without "and"');
+                        /*
+                        $netpart = explode('/',$net);
+                        $ip = sprintf("%032b",ip2long($data)); 
+                        $subnet = sprintf("%032b",ip2long($netpart[0])); 
+                        if (substr_compare($ip,$subnet,0,$netpart[1]) === 0) {
+                            $valid = true;
+                            break;
                         }
-                        $max = $ta['and'];
-                        if (($data < $min) || ($data > $max)) $valid = false;
-                        break;
-                    case 'minlength':
-                        if (strlen($data) < $arg) $valid = false;
-                        break;
-                    case 'maxlength':
-                        if (strlen($data) > $arg) $valid = false;
-                        break;
-                    case 'above':
-                        if ($data < $arg) $valid = false;
-                        break;
-                    case 'below':
-                        if ($data > $arg) $valid = false;
-                        break;
-                    case 'netmask':
-                        $s = explode(';',$arg);
-                        // Match subnet x.x.x.x/xxx
-                        $valid = false;
-                        foreach($s as $net) {
-                            list ($net, $mask) = explode ('/', $net);
-                            if ((ip2long($data) & ~((1 << (32 - $mask)) - 1) ) == (ip2long($net) & ~((1 << (32 - $mask)) - 1))) {
-                                $valid = true;
-                                break;
-                            }
-                            /*
-                            $netpart = explode('/',$net);
-                            $ip = sprintf("%032b",ip2long($data)); 
-                            $subnet = sprintf("%032b",ip2long($netpart[0])); 
-                            if (substr_compare($ip,$subnet,0,$netpart[1]) === 0) {
-                                $valid = true;
-                                break;
-                            }
-                            */
-                        }
-                        break;
-                    case 'match':
-                        $ret = preg_match($arg,$data);
-                        if (!$ret) $valid = false;
-                        break;
-                    case 'as':
-                        if ($data != $this->raw[$arg]) $valid = false;
-                        break;
-                    case 'required':
-                        if ($data == null) $valid = false;
-                        break;
-                    case 'default':
-                        if ($data == null) $data = $arg;
-                        break;
-                    default:
-                        throw new BaseException("Invalid token.");
-                }
+                        */
+                    }
+                    break;
+                case 'match':
+                    $ret = preg_match($arg,$data);
+                    if (!$ret) $valid = false;
+                    break;
+                case 'as':
+                    if ($data != $this->raw[$arg]) $valid = false;
+                    break;
+                case 'required':
+                    if ($data == null) $valid = false;
+                    break;
+                case 'default':
+                    if ($data == null) $data = $arg;
+                    break;
+                default:
+                    throw new BaseException("Invalid token.");
             }
-            // if (!$valid) { Console::warn('Form field %s failed validation', $field); }
-            $this->fieldvalid[$field] = $valid;
-            $this->parsed[$field] = $data;
-            if (!$valid) $this->formvalid = false;
         }
-        return $this->formvalid;
+
+        return $valid;
     }
 
     /**

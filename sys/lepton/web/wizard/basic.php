@@ -67,6 +67,16 @@ class WizardTextbox extends WizardControl {
         $this->options = $options;
     }
     
+    public function isValid($value) {
+        
+        $validation = $this->getOption('validation',null);
+        if (!$validation) return true;
+        
+        $ok = WizardControl::validateField($value, $validation);
+        printf('<p>In validator as <b>%s</b> with value"<em>%s</em>" = %d</p>', $validation, $value, $ok);
+        return $ok;
+    }
+    
     /**
      * Renders the wizard element
      * 
@@ -74,9 +84,6 @@ class WizardTextbox extends WizardControl {
      * @return string The rendered control
      */
     public function render(array $meta = null) {
-        if (arr::hasKey($meta['formdata'],$this->getKey())) {
-            printf("I am in there!"); die();
-        }
         if ($this->getOption('password',false) == true) {
             $type = 'password';
         } else {
@@ -354,9 +361,10 @@ class WizardCombo extends WizardControl {
     private $label = null;
     private $items = array();
     
-    public function __construct($label, Array $items = null, Array $options = null) {
+    public function __construct($label, $key, Array $items = null, Array $options = null) {
         
         $this->label = $label;
+        $this->setKey($key);
         // Here we will do a little check to see if the array we are passed is
         // indexed with a key ( $k => $v ), or if it's simply an array of arrays
         // i.e. a recordset from a database query. If this is the case, we will
@@ -413,7 +421,8 @@ class WizardCombo extends WizardControl {
         if (arr::hasKey($this->options,'combostyle')) $sattrs.=sprintf(' style="%s"', $this->options['style']);
 
         // Render the control
-        $out = sprintf('<div%s><label%s>%s</label><select%s>', $attrs, $lattrs, $this->label, $sattrs);
+        $key = $this->getKey();
+        $out = sprintf('<div%s><label%s>%s</label><select name="%s" id="%s"%s>', $attrs, $lattrs, $this->label, $key, $key, $sattrs);
         $current = $this->getOption('current',null);
         foreach($this->items as $value=>$text) {
             $attrs = '';
