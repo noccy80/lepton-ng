@@ -68,6 +68,8 @@ class WizardForm implements IWizardForm {
         $stepinfo = $this->steps[$step];
         $stepobj = $stepinfo['step']; 
         
+        if (!$stepobj) return null;
+        
         // Make sure that the formplus dataset is present in the session
         if (!session::has('fp')) session::set('fp',array());
         $fpdata = session::get('fp');
@@ -141,7 +143,7 @@ class WizardForm implements IWizardForm {
             $fp[$this->getFormToken()] = $formdata;
             session::set('fp', $fp);
 
-            debug::inspect($fp, false);
+            // debug::inspect($fp, false);
 
             $meta = request::get('wf_control',1)->toInt();
             if ($meta == 1) {
@@ -204,6 +206,7 @@ class WizardForm implements IWizardForm {
         
         // Now go over the data for the step to see if it has already been
         // validated and saved. We do this with the initialize method.
+        $step->setForm($this);
         $step->initialize($this->getFormToken());
         
     }
@@ -223,6 +226,23 @@ class WizardForm implements IWizardForm {
      * @return boolean True if the wizard is complete.
      */
     public function getFormCompleted() {
+
+        if (!session::has('fp')) session::set('fp',array());
+        $fpdata = session::get('fp');
+        if (!arr::hasKey($fpdata,$this->getFormToken())) {
+            $fpdata[$this->getFormToken()] = array();
+        }
+        $formdata = $fpdata[$this->getFormToken()];
+        
+        foreach($formdata as $field) {
+            if ($field['valid'] != true) return false;
+        }
+
+        // Find the current step
+        $step = $this->getOption('step',0);
+        $stepmax = count($this->steps[$step]) - 1;
+        if ($step>$stepmaxj) return true;
+        
         return false;
     }
     
@@ -275,6 +295,23 @@ class WizardForm implements IWizardForm {
         );
         debug::inspect($debug,false);
     }
+    
+    public function __get($field) {
+        return $this->getField($field);
+    }
+    
+    public function getField($field) {
+        if (!session::has('fp')) return null;
+        $fpdata = session::get('fp');
+        if (!arr::hasKey($fpdata,$this->getFormToken())) {
+            return null;
+        }
+        $formdata = $fpdata[$this->getFormToken()];
+        $val = $formdata[$field]['value'];
+
+        return $val;
+    }
+    
 }
 
 /**
@@ -294,6 +331,15 @@ interface IWizardStep {
 class WizardStep implements IWizardStep {
     protected $controls = array(); ///< @var Controls in the step
     protected $token = null; ///< @var The form token
+    protected $wpf = null; ///< @var The base form
+    
+    public function setForm(WizardForm $form) {
+        $this->wfp = $form;
+    }
+    
+    public function getForm() {
+        return $this->wfp;
+    }
     
     public function initialize($token) {
         $this->token = $token;
@@ -314,24 +360,38 @@ class WizardStep implements IWizardStep {
                     $formdata[$key]['changed'] = true;
                     
                     // Do the validation here
-                    if (arr::hasKey($formdata,$key) && 
-                        (request::has($key)) &&
-                        ($formdata[$key]['value'] == (string)request::get($key))) {
-                        printf("<p>Field not changed: %s</p>", $key);
+                    if (arr::hasKey($formdata,$key)) {
+
+                        //if (request::has($key)) && ($formdata[$key]['value'] == (string)request::get($key))) {
                         // Not changed, so query previous state of validation
-                        $formdata[$key]['changed'] = false;
-                        $formdata[$key]['valid'] = false;
-                        if ($formdata[$key]['valid'] != true) {
+
+                        $posted = request::get($key)->toString();
+                        $current = $formdata[$key]['value'];
+
+                        if ($current != $posteddata) {
+                            $ci->setValue($data);
+                        
                             // Do validation
-                            if (is_callable(array($ci,'isValid'))) {
-                                printf("<p>Validating field %s</p>", $key);
-                                $formdata[$key]['valid'] = (bool)$ci->isValid($formdata[$key]['value']);
-                            } else {
-                                printf("<p>No validation for %s</p>", $key);
-                                $formdata[$key]['valid'] = true;
+                            $formdata[$key]['value'] = $data;
+                            $formdata[$key]['changed'] = false;
+                            $formdata[$key]['valid'] = true;
+                            if ($formdata[$key]['valid'] != true) {
+                                if (is_callable(array($ci,'isValid'))) {
+                                    $formdata[$key]['valid'] = (bool)$ci->isValid($formdata[$key]['value']);
+                                } else {
+                                    $formdata[$key]['valid'] = true;
+                                }
                             }
+                        } else {
+                            $formdata[$key]['value'] = $posted;
+                        }
+                        // We give WizardCheckbox some special treatment as
+                        // it comes out blank 
+                        if ($ci instanceof WizardCheckbox) {
+                            $formdata[$key]['value'] = $posted;
                         }
                     } else {
+
                         // Insert into array
                         $formdata[$key] = array(
                             'value' => (string)request::get($key),
@@ -352,6 +412,7 @@ class WizardStep implements IWizardStep {
      * @param IWizardControl $item The item to add
      */
     public function addItem(IWizardControl $item, Array $options = null) {
+        $item->setForm($this->getForm());
         $this->controls[] = array(
             'control' => $item,
             'options' => (array)$options
@@ -390,14 +451,32 @@ abstract class WizardControl implements IWizardControl {
     protected $options = array();
     protected $defaults = array();
     public $key = null;
-
+    protected $value = null;
+    protected $wpf = null; ///< @var The base form
+    
+    public function setForm(WizardForm $form) {
+        $this->wfp = $form;
+    }
+    
+    public function getForm() {
+        return $this->wfp;
+    }
+    
     public function getKey() {
         return $this->key;
     }
     
     public function setKey($key) {
         $this->key = $key;
-    }    
+    }
+    
+    public function setValue($value) {
+        $this->value = $value;
+    }
+    
+    public function getValue() {
+        return $this->value;
+    }
 
     public function __construct(Array $opts = null) {
         $this->options = (array)$opts;

@@ -13,7 +13,7 @@ using('lepton.web.url');
  */
 class WizardHidden extends WizardControl {
     
-    private $value = null;
+    protected $value = null;
     
     /**
      * @brief Constructor.
@@ -73,7 +73,7 @@ class WizardTextbox extends WizardControl {
         if (!$validation) return true;
         
         $ok = WizardControl::validateField($value, $validation);
-        printf('<p>In validator as <b>%s</b> with value"<em>%s</em>" = %d</p>', $validation, $value, $ok);
+        //printf('<p>In validator as <b>%s</b> with value"<em>%s</em>" = %d</p>', $validation, $value, $ok);
         return $ok;
     }
     
@@ -302,6 +302,50 @@ class WizardLabel extends WizardControl {
     
 }
 
+/**
+ * @brief Encapsulates a checkbox
+ * 
+ * This control has got nothing to do with the html label element.
+ *  
+ * @author Christopher Vagnetoft
+ */
+class WizardCheckbox extends WizardControl {
+
+    private $label = null;
+    
+    public function __construct($label, $key, Array $options = null) {
+        $this->label = $label;
+        parent::__construct($options);
+        $this->setKey($key);
+    }
+    
+    public function formatValue($value) {
+        if ($value == '1') { 
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Renders the wizard element
+     * 
+     * @param array $meta Meta data to use when rendering
+     * @return string The rendered control
+     */
+    public function render(array $meta = null) {
+        $attrs = '';
+        $cssclass = 'fp -label';
+        if (arr::hasKey($this->options,'style')) $attrs.=sprintf(' style="%s"', $this->options['style']);
+        if (arr::hasKey($this->options,'class')) {
+            $attrs.=sprintf(' class="%s %s"', $cssclass, $this->options['class']);
+        } else {
+            $attrs.=sprintf(' class="%s"', $cssclass);
+        }
+        $key = $this->getKey();
+        return sprintf('<div class="fp -formrow"><input value="1" type="checkbox" name="%s" id="%s"%s><label class="fp -checkbox-label" for="%s">%s</div>', $key, $key, $attrs, $key, $this->label);
+    }
+    
+}
 
 /**
  * @brief Encapsulates an iframe. 
@@ -423,7 +467,10 @@ class WizardCombo extends WizardControl {
         // Render the control
         $key = $this->getKey();
         $out = sprintf('<div%s><label%s>%s</label><select name="%s" id="%s"%s>', $attrs, $lattrs, $this->label, $key, $key, $sattrs);
-        $current = $this->getOption('current',null);
+        $current = $this->getValue();
+        if ($current == null) {
+            $current = $this->getOption('initial',null);
+        }
         foreach($this->items as $value=>$text) {
             $attrs = '';
             if ($current == $value) $attrs.=' selected="selected"';
