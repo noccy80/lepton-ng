@@ -80,14 +80,19 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
      */
     function usage() {
 
-        Console::writeLn("%s - %s", $this->getName(), $this->description);
-        Console::writeLn("");
-        Console::writeLn("Usage:");
-        Console::writeLn("    %s [-arguments] [parameters]", $this->getName());
-        Console::writeLn("");
-        Console::writeLn("Arguments:");
+		$args = array();
+		$cmds = array();
+		$cmdlist = array();
+        $optsingle = array();
+        $optsargs = array();
+
         foreach($this->arguments as $arg=>$val) {
             $opts = '';
+            if (strlen($val[0]) > 1) {
+            	$optsargs[] = $val[0][0];
+            } else {
+            	$optsingle[] = $val[0];
+            }
             if ($val[0] != null) {
                 $opts.= '-'.$val[0][0];
             }
@@ -98,15 +103,32 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
             }
             if (strlen($val[0])>1) { $opts.=' arg'; }
             $desc = $val[2];
-            Console::writeLn("    %-20s %s", __astr($opts), $desc);
+            $args[] = sprintf("    %-20s %s", __astr($opts), $desc);
         }
         if (isset($this->commands)) {
-            Console::writeLn();
-            Console::writeLn("Commands:");
             foreach($this->commands as $cmd) {
-                Console::writeLn("    %-20s %s", __astr($cmd[0]),$cmd[1]);
+                $cmds[] = sprintf("    %s %s", __astr($cmd[0]),$cmd[1]);
+                $tmp = explode(' ',$cmd[0]);
+                $cmdlist[] = $tmp[0];
             }
         }
+        $argstr = sprintf('-%s', join('',$optsingle));
+        foreach ($optsargs as $optarg) {
+        	$argstr.= sprintf(' -%s arg',$optarg);
+        }
+        
+        Console::writeLn("%s - %s", $this->getName(), $this->description);
+        if ($this->copyright) console::writeLn("%s", $this->copyright);
+        if ($this->license) console::writeLn("%s", $this->license);
+        Console::writeLn("");
+        Console::writeLn("Usage:");
+        Console::writeLn("    %s %s %s", $this->getName(), $argstr, '['.join('|',$cmdlist).'] '.__astr('\g{params...}'));
+        Console::writeLn("");
+        Console::writeLn("Arguments:");
+        console::writeLn(join("\n", $args));
+        Console::writeLn();
+        Console::writeLn("Commands:");
+        console::writeLn(join("\n", $cmds));
         Console::writeLn();
         Console::writeLn("Environment Variables:");
         Console::writeLn("    APP_PATH             The application dir path");
@@ -114,6 +136,8 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         Console::writeLn("    DEBUG                Show extended debug info (1-5)");
         Console::writeLn("    LOGFILE              Log file to output debug info to");
         Console::writeLn("");
+        console::writeLn("%s (%s)",LEPTON_PLATFORM_ID, PHP_RUNTIME_OS);
+		console::writeLn("Allocated %0.3f KB (%0.3f KB total used)", (memory_get_usage() / 1024 / 1024), (memory_get_usage(true) / 1024 / 1024));
     }
 
     /**

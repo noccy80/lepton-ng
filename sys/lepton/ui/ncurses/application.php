@@ -32,7 +32,7 @@ abstract class NcursesApplication extends ConsoleApplication implements INcurses
 		// Get access to the mouose events
 		$newmask = NCURSES_ALL_MOUSE_EVENTS;
 		$oldmask = null;
-		$mask = ncurses_mousemask($newmask, &$oldmask);
+		$mask = ncurses_mousemask($newmask, $oldmask);
 
 		// Create a new desktop
 		$this->desktop = new NcursesDesktop();
@@ -45,7 +45,7 @@ abstract class NcursesApplication extends ConsoleApplication implements INcurses
 		ncurses_end();
 	}
 
-	static function application() {
+	public function application() {
 		return self::$instance;
 	}
 

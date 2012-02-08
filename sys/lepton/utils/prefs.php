@@ -1,5 +1,8 @@
 <?php
 
+using('lepton.crypto.uuid');
+using('lepton.mvc.request');
+
 /**
  * @brief Interface for preferences storage
  *
@@ -29,6 +32,64 @@ abstract class Prefs {
 
     protected $data;
     private $modified = false;
+    
+	protected $defs = array();
+
+    function __construct($structure = null) {
+        $path = expandpath('app:'.$structure);
+        if (file_exists($path)) {
+            $strx = domdocument::load($path);
+            $domx = new DOMXpath($strx);
+            $cfgs = $domx->query('/configurationschema/config');
+            foreach($cfgs as $item) {
+                $key = $item->getAttribute('key');
+                if ($item->hasAttribute('type')) {
+	                $vartype = $item->getAttribute('type');
+	            } else {
+	            	$vartype = 'string';
+	            }
+	            $description = null;
+	            $default = null;
+                if ($item->childNodes->length > 0) {
+                    foreach($item->childNodes as $item) {
+                        switch($item->nodeName) {
+                            case 'default':
+                                $value = $item->getAttribute('value');
+                                $type = $item->getAttribute('type');
+                                if ($type == 'string') {
+                                    $value = str_replace('${servername}', request::getDomain(), $value);
+                                    $default = $value;
+                                }
+                                if ($type == 'integer') {
+                                    $value = intval($value);
+                                    $default = $value;
+                                }
+                                if ($type == 'float') {
+                                    $value = floatval($value);
+                                    $default = $value;
+                                }
+                                if ($type == 'generate') {
+                                    if ($value=='uuid') $default = uuid::v4();
+                                    else $default = '<unknown>';
+                                }
+                                break;
+                            case 'description':
+                            	$description = $item->nodeValue;
+                            	break;
+                        }
+                    }
+                }
+                if (!arr::hasKey($this->data,$key)) {
+                    $this->data[$key] = $default;
+                }
+		    	$this->defs[$key] = array(
+		        	'description' => $description,
+		        	'vartype' => $vartype
+		    	);
+            }
+            $this->flush();
+        }
+    }
 
     function __destruct() {
         if ($this->modified) $this->flush();
@@ -40,17 +101,25 @@ abstract class Prefs {
     }
 
     public function  __get($name) {
+    	$name = str_replace('_','.',$name);
         if (isset($this->data[$name])) return $this->data[$name];
         return null;
     }
 
-    public function  __unset($name) {
-        if (isset($this->data[$name])) unset($this->data[$name]);
+    public function getAll() {
+    	return $this->data;
     }
 
     public function get($name,$default=null) {
         if (isset($this->data[$name])) return $this->data[$name];
         return $default;
+    }
+    
+    public function getDefs($name) {
+        if (isset($this->defs[$name])) return $this->defs[$name];
+        return array(
+        	'description' => '<unknown>'
+        );
     }
 
     public function set($name,$value) {
@@ -87,6 +156,7 @@ class FsPrefs extends Prefs {
                 $this->data = unserialize(file_get_contents($this->filename));
             }
         }
+        parent::__construct($structure);
     }
 
     public function flush() {
@@ -110,7 +180,7 @@ class DbPrefs extends Prefs {
     private $table;
     private $db = null;
 
-    public function __construct($table,$connection=null) {
+    public function __construct($table,$connection=null,$structure=null) {
         $this->db = new DatabaseConnection($connection);
         $this->table = $table;
         try {
@@ -128,12 +198,17 @@ class DbPrefs extends Prefs {
         foreach((array)$keys as $row) {
             $this->data[$row['prefskey']] = unserialize($row['data']);
         }
+        parent::__construct($structure);
     }
 
     public function flush() {
         if ($this->db) {
             foreach($this->data as $key=>$value) {
-                $this->db->updateRow("REPLACE INTO ".$this->table." (prefskey,data) VALUES (%s,%s)", $key, serialize($value));
+            	if ($value === null) {
+            		$this->db->updateRow("DELETE FROM ".$this->table." WHERE prefskey=%s", $key);
+            	} else {
+	                $this->db->updateRow("REPLACE INTO ".$this->table." (prefskey,data) VALUES (%s,%s)", $key, serialize($value));
+	            }
             }
         }
     }
