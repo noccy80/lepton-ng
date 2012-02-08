@@ -80,9 +80,9 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
      */
     function usage() {
 
-		$args = array();
-		$cmds = array();
-		$cmdlist = array();
+        $args = array();
+        $cmds = array();
+        $cmdlist = array();
         $optsingle = array();
         $optsargs = array();
 
@@ -118,8 +118,8 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         }
         
         Console::writeLn("%s - %s", $this->getName(), $this->description);
-        if ($this->copyright) console::writeLn("%s", $this->copyright);
-        if ($this->license) console::writeLn("%s", $this->license);
+        if (isset($this->copyright)) console::writeLn("%s", $this->copyright);
+        if (isset($this->license)) console::writeLn("%s", $this->license);
         Console::writeLn("");
         Console::writeLn("Usage:");
 	if (count($cmdlist)>0) $cmdstr = '['.join('|',$cmdlist).']';
