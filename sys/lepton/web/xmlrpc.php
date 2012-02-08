@@ -198,9 +198,11 @@ class XmlrpcClient {
         logger::debug('Response: %s',$ret->responseText());
         $mtd = null;
         $dec = xmlrpc_decode_request($ret->responseText(),$mtd);
+   /*
         if ($dec && arr::hasKey($dec,'faultCode')) {
         	printf("Fault\n");
         }
+   */
         return $dec;
 
     /*
