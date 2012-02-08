@@ -11,10 +11,15 @@ class WizardHPanel extends WizardLayoutControl {
 
     private $_err = null;
 
-    function __construct(Array $options=null) {
+	/**
+	 * 
+	 * @param array $options The options
+	 */
+	function __construct(Array $options=null) {
         parent::__construct($options);
     }
-    /**
+
+	/**
      * @brief Add an item to the HPanel
      * 
      * @param IWizardControl $item
@@ -24,7 +29,12 @@ class WizardHPanel extends WizardLayoutControl {
         $this->_items[] = $item;
     }
 
-    function render(Array $options = null) {
+	/**
+	 * @brief Render the component
+	 * 
+	 * @param array $meta The meta for the form
+	 */
+    function render(Array $meta = null) {
 
         $attrs = '';
         $cssclass = $this->getOption('class',null);
@@ -66,6 +76,11 @@ class WizardVPanel extends WizardLayoutControl {
         $this->_items[] = $item;
     }
 
+	/**
+	 * @brief Render the component
+	 * 
+	 * @param array $meta The meta for the form
+	 */
     function render(Array $meta = null) {
         $attrs = '';
         $cssclass = $this->getOption('class',null);

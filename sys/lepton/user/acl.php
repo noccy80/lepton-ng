@@ -26,6 +26,7 @@ if (class_exists('SqlTableSchema')):
  * @class AclconfSchema
  * @brief The schema that is used to define the ACL permissions
  */
+/*
 class AclconfSchema extends SqlTableSchema {
     function define() {
         $this->setName('aclconf');
@@ -47,6 +48,7 @@ class AclcacheSchema extends SqlTableSchema {
         $this->addIndex('uuid',array('uuid'),self::KEY_UNIQUE);
     }
 }
+*/
 
 /**
  * @class Acl
@@ -90,9 +92,9 @@ class Acl {
      */
     static function initialize() {
         $db = new DatabaseConnection();
-        $sm = $db->getSchemaManager();
-        if (!$sm->schemaExists('aclconf')) $sm->apply(new AclconfSchema());
-        if (!$sm->schemaExists('aclcache')) $sm->apply(new AclcacheSchema());
+        // $sm = $db->getSchemaManager();
+        // if (!$sm->schemaExists('aclconf')) $sm->apply(new AclconfSchema());
+        // if (!$sm->schemaExists('aclcache')) $sm->apply(new AclcacheSchema());
     }
 
     /**

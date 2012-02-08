@@ -86,7 +86,7 @@ class WizardForm implements IWizardForm {
             'formdata' => $fpdata
         );
         
-        // Output the form
+        // Resolve some special values before starting
         $action = $this->getOption('action',null);
         if ($action) $action = sprintf(' action="%s"', $action);
         $method = $this->getOption('method',null);
@@ -94,20 +94,22 @@ class WizardForm implements IWizardForm {
 
         $form = "";
         
+		// Inject the navigation control scripts unless explicitly told not to
+		// by the use of injectscripts=false.
         if ($this->getOption('injectscripts',true)) {
             $form.= sprintf('<script type="text/javascript">');
             $form.= sprintf('function fpGoPreviousStep() { $(\'wf_control\').value=\'-1\'; $(\''.$this->getFormToken().'\').submit(); }');
             $form.= sprintf('</script>');
         }
 
+		// Create the form HTML
         $form.= sprintf('<form id="%s"%s>', $this->getFormToken(), $action.$method);
         $form.= sprintf('<input type="hidden" name="wf_formtoken" value="%s">', $this->getFormToken());
         $form.= sprintf('<input type="hidden" id="wf_control" name="wf_control" value="1">');
         $form.= $stepobj->render($meta);
         $form.= sprintf('</form>');
 
-        //debug::inspect($fpdata, false);
-        
+        // Return it
         return $form;
         
     }
@@ -171,6 +173,14 @@ class WizardForm implements IWizardForm {
         }
     }
     
+	/**
+	 * @brief Shorthand for addStep.
+	 * 
+	 * @param string $key The key to assign
+	 * @param string $name The name to assign
+	 * @param array $options The option collection
+	 * @return \WizardStep The newly created wizard step.
+	 */
     public function createStep($key, $name, Array $options = null) {
        
         $ws = new WizardStep();
@@ -214,7 +224,7 @@ class WizardForm implements IWizardForm {
     /**
      * @brief Return the unique form token for this form
      * 
- 
+     * @return string The form token
      */
     public function getFormToken() {
         return ($this->getOption('token'));
@@ -276,6 +286,11 @@ class WizardForm implements IWizardForm {
         
     }
     
+	/**
+	 * @brief Get the keys from each of the steps.
+	 * 
+	 * @return array The keys of each of the steps
+	 */
     public function getStepKeys() {
         $ret = array();
         foreach($this->steps as $k=>$v) {
@@ -296,10 +311,22 @@ class WizardForm implements IWizardForm {
         debug::inspect($debug,false);
     }
     
+	/**
+	 * @brief Return a field (property accessor)
+	 * 
+	 * @param string $field  The field
+	 * @return mixed The field
+	 */
     public function __get($field) {
         return $this->getField($field);
     }
     
+	/**
+	 * @brief Return a field
+	 * 
+	 * @param string $field  The field
+	 * @return mixed The field
+	 */
     public function getField($field) {
         if (!session::has('fp')) return null;
         $fpdata = session::get('fp');
@@ -332,19 +359,40 @@ class WizardStep implements IWizardStep {
     protected $controls = array(); ///< @var Controls in the step
     protected $token = null; ///< @var The form token
     protected $wpf = null; ///< @var The base form
-    
+
+	/**
+	 * 
+	 * @todo Document
+	 * @param WizardForm $form 
+	 */
     public function setForm(WizardForm $form) {
         $this->wfp = $form;
     }
-    
+
+	/**
+	 * 
+	 * @todo Document
+	 * $return WizardForm 
+	 */
     public function getForm() {
         return $this->wfp;
     }
     
+	/**
+	 * 
+	 * @todo Document
+	 * @param string $token
+	 */
     public function initialize($token) {
         $this->token = $token;
     }
     
+	/**
+	 *
+	 * @todo Document
+	 * @param array $meta
+	 * @return type 
+	 */
     public function validate(array $meta) {
         
         $formdata = $meta['formdata'];
@@ -419,6 +467,12 @@ class WizardStep implements IWizardStep {
         );
     }
     
+	/**
+	 *
+	 * @todo Document
+	 * @param array $meta
+	 * @return type 
+	 */
     public function render(Array $meta = null) {
         $ret = '';
         if (($meta) && (arr::hasKey($meta,'step'))) {
@@ -454,30 +508,59 @@ abstract class WizardControl implements IWizardControl {
     protected $value = null;
     protected $wpf = null; ///< @var The base form
     
+	/**
+	 *
+	 * @todo Document
+	 * @param WizardForm $form 
+	 */
     public function setForm(WizardForm $form) {
         $this->wfp = $form;
     }
     
+	/**
+	 * @todo Document
+	 * @return type
+	 */
     public function getForm() {
         return $this->wfp;
     }
     
+	/**
+	 * @todo Document
+	 * @return type 
+	 */
     public function getKey() {
         return $this->key;
     }
     
+	/**
+	 * @todo Document
+	 * @param type $key 
+	 */
     public function setKey($key) {
         $this->key = $key;
     }
-    
+
+	/**
+	 * @todo Document
+	 * @param type $value
+	 */
     public function setValue($value) {
         $this->value = $value;
     }
     
+	/**
+	 * @todo Document
+	 * @return type 
+	 */
     public function getValue() {
         return $this->value;
     }
 
+	/**
+	 * @todo Document
+	 * @param array $opts 
+	 */
     public function __construct(Array $opts = null) {
         $this->options = (array)$opts;
         if (arr::hasKey($this->options,'key')) $this->setKey($this->options['key']);
@@ -537,6 +620,7 @@ abstract class WizardControl implements IWizardControl {
      *
      * maxlength LEN  - valid if shorter than len
      *
+	 * @todo Rewrite documentation and clean function.
      * @param string $data The field definition data
      * @return bool True if the form is valid
      */
@@ -667,6 +751,11 @@ abstract class WizardLayoutControl extends WizardControl {
 
     protected $_items = array();
 
+	/**
+	 * @todo Document
+	 * @param array $meta
+	 * @return type 
+	 */
     public function validate(array $meta) {
 
         $formdata = $meta['formdata'];
