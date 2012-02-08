@@ -112,9 +112,9 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
                 $cmdlist[] = $tmp[0];
             }
         }
-        $argstr = sprintf('-%s', join('',$optsingle));
+        $argstr = sprintf('[-%s]', join('',$optsingle));
         foreach ($optsargs as $optarg) {
-        	$argstr.= sprintf(' -%s arg',$optarg);
+        	$argstr.= sprintf(' [-%s arg]',$optarg);
         }
         
         Console::writeLn("%s - %s", $this->getName(), $this->description);
@@ -122,14 +122,18 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         if ($this->license) console::writeLn("%s", $this->license);
         Console::writeLn("");
         Console::writeLn("Usage:");
-        Console::writeLn("    %s %s %s", $this->getName(), $argstr, '['.join('|',$cmdlist).'] '.__astr('\g{params...}'));
+	if (count($cmdlist)>0) $cmdstr = '['.join('|',$cmdlist).']';
+	else $cmdstr = '';
+        Console::writeLn("    %s %s %s %s", $this->getName(), $argstr, $cmdstr, __astr('\g{params...}'));
         Console::writeLn("");
         Console::writeLn("Arguments:");
         console::writeLn(join("\n", $args));
         Console::writeLn();
-        Console::writeLn("Commands:");
-        console::writeLn(join("\n", $cmds));
-        Console::writeLn();
+	if (count($cmds)>0) {
+	        Console::writeLn("Commands:");
+	        console::writeLn(join("\n", $cmds));
+	        Console::writeLn();
+	}
         Console::writeLn("Environment Variables:");
         Console::writeLn("    APP_PATH             The application dir path");
         Console::writeLn("    SYS_PATH             The system path");
