@@ -25,10 +25,10 @@ class LeptonUtil extends ConsoleApplication {
 	protected $version = '1.0';
 	function usage() {
 		parent::usage();
-		Console::writeLn();	
+		Console::writeLn();
 		Console::writeLn("Example:");
 		Console::writeLn("    %s -i -llepton.base.mvc -lapp.myclass -- run myclass", $this->getName());	
-		Console::writeLn();	
+		Console::writeLn();
 		Console::writeLn("Use '%s help' to show the available commands.", $this->getName());
 	}
 	function interactiveMode() {
