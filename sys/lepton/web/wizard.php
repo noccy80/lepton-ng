@@ -55,6 +55,20 @@ class WizardForm implements IWizardForm {
         $this->options = arr::defaults($options, $defaults);
     }
     
+    static function setFormValue($formtoken,$key,$value) {
+
+        // Make sure that the formplus dataset is present in the session
+        if (!session::has('fp')) session::set('fp',array());
+        $fpdata = session::get('fp');
+        // Check if the specific form is present
+        if (!arr::hasKey($fpdata,$formtoken)) {
+            $fpdata[$formtoken] = array();
+        }
+        $fpdata[$formtoken][$key]['value'] = $value;
+        session::set('fp',$fpdata);
+        
+    }
+    
     /**
      * @brief Returns the HTML for the current step of the form.
      * 

@@ -378,6 +378,7 @@ class WizardIframe extends WizardControl {
         $url->setParameter('token', $meta['token']);
         if (arr::hasKey($this->options,'class')) $attrs.=sprintf(' class="%s"', $this->options['class']);
         if (arr::hasKey($this->options,'style')) $attrs.=sprintf(' style="%s"', $this->options['style']);
+        if (arr::hasKey($this->options,'onload')) $attrs.=sprintf(' onload="%s"', $this->options['onload']);
         return sprintf('<iframe src="%s" %s></iframe>', (string)$url, $attrs);
     }
     
