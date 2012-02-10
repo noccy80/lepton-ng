@@ -194,7 +194,7 @@ class WizardButton extends WizardControl {
         } else {
             $disabled = '';
         }
-        if ($this->hasOption('key')) {
+        if ($this->getOption('key',null)!=null) {
             $attrs.=' id="'.$this->getOption('key').'"';
         }
         $attrs.= ' '.$disabled;
