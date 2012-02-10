@@ -188,12 +188,16 @@ class WizardButton extends WizardControl {
      * @return string The rendered control
      */
     public function render(array $meta = null) {
+        $attrs = '';
         if ($this->getOption('enabled',true) != true) {
             $disabled = ' disabled="disabled"';
         } else {
             $disabled = '';
         }
-        $attrs = ''.$disabled;
+        if ($this->hasOption('key')) {
+            $attrs.=' id="'.$this->getOption('key').'"';
+        }
+        $attrs.= ' '.$disabled;
         switch($this->type) {
             case self::BUTTON_NEXT:
                 return sprintf('<input class="fp" type="submit" value="%s"%s>', $this->text, $attrs);
@@ -233,6 +237,10 @@ class WizardButtonBar extends WizardControl {
                 'onclick' => $onclick
         ));
         
+    }
+    
+    function addButtonEx(WizardButton $button) {
+        $this->_buttons[] = $button;
     }
 
     /**
@@ -376,7 +384,11 @@ class WizardIframe extends WizardControl {
         $attrs = '';
         $url = url($this->src);
         $url->setParameter('token', $meta['token']);
-        if (arr::hasKey($this->options,'class')) $attrs.=sprintf(' class="%s"', $this->options['class']);
+        if (arr::hasKey($this->options,'class')) {
+            $attrs.=sprintf(' class="fp %s"', $classdata);
+        } else {
+            $attrs.=sprintf(' class="fp"');
+        }
         if (arr::hasKey($this->options,'style')) $attrs.=sprintf(' style="%s"', $this->options['style']);
         if (arr::hasKey($this->options,'onload')) $attrs.=sprintf(' onload="%s"', $this->options['onload']);
         return sprintf('<iframe src="%s" %s></iframe>', (string)$url, $attrs);

@@ -55,6 +55,19 @@ class WizardForm implements IWizardForm {
         $this->options = arr::defaults($options, $defaults);
     }
     
+    /**
+     * @brief Sets the value of a specific form field in a wizardform instance.
+     * 
+     * You should create and add the appropriate field key as a part of your
+     * form before setting the field. Also note that this method is a bit
+     * heavier as it is intended to be used without an existing reference to
+     * the form data. Therefore, every time a value is set the entire data-
+     * set is retrieved and then updated.
+     * 
+     * @param string $formtoken The token, as found in the $meta or via getFormToken();
+     * @param string $key The key to set
+     * @param mixed $value The value to assign
+     */
     static function setFormValue($formtoken,$key,$value) {
 
         // Make sure that the formplus dataset is present in the session
