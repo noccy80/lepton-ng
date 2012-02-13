@@ -47,6 +47,7 @@ class WizardForm implements IWizardForm {
             'token' => $token,
             'url' => $url,
         );
+        view::set('token', $token);
         if (request::has('wf_step')) {
             $options['step'] = request::get('wf_step')->toString();
         }

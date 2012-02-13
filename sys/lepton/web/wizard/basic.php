@@ -496,6 +496,29 @@ class WizardCombo extends WizardControl {
     }
 }
 
+class WizardHtmlDisplay extends WizardControl {
+
+    private $view = null;
+    
+    function __construct($view, array $opts = null) {
+        $this->view = $view;
+        parent::__construct($opts);
+    }
+    
+    function render(array $meta = null) {
+        response::buffer(true);
+        view::embed($this->view);
+        $ret = response::getBuffer();
+        response::buffer(false);
+        return $ret;
+    }
+    
+}
+
+
+/**
+ * @brief 
+ */
 class WizardVisualSteps extends WizardControl {
     
     private $src = null;

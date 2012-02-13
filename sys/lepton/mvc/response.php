@@ -283,8 +283,9 @@ class response {
      */
     static function buffer($state) {
 
+        ob_end_flush();
         if ($state) {
-            # ob_start(array('response','__buffercb'));
+ //           ob_start(array('response','__buffercb'));
             ob_start();
         } else {
             ob_end_flush();
@@ -298,7 +299,7 @@ class response {
      */
     static function __buffercb($data) {
         return strlen($data);
-        response::$bufferdata = $data;
+        response::$bufferdata += $data;
         return "";
     }
 
