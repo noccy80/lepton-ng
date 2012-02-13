@@ -1711,7 +1711,7 @@ abstract class arr {
     }
 
     static function hasValue(Array $arr, $key) {
-        return in_array($arr, $key);
+        return in_array($key, $arr);
     }
 
     static function head(Array $arr, $num = 1) {
