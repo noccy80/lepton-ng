@@ -500,13 +500,16 @@ class WizardHtmlDisplay extends WizardControl {
 
     private $view = null;
     
-    function __construct($view, array $opts = null) {
+    function __construct($view, $key = null, array $opts = null) {
+        if ($key) $this->setKey($key);
         $this->view = $view;
         parent::__construct($opts);
     }
     
     function render(array $meta = null) {
         response::buffer(true);
+        view::set('meta',$meta);
+        view::set('key',$this->getKey());
         view::embed($this->view);
         $ret = response::getBuffer();
         response::buffer(false);

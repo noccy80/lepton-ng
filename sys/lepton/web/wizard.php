@@ -367,6 +367,16 @@ class WizardForm implements IWizardForm {
         return $val;
     }
     
+    public function getAllFields() {
+        if (!session::has('fp')) return null;
+        $fpdata = session::get('fp');
+        if (!arr::hasKey($fpdata,$this->getFormToken())) {
+            return null;
+        }
+        $formdata = $fpdata[$this->getFormToken()];
+        return $formdata;
+    }
+    
 }
 
 /**
