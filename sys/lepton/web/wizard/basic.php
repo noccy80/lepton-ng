@@ -510,6 +510,7 @@ class WizardHtmlDisplay extends WizardControl {
         response::buffer(true);
         view::set('meta',$meta);
         view::set('key',$this->getKey());
+        view::set('value',$this->getKey());
         view::embed($this->view);
         $ret = response::getBuffer();
         response::buffer(false);

@@ -15,14 +15,32 @@ class HttpException extends BaseException {
 	const UNSUPPORTED_MEDIA_TYPE = 415;
 	const REQUEST_RANGE_NOT_SATISFIABLE = 416;
 	const IM_A_TEAPOT = 418;
+    static function getHttpMessage($code) {
+        $msgs = array(
+            self::ERR_UNAUTHORIZED => "Not Authorized",
+            self::ERR_METHOD_NOT_ALLOWED => "Unallowed Method",
+            self::ERR_NOT_ACCEPTABLE => "Request not acceptable",
+            self::ERR_NOT_FOUND => "Not Found",
+            self::ERR_SERVER_ERROR => "Internal Server Error",
+            self::UNSUPPORTED_MEDIA_TYPE => "Unsupported Media Type",
+            self::REQUEST_RANGE_NOT_SATISFIABLE => "Request Range Not Satisfiable",
+            self::IM_A_TEAPOT => "I am a teapot"
+        );
+        if (!isset($msgs[$code])) {
+            return "Undefined Error";
+        }
+        return $msgs[$code];
+    }
 }
 
-class MvcExceptionHandler extends ExceptionHandler {
 
+
+class MvcExceptionHandler extends ExceptionHandler {
+    
     static $ico_error;
     static $css;
     static $js;
-
+    
     static function saveFeedback($id) {
 
         $text = request::get('text');
@@ -54,7 +72,7 @@ class MvcExceptionHandler extends ExceptionHandler {
 
     function exception(Exception $e) {
 
-        @ob_end_clean();
+        if (ob_get_length() != false) @ob_end_clean();
         
         $et = typeOf($e);
         if (($et == 'FileNotFoundException') || ($et == 'NavigationException')) {
@@ -65,8 +83,12 @@ class MvcExceptionHandler extends ExceptionHandler {
         }
         if ($et == 'HttpException') {
             response::setStatus($e->getCode());
-            header('HTTP/1.1 '.$e->getCode().' '.$e->getMessage());
-            printf('<h1>'.$e->getCode().': '.$e->getMessage().'</h1>');
+            $code = $e->getMessage();
+            list($code) = explode(':',$code);
+            $code = str_replace('Error ','',$code);
+            $msg = HttpException::getHttpMessage($code);
+            header('HTTP/1.1 '.$code.' '.$msg.' '.  $msg);
+            printf("<h1>%s: %s</h1>\n<pre>%s</pre>", $code, $msg, $msg);
             return;
         }
 
