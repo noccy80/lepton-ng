@@ -1353,7 +1353,7 @@ class Lepton {
                     logger::debug('Warning: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
                     break;
         case E_DEPRECATED:
-                    logger::warning('Deprecated: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                    // logger::warning('Deprecated: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
                     break;
             default:
                    logger::warning('%s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);

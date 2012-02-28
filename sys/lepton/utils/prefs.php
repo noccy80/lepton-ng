@@ -144,7 +144,7 @@ class FsPrefs extends Prefs {
     private $filename;
     private $compress;
 
-    public function __construct($filename,$compress=true) {
+    public function __construct($filename,$compress=true,$structure=null) {
         $this->filename = $filename;
         $this->compress = $compress;
         if (!file_exists($this->filename)) {

@@ -1,0 +1,45 @@
+#!/usr/bin/php
+<?php require('lepton-ng');
+
+using('lepton.web.xmlrpc');
+using('lepton.utils.prefs');
+using('lepton.base.clihelper');
+
+globals::set('config', new FsPrefs(expandpath('app:config.db'),true,'config.xml'));
+// using('app.controllers.api');
+
+// class Api extends ApiController { }
+
+class LpfApplication extends CliApplication {
+
+	protected $conf = null;
+
+	public $copyright = 'Copyright (c) 2012, NoccyLabs Innovation';
+	public $license = "Licensed under the GNU GPL Version 3.";
+	public $description = "Lepton Presentation Framework Utility";
+
+	function getCatalogs() {
+
+		$db = new DatabaseConnection();
+		$rscat = $db->getRows("SELECT * FROM catalogs");
+		return $rscat;
+
+	}
+
+	function cmd_render() {
+		$args = func_get_args();
+		foreach ($args as $arg) {
+			if (string::like('*.ls',$arg)) {
+				printf("Scene: %s\n", $arg);
+			}
+			if (string::like('*=*',$arg)) {
+				list($opt,$val) = explode('=',$arg);
+				printf("Option %s set to %s\n", $opt, $val);
+			}
+		}
+
+	}
+
+}
+
+lepton::run('LpfApplication');
