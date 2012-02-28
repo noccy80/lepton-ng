@@ -353,6 +353,10 @@ class WizardCheckbox extends WizardControl {
         return sprintf('<div class="fp -formrow"><input value="1" type="checkbox" name="%s" id="%s"%s><label class="fp -checkbox-label" for="%s">%s</div>', $key, $key, $attrs, $key, $this->label);
     }
     
+    public function isValid() {
+        return true;
+    }
+    
 }
 
 /**
@@ -369,9 +373,11 @@ class WizardIframe extends WizardControl {
 
     private $src = null;
     
-    public function __construct($src, Array $options = null) {
+    function __construct($src, $key = null, array $opts = null) {
         $this->src = $src;
-        $this->options = $options;
+        if ($key) $this->setKey($key);
+        $this->view = $view;
+        parent::__construct($opts);
     }
     
     /**
@@ -384,6 +390,7 @@ class WizardIframe extends WizardControl {
         $attrs = '';
         $url = url($this->src);
         $url->setParameter('token', $meta['token']);
+        $url->setParameter('formkey', $this->getKey());
         if (arr::hasKey($this->options,'class')) {
             $attrs.=sprintf(' class="fp %s"', $classdata);
         } else {
@@ -494,6 +501,17 @@ class WizardCombo extends WizardControl {
         return $out;
         
     }
+    
+    /**
+     * @brief Check value validity
+     * 
+     * @todo Check against allowed values.
+     * @return boolean 
+     */
+    public function isValid() {
+        return true;
+    }
+    
 }
 
 class WizardHtmlDisplay extends WizardControl {
@@ -617,6 +635,15 @@ class WizardCaptcha extends WizardControl {
         $str.= sprintf('</div>');
         return $str;
         
+    }
+    
+    function isValid() {
+        $cid = (string)request::get($this->getKey().'_cid', null);
+        $cval = (string)request::get($this->getKey(), null);
+        if ($cid) {
+            if (Captcha::verify($cval,$cid)) return true;
+        }
+        return false;
     }
     
 }

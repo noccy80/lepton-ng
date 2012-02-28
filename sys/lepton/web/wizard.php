@@ -82,6 +82,23 @@ class WizardForm implements IWizardForm {
         session::set('fp',$fpdata);
         
     }
+
+    static function getFormValue($formtoken,$key) {
+
+        // Make sure that the formplus dataset is present in the session
+        if (!session::has('fp')) session::set('fp',array());
+        $fpdata = session::get('fp');
+        // Check if the specific form is present
+        if (!arr::hasKey($fpdata,$formtoken)) {
+            $fpdata[$formtoken] = array();
+        }
+        if (arr::hasKey($fpdata[$formtoken], $key)) {
+            return $fpdata[$formtoken][$key]['value'];
+        } else {
+            return null;
+        }
+        
+    }
     
     /**
      * @brief Returns the HTML for the current step of the form.
@@ -90,14 +107,11 @@ class WizardForm implements IWizardForm {
      */
     public function render() {
         
-      
         // Find the current step
         $step = $this->getOption('step',0);
         $stepinfo = $this->steps[$step];
         $stepobj = $stepinfo['step']; 
-        
-        if (!$stepobj) return null;
-        
+
         // Make sure that the formplus dataset is present in the session
         if (!session::has('fp')) session::set('fp',array());
         $fpdata = session::get('fp');
@@ -105,10 +119,18 @@ class WizardForm implements IWizardForm {
         if (!arr::hasKey($fpdata,$this->getFormToken())) {
             $fpdata[$this->getFormToken()] = array();
         }
+        
+        if ((string)request::get('debug',null)=='fp') {
+            debug::inspect($fpdata,false);
+        }
+        if (!$stepobj) {
+            return null;
+        }
 
         // Assign the metadata to pass to the rendering chain.
         $meta = array(
             'step' => $step,
+            'stepcount' => count($this->steps[$step]) - 1,
             'token' => $this->getFormToken(),
             'steps' => $this->steps,
             'formdata' => $fpdata
@@ -136,7 +158,7 @@ class WizardForm implements IWizardForm {
         $form.= sprintf('<input type="hidden" id="wf_control" name="wf_control" value="1">');
         $form.= $stepobj->render($meta);
         $form.= sprintf('</form>');
-
+        
         // Return it
         return $form;
         
@@ -150,12 +172,7 @@ class WizardForm implements IWizardForm {
      */
     public function receive() {
 
-        if (!session::has('fp')) session::set('fp',array());
-        $fpdata = session::get('fp');
-        if (!arr::hasKey($fpdata,$this->getFormToken())) {
-            $fpdata[$this->getFormToken()] = array();
-        }
-        $formdata = $fpdata[$this->getFormToken()];
+        $formdata = WizardForm::getFormInstance($this->getFormToken());
         
         // Find the current step
         $step = $this->getOption('step',-1);
@@ -265,21 +282,16 @@ class WizardForm implements IWizardForm {
      */
     public function getFormCompleted() {
 
-        if (!session::has('fp')) session::set('fp',array());
-        $fpdata = session::get('fp');
-        if (!arr::hasKey($fpdata,$this->getFormToken())) {
-            $fpdata[$this->getFormToken()] = array();
-        }
-        $formdata = $fpdata[$this->getFormToken()];
+        $formdata = WizardForm::getFormInstance($this->getFormToken());
         
         foreach($formdata as $field) {
             if ($field['valid'] != true) return false;
         }
-
+        
         // Find the current step
         $step = $this->getOption('step',0);
         $stepmax = count($this->steps[$step]) - 1;
-        if ($step>$stepmaxj) return true;
+        if ($step>$stepmax) return true;
         
         return false;
     }
@@ -377,6 +389,23 @@ class WizardForm implements IWizardForm {
         return $formdata;
     }
     
+    public static function getFormInstance($token) {
+        if (!session::has('fp')) session::set('fp',array());
+        $fpdata = session::get('fp');
+        if (!arr::hasKey($fpdata,$token)) {
+            $fpdata[$token] = array();
+        }
+        $formdata = $fpdata[$token];
+        return $formdata;
+    }
+    
+    public static function updateFormInstance($token,Array $data) {
+        if (!session::has('fp')) session::set('fp',array());
+        $fpdata = session::get('fp');
+        $fpdata[$token] = $data;
+        session::set('fp',$fpdata);
+    }
+    
 }
 
 /**
@@ -454,22 +483,22 @@ class WizardStep implements IWizardStep {
                         $posted = request::get($key)->toString();
                         $current = $formdata[$key]['value'];
 
-                        if ($current != $posteddata) {
-                            $ci->setValue($data);
-                        
+                        if ($current != $posted) {
+                            $ci->setValue($posted);
                             // Do validation
-                            $formdata[$key]['value'] = $data;
-                            $formdata[$key]['changed'] = false;
-                            $formdata[$key]['valid'] = true;
-                            if ($formdata[$key]['valid'] != true) {
-                                if (is_callable(array($ci,'isValid'))) {
-                                    $formdata[$key]['valid'] = (bool)$ci->isValid($formdata[$key]['value']);
-                                } else {
-                                    $formdata[$key]['valid'] = true;
-                                }
-                            }
+                            $formdata[$key]['value'] = $posted;
+                            $formdata[$key]['changed'] = true;
                         } else {
                             $formdata[$key]['value'] = $posted;
+                            $formdata[$key]['changed'] = false;
+                        }
+                        if ($formdata[$key]['valid'] != true) {
+                            if (is_callable(array($ci,'isValid'))) {
+                                $formdata[$key]['valid'] = (bool)$ci->isValid($formdata[$key]['value']);
+                            } else {
+                                printf('<p>Assuming valid for %s</p>', $key);
+                                $formdata[$key]['valid'] = true;
+                            }
                         }
                         // We give WizardCheckbox some special treatment as
                         // it comes out blank 
@@ -477,7 +506,6 @@ class WizardStep implements IWizardStep {
                             $formdata[$key]['value'] = $posted;
                         }
                     } else {
-
                         // Insert into array
                         $formdata[$key] = array(
                             'value' => (string)request::get($key),
@@ -667,6 +695,7 @@ abstract class WizardControl implements IWizardControl {
             'match:1 as:1 minlength:1 maxlength:1 required:0 default:1';
         $fields = $data;
         $valid = true;
+        $raw = null;
         // Go over each of the expected form fields
 
         $t = new Tokenizer($toks,$rules);
@@ -745,7 +774,7 @@ abstract class WizardControl implements IWizardControl {
                     if (!$ret) $valid = false;
                     break;
                 case 'as':
-                    if ($data != $this->raw[$arg]) $valid = false;
+                    if ($data != (string)request::get($arg)) $valid = false;
                     break;
                 case 'required':
                     if ($data == null) $valid = false;
