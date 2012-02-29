@@ -18,6 +18,9 @@ class LpfApplication extends CliApplication {
 	public $license = "Licensed under the GNU GPL Version 3.";
 	public $description = "Lepton Presentation Framework Utility";
 
+	public $frames = 30;
+	public $seed = null;
+
 	function getCatalogs() {
 
 		$db = new DatabaseConnection();
@@ -26,15 +29,137 @@ class LpfApplication extends CliApplication {
 
 	}
 
+	function cmd_help() {
+		printf("Commands:\n");
+		printf("  render <scene.ls> [key=val].. - Render a scene\n");
+	}
+
 	function cmd_render() {
+		using('lepton.graphics.canvas');
+		using('lepton.graphics.colorspaces.*');
 		$args = func_get_args();
+
 		foreach ($args as $arg) {
 			if (string::like('*.ls',$arg)) {
-				printf("Scene: %s\n", $arg);
+				$scenename = basename($arg,'.ls');
+				printf(__astr("[\b{lpf}] Loading scene XML from %s\n"), $arg);
+				$scenexml = DomDocument::load($arg);
+				if (!$scenexml) {
+					fprintf(STDERR, "Scene failed to load!\n");
+					return 1;
+				}
+				$scenexp = new DomXpath($scenexml);
+				printf(__astr("[\b{assets}] Loading scene assets...\n"));
+				$assets = $scenexp->query('/scene/assets');
+				$scripts = $scenexp->query('/scene/script');
+				for($n = 0; $n < $scripts->length; $n++) {
+					$s = $scripts->item($n);
+					$type = $s->getAttribute('type');
+					$src = $s->getAttribute('src');
+					switch($s->getAttribute('type')) {
+					case 'text/php':
+						include($src);
+						printf(__astr("[\b{assets}] Loaded script %s [type=%s, bytes=%d]\n"), $src, $type, filesize($src));
+					}
+				}
+				printf(__astr("[\b{canvas}] Creating scene canvases...\n"));
+				$canvases = $scenexp->query('/scene/canvas');
+				for($n = 0; $n < $canvases->length; $n++) {
+					$cdef = $canvases->item($n);
+					$width = $cdef->getAttribute('width');
+					$height = $cdef->getAttribute('height');
+					$cscene[$n] = new Canvas($width,$height);
+					printf(__astr("[\b{canvas}] Created canvas %d: [%dx%dx%d]\n"), $n, $width, $height, 24);
+				}
+				printf(__astr("[\b{actor}] Creating actors...\n"));
+				$actors = $scenexp->query('/scene/actor');
+				for($n = 0; $n < $actors->length; $n++) {
+					$adef = $actors->item($n);
+					$type = $adef->getAttribute('type');
+					$ctype = $type.'_Actor';
+					$id = $adef->getAttribute('id');
+					printf(__astr("[\b{actor}] New actor %s (%s) spawned from %s\n"), $id, $type, $ctype);
+					$children = $scenexp->query($adef->getNodePath().'/*');
+					$ca[$n] = new $ctype($id);
+					foreach($adef->attributes as $ak=>$av) {
+						switch($ak) {
+						case 'id':
+						case 'type':
+							break;
+						default:
+							$ca[$n]->{$ak} = $av->nodeValue;
+						}
+					}
+					foreach($children as $cnode) {
+						switch ($cnode->nodeName) {
+						case 'param':
+							$param = $cnode->getAttribute('key');
+							$value = $cnode->getAttribute('value');
+							$ca[$n]->{$param} = $value;
+							break;
+						case 'position':
+							$left = $cnode->getAttribute('left');
+							$top = $cnode->getAttribute('top');
+							$width = $cnode->getAttribute('width');
+							$height = $cnode->getAttribute('height');
+							$ca[$n]->left = $left;
+							$ca[$n]->top = $top;
+							$ca[$n]->width = $width;
+							$ca[$n]->height = $height;
+							break;
+						default:
+							printf("Unknown tag: %s, Ignoring\n", $cnode->nodeName);
+						}
+					}
+
+				}
+
+			}
+			if ($arg=='render') {
+				printf(__astr("[\b{rnd}] Initialized random number generator. \g{seed: %s}\n"),lpf::rndseed($this->seed));
+
+				// Render the scene
+				$ss = new SceneState();
+				$as = new ActorState();
+				if (file_exists($scenename.'???.png')) unlink($scenename.'???.png');
+				// We want to sort the items by z-index here too.
+				$ftot = $this->frames;
+				for($f = 0; $f < $ftot; $f++) {
+					$ct = $cscene[0];
+					$t = new Timer(true);
+					for ($n = 0; $n < count($ca); $n++) {
+						$cta = new Canvas($ca[$n]->width, $ca[$n]->height);
+						$ca[$n]->render($ss,$as,$cta);
+						$cta->draw($ct,$ca[$n]->left, $ca[$n]->top, $ca[$n]->width, $ca[$n]->height);
+					}
+					$fn = sprintf('%s%03d.png',$scenename,$f);
+					$dur = $t->getElapsed();
+					$ct->save($fn);
+					printf("(%03d/%03d): Complete [s=%.1fK, time=%.2fs]\n", $f + 1, $ftot, (filesize($fn)/1024), $dur);
+				}
+
 			}
 			if (string::like('*=*',$arg)) {
 				list($opt,$val) = explode('=',$arg);
 				printf("Option %s set to %s\n", $opt, $val);
+				$this->{$opt} = $val;
+			}
+			if (string::like('convert:*',$arg)) {
+				list ($cmd,$dest) = explode(':',$arg);
+				switch($dest) {
+				case 'avi':
+					if (file_exists($scenename.'.avi')) unlink($scenename.'.avi');
+					shell_exec("mencoder 'mf://".$scenename."???.png' -mf -fps 5 -o ".$scenename.".avi -ovc lavc -lavcopts vcodec=msmpeg4v2:vbitrate=800");
+					shell_exec('mplayer '.$scenename.'.avi');
+					break;
+				case 'mp4':
+					if (file_exists($scenename.'.mp4')) unlink($scenename.'.mp4');
+					shell_exec('ffmpeg -r 5 -b 16000 -i '.$scenename.'%03d.png '.$scenename.'.mp4');
+					shell_exec('mplayer '.$scenename.'.mp4');
+					break;
+				default:
+					printf("Unknown target: %s\n", $dest);
+				}
 			}
 		}
 
