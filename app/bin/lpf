@@ -127,7 +127,7 @@ class LpfApplication extends CliApplication {
 				// Render the scene
 				$ss = new SceneState();
 				$as = new ActorState();
-				if (file_exists($scenename.'???.png')) unlink($scenename.'???.png');
+				if (file_exists($scenename.'000.png')) unlink($scenename.'???.png');
 				// We want to sort the items by z-index here too.
 				// Eventually this should be done with a scenegraph.
 				$ftot = $this->frames;
