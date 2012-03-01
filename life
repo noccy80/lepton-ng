@@ -1,0 +1,2 @@
+#!/bin/bash
+./lpf render frames=100 seed=1234 life.ls +render +convert:mp4
