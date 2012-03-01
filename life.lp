@@ -107,7 +107,7 @@ class LifeGrid_Actor extends LpfActor {
 				case 'noccy':
 					if (($na < 2) && $alive) {
 						$this->setAlive($b, $a, false);
-					} elseif (($na > 5) && $alive) {
+					} elseif (($na > 3) && $alive) {
 						$this->setAlive($b, $a, false);
 					} elseif (($na == 3) && (!$alive)) {
 						$this->setAlive($b, $a, true);
@@ -117,7 +117,7 @@ class LifeGrid_Actor extends LpfActor {
 					break;
 				default:
 					if (($na < 2) && $alive) { $alive = false; }
-					elseif (($na > 3) && $alive) { $alive = false; }
+					elseif (($na > 5) && $alive) { $alive = false; }
 					elseif (($na == 3) && (!$alive)) { $alive = true; }
 				}
 			}
@@ -128,7 +128,7 @@ class LifeGrid_Actor extends LpfActor {
 	}
 
 	function isAlive($col, $row) {
-		if (($row<0) || ($row>$this->rows) || ($col<0) || ($col>$this->columns)) return null;
+		if (($row<=0) || ($row>=$this->rows) || ($col<=0) || ($col>=$this->columns)) return false;
 		$index = ($row * $this->columns) + $col;
 		if (count($this->cells)>$index) {
 			return $this->cells[$index]->alive;
@@ -140,7 +140,7 @@ class LifeGrid_Actor extends LpfActor {
 	function setAlive($col, $row, $alive) {
 		if (($row<0) || ($row>$this->rows) || ($col<0) || ($col>$this->columns)) return;
 		$index = ($row * $this->columns) + $col;
-		if (count($this->cells)>$index) {
+		if (count($this->stage)>$index) {
 			$this->stage[$index]->alive = $alive;
 		}
 	}
@@ -159,16 +159,17 @@ class LifeGrid_Actor extends LpfActor {
 				$x = $b * $w;
 				$y = $a * $h;
 				if ($this->cells[$index]) {
-					$this->cells[$index]->moveTo($x, $y, $w, $h);
+					$this->cells[$index]->moveTo($x, $y, $w*0.9, $h*0.9);
 					// Draw the cell
 					$rc = new Canvas($w,$h);
+					
 					$this->cells[$index]->render($ss,$as,$rc);
-					$rc->draw($c, $x, $y, $w, $h);
+					$bf = new BitmapFont(1);
+					$rc->drawText($bf,rgb(255,255,255),1,1,$this->cells[$index]->neighbours);
+					$rc->draw($c, $x, $y, $w*0.9, $h*0.9);
 				}
 			}
 		}
-		// Flip the stage
-		$this->cells = $this->stage;
 
 	}
 

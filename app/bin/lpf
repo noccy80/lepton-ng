@@ -115,7 +115,13 @@ class LpfApplication extends CliApplication {
 				}
 
 			}
-			if ($arg=='render') {
+			if (string::like('*=*',$arg)) {
+				list($opt,$val) = explode('=',$arg);
+				printf("Option %s set to %s\n", $opt, $val);
+				$this->{$opt} = $val;
+			}
+
+			if ($arg=='+render') {
 				printf(__astr("[\b{rnd}] Initialized random number generator. \g{seed: %s}\n"),lpf::rndseed($this->seed));
 
 				// Render the scene
@@ -123,6 +129,7 @@ class LpfApplication extends CliApplication {
 				$as = new ActorState();
 				if (file_exists($scenename.'???.png')) unlink($scenename.'???.png');
 				// We want to sort the items by z-index here too.
+				// Eventually this should be done with a scenegraph.
 				$ftot = $this->frames;
 				for($f = 0; $f < $ftot; $f++) {
 					$ct = $cscene[0];
@@ -139,23 +146,17 @@ class LpfApplication extends CliApplication {
 				}
 
 			}
-			if (string::like('*=*',$arg)) {
-				list($opt,$val) = explode('=',$arg);
-				printf("Option %s set to %s\n", $opt, $val);
-				$this->{$opt} = $val;
-			}
-			if (string::like('convert:*',$arg)) {
+			if (string::like('+convert:*',$arg)) {
 				list ($cmd,$dest) = explode(':',$arg);
 				switch($dest) {
 				case 'avi':
 					if (file_exists($scenename.'.avi')) unlink($scenename.'.avi');
+					// -aid 1 -o "C:\test.avi" -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=1000:vpass=1 -ffourcc XVID
 					shell_exec("mencoder 'mf://".$scenename."???.png' -mf -fps 5 -o ".$scenename.".avi -ovc lavc -lavcopts vcodec=msmpeg4v2:vbitrate=800");
-					shell_exec('mplayer '.$scenename.'.avi');
 					break;
 				case 'mp4':
 					if (file_exists($scenename.'.mp4')) unlink($scenename.'.mp4');
-					shell_exec('ffmpeg -r 5 -b 16000 -i '.$scenename.'%03d.png '.$scenename.'.mp4');
-					shell_exec('mplayer '.$scenename.'.mp4');
+					shell_exec('ffmpeg -r 5 -b 16000 -mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 -i '.$scenename.'%03d.png '.$scenename.'.mp4');
 					break;
 				default:
 					printf("Unknown target: %s\n", $dest);
