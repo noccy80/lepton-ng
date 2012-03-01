@@ -36,6 +36,21 @@ abstract class lpf {
 		}
 		return $v;
 	}
+	static function doTick() {
+		static $tick = 0;
+		static $dots = 0;
+		$tick++;
+		if ($tick > 5) {
+			$dots++;
+			if (($dots/10) == floor($dots/10)) {
+				printf(":");
+			} else {
+				printf("·");
+			}
+			if ($dots == 80) { $dots = 0; printf(str_repeat(" ",20)."\n"); } 
+			$tick = 0;
+		}
+	}
 	static function updateStatus($text,$cur,$max) {
 		$mu = memory_get_usage();
 		if ($mu > 1024) {
@@ -48,7 +63,7 @@ abstract class lpf {
 		} else {
 			$muu = 'B';
 		}
-		$sout = sprintf('[%s %d%% %.1f%s]',$text,(100/$max)*$cur,$mu,$muu);
+		$sout = sprintf('[%s %d%% %.1f%s]'.str_repeat(" ",5),$text,(100/$max)*$cur,$mu,$muu);
 		printf('%s%s',$sout,str_repeat("\x08",strlen($sout)));
 	}
 	static function rndseed($seed = null) {

@@ -135,7 +135,7 @@ class LpfApplication extends CliApplication {
 					$fn = sprintf('%s%03d.png',$scenename,$f);
 					$dur = $t->getElapsed();
 					$ct->save($fn);
-					printf("(%03d/%03d): Complete [s=%.1fK, time=%.2fs]\n", $f + 1, $ftot, (filesize($fn)/1024), $dur);
+					//printf(__astr("\g{[%03d/%03d]}"), $f + 1, $ftot);
 				}
 
 			}
