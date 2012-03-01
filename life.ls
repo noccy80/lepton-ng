@@ -2,6 +2,7 @@
 <scene>
 
 	<script type="text/php" src="life.lp" />
+	<script type="text/php"><![CDATA[ echo "Conway's Game of Life 1.0\n(c) 2012, NoccyLabs.info. Distributed under GNU GPL v3 or later.\n\n"; ]]></script>
 	<canvas id="master" width="720" height="400" background="rgb(0,0,0)" />
 	<target format="mp4" lossless="false" />
 

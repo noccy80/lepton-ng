@@ -56,10 +56,24 @@ class LpfApplication extends CliApplication {
 					$s = $scripts->item($n);
 					$type = $s->getAttribute('type');
 					$src = $s->getAttribute('src');
-					switch($s->getAttribute('type')) {
-					case 'text/php':
-						include($src);
-						printf(__astr("[\b{assets}] Loaded script %s [type=%s, bytes=%d]\n"), $src, $type, filesize($src));
+					if ($src) {
+						switch($s->getAttribute('type')) {
+						case 'text/php':
+							include_once($src);
+							printf(__astr("[\b{assets}] Loaded script %s [type=%s, bytes=%d]\n"), $src, $type, filesize($src));
+							break;
+						default:
+							printf("Unhandled script type: %s\n", $type);
+						}
+					} else {
+						switch($type) {
+						case 'text/php':
+							eval($s->nodeValue);
+							printf(__astr("[\b{assets}] Loaded inline script [type=%s, bytes=%d]\n"), $type, strlen($src));
+							break;
+						default:
+							printf("Unhandled script type: %s\n", $type);
+						}
 					}
 				}
 				printf(__astr("[\b{canvas}] Creating scene canvases...\n"));
@@ -106,6 +120,33 @@ class LpfApplication extends CliApplication {
 							$ca[$n]->top = $top;
 							$ca[$n]->width = $width;
 							$ca[$n]->height = $height;
+							break;
+						case 'script':
+							$type = $cnode->getAttribute('type');
+							if ($cnode->hasAttribute('src')) {
+								$src = $cnode->getAttribute('src');
+								if (file_exists($src)) {
+									switch($type) {
+									case 'text/php':
+										include_once($src);
+										printf(__astr("[\b{assets}] Loaded script %s [type=%s, bytes=%d]\n"), $src, $type, filesize($src));
+										break;
+									default:
+										printf("Unhandled script type: %s\n", $type);
+									}
+								} else {
+									fprintf(STDERR,"Script %s not found!\n", $src);
+								}
+							} else {
+								switch($type) {
+								case 'text/php':
+									eval($cnode->nodeValue);
+									printf(__astr("[\b{assets}] Loaded inline script [type=%s, bytes=%d]\n"), $type, strlen($src));
+									break;
+								default:
+									printf("Unhandled script type: %s\n", $type);
+								}
+							}
 							break;
 						default:
 							printf("Unknown tag: %s, Ignoring\n", $cnode->nodeName);

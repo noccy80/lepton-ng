@@ -96,9 +96,9 @@ class LifeGrid_Actor extends LpfActor {
 				if ($this->isAlive($b - 1, $a + 1)) $na++;
 				if ($this->isAlive($b    , $a - 1)) $na++;
 				if ($this->isAlive($b    , $a + 1)) $na++;
-				if ($this->isAlive($b - 1, $a - 1)) $na++;
-				if ($this->isAlive($b - 1, $a    )) $na++;
-				if ($this->isAlive($b - 1, $a + 1)) $na++;
+				if ($this->isAlive($b + 1, $a - 1)) $na++;
+				if ($this->isAlive($b + 1, $a    )) $na++;
+				if ($this->isAlive($b + 1, $a + 1)) $na++;
 				$this->stage[$index]->neighbours = $na;
 
 				$alive = $this->isAlive($b, $a);
@@ -164,8 +164,10 @@ class LifeGrid_Actor extends LpfActor {
 					$rc = new Canvas($w,$h);
 					
 					$this->cells[$index]->render($ss,$as,$rc);
+					/*
 					$bf = new BitmapFont(1);
 					$rc->drawText($bf,rgb(255,255,255),1,1,$this->cells[$index]->neighbours);
+					*/
 					$rc->draw($c, $x, $y, $w*0.9, $h*0.9);
 				}
 			}
