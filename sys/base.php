@@ -510,6 +510,22 @@ function __printable($var) {
     }
 }
 
+function file_find_all($dir,$match) {
+
+    $ret = array();
+    $pattern = str_replace('//','/',$dir.'/*/'.$match);
+    try {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+        foreach ($iterator as $path) {
+            if (fnmatch($pattern,$path)) $ret[] = $path;
+        }
+        return $ret;
+    } catch(Exception $e) {
+        return null;
+    }
+
+}
+
 function file_find($dir,$match) {
 
     $pattern = str_replace('//','/',$dir.'/*/'.$match);
@@ -522,6 +538,7 @@ function file_find($dir,$match) {
     } catch(Exception $e) {
         return null;
     }
+
 }
 
 
@@ -1093,6 +1110,10 @@ class Console {
         }
         console::write("\n");
         return $ld;
+    }
+
+    static function clearLine() {
+        printf("\x1b[1K\r");
     }
 
     static function writeLn() {

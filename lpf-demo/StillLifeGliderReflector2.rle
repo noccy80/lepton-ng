@@ -1,0 +1,17 @@
+x = 44, y = 32, skip = 1, fps = 100
+4bobo6boo$5boo6boo$5bo7$40bo$39bobo$39bobo$20boo16booboo$20boo$38boobo
+o$bboo34boobo$bobo39bo$bo40boo$oo$$34boo$34boo4boo$11boo27bobo$10bobo
+29bo$10bo31boo$9boo23boo$34boo3$29bo$28bobo$29bo!
+Small Still-Life Glider Reflector
+
+Reflects a glider 180 degrees on a slightly different path, with a
+minimum repeat time of 202 generations.
+
+This reflector was built by Dave Greene to win a prize for the
+first still-life glider reflector to fit within a 50x50 box. He is
+using the prize money to offer two new prizes: a $50 prize for the
+first still-life glider reflector to fit within a 50x50 box and
+reflect a glider 90 degrees, and another $50 if it fits in a 35x35
+box.
+
+By Dave Greene (dvgrn@juno.com), Apr 27, 2001.

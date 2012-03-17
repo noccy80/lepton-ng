@@ -48,10 +48,13 @@ class LifeGrid_Actor extends LpfActor {
 
 	protected $cells = array();
 	protected $stage = array();
+	protected $initialized = false;
+	
 
 	function create() {
 		$this->addProperty('rows',255, lpf::int(1,512));
 		$this->addProperty('columns',255, lpf::int(1,512));
+		$this->addProperty('filename',null, lpf::string());
 	}
 
 	function getCellXY($row,$col) {
@@ -64,7 +67,7 @@ class LifeGrid_Actor extends LpfActor {
 		}
 	}
 
-	function generate() {
+	function initrandom() {
 
 		$total = ($this->columns * $this->rows);
 		for($a = 0; $a < $this->rows; $a++) {
@@ -81,6 +84,29 @@ class LifeGrid_Actor extends LpfActor {
 			}
 			if ($op) lpf::doTick();
 
+		}
+		
+		$this->initialized=true;
+	
+	}
+	
+	function initfile($file) {
+
+		// since reading a state will require a specific size, we will keep
+		//track of the width and height
+		$w = 0; $h = 0;
+		$this->initialized=true;
+	
+	}
+
+	function generate() {
+
+		if (!$this->initialized) {
+			if ($this->filename) {
+				$this->initfile($this->filename);
+			} else {
+				$this->initrandom();
+			}
 		}
 
 		$algo = 'noccy';
