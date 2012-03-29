@@ -205,4 +205,19 @@ function file_find($dir,$match) {
     }
 }
 
+function file_find_all($dir,$match) {
+
+    $pattern = str_replace('//','/',$dir.'/*/'.$match);
+    $out = array();
+    try {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+        foreach ($iterator as $path) {
+            if (fnmatch($pattern,$path)) $out[] = $path;
+        }
+        return $out;
+    } catch(Exception $e) {
+        return null;
+    }
+}
+
 
