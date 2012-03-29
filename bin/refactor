@@ -1,0 +1,151 @@
+#!/usr/bin/php
+<?php require('lepton-ng');
+
+using('refactor.objects');
+
+class Refactors {
+    private static $refactors = array();
+    static function registerRefactor($refactor,$nsuri) {
+        printf(__astr("[\b{refactor}] Registered refactor %s for %s\n"), $refactor, $nsuri);
+        self::$refactors[$nsuri] = $refactor;
+    }
+    
+    static function getRefactorFromNs($nsuri) {
+        if (arr::hasKey(self::$refactors,$nsuri)) {
+            $refactor = self::$refactors[$nsuri];
+            $ro = new $refactor();
+            return $ro;
+        }
+        printf("Refactor for %s requested but it is not handled\n", $nsuri);
+        return null;
+    }
+}
+
+class RefactorApp extends ConsoleApplication {
+
+    public $arguments = array(
+        array('f:','file','File to refactor from (.rf.xml)'),
+        array('c','clean','Remove any temporary files'),
+        array('h','help','Show this help'),
+        array('v','verbose','Be verbose'),
+        array('a','apply','Apply (after asking to review the changes)')
+    );
+
+    private function readmanifest($manifest,$clean=false) {
+
+        printf(__astr("[\b{refactor}] %s\n"), ($clean)?'Cleaning...':'Refactoring');    
+        $xd = DomDocument::load($manifest);
+        if (!$xd) {
+            printf("Could not read file: %s\n", $manifest); 
+            die(1);
+        }
+        $xp = new DomXPath($xd);
+        $root = $xd->documentElement;
+        if ($root->tagName != 'refactor') {
+            printf("Don't know this XML format");
+            die(2);
+        }
+
+        $modified = array();        
+        if (file_exists('refactor.log')) unlink('refactor.log');
+        foreach($root->childNodes as $xnfileset) {
+            if (typeOf($xnfileset) == 'DOMElement') {
+                // DOM Elements
+                if (typeOf($xnfileset) == 'DOMElement') {
+                    switch($xnfileset->tagName) {
+                      case "fileset":
+                        // Create a new fileset and go over the children
+                        $fileset = new RefactorFileset();
+                        foreach($xnfileset->childNodes as $cn) {
+                            if (typeOf($cn) == 'DOMElement') {
+                                $cntag = end(explode(':',$cn->tagName));
+                                switch($cntag) {
+                                case "filematch":
+                                    // has a pattern
+                                    $fileset->addFiles($cn->getAttribute('src'));
+                                    break;
+                                default:
+                                    $ro = refactors::getRefactorFromNs($cn->namespaceURI);
+                                    if (!$ro) {
+                                        printf("Warning: Unexpected tag or ns <%s>%s in fileset\n", $cn->namespaceURI, $cn->tagName);
+                                    }
+                                    if ($clean) {
+                                        foreach($fileset->files as $file) {
+                                            if (file_exists($file.'.rf')) unlink($file.'.rf');
+                                            if (file_exists($file.'.diff')) unlink($file.'.diff');
+                                        }
+                                    } else {
+                                        $ro->read($cn);
+                                        $modified = array_unique(array_merge($modified,$ro->refactor($fileset)));
+                                        foreach($modified as $file) {
+                                            $fdiff = fopen('refactor.log','a+');
+                                            fprintf($fdiff,"File: %s\n\n",$file);
+                                            fclose($fdiff);
+                                            $diff = shell_exec('diff -d --normal "'.$file.'" "'.$file.'.rf" | tee "'.$file.'.diff" | tee -a "refactor.log"');
+                                            if ($this->hasArgument('v')) printf(__astr("[\b{phprefactor}] Refactored file: %s\n"), $file);
+                                            if ($this->hasArgument('v')) printf($diff);
+                                            $fdiff = fopen('refactor.log','a+');
+                                            fprintf($fdiff,"\n");
+                                            fclose($fdiff);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                      default:
+                        printf("Warning: Unexpected tag %s in refactor set.\n", $xnfileset->tagName);
+                    }
+                }
+                    
+            }
+        }
+        
+        if (count($modified) > 0) {
+            printf(__astr("[\b{phprefactor}] Affected files: %d\n"), count($modified));
+            if ($this->hasArgument('a')) {
+                $l = true;
+                while($l) {
+                    $l = false;
+                    printf(__astr("Apply changes to files? [\b{y}es/\b{n}o/\b{r}eview]}) "));
+                    $ok = strToLower(readline());
+                    if ($ok == 'y') { 
+                        printf(__astr("[\b{phprefactor}] Applying changes to files...\n"));
+                        foreach($modified as $file) {
+                            if (file_exists($file.'.rf')) {
+                                printf(__astr("[\b{refactor}] Applying %s\n"), $file);
+                                rename($file,$file.'~');
+                                rename($file.'.rf',$file);
+                                unlink($file.'.diff');
+                            }
+                        }
+                    } elseif ($ok == 'r') {
+                        printf("%s\n\nType exit to return.\n", file_get_contents('refactor.log'));
+                        exec("bash -i");
+                        $l = true;
+                    }
+                }
+            }
+            printf("Review refactor.log for the changes applied. Run again with -a to apply changes directly.\n");
+                    
+        }
+        
+    
+    }
+
+    public function main($argc,$argv) {
+
+        if (!$this->hasArgument('f')) {
+            $this->usage();
+            return;
+        }
+        $this->readmanifest($this->getArgument('f'),true);
+        if (!$this->hasArgument('c')) $this->readmanifest($this->getArgument('f'),false);
+    
+    }
+
+}
+
+using('refactor.languages.*');
+
+lepton::run('RefactorApp');

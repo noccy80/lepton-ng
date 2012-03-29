@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<refactor xmlns:php="lepton.refactor.php">
+    <fileset>
+        <filematch src="app/*.php" />
+        <filematch src="sys/*.php" />
+        <php:function>
+            <php:from>modulemanager::load(1)</php:from>
+            <php:from>lepton::using(1)</php:from>
+            <php:from>using(1)</php:from>
+            <php:to>l::using(1)</php:to>
+        </php:function>
+        <php:function>
+             <php:from>expandpath(1)</php:from>
+             <php:from>getpath(1)</php:from>
+             <php:from>base::expand(1)</php:from>
+             <php:to>l::expand(1)</php:to>
+        </php:function>
+    </fileset>
+</refactor>

@@ -1,0 +1,20 @@
+x = 96, y = 71, skip = 1, fps = 100
+o$boo$oo7$89boo$89bo$87bobo$45bo37boobboo$19bo9bo15b3o35boo$19b3o5b3o
+18bo$22bo3bo20boo11boo$21boo3boo32boo8$35boo52boo$35boo34boo16bobo$23b
+oo45bobo18bo$22bobbo44bo20boo$17boo4boo44boo4boo$16bobo54bobbo$16bo56b
+oo$15boo65boo$25boo33boo20boo$25bo34bo$26b3o32b3o$28bo34bo11$72bo$72b
+3o$75bo$74boo10$94boo$94boo9$79boo$79boo!
+Still-Life Glider Reflector
+
+Converts one glider into 3 for any input stream with a period of 497 or 
+greater, unless pipelining techniques are employed. It is a great challenge 
+to come up with the small, fast reflector that consists solely of still-lifes. 
+
+On April 27, 2001, Dave Greene of Albany, NY won the long-standing $100
+prize for a stable glider reflector that fits into a 50x50 square.
+See StillLifeGliderReflector2.
+
+The first stable glider reflectors were created by Paul Callahan and Dean 
+Hickerson in late 1996. This one by Stephen Silver, Nov 6, 1998.
+
+See also HerschelTrack.

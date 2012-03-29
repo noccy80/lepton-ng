@@ -1,2 +1,3 @@
 #!/bin/bash
-./lpf render frames=300 life.ls +render +convert:mp4
+mkdir -p life-png
+./lpf render output=life-png frames=300 life.ls +render +convert:mp4

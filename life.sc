@@ -12,8 +12,8 @@
 		<position left="10" top="10" width="700" height="350" />
 	</actor>
 
-	<actor id="footer1" type="Text" font="Delicious-Roman.ttf" size="14" text="Conway's Game of Life" color="#FFFFFF" background="#000000">
-		<position left="20" top="360" width="400" height="20" />
+	<actor id="footer1" type="Text" font="Delicious-Roman.ttf" size="16" text="Conway's Game of Life" color="#FFFFFF" background="#000000">
+		<position left="20" top="360" width="400" height="30" />
 
 	</actor>
 
@@ -22,17 +22,21 @@
 	</actor>
 
 
-	<!-- new style actor template for the board -->
+	
 	<actortemplate name="gameoflifeboard" type="LifeGrid">
 		<param key="rows" value="20" />
 		<param key="columns" value="50" />
 		<position left="10" top="10" width="700" height="350" />
 	</actortemplate>
 	<actortemplate name="footer" type="Text" font="Delicious-Roman.ttf" color="#FFFFFF" background="#000000" />
-	<!-- Classes add properties to the various actors. -->
+	<!--
+		Classes add properties to the various actors.
+	-->
 	<class name="Text:big" size="16" />
 	<class name="Text:small" size="10" />
-	<!-- And this is our scenegraph. -->
+	<!--
+		And this is our scenegraph.
+	-->
 	<scenegraph>
 		<node id="root">
 			<node id="board" protoype="board" />
@@ -42,12 +46,5 @@
 			</node>
 		</node>
 	</scenegraph>
-	<!-- timeline -->
-	<timeline duration="300">
-	</timeline>
-	<!-- camera -->
-	<camera id="mastercamera" width="720" height="400" target="mp4">
-	    <param key="losslessproxy" value="1" />
-	    <position3d x="0" y="0" z="0" />
-	</camera>
+
 </scene>

@@ -149,7 +149,7 @@ class LpfApplication extends CliApplication {
 							}
 							break;
 						default:
-							printf("Unknown tag: %s, Ignoring\n", $cnode->nodeName);
+							printf(__astr("[\c{red warn}] Unknown tag: %s, Ignoring\n"), $cnode->nodeName);
 						}
 					}
 
@@ -158,7 +158,7 @@ class LpfApplication extends CliApplication {
 			}
 			if (string::like('*=*',$arg)) {
 				list($opt,$val) = explode('=',$arg);
-				printf("Option %s set to %s\n", $opt, $val);
+				printf(__astr("[\b{core}] \g{%s}: %s\n"), $opt, $val);
 				$this->{$opt} = $val;
 			}
 
@@ -168,23 +168,31 @@ class LpfApplication extends CliApplication {
 				// Render the scene
 				$ss = new SceneState();
 				$as = new ActorState();
-				if (file_exists($scenename.'000.png')) unlink($scenename.'???.png');
 				// We want to sort the items by z-index here too.
 				// Eventually this should be done with a scenegraph.
 				$ftot = $this->frames;
+				$t = new Timer(true);
 				for($f = 0; $f < $ftot; $f++) {
 					$ct = $cscene[0];
-					$t = new Timer(true);
 					for ($n = 0; $n < count($ca); $n++) {
 						$cta = new Canvas($ca[$n]->width, $ca[$n]->height);
 						$ca[$n]->render($ss,$as,$cta);
 						$cta->draw($ct,$ca[$n]->left, $ca[$n]->top, $ca[$n]->width, $ca[$n]->height);
 					}
-					$fn = sprintf('%s%03d.png',$scenename,$f);
+					$fn = sprintf('%s%04d.png',$scenename,$f);
 					$dur = $t->getElapsed();
+					if ($this->output) {
+						$fn = str_replace('//','/',$this->output.'/'.$fn);
+					}
 					$ct->save($fn);
-					//printf(__astr("\g{[%03d/%03d]}"), $f + 1, $ftot);
+					$te = $t->getElapsed();
+					$tpf = ($f+1) / $te;
+					$tr = ($ftot-$f+1) * $tpf;
+					console::clearLine();
+    				printf(__astr("[\b{lpf}] Render "), $fn);
+					printf("%04d/%04d: %.2fs left, %.2ffps ", $f, $ftot, $tr, $tpf);
 				}
+				printf("\n");
 
 			}
 			if (string::like('+convert:*',$arg)) {
