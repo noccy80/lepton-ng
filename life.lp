@@ -4,30 +4,46 @@ using('lpf.actor');
 using('lpf.actors.*');
 
 /**
- * Conway's Game of Life implemented on top of Lepton Presentation Framework.
+ * @file life.lp
+ * @brief Conway's Game of Life implemented on top of Lepton Presentation Framework.
  *
  * The rules are simple:
- *  - Any live cell with fewer than two live neighbours dies, as if caused by
- *    under-population.
- *  - Any live cell with two or three live neighbours lives on to the next
- *    generation.
- *  - Any live cell with more than three live neighbours dies, as if by over-
- *    crowding.
- *  - Any dead cell with exactly three live neighbours becomes a live cell, as
- *    if by reproduction.
+ *   - Any live cell with fewer than two live neighbours dies, as if caused by under-population.
+ *   - Any live cell with two or three live neighbours lives on to the next generation.
+ *   - Any live cell with more than three live neighbours dies, as if by overcrowding.
+ *   - Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
  *
  * @author Christopher Vagnetoft <noccy.com>
  * @license GNU General Public License (GPL) Version 3
  */
 
+/**
+ * @class LifeCell_Actor
+ * @brief A single cell in the game of life.
+ *
+ * A cell can either be alive or dead. It's state is set with the property
+ * "alive" on the cell. The property "neighbours" is updated aptly with the
+ * number of alive neighbours.
+ */
 class LifeCell_Actor extends LpfActor {
 
+    /**
+     * @brief Create, called when the actor is created.
+     *
+     */
 	function create() {
 		// Initialize some cells with a life spark.
 		$this->addProperty('alive', (mt_rand(0,100)>70) , lpf::bool());
 		$this->addProperty('neighbours', 0, lpf::int(0,8));
 	}
 
+    /**
+     * @brief Render the actor.
+     *
+     * @param SceneState $ss The scene state
+     * @param ActorState $as The actor state
+     * @aram Canvas $c The canvas on which to produce the result.
+     */
 	function render(SceneState $ss, ActorState $as, Canvas $c) {
 		$p = $c->getPainter();
 		if ($this->alive) {
@@ -44,26 +60,28 @@ class LifeCell_Actor extends LpfActor {
 
 }
 
+/**
+ * @brief This grid holds the game board.
+ *
+ */
 class LifeGrid_Actor extends LpfActor {
 
 	protected $cells = array();
 	protected $stage = array();
 
+    /**
+     * @brief Create, called when the actor is created.
+     *
+     */
 	function create() {
 		$this->addProperty('rows',255, lpf::int(1,512));
 		$this->addProperty('columns',255, lpf::int(1,512));
 	}
 
-	function getCellXY($row,$col) {
-		if (($row<0) || ($row>$this->rows) || ($col<0) || ($col>$this->columns)) return null;
-		$index = ($row * $this->columns) + $col;
-		if (count($this->cells)>$index) {
-			return $this->cells[$index];
-		} else {
-			return null;
-		}
-	}
-
+    /**
+     * @brief Generate the scene.
+     *
+     */
 	function generate() {
 
 		$total = ($this->columns * $this->rows);
@@ -127,6 +145,13 @@ class LifeGrid_Actor extends LpfActor {
 
 	}
 
+    /**
+     * @brief Checks if a cell is alive.
+     *
+     * @param $col The column
+     * @param $row The row
+     * @return bool True if the cell is alive.
+     */
 	function isAlive($col, $row) {
 		if (($row<=0) || ($row>=$this->rows) || ($col<=0) || ($col>=$this->columns)) return false;
 		$index = ($row * $this->columns) + $col;
@@ -137,6 +162,13 @@ class LifeGrid_Actor extends LpfActor {
 		}
 	}
 
+    /**
+     * @brief Sets the cells alive state for the next tick.
+     *
+     * @param $col The column
+     * @param $row The row
+     * @param $alive The alive state
+     */
 	function setAlive($col, $row, $alive) {
 		if (($row<0) || ($row>$this->rows) || ($col<0) || ($col>$this->columns)) return;
 		$index = ($row * $this->columns) + $col;
@@ -145,8 +177,16 @@ class LifeGrid_Actor extends LpfActor {
 		}
 	}
 
+    /**
+     * @brief Render the actor.
+     *
+     * @param SceneState $ss The scene state
+     * @param ActorState $as The actor state
+     * @aram Canvas $c The canvas on which to produce the result.
+     */
 	function render(SceneState $ss, ActorState $as, Canvas $c) {
 
+        // Generate and iterate to the next tick.
 		$this->generate();
 
 		for($a = 0; $a < $this->rows; $a++) {
