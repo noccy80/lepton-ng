@@ -7,43 +7,50 @@ using('lepton.cli.debug');
 using('lepton.cli.exception');
 using('lepton.system.process');
 
-interface IConsoleApplication {
-    function main($argc,$argv);
-}
-
 using('lepton.cli.ansi');
 
 logger::registerFactory(new ConsoleLoggerFactory());
 
-class Argument {
-	const ARG_NONE = 0;
-	const ARG_SINGLE = 1;
-	const ARG_MULTI = 2;
-	private $shortopt = null;
-	private $longopt = null;
-	private $helpstr = null;
-	private $paramtype = self::ARG_NONE;
-	private $options = null;
-	function __construct($shortopt,$longopt = null,$helpstr = null,$paramtype = Argument::ARG_NONE,$options=null) {
-		$this->shortopt = $shortopt;
-		$this->longopt = $longopt;
-		$this->helpstr = $helpstr;
-		$this->paramtype = $paramtype;
-		$this->options = (array)$options;
+abstract class AppBaseList implements IteratorAggregate, ArrayAccess {
+	protected $data;
+	public function __construct() {
+		$this->data = array();
 	}
-	function get() {
-		if ($this->paramtype == self::ARG_NONE) {
-			$as = $this->shortopt;
-		} elseif ($this->paramtype == self::ARG_SINGLE) {
-			$as = $this->shortopt.':';
-		} elseif ($this->paramtype == self::ARG_MULTI) {
-			$as = $this->shortopt.'::';
-		}
-		$al = $this->longopt;
-		$help = $this->helpstr;
-		return array($as,$al,$help);
+	public function getData() {
+		return $this->data;
+	}
+	public function getIterator() {
+		return new ArrayIterator($this->data);
+	}
+    public function offsetSet($offset, $value) {
+        if (is_null($offset)) {
+            $this->data[] = $value;
+        } else {
+            $this->data[$offset] = $value;
+        }
+    }
+    public function offsetExists($offset) {
+        return isset($this->data[$offset]);
+    }
+    public function offsetUnset($offset) {
+        unset($this->data[$offset]);
+    }
+    public function offsetGet($offset) {
+        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+    }	
+}
+class AppArgumentList extends AppBaseList {
+	public function register($short,$long,$info,array $opts=null) {
+		$this->data[$long] = array($short,$long,$info);
 	}
 }
+class AppCommandList extends AppBaseList {
+	public function add($cmd,$desc) {
+		$this->data[$cmd] = array($cmd,$desc);
+	}
+}
+
+
 
 /**
  * @class ConsoleApplication
@@ -51,25 +58,30 @@ class Argument {
  *
  *
  */
-abstract class ConsoleApplication extends Application implements IConsoleApplication {
+abstract class ConsoleApplication extends Application {
 
     protected $_args;
     protected $_params;
     protected $_pidfile;
     protected $description = "Application";
     protected $arguments;
+    protected $commands;
 
     protected function application($description,$options=null) {
         $this->description = $description;
     }
 
-    protected function addArgument(Argument $arg) {
-        $this->arguments[] = $arg->get();
-    }
-
     const PROCESS_RUNNING = 0;
     const PROCESS_CLEAR = 1;
     const PROCESS_STALE = 2;
+
+	function __construct() {
+		if (is_callable(array($this,'init'))) {
+			$this->arguments = new AppArgumentList();
+			$this->commands = new AppCommandList();
+			$this->init();
+		}
+	}
 
     /**
      * @brief Show usage information on the command.
@@ -107,7 +119,7 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         }
         if (isset($this->commands)) {
             foreach($this->commands as $cmd) {
-                $cmds[] = sprintf("    %s %s", __astr($cmd[0]),$cmd[1]);
+                $cmds[] = sprintf("    %-20s %s", __astr($cmd[0]),$cmd[1]);
                 $tmp = explode(' ',$cmd[0]);
                 $cmdlist[] = $tmp[0];
             }
@@ -122,18 +134,18 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
         if (isset($this->license)) console::writeLn("%s", $this->license);
         Console::writeLn("");
         Console::writeLn("Usage:");
-	if (count($cmdlist)>0) $cmdstr = '['.join('|',$cmdlist).']';
-	else $cmdstr = '';
-        Console::writeLn("    %s %s %s %s", $this->getName(), $argstr, $cmdstr, __astr('\g{params...}'));
-        Console::writeLn("");
-        Console::writeLn("Arguments:");
-        console::writeLn(join("\n", $args));
-        Console::writeLn();
-	if (count($cmds)>0) {
-	        Console::writeLn("Commands:");
-	        console::writeLn(join("\n", $cmds));
-	        Console::writeLn();
-	}
+		if (count($cmdlist)>0) $cmdstr = '['.join('|',$cmdlist).']';
+		else $cmdstr = '';
+	    Console::writeLn("    %s %s %s %s", $this->getName(), $argstr, $cmdstr, __astr('\g{params...}'));
+	    Console::writeLn("");
+	    Console::writeLn("Arguments:");
+	    console::writeLn(join("\n", $args));
+	    Console::writeLn();
+		if (count($cmds)>0) {
+			    Console::writeLn("Commands:");
+			    console::writeLn(join("\n", $cmds));
+			    Console::writeLn();
+		}
         Console::writeLn("Environment Variables:");
         Console::writeLn("    APP_PATH             The application dir path");
         Console::writeLn("    SYS_PATH             The system path");
@@ -159,6 +171,16 @@ abstract class ConsoleApplication extends Application implements IConsoleApplica
                 $strargs = '';
                 $longargs = array();
                 foreach($this->arguments as $arg) {
+                    $strargs.= $arg[0];
+                    // Scope is the : or ::
+                    $scope = substr($arg[0],1);
+                    $longargs[] = $arg[1].$scope;
+                }
+            } elseif (typeOf($this->arguments) == 'AppArgumentList') {
+            	$args = $this->arguments->getData();
+            	$strargs = '';
+            	$longargs = array();
+                foreach($args as $arg) {
                     $strargs.= $arg[0];
                     // Scope is the : or ::
                     $scope = substr($arg[0],1);
