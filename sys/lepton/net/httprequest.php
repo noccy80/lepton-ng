@@ -9,12 +9,14 @@ class HttpRequest {
     private $url;
     private $args;
     protected $ret = null;
+    
+    const KEY_USERAGENT = 'lepton.net.httprequest.useragent';
 
     function __construct($url, $args=null) {
         $this->args = arr::apply(array(
             'returndom' => false,
             'method' => 'get',
-            'useragent' => 'LeptonPHP/1.0 (+http://labs.noccy.com)'
+            'useragent' => config::get(self::KEY_USERAGENT,'LeptonPHP/1.0 (+http://labs.noccy.com)')
         ),(array)$args);
         $this->url = $url;
 
@@ -153,7 +155,7 @@ class HttpDownload extends HttpRequest {
     function __construct($url,$target,$args=null) {
         $this->args = arr::apply(array(
             'method' => 'get',
-            'useragent' => 'LeptonPHP/1.0 (+http://labs.noccy.com)'
+            'useragent' => config::get(self::KEY_USERAGENT,'LeptonPHP/1.0 (+http://labs.noccy.com)')
         ),(array)$args);
         $this->url = $url;
         $this->target = $target;
@@ -175,6 +177,7 @@ class HttpDownload extends HttpRequest {
 
         if (isset($options['onprogress'])) $ci->setProgressCallback($options['onprogress']);
 
+        $ci->setOption(CURLOPT_BINARYTRANSFER,true);
         $ci->setTarget($this->target);
         $ci->setOption(CURLOPT_HEADER, false);
         $ci->setOption(CURLOPT_RETURNTRANSFER, true);

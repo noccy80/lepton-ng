@@ -1505,8 +1505,8 @@ abstract class CoreEvents implements IEventList {
  * @deprecated To be replaced by delegate
  */
 class Callback {
-    private $cbarray = null;
-    private $cbfixed = null;
+    protected $cbarray = null;
+    protected $cbfixed = null;
     function __construct(&$object,$method) {
         $this->cbarray = array($object,$method);
         $args = func_get_args();
@@ -1515,6 +1515,13 @@ class Callback {
     function call() {
         $args = func_get_args();
         return call_user_func_array($this->cbarray,array_merge((array)$this->cbfixed,$args));
+    }
+}
+class FunctionCallback extends Callback {
+    function __construct($method) {
+        $this->cbarray = $method;
+        $args = func_get_args();
+        if (count($args)>1) { $this->cbfixed = array_slice($args,1); }
     }
 }
 function cb(callback $cb = null) {
