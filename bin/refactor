@@ -6,7 +6,7 @@ using('refactor.objects');
 class Refactors {
     private static $refactors = array();
     static function registerRefactor($refactor,$nsuri) {
-        printf(__astr("[\b{refactor}] Registered refactor %s for %s\n"), $refactor, $nsuri);
+        // printf(__astr("[\b{refactor}] Registered refactor %s for %s\n"), $refactor, $nsuri);
         self::$refactors[$nsuri] = $refactor;
     }
     
