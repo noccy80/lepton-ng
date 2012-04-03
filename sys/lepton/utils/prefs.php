@@ -37,7 +37,7 @@ abstract class Prefs {
 
     function __construct($structure = null) {
         $path = expandpath('app:'.$structure);
-        if (file_exists($path)) {
+        if (file_exists($path) && ($structure)) {
             $strx = domdocument::load($path);
             $domx = new DOMXpath($strx);
             $cfgs = $domx->query('/configurationschema/config');

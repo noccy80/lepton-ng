@@ -409,6 +409,7 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
         gc_enable();
         declare(ticks=1);
         register_tick_function(array($this,'checkstate'));
+        parent::__construct();
     }
 
     /**
