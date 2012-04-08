@@ -387,7 +387,7 @@ abstract class ConsoleApplication extends Application {
 
 interface IConsoleService {
     function servicemain();
-    static function signal($sig);
+    function signal($sig);
 }
 
 /**
@@ -419,8 +419,9 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
      * @todo Add the ability to specify a custom handler.
      * @param int $signal The signal to attach
      */
-    protected function attachSignal($signal) {
-        pcntl_signal($signal, array($this,'signal'));
+    protected function attachSignal($signal,$handler=null) {
+    	if (!$handler) $handler = array($this,'signal');
+        pcntl_signal($signal, $handler);
     }
 
     /**
@@ -440,7 +441,7 @@ abstract class ConsoleService extends ConsoleApplication implements IConsoleServ
      * 
      * @param type $signal 
      */
-    static function signal($signal) {
+    public function signal($signal) {
         echo "\n";
         Console::debug("Caught signal %d", $signal);
         if ($signal === SIGINT || $signal === SIGTERM) {

@@ -38,6 +38,40 @@ class Cache {
             self::$initialized = true;
         }
     }
+    
+    public static function getBackend() {
+    
+    	return "memcached";
+    
+    }
+    
+    public static function getStats() {
+    	self::initialize();
+    	$stats = self::$mci->getStats();
+    	$stats = $stats['127.0.0.1:11211'];
+    	$size = $stats['bytes']; $unit = 'B';
+    	if ($size>1024) {
+    		$size/=1024; $unit = 'kB';
+    		if ($size>1024) {
+    			$size/=1024; $unit = 'mB';
+    		}
+    	}
+    	$hitstot = ($stats['get_hits'] + $stats['get_misses']);
+   	    $effpc = 0;
+    	if ($hitstot>0) {
+    	    $effpc = ($stats['get_hits'] / $hitstot) * 100;
+    	}
+
+    	$ret = array(
+    		'cachehits' => $stats['get_hits'],
+    		'cachemiss' => $stats['get_misses'],
+    		'size' => $stats['curr_items'],
+    		'total' => $stats['total_items'],
+    		'efficiency' => $effpc,
+    		'size' => sprintf('%.2f%s',$size,$unit)
+    	);
+    	return $ret;
+    }
 
     /**
      * @brief Helper function to check if the last operation was successful.
@@ -96,6 +130,11 @@ class Cache {
                 return false;
         }
     }
+    
+    public static function flush() {
+    	self::initialize();
+    	self::$mci->flush();
+    }
 
     /**
      * @brief Retrieve data from the cache
@@ -110,6 +149,7 @@ class Cache {
         self::initialize();
         $val = self::$mci->get($key);
         if (self::check()) return $val;
+        return null;
     }
 
     /**
