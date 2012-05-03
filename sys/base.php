@@ -328,6 +328,7 @@ using('base.config');
 using('base.assert');
 using('base.utils');
 using('base.structs');
+using('base.logging');
 
 abstract class Globals {
     
@@ -520,10 +521,6 @@ class Console {
         }
         console::write("\n");
         return $ld;
-    }
-
-    static function clearLine() {
-        printf("\x1b[1K\r");
     }
 
     static function writeLn() {
@@ -781,15 +778,14 @@ class Lepton {
             // Chain PHPs error handling
             switch($errno) {
             case E_STRICT:
-                logger::debug('Warning: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
-                break;
-            case E_DEPRECATED:
-                if (config::has('lepton.showdeprecated',false))
+                    logger::debug('Warning: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                    break;
+        case E_DEPRECATED:
                     logger::warning('Deprecated: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
-                break;
+                    break;
             default:
-                logger::warning('%s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
-                break;
+                   logger::warning('%s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                    break;
             }
             return true;
         }
@@ -1238,303 +1234,9 @@ function KeyStore($key) {
     return (string) (new KeyStoreRequest($key));
 }
 
-////// Logging Functionality //////////////////////////////////////////////////
+using('base.events');
+using('base.callback');
 
-interface ILoggerFactory {
-    function __logMessage($priority, $message);
-}
-
-abstract class LoggerFactory implements ILoggerFactory {
-
-}
-
-class SyslogLoggerFactory extends LoggerFactory {
-
-    private $verbose;
-    private $logger;
-
-    function __construct($perror=false, $facility=LOG_LOCAL0) {
-        $this->verbose = $perror;
-        $flag = LOG_PID;
-        if ($perror)
-            $flag |= LOG_PERROR;
-        $this->logger = openlog(Lepton::getServerHostname(), $flag, $facility);
-    }
-
-    function __logMessage($prio, $msg) {
-        syslog($prio, __fmt($msg));
-    }
-
-    function __destruct() {
-        closelog();
-    }
-
-}
-
-class DatabaseLoggerFactory extends LoggerFactory {
-
-    function __logMessage($prio, $msg) {
-        
-    }
-
-}
-
-class EventLoggerFactory extends LoggerFactory {
-
-    function __logMessage($prio, $msg) {
-        event::invoke(debug::EVT_DEBUG, array($prio,$msg));
-    }
-
-}
-
-class ConsoleLoggerFactory extends LoggerFactory {
-
-    private static $level = array(
-        'Base','Emerge','Alert','Critical','Warning','Notice','Info','Debug'
-    );
-
-    function __logMessage($prio,$msg) {
-        $ts = @date("M-d H:i:s", time());
-        $lines = explode("\n", $msg);
-        foreach ($lines as $line) {
-            if (defined('STDERR'))
-                fprintf(STDERR, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
-            else
-                printf("%s %-20s %s\n", $ts, self::$level[$prio], $line);
-            //fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
-        }
-    }
-
-}
-
-class FileLoggerFactory extends LoggerFactory {
-
-    private $filename = null;
-
-    private static $level = array(
-        'BASE','EMERG','ALERT','CRIT','WARN','NOTICE','INFO','DEBUG'
-    );
-
-    function __construct($filename) {
-        $this->filename = $filename;
-    }
-
-    function __logMessage($prio,$msg) {
-        $ts = @date("M-d H:i:s", time());
-        $lines = explode("\n", $msg);
-        $fh = fopen($this->filename,'a+');
-        foreach ($lines as $line) {
-            fprintf($fh, "%s %-20s %s\n", $ts, self::$level[$prio], $line);
-            //fprintf(STDERR, "%s | %-10s | %s\n", $ts, self::$level[$prio-1],$line);
-        }
-        fclose($fh);
-    }
-
-}
-
-abstract class Logger {
-
-    static $_loggers = array();
-    static $_logger = null;
-
-    public static function emerg($msgfmt) {
-        $arg = func_get_args();
-        self::__log(LOG_EMERG, __fmt($arg));
-    }
-
-    public static function alert($msgfmt) {
-        $arg = func_get_args();
-        self::__log(LOG_ALERT, __fmt($arg));
-    }
-
-    public static function crit($msgfmt) {
-        $arg = func_get_args();
-        self::__log(LOG_CRIT, __fmt($arg));
-    }
-
-    public static function err($msgfmt) {
-        $arg = func_get_args();
-        self::__log(LOG_ERR, __fmt($arg));
-    }
-
-    public static function warning($msgfmt) {
-        $arg = func_get_args();
-        self::__log(LOG_WARNING, __fmt($arg));
-    }
-
-    public static function notice($msgfmt) {
-        $arg = func_get_args();
-        self::__log(LOG_NOTICE, __fmt($arg));
-    }
-
-    public static function info($msgfmt) {
-        $arg = func_get_args();
-        self::__log(LOG_INFO, __fmt($arg));
-    }
-
-    public static function debug($msgfmt) {
-        $arg = func_get_args();
-        self::__log(LOG_DEBUG, __fmt($arg));
-    }
-
-    public static function log($msgfmg) {
-        $arg = func_get_args();
-        self::__log(LOG_INFO, __fmt($arg));
-    }
-
-    public static function registerFactory(LoggerFactory $factory) {
-        foreach(self::$_loggers as $logger) {
-            if (typeOf($logger) == typeOf($factory)) {
-                logger::warning('Attempting to register logger %s twice',typeOf($factory));
-                return;
-            }
-        }
-        self::$_loggers[] = $factory;
-    }
-
-    private static function __log($prio, $msg) {
-        if ($prio <= base::logLevel()) {
-            foreach (self::$_loggers as $logger) {
-                $logger->__logMessage($prio, $msg);
-            }
-        }
-    }
-
-    public static function logEx($prio,$msg) {
-        self::__log($prio,$msg);
-    }
-
-}
-
-///// Events /////////////////////////////////////////////////////////////////
-
-class EventHandler {
-
-    private $_class = null;
-    private $_method = null;
-    private $_uid = null;
-
-    /**
-     * Constructor
-     *
-     * @param Object $class The class name or a class instance
-     * @param Mixed $method The method to invoke
-     */
-    public function __construct($class, $method) {
-        $this->_class = $class;
-        $this->_method = $method;
-        $this->_uid = uniqid('ev', true);
-    }
-
-    /**
-     * Called when the event is invoked. Normal users don't have to bother
-     * with this.
-     *
-     * @param Mixed $event The event that is being dispatched
-     * @param Array $data The data being passed to the event
-     */
-    public function dispatch($event, Array $data) {
-        if ($this->_class) {
-            if (is_string($this->_class)) {
-                $ci = new $this->_class;
-            } else {
-                $ci = $this->_class;
-            }
-            return (call_user_func_array(array($ci, $this->_method), array($event, $data)) == true);
-        } else {
-            return (call_user_func_array($this->_method, array($event, $data)) == true);
-        }
-    }
-
-    /**
-     * Returns an events unique ID.
-     *
-     * @return Mixed The unique ID assigned to the event
-     */
-    public function getUniqueId() {
-        return $this->_uid;
-    }
-
-}
-
-/**
- * Manages various events
- */
-abstract class Event {
-
-    private static $_handlers = array();
-
-    /**
-     * Register an event handler
-     *
-     * @param Mixed $event The event to register
-     * @param EventHandler $handler The EventHandler in charge of the event.
-     */
-    static function register($event, EventHandler $handler) {
-        if (!arr::hasKey(self::$_handlers, strtolower($event))) {
-            self::$_handlers[$event] = array();
-        }
-        self::$_handlers[$event][$handler->getUniqueId()] = $handler;
-    }
-
-    /**
-     * Invoke a specif event
-     *
-     * @param Mixed $event The event to invoke
-     * @param Array $data The data to pass to the handler
-     */
-    static function invoke($event, Array $data) {
-        if (arr::hasKey(self::$_handlers, strtolower($event))) {
-            foreach (self::$_handlers[$event] as $evt) {
-                if ($evt->dispatch($event, $data) == true)
-                    return true;
-            }
-        }
-        return false;
-    }
-
-}
-
-interface IEventList { }
-
-abstract class CoreEvents implements IEventList {
-    const EVENT_BEFORE_APPLICATION = 'lepton.application.before';
-    const EVENT_AFTER_APPLICATION = 'lepton.application.after';
-}
-
-/**
- * @deprecated To be replaced by delegate
- */
-class Callback {
-    protected $cbarray = null;
-    protected $cbfixed = null;
-    function __construct(&$object,$method) {
-        $this->cbarray = array($object,$method);
-        $args = func_get_args();
-        if (count($args)>2) { $this->cbfixed = array_slice($args,2); }
-    }
-    function call() {
-        $args = func_get_args();
-        return call_user_func_array($this->cbarray,array_merge((array)$this->cbfixed,$args));
-    }
-}
-class FunctionCallback extends Callback {
-    function __construct($method) {
-        $this->cbarray = $method;
-        $args = func_get_args();
-        if (count($args)>1) { $this->cbfixed = array_slice($args,1); }
-    }
-}
-function cb(callback $cb = null) {
-    $args = func_get_args();
-    if ($cb) call_user_func_array(array($cb,'call'),array_slice($args,1));
-}
-// Semantic prettification method
-function callback(&$object,$method) { 
-    // return array($o,$m);
-    $args = func_get_args();
-    return new Callback($object,array_slice($args,1));
-}
 ////// Finalizing Bootstrap ///////////////////////////////////////////////////
 
 if (PHP_VERSION < "5") {
@@ -1581,6 +1283,8 @@ class LeptonInstanceScopeWatcher {
     }
 }
 $__leptoninstancescope = new LeptonInstanceScopeWatcher();
+
+using('s2s.requesthandler');
 
 using('lepton.utils.rtoptimization');
 RuntimeOptimization::enable();
