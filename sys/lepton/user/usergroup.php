@@ -5,6 +5,8 @@ module("Group Management");
 using('lepton.crypto.uuid');
 using('lepton.user.acl');
 
+config::push('lepton.user.extensions', 'UserGroupExtension');
+
 /**
  * @class UserGroup
  * @brief Contains a usergroup record.
