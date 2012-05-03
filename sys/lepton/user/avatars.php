@@ -53,8 +53,8 @@ class GravatarAvatarProvider extends AvatarProviderBase{
         if (!$size) $size = config::get('lepton.avatars.defaultsize', 64);
         $email = $user->email;
         return(
-            (request::isSecure()?'https://':'http://').
-            "www.gravatar.com/avatar.php?" .
+            (request::isSecure()?'https://secure.gravatar.com':'http://www.gravatar.com').
+            "/avatar.php?" .
             "gravatar_id=".md5( strtolower($email) ) .
             "&default=".urlencode($default) .
             "&size=".$size
@@ -70,8 +70,8 @@ class Gravatar {
         $default = config::get('lepton.avatars.gravatars.default','identicon');
         if (!$size) $size = config::get('lepton.avatars.defaultsize', 64);
         return(
-            (request::isSecure()?'https://':'http://').
-            "www.gravatar.com/avatar.php?" .
+            (request::isSecure()?'https://secure.gravatar.com':'http://www.gravatar.com').
+            "/avatar.php?" .
             "gravatar_id=".md5( strtolower($email) ) .
             "&default=".urlencode($default) .
             "&size=".$size
