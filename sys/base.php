@@ -778,14 +778,16 @@ class Lepton {
             // Chain PHPs error handling
             switch($errno) {
             case E_STRICT:
-                    logger::debug('Warning: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
-                    break;
-        case E_DEPRECATED:
-                    logger::warning('Deprecated: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
-                    break;
+                logger::debug('Warning: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                break;
+            case E_DEPRECATED:
+                // Disable showing deprecation warnings for now
+                break;
+                logger::warning('Deprecated: %s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                break;
             default:
-                   logger::warning('%s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
-                    break;
+                logger::warning('%s:%d %s', str_replace(base::basePath(),'',$errfile), $errline, $errstr);
+                break;
             }
             return true;
         }
