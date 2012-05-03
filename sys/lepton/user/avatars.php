@@ -5,6 +5,7 @@ config::def('lepton.avatar.providers', array(
     'LocalAvatarProvider',
     'GravatarAvatarProvider'
 ));
+config::push('lepton.user.extensions', 'AvatarProvider');
 
 ////////// AvatarProviders ////////////////////////////////////////////////
 
@@ -13,11 +14,6 @@ config::def('lepton.avatar.providers', array(
  * from the AvatarProvider class. The first class in the chain to return a non-null
  * string will be used as the avatar source.
  */
-
-interface IAvatarProvider {
-    function getAvatar(UserRecord $user, $size=null);
-    function setAvatar(UserRecord $user, $avatar);
-}
 
 class AvatarProvider extends UserExtension { 
     function getMethods() {
@@ -37,8 +33,9 @@ class AvatarProvider extends UserExtension {
     }
 }
 
-abstract class AvatarProviderBase implements IAvatarProvider {
-
+abstract class AvatarProviderBase {
+    abstract function getAvatar(UserRecord $user, $size=null);
+    abstract function setAvatar(UserRecord $user, $avatar);
 }
 
 class LocalAvatarProvider extends AvatarProviderBase{
@@ -56,7 +53,8 @@ class GravatarAvatarProvider extends AvatarProviderBase{
         if (!$size) $size = config::get('lepton.avatars.defaultsize', 64);
         $email = $user->email;
         return(
-            "http://www.gravatar.com/avatar.php?" .
+            (request::isSecure()?'https://':'http://').
+            "www.gravatar.com/avatar.php?" .
             "gravatar_id=".md5( strtolower($email) ) .
             "&default=".urlencode($default) .
             "&size=".$size
@@ -72,12 +70,12 @@ class Gravatar {
         $default = config::get('lepton.avatars.gravatars.default','identicon');
         if (!$size) $size = config::get('lepton.avatars.defaultsize', 64);
         return(
-            "http://www.gravatar.com/avatar.php?" .
+            (request::isSecure()?'https://':'http://').
+            "www.gravatar.com/avatar.php?" .
             "gravatar_id=".md5( strtolower($email) ) .
             "&default=".urlencode($default) .
             "&size=".$size
         );
     }
 }
-
 
