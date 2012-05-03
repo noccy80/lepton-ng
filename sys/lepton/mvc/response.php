@@ -91,15 +91,38 @@ class response {
             throw new BaseException("File not found: " . $file);
         }
         // Streamed content expires in 1 hour
-        if (!(config::get('lepton.mvc.staticneverexpires', false) == true))
+        if (!(config::get('lepton.mvc.staticneverexpires', false) == true)) {
             response::expires(60);
-        if ($contenttype) {
-            response::contentType($contenttype);
-        } else {
-            $mimetype = response::contentTypeFromFile($file);
-            response::contentType($mimetype);
         }
-        echo file_get_contents($file);
+        // Query the cache
+        if (class_exists('cache')) {
+            $chash = sha1($file);
+            try {
+                $cachedata = cache::get($chash);
+                $content = $cachedata['content'];
+                $contenttype = $cachedata['type'];
+            } catch (CacheException $e) {
+                $content = file_get_contents($file);
+                // Set content type
+                if (!$contenttype) {
+                    $contenttype = response::contentTypeFromFile($file);
+                }
+                if (strlen($content)<500000) {
+                    cache::set($chash,array(
+                        'content' => $content,
+                        'type' => $contenttype
+                    ), '10m');
+                }
+            }
+        } else {
+            // Set content type
+            if (!$contenttype) {
+                $contenttype = response::contentTypeFromFile($file);
+            }
+            $content = file_get_contents($file);
+        }
+        response::contentType($contenttype);
+        echo $content;
     }
 
     /**
