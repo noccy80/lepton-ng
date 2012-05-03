@@ -56,7 +56,8 @@ CREATE TABLE geonames (
 	elevation INT,
 	gtopo30 INT,
 	timezone VARCHAR(40),
-	modificationdate DATE
+	modificationdate DATE,
+	INDEX geo(latitude, longitude)
 );
 
 DROP TABLE IF EXISTS geonames_timezones;

@@ -51,3 +51,15 @@ config::set('lepton.user.default.flag', '');
 //
 config::set('lepton.user.authbackend', 'nouveau');
 
+//
+// These options are valid for the gravatar avatar provider.
+// Default can be one of the following:
+// 
+//  404: do not load any image if none is associated with the email hash, instead return an HTTP 404 (File Not Found) response
+//  mm: (mystery-man) a simple, cartoon-style silhouetted outline of a person (does not vary by email hash)
+//  identicon: a geometric pattern based on an email hash
+//  monsterid: a generated 'monster' with different colors, faces, etc
+//  wavatar: generated faces with differing features and backgrounds
+//  retro: awesome generated, 8-bit arcade-style pixelated faces
+//
+config::set('lepton.avatars.gravatars.default','identicon');
