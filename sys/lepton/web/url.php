@@ -261,6 +261,10 @@ class url {
         return $ret;
     }
 
+    public function like($expression) {
+            return preg_match($expression,(string)$this);
+    }
+
 }
 
 function url($url) { return new url($url); }
