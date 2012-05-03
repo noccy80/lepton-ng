@@ -35,7 +35,21 @@ class BaseAction extends Action {
                 'arguments' => '',
                 'info' => 'Push a value onto a configuration stack (for the session)'
             ),
+            'apcinfo' => array(
+                'arguments' => '',
+                'info' => 'Show the APC cache info'
+            )
     );
+
+    function apcinfo() {
+
+        foreach(apc_cache_info() as $k=>$v) {
+            if ($k != 'cache_info') {
+                printf("%s: %s\n", $k, $v);
+            }
+        }
+
+    }
 
     function clear($key=null) {
         if ($key) {

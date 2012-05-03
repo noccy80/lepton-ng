@@ -37,7 +37,11 @@ class UserAction extends Action {
         ),
         'show' => array(
             'arguments' => '\g{username}',
-            'info' => 'Show detailed information on a user'
+            'info' => 'Show information on a user'
+        ),
+        'showall' => array(
+            'arguments' => '\g{username}',
+            'info' => 'Show detailed information on a user (including ambient properties)'
         ),
         'password' => array(
             'arguments' => '\g{username}',
@@ -244,6 +248,30 @@ class UserAction extends Action {
             console::writeLn(__astr('\b{%-20s}: %s'), 'Last login', $ur->lastlogin);
             console::writeLn(__astr('\b{%-20s}: %s'), 'Last IP', $ur->lastip);
             console::writeLn(__astr('\b{%-20s}: %s'), 'Registered', $ur->registered);
+        } else {
+            console::writeLn("Use: user show username");
+        }
+    }
+
+    function showall($username=null) {
+        using('lepton.user.*');
+        using('lepton.mvc.request');
+        if ($username) {
+            $ur = user::find($username);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Username', $ur->username);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Displayname', $ur->displayname);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'E-Mail', $ur->email);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'UUID', $ur->uuid);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Flags', $ur->flags);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Active', ($ur->active==1)?'Yes':'No');
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Firstname', $ur->firstname);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Lastname', $ur->lastname);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Last login', $ur->lastlogin);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Last IP', $ur->lastip);
+            console::writeLn(__astr('\b{%-20s}: %s'), 'Registered', $ur->registered);
+            foreach($ur as $af=>$ad) {
+                console::writeLn(__astr('\g{%-20s}: %s'), $af, $ad);
+            }
         } else {
             console::writeLn("Use: user show username");
         }

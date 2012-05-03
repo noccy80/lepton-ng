@@ -250,3 +250,10 @@ actions::register(
     'Manage the databases',
     DatabaseAction::$commands
 );
+
+actions::register(
+    new DatabaseAction(),
+    'db',
+    'Manage the databases',
+    DatabaseAction::$commands
+);
