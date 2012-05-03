@@ -19,6 +19,8 @@ class PdoDatabaseDriver extends DatabaseDriver {
         $driver = explode('::',str_replace('/','::',$config['driver']));
         $drv = $driver[1];
         $cfg = $config;
+        $cs = config::get('lepton.charset');
+        $cs = str_replace('utf-','utf',$cs); // 'utf8';
 
         switch($drv) {
             case 'sqlite':
@@ -39,6 +41,7 @@ class PdoDatabaseDriver extends DatabaseDriver {
                     // $port = $cfg['port'];
                     $this->dsn.='host='.$this->host.';dbname='.$this->db;
                 }
+                if ($cs) { $this->dsn .= ';charset='.$cs; }
                 $this->driver = 'mysql';
                 break;
         }
@@ -46,12 +49,11 @@ class PdoDatabaseDriver extends DatabaseDriver {
         try {
             $this->conn = new PDO($this->dsn,$this->user,$this->pass);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $cs = config::get('lepton.charset');
-            $cs = str_replace('utf-','utf',$cs); // 'utf8';
             // $this->exec("CHARSET ".$cs);
             if ($this->driver == 'mysql') {
                 if (isset($this->db) && ($this->db['database'] != '')) $this->execute("USE ".$this->db);
                 $this->execute("SET NAMES '".$cs."'");
+                $this->execute("SET CHARACTER SET '".$cs."'");
                 $this->execute("SET character_set_results='".$cs."'");
                 $this->conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             }
