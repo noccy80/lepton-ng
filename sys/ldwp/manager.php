@@ -1,12 +1,13 @@
 <?php
 
-using('net.lepton.url');
+using('lepton.web.url');
 
 class LdwpManager {
 
     function request($event,$data) {
-    	if (url($event)->like('/^ldwp-webxml\/')) {
-			echo "Ohai";
+        $qurl = $data['uri'];
+    	if (url($qurl)->like('/^\/ldwp-webxml\//')) {
+            view::load('base:/dist/ldwp/dynamic/manager.php');
 			return true;    	
     	}
         return false;
