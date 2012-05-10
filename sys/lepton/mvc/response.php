@@ -107,11 +107,13 @@ class response {
                 if (!$contenttype) {
                     $contenttype = response::contentTypeFromFile($file);
                 }
-                if (strlen($content)<500000) {
-                    cache::set($chash,array(
-                        'content' => $content,
-                        'type' => $contenttype
-                    ), '10m');
+                if ($e->getCode() == CacheException::ERR_KEY_NOT_FOUND) {
+                    if (strlen($content)<500000) {
+                        cache::set($chash,array(
+                            'content' => $content,
+                            'type' => $contenttype
+                        ), '10m');
+                    }
                 }
             }
         } else {

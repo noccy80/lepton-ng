@@ -5,7 +5,9 @@ config::def('cache.memcached.servers', array('127.0.0.1:11211'));
 
 using('lepton.utils.datetime');
 
-class CacheException extends Exception { }
+class CacheException extends Exception {
+    const ERR_KEY_NOT_FOUND = 16; // Memcached RES_NOTFOUND
+}
 
 // if (!class_exists('memcached')) throw new FunctionNotSupportedException("No Memcached support");
 
@@ -29,21 +31,26 @@ class Cache {
      * 
      */
     private static function initialize() {
-        if (!self::$initialized) {
-            self::$mci = new Memcached();
-            foreach(config::get('cache.memcached.servers') as $server) {
-                list($host,$port) = explode(':',$server);
-                self::$mci->addServer($host,$port);
-            }
-            self::$initialized = true;
+        if (self::$initialized) return;
+        self::$mci = new Memcached();
+        foreach(config::get('cache.memcached.servers') as $server) {
+            list($host,$port) = explode(':',$server);
+            self::$mci->addServer($host,$port);
         }
+        self::$initialized = true;
     }
     
-    public static function getBackend() {
-    
-    	return "memcached";
-    
-    }
+    static function getBackend() {
+
+        if (class_exists('Memcached'))
+            return "Memcached";
+        if (function_exists('apc_exists'))
+            return 'APC';
+        if (function_exists('xcache_get'))
+            return 'XCache';
+        return 'None';
+
+    }    
     
     public static function getStats() {
     	self::initialize();
