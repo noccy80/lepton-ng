@@ -1,2 +1,2 @@
 #!/bin/bash
-bin/lunit -d -ttests.* -rwikilunitreporter
+bin/lunit -ttests.* -rwikilunitreporter
