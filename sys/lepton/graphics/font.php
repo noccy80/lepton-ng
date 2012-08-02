@@ -149,6 +149,7 @@ class BitmapFont implements IFont {
     const EFFECT_NONE = null;
     const EFFECT_OUTLINE = 'outline';
     const EFFECT_SHADOW = 'shadow';
+    const EFFECT_BOLD = 'bold';
 
     private $font = null;
     private $fontfile = null;
@@ -164,7 +165,7 @@ class BitmapFont implements IFont {
         }
     }
 
-    function setTextEffect($effect, $color) {
+    function setTextEffect($effect, $color=null) {
         $this->effect = $effect;
         $this->options = $color;
     }
@@ -183,6 +184,8 @@ class BitmapFont implements IFont {
             for ($z = 0; $z <= $ow; $z++) {
                 imagestring($himage, $this->font, $x + $z, $y + $z, $text, $this->options->getColor($himage));
             }
+        } elseif ($this->effect == BitmapFont::EFFECT_BOLD) {
+            imagestring($himage, $this->font, $x + 1, $y, $text, $color->getColor($himage));
         }
         imagestring($himage, $this->font, $x, $y, $text, $color->getColor($himage));
     }

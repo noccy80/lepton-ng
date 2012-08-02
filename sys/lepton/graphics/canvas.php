@@ -99,6 +99,22 @@ class Canvas implements IDrawable,ICanvas {
     }
 
     /**
+     * @overload Canvas::__construct()
+     * @param string $filename The file to load
+     * @throws GraphicsException
+     */
+    function createFromString($string) {
+    	$n = new Canvas(1,1);
+    	$img = @imagecreatefromstring($string);
+        if ($img) {
+            $n->setImage($img);
+        } else {
+            throw new GraphicsException("Failed to load the image.", GraphicsException::ERR_LOAD_FAILURE);
+        }
+        return $n;
+    }
+
+    /**
      * @brief Retrieve the GD image handle
      *
      * @throws GraphicsException
@@ -656,11 +672,7 @@ class Canvas implements IDrawable,ICanvas {
             $dup->save('temp.png');
             $dup->draw($this,$area->x,$area->y);
         } else {
-            $htemp = $filter->applyFilter($this);
-            if ($htemp != null) {
-                imagedestroy($this->himage);
-                $this->himage = $htemp;
-            }
+            $filter->applyFilter($this);
         }
             
     }
@@ -695,6 +707,26 @@ class Canvas implements IDrawable,ICanvas {
         $this->checkImage();
         $font->drawText($this,$x,$y,$color,$text);
 
+    }
+    
+    function drawTextAlign(IFont $font, Color $color, $x, $y, $w, $text, $align='left') {
+    
+        $this->checkImage();
+        $m = $font->measure($text);
+        $mw = $m['width'];
+        switch(strtolower($align)) {
+            case 'left':
+                $ox = $x;
+                break;
+            case 'right':
+                $ox = ($x + $w) - $mw;
+                break;
+            case 'center':
+                $ox = ($x + ($w / 2) - ($mw / 2));
+                break;
+        }
+        $font->drawText($this,$ox,$y,$color,$text);
+    
     }
 
     /**
@@ -732,6 +764,7 @@ class Canvas implements IDrawable,ICanvas {
      */
     function draw(Canvas $dest,$x=null,$y=null,$width=null,$height=null,$alpha=false) {
 
+        $this->checkMeta();
         $dstimage = $dest->getImage();
         if (!$x) $x = 0;
         if (!$y) $y = 0;
@@ -792,6 +825,7 @@ class StringImage extends Canvas {
      * @throws GraphicsException
      */
     function __construct($string) {
+        $this->filename = null;
         $img = @imagecreatefromstring($string);
         if ($img) {
             $this->setImage($img);
@@ -799,6 +833,7 @@ class StringImage extends Canvas {
         } else {
             throw new GraphicsException("Failed to load the image.", GraphicsException::ERR_LOAD_FAILURE);
         }
+
     }
 
 }
